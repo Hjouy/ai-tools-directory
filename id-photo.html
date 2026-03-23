@@ -6,6 +6,11 @@
     <title>证件照换底色 - AI智能抠图、一键换白底蓝底红底</title>
     <meta name="description" content="免费在线证件照换底色工具，AI智能识别主体、一键换白底/蓝底/红底，支持美颜优化、多种证件照尺寸导出">
     <meta name="keywords" content="证件照换底色,抠图,AI抠图,换背景,证件照制作">
+    <link rel="canonical" href="https://hjouy.github.io/ai-tools-directory/id-photo.html">
+    <meta property="og:title" content="证件照换底色 - AI智能抠图">
+    <meta property="og:description" content="免费在线证件照换底色工具，AI智能识别主体、一键换底色">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://hjouy.github.io/ai-tools-directory/id-photo.html">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -162,6 +167,7 @@
             gap: 10px;
             flex-wrap: wrap;
             justify-content: center;
+            margin-top: 15px;
         }
         .btn {
             padding: 10px 24px;
@@ -187,11 +193,34 @@
             padding: 10px 15px;
             font-size: 0.85em;
             color: #2e7d32;
+            margin-bottom: 15px;
             display: none;
         }
         .status-bar.processing { background: #e3f2fd; border-color: #90caf9; color: #1565c0; display: block; }
         .status-bar.success { background: #e8f5e9; border-color: #a5d6a7; color: #2e7d32; display: block; }
         .status-bar.error { background: #ffebee; border-color: #ef9a9a; color: #c62828; display: block; }
+        .loading-spinner {
+            display: none;
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e0e0e0;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .model-status {
+            font-size: 0.8em;
+            color: #888;
+            margin-top: 5px;
+        }
+        .model-loaded { color: #4caf50; }
+        .model-loading { color: #ff9800; }
+        .model-error { color: #f44336; }
         @media (max-width: 900px) {
             .main-content { grid-template-columns: 1fr; }
         }
@@ -279,7 +308,7 @@
                     <div class="preview-hint">
                         <i class="fas fa-id-card" style="font-size: 3em; color: #ddd; margin-bottom: 15px; display: block;"></i>
                         <p>上传照片后，AI自动识别主体并换底色</p>
-                        <p style="font-size: 0.8em; color: #bbb; margin-top: 5px;">支持各种背景颜色，智能识别主体</p>
+                        <p style="font-size: 0.8em; color: #bbb; margin-top: 5px;">支持各种背景颜色，智能识别人像</p>
                     </div>
                 </div>
 
@@ -298,12 +327,62 @@
         </div>
     </div>
 
+    <!-- TensorFlow.js Core -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.17.0/dist/tf.min.js"></script>
+    <!-- MediaPipe Camera Utils -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3.1640029074/camera_utils.js" crossorigin="anonymous"></script>
+    <!-- MediaPipe Selfie Segmentation -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.1.1632779610/selfie_segmentation.js" crossorigin="anonymous"></script>
+
     <script>
         let originalImage = null;
         let processedCanvas = null;
         let currentBgColor = '#FFFFFF';
         let currentSize = { width: 295, height: 413 };
         let isProcessing = false;
+        
+        // MediaPipe Selfie Segmentation 实例
+        let segmenter = null;
+        let segmenterLoaded = false;
+
+        // 初始化 MediaPipe Selfie Segmentation
+        async function initSegmenter() {
+            const statusBar = document.getElementById('statusBar');
+            statusBar.textContent = '正在加载AI模型，请稍候...';
+            statusBar.className = 'status-bar processing';
+            
+            try {
+                segmenter = await SelfieSegmentation.create({
+                    locateFile: (file) => {
+                        return `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.1.1632779610/${file}`;
+                    }
+                });
+                
+                // 设置模型为通用模式（更好的边缘处理）
+                segmenter.setOptions({
+                    modelType: 'general',
+                    selfieMode: false
+                });
+                
+                segmenterLoaded = true;
+                statusBar.textContent = '✓ AI模型加载完成，可以开始处理';
+                statusBar.className = 'status-bar success';
+                
+                // 3秒后隐藏状态栏
+                setTimeout(() => {
+                    statusBar.className = 'status-bar';
+                }, 3000);
+                
+            } catch (err) {
+                console.error('Failed to load segmenter:', err);
+                statusBar.textContent = 'AI模型加载失败，将使用备用算法';
+                statusBar.className = 'status-bar error';
+                segmenterLoaded = false;
+            }
+        }
+
+        // 页面加载时初始化模型
+        initSegmenter();
 
         // 文件上传
         document.getElementById('imageInput').addEventListener('change', handleFileUpload);
@@ -402,21 +481,21 @@
             slider.addEventListener('input', () => { val.textContent = slider.value; });
         });
 
-        // AI抠图换底色
+        // AI抠图换底色 - 使用 MediaPipe Selfie Segmentation
         async function processImage() {
             if (!originalImage || isProcessing) return;
             
             isProcessing = true;
-            showStatus('正在AI识别主体，请稍候...', 'processing');
+            showStatus('正在AI识别人像，请稍候...', 'processing');
             document.getElementById('processBtn').disabled = true;
 
             try {
-                // 1. 创建处理画布
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
+                // 创建工作画布
+                const workCanvas = document.createElement('canvas');
+                const workCtx = workCanvas.getContext('2d');
                 
-                // 使用合适的工作尺寸（平衡效果和性能）
-                const maxDim = 800;
+                // 使用合适的处理尺寸
+                const maxDim = 1024;
                 let w = originalImage.width;
                 let h = originalImage.height;
                 if (w > maxDim || h > maxDim) {
@@ -425,150 +504,104 @@
                     h = Math.round(h * ratio);
                 }
                 
-                canvas.width = w;
-                canvas.height = h;
-                ctx.drawImage(originalImage, 0, 0, w, h);
+                workCanvas.width = w;
+                workCanvas.height = h;
+                workCtx.drawImage(originalImage, 0, 0, w, h);
                 
-                // 2. 获取图像数据
-                const imageData = ctx.getImageData(0, 0, w, h);
+                let mask;
+                
+                if (segmenterLoaded && segmenter) {
+                    // 使用 MediaPipe Selfie Segmentation
+                    showStatus('AI模型分析中，请稍候...', 'processing');
+                    
+                    try {
+                        mask = await segmenter.segmentPeople(workCanvas, {
+                            multiSegmentation: false,
+                            segmentBodyParts: false
+                        });
+                        
+                        // mask 是 Float32Array，包含每个像素属于人物的置信度 (0-1)
+                        if (!mask || mask.length === 0) {
+                            throw new Error('Segmentation failed');
+                        }
+                    } catch (segErr) {
+                        console.warn('MediaPipe segmentation failed, using fallback:', segErr);
+                        mask = await fallbackSegmentation(workCtx, w, h);
+                    }
+                } else {
+                    // 使用备用算法
+                    showStatus('使用备用算法处理中...', 'processing');
+                    mask = await fallbackSegmentation(workCtx, w, h);
+                }
+                
+                showStatus('正在合成证件照...', 'processing');
+                
+                // 创建输出画布
+                const outputCanvas = document.createElement('canvas');
+                const outputCtx = outputCanvas.getContext('2d');
+                outputCanvas.width = w;
+                outputCanvas.height = h;
+                
+                // 绘制原图
+                outputCtx.drawImage(workCanvas, 0, 0);
+                
+                // 获取图像数据
+                const imageData = outputCtx.getImageData(0, 0, w, h);
                 const data = imageData.data;
                 
-                // 3. 分析边缘颜色（用于识别背景）
-                const edgeColors = [];
-                const edgeSample = 20; // 采样点数
-                
-                // 采集四个角的颜色
-                for (let i = 0; i < edgeSample; i++) {
-                    // 左上角
-                    edgeColors.push({
-                        r: data[i * 4],
-                        g: data[i * 4 + 1],
-                        b: data[i * 4 + 2]
-                    });
-                    // 右上角
-                    edgeColors.push({
-                        r: data[i * 4 + (w - 1) * 4],
-                        g: data[i * 4 + (w - 1) * 4 + 1],
-                        b: data[i * 4 + (w - 1) * 4 + 2]
-                    });
-                    // 左下角
-                    const y = h - 1;
-                    edgeColors.push({
-                        r: data[(y * w + i) * 4],
-                        g: data[(y * w + i) * 4 + 1],
-                        b: data[(y * w + i) * 4 + 2]
-                    });
-                    // 右下角
-                    edgeColors.push({
-                        r: data[(y * w + w - 1 - i) * 4],
-                        g: data[(y * w + w - 1 - i) * 4 + 1],
-                        b: data[(y * w + w - 1 - i) * 4 + 2]
-                    });
-                }
-                
-                // 计算背景主色
-                const bgColor = {
-                    r: Math.round(edgeColors.reduce((s, c) => s + c.r, 0) / edgeColors.length),
-                    g: Math.round(edgeColors.reduce((s, c) => s + c.g, 0) / edgeColors.length),
-                    b: Math.round(edgeColors.reduce((s, c) => s + c.b, 0) / edgeColors.length)
-                };
-                
-                // 4. 智能抠图 - 使用颜色相似度和边缘检测
-                const targetColor = hexToRgb(currentBgColor);
-                
-                for (let y = 0; y < h; y++) {
-                    for (let x = 0; x < w; x++) {
-                        const i = (y * w + x) * 4;
-                        const r = data[i];
-                        const g = data[i + 1];
-                        const b = data[i + 2];
-                        
-                        // 计算与背景色的差异
-                        const diff = colorDiff(r, g, b, bgColor.r, bgColor.g, bgColor.b);
-                        
-                        // 边缘区域更敏感
-                        const isEdge = x < 30 || x > w - 30 || y < 30 || y > h - 30;
-                        const threshold = isEdge ? 35 : 50;
-                        
-                        if (diff < threshold) {
-                            // 计算与目标颜色的混合程度
-                            const blend = Math.max(0, 1 - diff / threshold);
-                            
-                            // 边缘过渡更自然
-                            let newR, newG, newB;
-                            if (blend < 1) {
-                                newR = r + (targetColor.r - r) * blend;
-                                newG = g + (targetColor.g - g) * blend;
-                                newB = b + (targetColor.b - b) * blend;
-                            } else {
-                                newR = targetColor.r;
-                                newG = targetColor.g;
-                                newB = targetColor.b;
-                            }
-                            
-                            data[i] = Math.round(newR);
-                            data[i + 1] = Math.round(newG);
-                            data[i + 2] = Math.round(newB);
-                        }
-                    }
-                }
-                
-                // 5. 应用美颜效果
+                // 应用美颜效果到主体
                 const brightness = parseInt(document.getElementById('brightness').value);
                 const contrast = parseInt(document.getElementById('contrast').value);
                 const smooth = parseInt(document.getElementById('smooth').value);
                 const whitening = parseInt(document.getElementById('whitening').value);
                 
-                for (let i = 0; i < data.length; i += 4) {
-                    let r = data[i];
-                    let g = data[i + 1];
-                    let b = data[i + 2];
-                    
-                    // 亮度
-                    if (brightness !== 0) {
-                        r += brightness * 2.55;
-                        g += brightness * 2.55;
-                        b += brightness * 2.55;
-                    }
-                    
-                    // 对比度
-                    if (contrast !== 0) {
-                        const factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
-                        r = factor * (r - 128) + 128;
-                        g = factor * (g - 128) + 128;
-                        b = factor * (b - 128) + 128;
-                    }
-                    
-                    // 磨皮（简单的模糊）
-                    if (smooth > 0) {
-                        // 检测是否为肤色（相对柔和的处理）
-                        const isLikelySkin = isSkinColor(r, g, b);
-                        if (isLikelySkin) {
-                            const factor = smooth / 100 * 0.3;
-                            r = r * (1 - factor) + (r + 10) * factor;
-                            g = g * (1 - factor) + (g + 10) * factor;
-                            b = b * (1 - factor) + (b + 10) * factor;
+                // 创建临时画布用于模糊
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = w;
+                tempCanvas.height = h;
+                const tempCtx = tempCanvas.getContext('2d');
+                
+                // 解析目标底色
+                const targetColor = hexToRgb(currentBgColor);
+                
+                // 遍历每个像素
+                for (let y = 0; y < h; y++) {
+                    for (let x = 0; x < w; x++) {
+                        const i = (y * w + x);
+                        const pixelIdx = i * 4;
+                        
+                        // 获取人物置信度
+                        const personProb = mask[i] || 0;
+                        
+                        // 人像置信度阈值（低于此值认为是背景）
+                        const threshold = 0.5;
+                        
+                        if (personProb < threshold) {
+                            // 背景区域：直接替换为目标颜色
+                            data[pixelIdx] = targetColor.r;
+                            data[pixelIdx + 1] = targetColor.g;
+                            data[pixelIdx + 2] = targetColor.b;
+                        } else if (personProb < threshold + 0.15) {
+                            // 边缘区域：平滑过渡
+                            const blend = (personProb - threshold) / 0.15;
+                            const origR = data[pixelIdx];
+                            const origG = data[pixelIdx + 1];
+                            const origB = data[pixelIdx + 2];
+                            
+                            data[pixelIdx] = Math.round(origR * blend + targetColor.r * (1 - blend));
+                            data[pixelIdx + 1] = Math.round(origG * blend + targetColor.g * (1 - blend));
+                            data[pixelIdx + 2] = Math.round(origB * blend + targetColor.b * (1 - blend));
                         }
+                        // else: 人物区域，保持原样
                     }
-                    
-                    // 美白
-                    if (whitening > 0) {
-                        const gray = 0.299 * r + 0.587 * g + 0.114 * b;
-                        const f = whitening / 100 * 0.3;
-                        r = r + (255 - gray) * f;
-                        g = g + (255 - gray) * f;
-                        b = b + (255 - gray) * f;
-                    }
-                    
-                    // 限制范围
-                    data[i] = Math.max(0, Math.min(255, Math.round(r)));
-                    data[i + 1] = Math.max(0, Math.min(255, Math.round(g)));
-                    data[i + 2] = Math.max(0, Math.min(255, Math.round(b)));
                 }
                 
-                ctx.putImageData(imageData, 0, 0);
+                // 应用美颜效果（仅对人像区域）
+                applyBeautyEffect(data, w, h, mask, brightness, contrast, smooth, whitening);
                 
-                // 6. 绘制最终证件照尺寸
+                outputCtx.putImageData(imageData, 0, 0);
+                
+                // 绘制最终证件照尺寸
                 const finalCanvas = document.createElement('canvas');
                 const finalCtx = finalCanvas.getContext('2d');
                 finalCanvas.width = currentSize.width;
@@ -579,25 +612,25 @@
                 finalCtx.fillRect(0, 0, currentSize.width, currentSize.height);
                 
                 // 居中裁剪绘制
-                const srcRatio = canvas.width / canvas.height;
+                const srcRatio = outputCanvas.width / outputCanvas.height;
                 const dstRatio = currentSize.width / currentSize.height;
                 
                 let sx, sy, sw, sh;
                 if (srcRatio > dstRatio) {
-                    sh = canvas.height;
+                    sh = outputCanvas.height;
                     sw = sh * dstRatio;
-                    sx = (canvas.width - sw) / 2;
+                    sx = (outputCanvas.width - sw) / 2;
                     sy = 0;
                 } else {
-                    sw = canvas.width;
+                    sw = outputCanvas.width;
                     sh = sw / dstRatio;
                     sx = 0;
-                    sy = (canvas.height - sh) / 2;
+                    sy = (outputCanvas.height - sh) / 2;
                 }
                 
-                finalCtx.drawImage(canvas, sx, sy, sw, sh, 0, 0, currentSize.width, currentSize.height);
+                finalCtx.drawImage(outputCanvas, sx, sy, sw, sh, 0, 0, currentSize.width, currentSize.height);
                 
-                // 7. 显示结果
+                // 显示结果
                 processedCanvas = finalCanvas;
                 const area = document.getElementById('canvasArea');
                 area.innerHTML = `
@@ -630,15 +663,171 @@
             }
         }
 
-        // 辅助函数
-        function colorDiff(r1, g1, b1, r2, g2, b2) {
-            return Math.sqrt(
-                Math.pow(r1 - r2, 2) +
-                Math.pow(g1 - g2, 2) +
-                Math.pow(b1 - b2, 2)
-            );
+        // 备用分割算法（基于颜色和边缘检测）
+        async function fallbackSegmentation(ctx, w, h) {
+            const imageData = ctx.getImageData(0, 0, w, h);
+            const data = imageData.data;
+            
+            // 分析四个角的颜色（假设背景是均匀的）
+            const cornerColors = [];
+            
+            // 采集样本
+            const sampleSize = Math.min(30, Math.floor(w * 0.1), Math.floor(h * 0.1));
+            
+            // 四个角
+            const corners = [
+                { x: 0, y: 0 },
+                { x: w - sampleSize, y: 0 },
+                { x: 0, y: h - sampleSize },
+                { x: w - sampleSize, y: h - sampleSize }
+            ];
+            
+            corners.forEach(corner => {
+                let r = 0, g = 0, b = 0, count = 0;
+                for (let dy = 0; dy < sampleSize; dy++) {
+                    for (let dx = 0; dx < sampleSize; dx++) {
+                        const x = corner.x + dx;
+                        const y = corner.y + dy;
+                        if (x < w && y < h) {
+                            const i = (y * w + x) * 4;
+                            r += data[i];
+                            g += data[i + 1];
+                            b += data[i + 2];
+                            count++;
+                        }
+                    }
+                }
+                cornerColors.push({ r: r / count, g: g / count, b: b / count });
+            });
+            
+            // 计算平均背景色
+            const bgColor = {
+                r: cornerColors.reduce((s, c) => s + c.r, 0) / 4,
+                g: cornerColors.reduce((s, c) => s + c.g, 0) / 4,
+                b: cornerColors.reduce((s, c) => s + c.b, 0) / 4
+            };
+            
+            // 生成 mask（Float32Array）
+            const mask = new Float32Array(w * h);
+            
+            for (let y = 0; y < h; y++) {
+                for (let x = 0; x < w; x++) {
+                    const i = y * w + x;
+                    const pixelIdx = i * 4;
+                    
+                    const r = data[pixelIdx];
+                    const g = data[pixelIdx + 1];
+                    const b = data[pixelIdx + 2];
+                    
+                    // 计算与背景色的差异
+                    const diff = Math.sqrt(
+                        Math.pow(r - bgColor.r, 2) +
+                        Math.pow(g - bgColor.g, 2) +
+                        Math.pow(b - bgColor.b, 2)
+                    );
+                    
+                    // 边缘更敏感
+                    const edgeDist = Math.min(x, y, w - x, h - y);
+                    const threshold = edgeDist < 50 ? 40 : 55;
+                    
+                    // 转换为人像概率
+                    if (diff < threshold) {
+                        mask[i] = 1 - diff / threshold;
+                    } else {
+                        mask[i] = 0;
+                    }
+                }
+            }
+            
+            // 形态学处理 - 膨胀和腐蚀使mask更平滑
+            const processedMask = new Float32Array(w * h);
+            const kernel = 3;
+            
+            for (let y = 0; y < h; y++) {
+                for (let x = 0; x < w; x++) {
+                    let maxVal = 0;
+                    let sumVal = 0;
+                    let count = 0;
+                    
+                    for (let dy = -kernel; dy <= kernel; dy++) {
+                        for (let dx = -kernel; dx <= kernel; dx++) {
+                            const nx = x + dx;
+                            const ny = y + dy;
+                            if (nx >= 0 && nx < w && ny >= 0 && ny < h) {
+                                const val = mask[ny * w + nx];
+                                maxVal = Math.max(maxVal, val);
+                                sumVal += val;
+                                count++;
+                            }
+                        }
+                    }
+                    
+                    // 使用均值和最大值混合
+                    processedMask[y * w + x] = maxVal * 0.6 + (sumVal / count) * 0.4;
+                }
+            }
+            
+            return processedMask;
         }
 
+        // 应用美颜效果
+        function applyBeautyEffect(data, w, h, mask, brightness, contrast, smooth, whitening) {
+            for (let y = 0; y < h; y++) {
+                for (let x = 0; x < w; x++) {
+                    const i = (y * w + x) * 4;
+                    const maskIdx = y * w + x;
+                    
+                    // 只对人物区域应用美颜（置信度 > 0.5）
+                    if (mask[maskIdx] < 0.5) continue;
+                    
+                    let r = data[i];
+                    let g = data[i + 1];
+                    let b = data[i + 2];
+                    
+                    // 亮度
+                    if (brightness !== 0) {
+                        r += brightness * 2.55;
+                        g += brightness * 2.55;
+                        b += brightness * 2.55;
+                    }
+                    
+                    // 对比度
+                    if (contrast !== 0) {
+                        const factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
+                        r = factor * (r - 128) + 128;
+                        g = factor * (g - 128) + 128;
+                        b = factor * (b - 128) + 128;
+                    }
+                    
+                    // 磨皮（简单的模糊，仅对肤色区域）
+                    if (smooth > 0) {
+                        const isSkin = isSkinColor(r, g, b);
+                        if (isSkin) {
+                            const factor = smooth / 100 * 0.3;
+                            r = r * (1 - factor) + (r + 10) * factor;
+                            g = g * (1 - factor) + (g + 10) * factor;
+                            b = b * (1 - factor) + (b + 10) * factor;
+                        }
+                    }
+                    
+                    // 美白
+                    if (whitening > 0) {
+                        const gray = 0.299 * r + 0.587 * g + 0.114 * b;
+                        const f = whitening / 100 * 0.3;
+                        r = r + (255 - gray) * f;
+                        g = g + (255 - gray) * f;
+                        b = b + (255 - gray) * f;
+                    }
+                    
+                    // 限制范围
+                    data[i] = Math.max(0, Math.min(255, Math.round(r)));
+                    data[i + 1] = Math.max(0, Math.min(255, Math.round(g)));
+                    data[i + 2] = Math.max(0, Math.min(255, Math.round(b)));
+                }
+            }
+        }
+
+        // 辅助函数
         function hexToRgb(hex) {
             const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
             return result ? {
@@ -649,16 +838,14 @@
         }
 
         function isSkinColor(r, g, b) {
-            // 简化的肤色检测
             const r2 = r / 255, g2 = g / 255, b2 = b / 255;
             const max = Math.max(r2, g2, b2);
             const min = Math.min(r2, g2, b2);
             
-            // 排除太暗或太亮的
             if (max < 0.2 || max > 0.95) return false;
             if (min > 0.8) return false;
             
-            // 排除蓝色系（天空、背景布）
+            // 排除蓝色系
             if (b2 > r2 * 1.2 && b2 > g2 * 1.1) return false;
             
             return true;
@@ -687,20 +874,12 @@
                 <div class="preview-hint">
                     <i class="fas fa-id-card" style="font-size: 3em; color: #ddd; margin-bottom: 15px; display: block;"></i>
                     <p>上传照片后，AI自动识别主体并换底色</p>
-                    <p style="font-size: 0.8em; color: #bbb; margin-top: 5px;">支持各种背景颜色，智能识别主体</p>
+                    <p style="font-size: 0.8em; color: #bbb; margin-top: 5px;">支持各种背景颜色，智能识别人像</p>
                 </div>
             `;
             document.getElementById('processBtn').disabled = true;
             document.getElementById('downloadBtn').disabled = true;
-            document.getElementById('brightness').value = 0;
-            document.getElementById('brightnessVal').textContent = '0';
-            document.getElementById('contrast').value = 0;
-            document.getElementById('contrastVal').textContent = '0';
-            document.getElementById('smooth').value = 0;
-            document.getElementById('smoothVal').textContent = '0';
-            document.getElementById('whitening').value = 0;
-            document.getElementById('whiteningVal').textContent = '0';
-            showStatus('', '');
+            document.getElementById('statusBar').className = 'status-bar';
         }
     </script>
 </body>
