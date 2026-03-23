@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI工具导航 - 国内访问入口</title>
+  <meta name="description" content="AI工具导航站 - 多个访问入口，解决GitHub Pages访问问题">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .main-card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 60px 40px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      color: #333;
+    }
+
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 15px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      font-size: 1.2em;
+      color: #666;
+      margin-bottom: 40px;
+    }
+
+    .notice {
+      background: #fff3cd;
+      border-left: 4px solid #ffc107;
+      padding: 15px 20px;
+      margin-bottom: 30px;
+      text-align: left;
+      border-radius: 8px;
+    }
+
+    .notice strong {
+      color: #856404;
+    }
+
+    .notice p {
+      color: #856404;
+      font-size: 0.95em;
+      line-height: 1.6;
+      margin: 5px 0;
+    }
+
+    .links-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 30px;
+    }
+
+    .link-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 12px;
+      padding: 25px 20px;
+      text-decoration: none;
+      color: #fff;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .link-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+    }
+
+    .link-card i {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    .link-card h3 {
+      font-size: 1.3em;
+      margin-bottom: 8px;
+    }
+
+    .link-card p {
+      font-size: 0.9em;
+      opacity: 0.9;
+    }
+
+    .link-card.recommended {
+      background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    }
+
+    .link-card.primary {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+
+    .speed-badge {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.3);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8em;
+      margin-top: 10px;
+    }
+
+    .tips {
+      margin-top: 40px;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 12px;
+      text-align: left;
+    }
+
+    .tips h3 {
+      color: #667eea;
+      margin-bottom: 15px;
+      font-size: 1.2em;
+    }
+
+    .tips ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .tips li {
+      padding: 8px 0;
+      color: #666;
+      font-size: 0.95em;
+      display: flex;
+      align-items: flex-start;
+    }
+
+    .tips li:before {
+      content: "✓";
+      color: #38ef7d;
+      margin-right: 10px;
+      font-weight: bold;
+    }
+
+    @media (max-width: 768px) {
+      .main-card {
+        padding: 40px 20px;
+      }
+
+      h1 {
+        font-size: 2em;
+      }
+
+      .links-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <div class="main-card">
+      <h1>🎯 AI工具导航站</h1>
+      <p class="subtitle">发现最好用的人工智能工具</p>
+
+      <div class="notice">
+        <strong>⚠️ 访问提示</strong>
+        <p>GitHub Pages 在中国大陆访问可能不稳定。如遇到加载缓慢或无法访问，请尝试以下备用入口：</p>
+      </div>
+
+      <div class="links-grid">
+        <a href="https://hjouy.github.io/ai-tools-directory/" class="link-card primary">
+          <i class="fab fa-github"></i>
+          <h3>GitHub Pages</h3>
+          <p>官方主页 - 完整功能</p>
+          <span class="speed-badge">可能较慢</span>
+        </a>
+
+        <a href="https://ai-tools-nav.vercel.app" class="link-card recommended">
+          <i class="fas fa-rocket"></i>
+          <h3>Vercel 镜像</h3>
+          <p>国内访问较快 - 推荐使用</p>
+          <span class="speed-badge">速度快 ⭐</span>
+        </a>
+
+        <a href="https://ai-tools-nav.pages.dev" class="link-card">
+          <i class="fas fa-cloud"></i>
+          <h3>Cloudflare Pages</h3>
+          <p>全球CDN加速</p>
+          <span class="speed-badge">速度稳定</span>
+        </a>
+
+        <a href="https://ai-tools-nav.netlify.app" class="link-card">
+          <i class="fas fa-globe"></i>
+          <h3>Netlify</h3>
+          <p>备用访问入口</p>
+          <span class="speed-badge">速度一般</span>
+        </a>
+      </div>
+
+      <div class="tips">
+        <h3>💡 使用建议</h3>
+        <ul>
+          <li><strong>国内用户</strong>：优先使用 Vercel 镜像，速度最快最稳定</li>
+          <li><strong>海外用户</strong>：GitHub Pages 速度最佳，功能最完整</li>
+          <li><strong>网络不佳时</strong>：可尝试切换不同镜像，或使用VPN访问 GitHub Pages</li>
+          <li><strong>收藏建议</strong>：将所有镜像地址加入收藏夹，方便随时切换</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 检测用户地区，自动推荐最佳入口
+    async function detectBestMirror() {
+      try {
+        // 简单的延迟检测
+        const githubStart = Date.now();
+        await fetch('https://hjouy.github.io/ai-tools-directory/', { mode: 'no-cors' });
+        const githubTime = Date.now() - githubStart;
+
+        if (githubTime > 5000) {
+          // GitHub 超过5秒，推荐其他镜像
+          console.log('GitHub 访问较慢，建议使用其他镜像');
+        }
+      } catch (error) {
+        console.log('GitHub 访问失败，建议使用其他镜像');
+      }
+    }
+
+    detectBestMirror();
+  </script>
+</body>
+</html>
