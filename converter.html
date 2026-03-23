@@ -246,6 +246,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <!-- PDF.js: PDF文本提取 -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <!-- docx.js: 生成Word文档 -->
+  <script src="https://unpkg.com/docx@8.2.0/build/index.umd.js"></script>
 
 <script>
 // 设置PDF.js worker
@@ -474,7 +476,6 @@ async function convertImageToPDF(fill, pct, text) {
     reader.readAsDataURL(selectedFile);
   });
 }
-
 // PDF转Word - 提取文本生成Word
 async function convertPDFToWord(fill, pct, text) {
   updateProgress(fill, pct, text, 10, '正在读取PDF...');
@@ -497,36 +498,68 @@ async function convertPDFToWord(fill, pct, text) {
   
   updateProgress(fill, pct, text, 80, '正在生成Word文档...');
   
-  // 创建简单的HTML文档
-  const htmlContent = `
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>${selectedFile.name.replace('.pdf', '')}</title>
-  <style>
-    body { font-family: 'Microsoft YaHei', Arial, sans-serif; line-height: 1.6; padding: 40px; }
-    h1 { color: #333; border-bottom: 2px solid #6366f1; padding-bottom: 10px; }
-    .meta { color: #666; font-size: 0.9em; margin-bottom: 20px; }
-    .content { white-space: pre-wrap; word-wrap: break-word; }
-  </style>
-</head>
-<body>
-  <h1>${selectedFile.name.replace('.pdf', '')}</h1>
-  <div class="meta">转换时间: ${new Date().toLocaleString('zh-CN')}</div>
-  <div class="content">${escapeHtml(fullText)}</div>
-</body>
-</html>`;
-  
-  // 使用mammoth生成Word文档
-  const result = await mammoth.convertToHtml({ path: htmlContent });
-  
-  // 创建Word文档Blob
-  const wordBlob = new Blob([htmlContent], { 
-    type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' 
-  });
-  
-  convertedBlob = wordBlob;
+  try {
+    // 使用docx库生成真正的Word文档
+    const { Document, Packer, Paragraph, TextRun, HeadingLevel } = docx;
+    
+    // 分段处理文本
+    const paragraphs = fullText.split('\n\n').filter(p => p.trim());
+    
+    const doc = new Document({
+      sections: [{
+        properties: {},
+        children: [
+          new Paragraph({
+            children: [
+              new TextRun({
+                text: selectedFile.name.replace('.pdf', ''),
+                bold: true,
+                size: 32,
+              }),
+            ],
+            heading: HeadingLevel.HEADING_1,
+            spacing: {
+              after: 400,
+            },
+          }),
+          new Paragraph({
+            children: [
+              new TextRun({
+                text: `转换时间: ${new Date().toLocaleString('zh-CN')}`,
+                size: 20,
+                color: '666666',
+              }),
+            ],
+            spacing: {
+              after: 400,
+            },
+          }),
+          ...paragraphs.map(text => new Paragraph({
+            children: [
+              new TextRun({
+                text: text,
+                size: 24,
+              }),
+            ],
+            spacing: {
+              after: 200,
+            },
+          })),
+        ],
+      }],
+    });
+    
+    // 生成Word文档
+    const blob = await Packer.toBlob(doc);
+    convertedBlob = blob;
+  } catch (error) {
+    // 如果docx库不可用，回退到HTML格式
+    console.warn('docx库不可用，使用HTML格式');
+    const htmlContent = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${selectedFile.name.replace('.pdf', '')}</title><style>body{font-family:'Microsoft YaHei',Arial,sans-serif;line-height:1.6;padding:40px;}h1{color:#333;border-bottom:2px solid #6366f1;padding-bottom:10px;}.meta{color:#666;font-size:0.9em;margin-bottom:20px;}.content{white-space:pre-wrap;word-wrap:break-word;}</style></head><body><h1>${selectedFile.name.replace('.pdf', '')}</h1><div class="meta">转换时间: ${new Date().toLocaleString('zh-CN')}</div><div class="content">${escapeHtml(fullText)}</div></body></html>`;
+    convertedBlob = new Blob([htmlContent], { 
+      type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' 
+    });
+  }
   
   updateProgress(fill, pct, text, 100, '转换完成！');
   setTimeout(() => {
@@ -534,6 +567,8 @@ async function convertPDFToWord(fill, pct, text) {
     document.getElementById('downloadBtn').style.display = 'flex';
   }, 500);
 }
+
+
 
 // Word转PDF - 提取文本生成PDF
 async function convertWordToPDF(fill, pct, text) {
