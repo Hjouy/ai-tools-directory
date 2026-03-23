@@ -126,7 +126,10 @@
 
   <!-- 转换器 -->
   <div class="converter-area">
-    <h2 id="converterTitle" style="font-size:1.1rem;font-weight:700;margin-bottom:20px;">PDF 转 Word</h2>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+      <h2 id="converterTitle" style="font-size:1.1rem;font-weight:700;margin:0;">PDF 转 Word</h2>
+      <span id="featureTag" style="background:rgba(99,102,241,.15);color:#6366f1;padding:4px 12px;border-radius:20px;font-size:.75rem;">即将上线</span>
+    </div>
 
     <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()"
          ondragover="event.preventDefault();this.classList.add('drag')"
@@ -161,6 +164,35 @@
     </button>
   </div>
 
+  <!-- 功能状态说明 -->
+  <div style="background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:12px;padding:20px;margin:40px 0;">
+    <h3 style="font-size:1rem;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+      <span>📋</span> 功能状态说明
+    </h3>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;font-size:.85rem;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="background:#10b981;color:white;padding:2px 8px;border-radius:10px;font-size:.7rem;">✅ 可用</span>
+        <span>图片转PDF - 浏览器本地转换</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="background:#6366f1;color:white;padding:2px 8px;border-radius:10px;font-size:.7rem;">即将上线</span>
+        <span>PDF转Word - 需后端支持</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="background:#6366f1;color:white;padding:2px 8px;border-radius:10px;font-size:.7rem;">即将上线</span>
+        <span>Word转PDF - 需后端支持</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="background:#6366f1;color:white;padding:2px 8px;border-radius:10px;font-size:.7rem;">即将上线</span>
+        <span>PDF转Excel - 需后端支持</span>
+      </div>
+    </div>
+    <p style="color:var(--text-muted);font-size:.8rem;margin-top:12px;line-height:1.5;">
+      💡 <strong>提示:</strong> 图片转PDF功能已完全可用,其他功能需要后端服务支持。我们正在开发中,敬请期待!
+      当前版本会生成说明文档,帮助您了解功能状态。
+    </p>
+  </div>
+
   <!-- 功能特点 -->
   <div class="features">
     <div class="feature">
@@ -171,12 +203,22 @@
     <div class="feature">
       <div class="feature-icon">⚡</div>
       <div class="feature-title">秒级转换</div>
-      <div class="feature-desc">平均转换时间不超过10秒</div>
+      <div class="feature-desc">图片转PDF平均不超过10秒</div>
     </div>
     <div class="feature">
       <div class="feature-icon">🆓</div>
       <div class="feature-title">完全免费</div>
       <div class="feature-desc">无需注册，无使用次数限制</div>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">🔒</div>
+      <div class="feature-title">隐私安全</div>
+      <div class="feature-desc">文件本地处理，不上传服务器</div>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">💻</div>
+      <div class="feature-title">浏览器转换</div>
+      <div class="feature-desc">使用浏览器本地能力，极速响应</div>
     </div>
     <div class="feature">
       <div class="feature-icon">📱</div>
@@ -194,16 +236,22 @@
   </p>
 </footer>
 
+  <!-- jsPDF: 图片转PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <!-- mammoth.js: PDF转Word(实际是HTML转Word) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+
 <script>
 const typeConfig = {
-  pdf2word: { title: 'PDF 转 Word', accept: '.pdf', hint: '支持 PDF 格式，最大 50MB', icon: '📄', ext: '.docx' },
-  pdf2excel: { title: 'PDF 转 Excel', accept: '.pdf', hint: '支持 PDF 格式（含表格），最大 50MB', icon: '📄', ext: '.xlsx' },
-  word2pdf: { title: 'Word 转 PDF', accept: '.doc,.docx', hint: '支持 .doc/.docx 格式，最大 20MB', icon: '📝', ext: '.pdf' },
-  img2pdf: { title: '图片 转 PDF', accept: '.jpg,.jpeg,.png,.webp,.gif', hint: '支持 JPG/PNG/WEBP 格式，最大 100MB', icon: '🖼️', ext: '.pdf' },
+  pdf2word: { title: 'PDF 转 Word', accept: '.pdf', hint: '支持 PDF 格式，最大 50MB', icon: '📄', ext: '.docx', desc: '将PDF文档转换为可编辑的Word文档' },
+  pdf2excel: { title: 'PDF 转 Excel', accept: '.pdf', hint: '支持 PDF 格式（含表格），最大 50MB', icon: '📄', ext: '.xlsx', desc: '将PDF表格转换为Excel电子表格' },
+  word2pdf: { title: 'Word 转 PDF', accept: '.doc,.docx', hint: '支持 .doc/.docx 格式，最大 20MB', icon: '📝', ext: '.pdf', desc: '将Word文档转换为PDF格式' },
+  img2pdf: { title: '图片 转 PDF', accept: '.jpg,.jpeg,.png,.webp,.gif', hint: '支持 JPG/PNG/WEBP 格式，最大 100MB', icon: '🖼️', ext: '.pdf', desc: '将图片转换为PDF文档' },
 };
 
 let currentType = 'pdf2word';
 let selectedFile = null;
+let convertedBlob = null;
 
 function selectType(el, type) {
   document.querySelectorAll('.type-card').forEach(c => c.classList.remove('active'));
@@ -212,7 +260,19 @@ function selectType(el, type) {
   const cfg = typeConfig[type];
   document.getElementById('converterTitle').textContent = cfg.title;
   document.getElementById('uploadHint').textContent = cfg.hint;
-  document.getElementById('fileInput').accept = cfg.accept;
+
+  // 更新功能标签
+  const tag = document.getElementById('featureTag');
+  if (type === 'img2pdf') {
+    tag.textContent = '✅ 已上线';
+    tag.style.background = 'rgba(16,185,129,.15)';
+    tag.style.color = '#10b981';
+  } else {
+    tag.textContent = '即将上线';
+    tag.style.background = 'rgba(99,102,241,.15)';
+    tag.style.color = '#6366f1';
+  }
+
   removeFile();
 }
 
@@ -268,47 +328,313 @@ function startConvert() {
   btn.style.display = 'none';
   wrap.style.display = 'block';
   let progress = 0;
-  text.textContent = '正在解析文件...';
+  text.textContent = '正在初始化...';
 
-  const stages = [
-    { target: 30, label: '正在解析文件...', delay: 80 },
-    { target: 65, label: '正在转换格式...', delay: 60 },
-    { target: 90, label: '正在优化输出...', delay: 50 },
-    { target: 100, label: '转换完成！', delay: 30 },
-  ];
+  // 根据转换类型调用不同的转换函数
+  if (currentType === 'img2pdf') {
+    convertImageToPDF(fill, pct, text, wrap, btn);
+  } else if (currentType === 'pdf2word') {
+    convertPDFToWord(fill, pct, text, wrap, btn);
+  } else if (currentType === 'word2pdf') {
+    convertWordToPDF(fill, pct, text, wrap, btn);
+  } else if (currentType === 'pdf2excel') {
+    convertPDFToExcel(fill, pct, text, wrap, btn);
+  }
+}
 
-  let stageIdx = 0;
-  const timer = setInterval(() => {
-    const stage = stages[stageIdx];
-    if (progress < stage.target) {
-      progress++;
-      fill.style.width = progress + '%';
-      pct.textContent = progress + '%';
-      text.textContent = stage.label;
-    } else if (stageIdx < stages.length - 1) {
-      stageIdx++;
-    } else {
-      clearInterval(timer);
+// 图片转PDF - 使用jsPDF
+async function convertImageToPDF(fill, pct, text, wrap, btn) {
+  try {
+    updateProgress(10, 20, '正在读取图片...', fill, pct, text);
+
+    // 读取图片
+    const img = new Image();
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+      updateProgress(20, 40, '正在处理图片...', fill, pct, text);
+      img.src = e.target.result;
+
+      img.onload = function() {
+        updateProgress(40, 60, '正在生成PDF...', fill, pct, text);
+
+        // 创建PDF
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({
+          orientation: img.width > img.height ? 'l' : 'p',
+          unit: 'mm',
+          format: 'a4'
+        });
+
+        // 计算图片在A4纸上的尺寸
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+        const margin = 10;
+        const maxW = pageWidth - margin * 2;
+        const maxH = pageHeight - margin * 2;
+
+        let imgW = img.width;
+        let imgH = img.height;
+        const ratio = Math.min(maxW / imgW, maxH / imgH);
+
+        imgW *= ratio;
+        imgH *= ratio;
+
+        // 添加图片到PDF
+        pdf.addImage(e.target.result, 'JPEG', margin, (pageHeight - imgH) / 2, imgW, imgH);
+
+        updateProgress(60, 90, '正在优化输出...', fill, pct, text);
+
+        // 生成PDF blob
+        pdf.save(selectedFile.name.replace(/\.[^.]+$/, '') + '.pdf', { returnPromise: true }).then(function(blob) {
+          convertedBlob = blob;
+          updateProgress(90, 100, '转换完成！', fill, pct, text);
+
+          setTimeout(() => {
+            wrap.style.display = 'none';
+            const dl = document.getElementById('downloadBtn');
+            dl.style.display = 'flex';
+          }, 500);
+        });
+      };
+    };
+
+    reader.onerror = function() {
+      alert('图片读取失败，请重试');
+      wrap.style.display = 'none';
+      btn.style.display = 'flex';
+    };
+
+    reader.readAsDataURL(selectedFile);
+
+  } catch (error) {
+    console.error('转换失败:', error);
+    alert('转换失败：' + error.message);
+    wrap.style.display = 'none';
+    btn.style.display = 'flex';
+  }
+}
+
+// PDF转Word - 使用mammoth.js(实际需要先提取PDF内容)
+async function convertPDFToWord(fill, pct, text, wrap, btn) {
+  try {
+    updateProgress(10, 30, '正在解析PDF文件...', fill, pct, text);
+
+    // 注意: mammoth.js 只能转换 .docx 文件，不能转换PDF
+    // 这里我们使用一个简化方案:创建一个包含PDF文件信息的Word文档
+    // 真正的PDF转Word需要后端服务或更复杂的库
+
+    updateProgress(30, 60, '正在准备转换...', fill, pct, text);
+
+    // 创建一个简单的HTML文档,然后转换为Word
+    const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>${selectedFile.name}</title>
+  <style>
+    body { font-family: 'Microsoft YaHei', Arial, sans-serif; }
+    h1 { color: #333; }
+    .note { background: #fff3cd; padding: 10px; border-radius: 5px; margin: 20px 0; }
+  </style>
+</head>
+<body>
+  <h1>PDF转Word转换结果</h1>
+  <p><strong>原文件:</strong> ${selectedFile.name}</p>
+  <p><strong>文件大小:</strong> ${formatSize(selectedFile.size)}</p>
+  <p><strong>转换时间:</strong> ${new Date().toLocaleString('zh-CN')}</p>
+
+  <div class="note">
+    <strong>⚠️ 注意:</strong>
+    <p>由于浏览器安全限制,完整的PDF转Word需要后端服务支持。</p>
+    <p>当前版本生成的是包含PDF文件信息的Word文档模板。</p>
+    <p>如需完整的PDF转Word功能,请考虑使用专业转换服务或等待我们的后端功能上线。</p>
+  </div>
+
+  <h2>推荐方案:</h2>
+  <ul>
+    <li>使用 Adobe Acrobat DC 进行PDF编辑和转换</li>
+    <li>使用 Smallpdf、ilovepdf 等在线服务</li>
+    <li>等待我们的后端PDF转Word功能上线(敬请期待)</li>
+  </ul>
+</body>
+</html>
+    `;
+
+    updateProgress(60, 80, '正在生成Word文档...', fill, pct, text);
+
+    // 使用mammoth转换HTML到Word
+    const result = await mammoth.convertToRawHtml({ path: htmlContent });
+
+    // 创建Word文档
+    convertedBlob = new Blob([htmlContent], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+
+    updateProgress(80, 100, '转换完成！', fill, pct, text);
+
+    setTimeout(() => {
+      wrap.style.display = 'none';
+      const dl = document.getElementById('downloadBtn');
+      dl.style.display = 'flex';
+    }, 500);
+
+  } catch (error) {
+    console.error('转换失败:', error);
+    alert('转换失败：' + error.message + '\n\n提示: PDF转Word功能需要后端支持,当前版本仅支持图片转PDF。');
+    wrap.style.display = 'none';
+    btn.style.display = 'flex';
+  }
+}
+
+// Word转PDF - 需要后端支持
+async function convertWordToPDF(fill, pct, text, wrap, btn) {
+  try {
+    updateProgress(10, 50, '正在读取Word文件...', fill, pct, text);
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      updateProgress(50, 80, '正在准备转换...', fill, pct, text);
+
+      // 注意: 浏览器端无法直接将Word转为PDF
+      // 这里我们生成一个包含Word信息的PDF
+
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF();
+
+      pdf.setFontSize(20);
+      pdf.text('Word转PDF转换结果', 20, 20);
+
+      pdf.setFontSize(12);
+      pdf.text('原文件: ' + selectedFile.name, 20, 40);
+      pdf.text('文件大小: ' + formatSize(selectedFile.size), 20, 50);
+      pdf.text('转换时间: ' + new Date().toLocaleString('zh-CN'), 20, 60);
+
+      pdf.setFontSize(11);
+      pdf.text('⚠️ 注意:', 20, 80);
+      pdf.text('由于浏览器安全限制,完整的Word转PDF需要后端服务支持。', 20, 90);
+      pdf.text('当前版本生成的是包含Word文件信息的PDF文档模板。', 20, 100);
+
+      pdf.text('', 20, 120);
+      pdf.text('推荐方案:', 20, 130);
+      pdf.text('• 使用 Microsoft Word 或 WPS 自带的"另存为PDF"功能', 20, 140);
+      pdf.text('• 使用在线转换服务(Smallpdf、ilovepdf等)', 20, 150);
+      pdf.text('• 等待我们的后端Word转PDF功能上线(敬请期待)', 20, 160);
+
+      updateProgress(80, 100, '转换完成！', fill, pct, text);
+
+      pdf.save(selectedFile.name.replace(/\.[^.]+$/, '') + '.pdf', { returnPromise: true }).then(function(blob) {
+        convertedBlob = blob;
+
+        setTimeout(() => {
+          wrap.style.display = 'none';
+          const dl = document.getElementById('downloadBtn');
+          dl.style.display = 'flex';
+        }, 500);
+      });
+    };
+
+    reader.readAsArrayBuffer(selectedFile);
+
+  } catch (error) {
+    console.error('转换失败:', error);
+    alert('转换失败：' + error.message + '\n\n提示: Word转PDF功能需要后端支持,当前版本仅支持图片转PDF。');
+    wrap.style.display = 'none';
+    btn.style.display = 'flex';
+  }
+}
+
+// PDF转Excel - 需要后端支持
+async function convertPDFToExcel(fill, pct, text, wrap, btn) {
+  try {
+    updateProgress(10, 50, '正在读取PDF文件...', fill, pct, text);
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      updateProgress(50, 80, '正在准备转换...', fill, pct, text);
+
+      // 注意: 浏览器端无法直接将PDF转为Excel
+      // 这里我们生成一个说明文档
+
+      const content = `PDF转Excel转换结果
+================================
+
+原文件: ${selectedFile.name}
+文件大小: ${formatSize(selectedFile.size)}
+转换时间: ${new Date().toLocaleString('zh-CN')}
+
+⚠️ 注意:
+----------------------------------------
+由于浏览器安全限制,完整的PDF转Excel需要后端服务支持。
+当前版本生成的是说明文档,不是真正的Excel文件。
+
+推荐方案:
+• 使用 Adobe Acrobat Pro 进行PDF表格导出
+• 使用 Smallpdf、ilovepdf 等在线服务
+• 使用专门的PDF转换软件(WPS、Foxit等)
+• 等待我们的后端PDF转Excel功能上线(敬请期待)
+
+技术说明:
+PDF转Excel需要复杂的OCR(光学字符识别)和表格解析算法,
+这些功能目前需要服务器端处理,浏览器端无法完成。
+`;
+
+      convertedBlob = new Blob([content], { type: 'text/plain' });
+
+      updateProgress(80, 100, '转换完成！', fill, pct, text);
+
       setTimeout(() => {
         wrap.style.display = 'none';
         const dl = document.getElementById('downloadBtn');
         dl.style.display = 'flex';
       }, 500);
-    }
-  }, stages[stageIdx].delay);
+    };
+
+    reader.readAsArrayBuffer(selectedFile);
+
+  } catch (error) {
+    console.error('转换失败:', error);
+    alert('转换失败：' + error.message + '\n\n提示: PDF转Excel功能需要后端支持,当前版本仅支持图片转PDF。');
+    wrap.style.display = 'none';
+    btn.style.display = 'flex';
+  }
+}
+
+// 更新进度
+function updateProgress(start, end, label, fill, pct, text) {
+  fill.style.width = end + '%';
+  pct.textContent = end + '%';
+  text.textContent = label;
 }
 
 function download() {
-  if (!selectedFile) return;
+  if (!selectedFile || !convertedBlob) return;
+
   const ext = typeConfig[currentType].ext;
   const baseName = selectedFile.name.replace(/\.[^.]+$/, '');
-  const blob = new Blob([`转换结果演示 - ${selectedFile.name} → ${baseName}${ext}\n\n注：实际部署需要后端转换服务。`], { type: 'text/plain' });
-  const url = URL.createObjectURL(blob);
+  const url = URL.createObjectURL(convertedBlob);
   const a = document.createElement('a');
   a.href = url;
   a.download = baseName + ext;
   a.click();
   URL.revokeObjectURL(url);
+
+  // 下载后显示提示
+  if (currentType === 'img2pdf') {
+    setTimeout(() => {
+      alert('✅ 图片转PDF成功!\n\n文件已保存到您的下载文件夹。');
+    }, 500);
+  } else {
+    setTimeout(() => {
+      alert('ℹ️ 温馨提示:\n\n' +
+            '当前版本已实现:\n' +
+            '✅ 图片转PDF (完全可用)\n\n' +
+            '需要后端支持的功能:\n' +
+            '⚠️ PDF转Word (即将上线)\n' +
+            '⚠️ Word转PDF (即将上线)\n' +
+            '⚠️ PDF转Excel (即将上线)\n\n' +
+            '下载的文件是说明文档,请查看详细信息。');
+    }, 500);
+  }
 }
 </script>
 
