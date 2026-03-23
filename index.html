@@ -890,13 +890,49 @@
 
     /* 响应式 */
     @media (max-width: 768px) {
-      .nav-links { display: none; }
+      .nav-links {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.95);
+        flex-direction: column;
+        padding: 1rem;
+        border-top: 1px solid rgba(99, 102, 241, 0.3);
+      }
+      .nav-links.active { display: flex; }
+      .mobile-menu-btn { display: block !important; }
       .hero-stats { gap: 20px; }
       .footer-grid { grid-template-columns: 1fr 1fr; }
       .daily-pick { grid-template-columns: 1fr; }
       .daily-pick-img { display: none; }
       .categories-grid { grid-template-columns: repeat(3, 1fr); }
       .tools-grid { grid-template-columns: 1fr; }
+    }
+
+    /* 移动端菜单按钮 */
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      color: #e2e8f0;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0.5rem;
+      min-width: 44px;
+      min-height: 44px;
+      touch-action: manipulation;
+    }
+
+    /* 触摸优化 */
+    .tool-card, .category-card, .nav-btn {
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .tool-card:active, .category-card:active {
+      transform: scale(0.98);
     }
   </style>
 
@@ -908,9 +944,11 @@
 <!-- 导航栏 -->
 <nav class="navbar" aria-label="主导航">
   <a href="/" class="nav-logo">🤖 AI工具导航</a>
-  <ul class="nav-links">
+  <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="菜单">☰</button>
+  <ul class="nav-links" id="navLinks">
     <li><a href="index.html" class="active">首页</a></li>
     <li><a href="ranking.html">排行榜</a></li>
+    <li><a href="use-cases.html">使用场景</a></li>
     <li><a href="news.html">AI资讯</a></li>
     <li><a href="converter.html">文件转换</a></li>
     <li><button class="quick-search-btn" onclick="openModal()">🔍 快速查询</button></li>
@@ -955,6 +993,7 @@
 
   <div class="hero-actions">
     <a href="ranking.html" class="btn-primary">📊 查看排行榜</a>
+    <a href="use-cases.html" class="btn-outline">💡 使用场景</a>
     <a href="converter.html" class="btn-outline">📄 文件转换工具</a>
     <a href="news.html" class="btn-outline">📰 AI最新资讯</a>
     <a href="submit.html" class="btn-outline">✉️ 提交工具</a>
@@ -1176,9 +1215,23 @@
       <h4>功能</h4>
       <ul>
         <li><a href="ranking.html">排行榜</a></li>
+        <li><a href="use-cases.html">使用场景</a></li>
+        <li><a href="compare.html">工具对比</a></li>
+        <li><a href="tutorials.html">教程专区</a></li>
         <li><a href="news.html">AI资讯</a></li>
         <li><a href="converter.html">文件转换</a></li>
         <li><a href="submit.html">提交工具</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>热门工具</h4>
+      <ul>
+        <li><a href="tool.html?id=chatgpt">ChatGPT</a></li>
+        <li><a href="tool.html?id=midjourney">Midjourney</a></li>
+        <li><a href="tool.html?id=cursor">Cursor</a></li>
+        <li><a href="tool.html?id=stable-diffusion">Stable Diffusion</a></li>
+        <li><a href="tool.html?id=claude">Claude</a></li>
+        <li><a href="tool.html?id=runway">Runway</a></li>
       </ul>
     </div>
     <div class="footer-col">
@@ -1196,6 +1249,7 @@
     <span>© 2026 AI工具导航 · 专注发现最好用的AI工具</span>
     <span>
       <a href="sitemap.xml" style="color:var(--text-muted);text-decoration:none;margin-right:16px;">网站地图</a>
+      <a href="rss.xml" style="color:var(--text-muted);text-decoration:none;margin-right:16px;">RSS订阅</a>
       <a href="https://github.com/hjouy/ai-tools-directory" target="_blank" rel="noopener" style="color:var(--text-muted);text-decoration:none;">GitHub</a>
     </span>
   </div>
@@ -1299,6 +1353,24 @@
   document.getElementById('searchInput').addEventListener('keydown', function(e) {
     if (e.key === 'Enter') handleSearch();
   });
+
+  // 处理 URL 搜索参数
+  window.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchQuery = urlParams.get('s');
+    if (searchQuery) {
+      document.getElementById('searchInput').value = searchQuery;
+      openModal();
+      document.getElementById('modalInput').value = searchQuery;
+      filterTools();
+    }
+  });
+
+  // 移动端菜单切换
+  function toggleMobileMenu() {
+    const navLinks = document.getElementById('navLinks');
+    navLinks.classList.toggle('active');
+  }
 
   // 快速查询弹窗
   function openModal() {

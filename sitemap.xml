@@ -142,4 +142,28 @@
     <priority>0.9</priority>
   </url>
 
+  <!-- RSS Feed -->
+  <url>
+    <loc>https://hjouy.github.io/ai-tools-directory/rss.xml</loc>
+    <lastmod>2026-03-23</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- 404 页面 -->
+  <url>
+    <loc>https://hjouy.github.io/ai-tools-directory/404.html</loc>
+    <lastmod>2026-03-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <!-- 使用场景页面 -->
+  <url>
+    <loc>https://hjouy.github.io/ai-tools-directory/use-cases.html</loc>
+    <lastmod>2026-03-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
 </urlset>

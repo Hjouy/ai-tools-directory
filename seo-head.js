@@ -8,7 +8,8 @@
   const SITE = {
     name: 'AI工具导航',
     url: 'https://hjouy.github.io/ai-tools-directory',
-    logo: 'https://hjouy.github.io/ai-tools-directory/assets/logo.png',
+    logo: 'https://via.placeholder.com/1200x630/4F46E5/FFFFFF?text=AI%E5%B7%A5%E5%85%B7%E5%AF%BC%E8%88%AA',
+    rss: 'https://hjouy.github.io/ai-tools-directory/rss.xml',
     description: '发现最好用的AI工具，涵盖AI写作、AI绘画、AI视频、AI编程等热门分类，每日更新，免费使用。',
     keywords: 'AI工具,人工智能工具,AI写作,AI绘画,AI视频,Midjourney,ChatGPT,Stable Diffusion,AI工具导航,AI工具大全',
     twitter: '@aitools_nav',
@@ -21,24 +22,28 @@
       description: '全球最全AI工具目录，收录500+人工智能工具，涵盖AI写作、AI绘画、AI视频、AI编程、AI音乐等热门分类。每日更新，免费访问。',
       keywords: 'AI工具导航,AI工具大全,人工智能工具,ChatGPT,Midjourney,AI写作工具,AI绘画工具,免费AI工具',
       type: 'website',
+      ogImage: 'https://via.placeholder.com/1200x630/4F46E5/FFFFFF?text=AI%E5%B7%A5%E5%85%B7%E5%AF%BC%E8%88%AA',
     },
     'index.html': {
       title: 'AI工具导航 - 发现最好用的人工智能工具',
       description: '全球最全AI工具目录，收录500+人工智能工具，涵盖AI写作、AI绘画、AI视频、AI编程、AI音乐等热门分类。每日更新，免费访问。',
       keywords: 'AI工具导航,AI工具大全,人工智能工具,ChatGPT,Midjourney,AI写作工具,AI绘画工具,免费AI工具',
       type: 'website',
+      ogImage: 'https://via.placeholder.com/1200x630/4F46E5/FFFFFF?text=AI%E5%B7%A5%E5%85%B7%E5%AF%BC%E8%88%AA',
     },
     'writing.html': {
       title: 'AI写作工具推荐 - 最好用的AI写作助手大全 | AI工具导航',
       description: '精选12款最好用的AI写作工具，包括ChatGPT、Claude、Jasper、Copy.ai等。提升写作效率，轻松创作高质量文章、邮件、文案。',
       keywords: 'AI写作工具,ChatGPT写作,Claude写作,Jasper AI,Copy.ai,AI文章生成,AI写作助手,智能写作',
       type: 'website',
+      ogImage: 'https://via.placeholder.com/1200x630/10B981/FFFFFF?text=AI%E5%86%99%E4%BD%9C%E5%B7%A5%E5%85%B7',
     },
     'image.html': {
       title: 'AI绘画工具推荐 - Midjourney/Stable Diffusion等AI作图工具 | AI工具导航',
       description: '精选12款顶级AI绘画工具，包括Midjourney、Stable Diffusion、DALL-E 3、Adobe Firefly等。一键生成高质量AI艺术图片。',
       keywords: 'AI绘画工具,Midjourney,Stable Diffusion,DALL-E 3,AI作图,AI绘图,文字生图,AI艺术生成',
       type: 'website',
+      ogImage: 'https://via.placeholder.com/1200x630/EC4899/FFFFFF?text=AI%E7%BB%98%E7%94%BB%E5%B7%A5%E5%85%B7',
     },
     'video.html': {
       title: 'AI视频工具推荐 - Runway/Sora等AI视频生成工具 | AI工具导航',
@@ -81,18 +86,49 @@
       description: '免费提交你的AI工具到AI工具导航，获得更多曝光机会。支持付费推广，置顶展示，快速获取目标用户。',
       keywords: 'AI工具提交,提交AI产品,AI工具推广,AI工具收录,AI工具目录投稿',
       type: 'website',
+      ogImage: 'https://via.placeholder.com/1200x630/F59E0B/FFFFFF?text=%E6%8F%90%E4%BA%A4%E4%BD%A0%E7%9A%84AI%E5%B7%A5%E5%85%B7',
     },
     'converter.html': {
       title: '免费文件格式转换工具 - PDF转Word/Excel/图片 | AI工具导航',
       description: '免费在线文件格式转换，支持PDF转Word、PDF转Excel、Word转PDF、图片转PDF等格式转换，无需注册，即用即走。',
       keywords: 'PDF转Word,PDF转Excel,文件格式转换,Word转PDF,图片转PDF,在线转换,免费转换工具',
       type: 'website',
+      ogImage: 'https://via.placeholder.com/1200x630/8B5CF6/FFFFFF?text=%E6%96%87%E4%BB%B6%E8%BD%AC%E6%8D%A2%E5%B7%A5%E5%85%B7',
     },
     'tool.html': {
       title: 'AI工具详情 | AI工具导航',
       description: '查看AI工具的详细介绍、功能特点、定价方案、用户评价，帮助你找到最适合的AI工具。',
       keywords: 'AI工具详情,AI工具介绍,AI工具评测,AI工具价格,AI工具使用',
       type: 'article',
+      ogImage: 'https://via.placeholder.com/1200x630/3B82F6/FFFFFF?text=AI%E5%B7%A5%E5%85%B7%E8%AF%A6%E6%83%85',
+    },
+    'compare.html': {
+      title: 'AI工具对比 - ChatGPT vs Claude等工具深度对比 | AI工具导航',
+      description: '详细对比主流AI工具的优缺点、价格、使用场景，帮助你选择最适合的AI工具。涵盖ChatGPT、Claude、Midjourney等热门工具。',
+      keywords: 'AI工具对比,ChatGPT vs Claude, Midjourney对比,AI工具选型,AI工具评测',
+      type: 'article',
+      ogImage: 'https://via.placeholder.com/1200x630/EF4444/FFFFFF?text=AI%E5%B7%A5%E5%85%B7%E5%AF%B9%E6%AF%94',
+    },
+    'tutorials.html': {
+      title: 'AI工具使用教程 - 从入门到精通 | AI工具导航',
+      description: '详细的AI工具使用教程，涵盖Midjourney、ChatGPT、Stable Diffusion、Cursor等热门工具的使用方法和技巧。',
+      keywords: 'AI工具教程,Midjourney教程,ChatGPT教程,AI使用指南,AI工具学习',
+      type: 'article',
+      ogImage: 'https://via.placeholder.com/1200x630/06B6D4/FFFFFF?text=AI%E5%B7%A5%E5%85%B7%E6%95%99%E7%A8%8B',
+    },
+    'ranking.html': {
+      title: 'AI工具排行榜 - 热门AI工具榜单 | AI工具导航',
+      description: '最新AI工具排行榜，涵盖月度榜、分类榜和飙升榜，发现最受欢迎的AI工具。',
+      keywords: 'AI工具排行榜,热门AI工具,AI工具榜单,AI工具推荐,最佳AI工具',
+      type: 'website',
+      ogImage: 'https://via.placeholder.com/1200x630/84CC16/FFFFFF?text=AI%E5%B7%A5%E5%85%B7%E6%8E%92%E8%A1%8C%E6%A6%9C',
+    },
+    'news.html': {
+      title: 'AI行业资讯 - 最新AI工具动态 | AI工具导航',
+      description: '追踪AI行业最新动态，包括AI工具发布、技术突破、行业趋势等。',
+      keywords: 'AI行业资讯,AI新闻,AI动态,AI工具发布,人工智能趋势',
+      type: 'website',
+      ogImage: 'https://via.placeholder.com/1200x630/14B8A6/FFFFFF?text=AI%E8%A1%8C%E4%B8%9A%E8%B5%84%E8%AE%AF',
     },
   };
 
@@ -186,7 +222,7 @@
     el.setAttribute('content', content);
   }
 
-  function setLink(rel, href) {
+  function setLink(rel, href, type = null) {
     let el = document.querySelector(`link[rel="${rel}"]`);
     if (!el) {
       el = document.createElement('link');
@@ -194,6 +230,9 @@
       document.head.appendChild(el);
     }
     el.setAttribute('href', href);
+    if (type) {
+      el.setAttribute('type', type);
+    }
   }
 
   function injectJSONLD(data) {
@@ -231,18 +270,23 @@
     setMeta('og:type', config.type || 'website', true);
     setMeta('og:url', currentUrl, true);
     setMeta('og:site_name', SITE.name, true);
-    setMeta('og:image', SITE.logo, true);
+    setMeta('og:image', config.ogImage || SITE.logo, true);
+    setMeta('og:image:width', '1200', true);
+    setMeta('og:image:height', '630', true);
     setMeta('og:locale', 'zh_CN', true);
 
     // Twitter Card
     setMeta('twitter:card', 'summary_large_image');
     setMeta('twitter:title', config.title);
     setMeta('twitter:description', config.description);
-    setMeta('twitter:image', SITE.logo);
+    setMeta('twitter:image', config.ogImage || SITE.logo);
     setMeta('twitter:site', SITE.twitter);
 
     // Canonical URL
     setLink('canonical', currentUrl);
+
+    // RSS Feed 订阅链接
+    setLink('alternate', SITE.rss, 'application/rss+xml');
 
     // 语言标记
     if (!document.documentElement.lang) {

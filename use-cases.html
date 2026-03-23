@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI工具使用场景与应用案例 | AI工具导航</title>
+  <meta name="description" content="探索AI工具的实际应用场景和使用案例，了解如何在不同场景下使用AI工具提升工作效率。涵盖写作、绘画、编程、视频等多个领域。">
+  <meta name="keywords" content="AI工具使用场景,AI工具应用案例,AI工具怎么用,AI使用教程,AI工具实际应用,AI工作流">
+  <link rel="canonical" href="https://hjouy.github.io/ai-tools-directory/use-cases.html">
+  <script src="seo-head.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #1e1e2e 0%, #2d2d44 100%);
+      min-height: 100vh;
+      color: #e2e8f0;
+    }
+
+    /* 导航栏 */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+    }
+    .nav-logo { font-size: 1.5rem; font-weight: 700; background: linear-gradient(135deg, #6366f1, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-decoration: none; }
+    .nav-links { display: flex; gap: 1.5rem; list-style: none; }
+    .nav-links a { color: #94a3b8; text-decoration: none; transition: color 0.3s; font-size: 0.95rem; }
+    .nav-links a:hover { color: #fff; }
+
+    /* 面包屑 */
+    .breadcrumb {
+      padding: 1rem 2rem;
+      font-size: 0.9rem;
+      color: #94a3b8;
+    }
+    .breadcrumb a { color: #94a3b8; text-decoration: none; }
+    .breadcrumb a:hover { color: #fff; }
+    .breadcrumb span { margin: 0 0.5rem; color: #4b5563; }
+
+    /* 页面头部 */
+    .page-hero {
+      text-align: center;
+      padding: 3rem 2rem;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+    }
+    .page-hero h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+    .page-hero p { font-size: 1.1rem; color: #94a3b8; max-width: 600px; margin: 0 auto; }
+
+    /* 主内容 */
+    main { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+
+    /* 场景卡片 */
+    .scenario-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+    .scenario-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      transition: all 0.3s ease;
+    }
+    .scenario-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(99, 102, 241, 0.2);
+      border-color: rgba(99, 102, 241, 0.5);
+    }
+    .scenario-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .scenario-card h3 { font-size: 1.3rem; margin-bottom: 0.75rem; color: #fff; }
+    .scenario-card p { color: #94a3b8; line-height: 1.6; margin-bottom: 1rem; }
+    .scenario-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+    .scenario-tag {
+      background: rgba(99, 102, 241, 0.2);
+      color: #a5b4fc;
+      padding: 0.3rem 0.75rem;
+      border-radius: 1rem;
+      font-size: 0.85rem;
+    }
+    .scenario-tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .tool-badge {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 0.4rem 0.8rem;
+      border-radius: 0.5rem;
+      font-size: 0.85rem;
+      color: #e2e8f0;
+    }
+
+    /* 步骤列表 */
+    .steps-section {
+      background: rgba(99, 102, 241, 0.05);
+      border-radius: 1rem;
+      padding: 2rem;
+      margin-top: 1.5rem;
+    }
+    .steps-title { font-size: 1.1rem; margin-bottom: 1rem; color: #fff; }
+    .steps-list { list-style: none; }
+    .step-item {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .step-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .step-number {
+      width: 28px;
+      height: 28px;
+      background: linear-gradient(135deg, #6366f1, #a855f7);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    .step-content h4 { font-size: 0.95rem; margin-bottom: 0.3rem; color: #e2e8f0; }
+    .step-content p { font-size: 0.9rem; color: #94a3b8; line-height: 1.5; }
+
+    /* 页脚 */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: #64748b;
+      font-size: 0.9rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin-top: 3rem;
+    }
+
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .page-hero h1 { font-size: 1.8rem; }
+      .scenario-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <!-- 导航栏 -->
+  <nav>
+    <a href="index.html" class="nav-logo">AI工具导航</a>
+    <ul class="nav-links">
+      <li><a href="writing.html">AI写作</a></li>
+      <li><a href="image.html">AI绘画</a></li>
+      <li><a href="video.html">AI视频</a></li>
+      <li><a href="code.html">AI编程</a></li>
+      <li><a href="ranking.html">排行榜</a></li>
+      <li><a href="submit.html">提交工具</a></li>
+    </ul>
+  </nav>
+
+  <!-- 面包屑导航 -->
+  <nav class="breadcrumb">
+    <a href="index.html">首页</a><span>›</span><span>AI工具使用场景</span>
+  </nav>
+
+  <!-- 页面头部 -->
+  <header class="page-hero">
+    <h1>AI工具使用场景与应用案例</h1>
+    <p>探索AI工具在真实场景中的应用，从内容创作到工作提效，了解如何让AI为你创造价值</p>
+  </header>
+
+  <!-- 主内容 -->
+  <main>
+    <!-- 场景1：内容创作 -->
+    <div class="scenario-card">
+      <div class="scenario-icon">✍️</div>
+      <h3>内容创作场景</h3>
+      <p>使用AI工具快速创作博客文章、社交媒体内容、营销文案，大幅提升写作效率。</p>
+      <div class="scenario-tags">
+        <span class="scenario-tag">博客写作</span>
+        <span class="scenario-tag">营销文案</span>
+        <span class="scenario-tag">社交媒体</span>
+      </div>
+      <div class="scenario-tools">
+        <span class="tool-badge">ChatGPT</span>
+        <span class="tool-badge">Claude</span>
+        <span class="tool-badge">Jasper AI</span>
+        <span class="tool-badge">Copy.ai</span>
+      </div>
+      <div class="steps-section">
+        <h4 class="steps-title">使用流程：</h4>
+        <ul class="steps-list">
+          <li class="step-item">
+            <span class="step-number">1</span>
+            <div class="step-content">
+              <h4>确定主题</h4>
+              <p>明确要创作的内容类型、目标受众和核心信息</p>
+            </div>
+          </li>
+          <li class="step-item">
+            <span class="step-number">2</span>
+            <div class="step-content">
+              <h4>生成大纲</h4>
+              <p>使用ChatGPT或Claude生成内容大纲和结构</p>
+            </div>
+          </li>
+          <li class="step-item">
+            <span class="step-number">3</span>
+            <div class="step-content">
+              <h4>扩展内容</h4>
+              <p>基于大纲扩展每个章节，添加细节和案例</p>
+            </div>
+          </li>
+          <li class="step-item">
+            <span class="step-number">4</span>
+            <div class="step-content">
+              <h4>润色优化</h4>
+              <p>使用Jasper AI优化语气、风格和SEO关键词</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 场景2：AI绘画 -->
+    <div class="scenario-card">
+      <div class="scenario-icon">🎨</div>
+      <h3>AI绘画创作场景</h3>
+      <p>通过文字描述生成高质量图片，用于设计灵感、插画创作、海报制作等。</p>
+      <div class="scenario-tags">
+        <span class="scenario-tag">插画设计</span>
+        <span class="scenario-tag">海报制作</span>
+        <span class="scenario-tag">概念艺术</span>
+      </div>
+      <div class="scenario-tools">
+        <span class="tool-badge">Midjourney</span>
+        <span class="tool-badge">Stable Diffusion</span>
+        <span class="tool-badge">DALL-E 3</span>
+      </div>
+      <div class="steps-section">
+        <h4 class="steps-title">使用流程：</h4>
+        <ul class="steps-list">
+          <li class="step-item">
+            <span class="step-number">1</span>
+            <div class="step-content">
+              <h4>构思画面</h4>
+              <p>明确想要表达的主题、风格和元素</p>
+            </div>
+          </li>
+          <li class="step-item">
+            <span class="step-number">2</span>
+            <div class="step-content">
+              <h4>编写提示词</h4>
+              <p>使用Midjourney或DALL-E编写详细描述词</p>
+            </div>
+          </li>
+          <li class="step-item">
+            <span class="step-number">3</span>
+            <div class="step-content">
+              <h4>生成图片</h4>
+              <p>生成多个版本，选择最满意的结果</p>
+            </div>
+          </li>
+          <li class="step-item">
+            <span class="step-number">4</span>
+            <div class="step-content">
+              <h4>后期优化</h4>
+              <p>使用Photoshop或Canva进行后期调整</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 场景3：编程开发 -->
+    <div class="scenario-card">
+      <div class="scenario-icon">💻</div>
+      <h3>AI编程开发场景</h3>
+      <p>使用AI编程助手快速生成代码、调试Bug、重构代码，提升开发效率。</p>
+      <div class="scenario-tags">
+        <span class="scenario-tag">代码生成</span>
+        <span class="scenario-tag">Bug调试</span>
+        <span class="scenario-tag">代码重构</span>
+      </div>
+      <div class="scenario-tools">
+        <span class="tool-badge">Cursor</span>
+        <span class="tool-badge">GitHub Copilot</span>
+        <span class="tool-badge">ChatGPT</span>
+      </div>
+      <div class="steps-section">
+        <h4 class="steps-title">使用流程：</h4>
+        <ul class="steps-list">
+          <li class="step-item">
+            <span class="step-number">1</span>
+            <div class="step-content">
+              <h4>描述需求</h4>
+              <p>用自然语言描述要实现的功能</p>
+            </div>
+          </li>
+          <li class="step-item">
+            <span class="step-number">2</span>
+            <div class="step-content">
+              <h4>生成代码</h4>
+              <p>Cursor或Copilot自动生成初始代码</p>
+            </div>
+          </li>
+          <li class="step-item">
+            <span class="step-number">3</span>
+            <div class="step-content">
+              <h4>测试调试</h4>
+              <p>运行测试，让AI助手定位和修复Bug</p>
+            </div>
+          </li>
+          <li class="step-item">
+            <span class="step-number">4</span>
+            <div class="step-content">
+              <h4>代码优化</h4>
+              <p>使用AI进行代码重构和性能优化</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 场景4：AI视频制作 -->
+    <div class="scenario-card">
+      <div class="scenario-icon">🎬</div>
+      <h3>AI视频制作场景</h3>
+      <p>使用AI工具快速生成视频内容、添加特效、剪辑视频，降低视频制作门槛。</p>
+      <div class="scenario-tags">
+        <span class="scenario-tag">视频生成</span>
+        <span class="scenario-tag">视频剪辑</span>
+        <span class="scenario-tag">特效添加</span>
+      </div>
+      <div class="scenario-tools">
+        <span class="tool-badge">Runway</span>
+        <span class="tool-badge">Pika Labs</span>
+        <span class="tool-badge">CapCut AI</span>
+      </div>
+      <div class="steps-section">
+        <h4 class="steps-title">使用流程：</h4>
+        <ul class="steps-list">
+          <li class="step-item">
+            <span class="step-number">1</span>
+            <div class="step-content">
+              <h4>创意构思</h4>
+              <p>确定视频主题和表现手法</p>
+            </div>
+          </li>
+          <li class="step-item">
+            <span class="step-number">2</span>
+            <div class="step-content">
+              <h4>生成素材</h4>
+              <p>使用Runway或Pika生成视频片段</p>
+            </div>
+          </li>
+          <li class="step-item">
+            <span class="step-number">3</span>
+            <div class="step-content">
+              <h4>剪辑拼接</h4>
+              <p>在CapCut中拼接片段、添加音乐</p>
+            </div>
+          </li>
+          <li class="step-item">
+            <span class="step-number">4</span>
+            <div class="step-content">
+              <h4>导出发布</h4>
+              <p>导出最终视频并发布到平台</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 场景5：AI音乐创作 -->
+    <div class="scenario-card">
+      <div class="scenario-icon">🎵</div>
+      <h3>AI音乐创作场景</h3>
+      <p>使用AI工具创作原创音乐，生成背景音乐、音效，满足视频和内容创作需求。</p>
+      <div class="scenario-tags">
+        <span class="scenario-tag">音乐生成</span>
+        <span class="scenario-tag">背景音乐</span>
+        <span class="scenario-tag">音效制作</span>
+      </div>
+      <div class="scenario-tools">
+        <span class="tool-badge">Suno AI</span>
+        <span class="tool-badge">Udio</span>
+        <span class="tool-badge">Mubert</span>
+      </div>
+      <div class="steps-section">
+        <h4 class="steps-title">使用流程：</h4>
+        <ul class="steps-list">
+          <li class="step-item">
+            <span class="step-number">1</span>
+            <div class="step-content">
+              <h4>选择风格</h4>
+              <p>确定音乐类型和情绪风格</p>
+            </div>
+          </li>
+          <li class="step-item">
+            <span class="step-number">2</span>
+            <div class="step-content">
+              <h4>生成音乐</h4>
+              <p>使用Suno或Udio生成音乐片段</p>
+            </div>
+          </li>
+          <li class="step-item">
+            <span class="step-number">3</span>
+            <div class="step-content">
+              <h4>调整优化</h4>
+              <p>根据需要调整节奏、旋律和时长</p>
+            </div>
+          </li>
+          <li class="step-item">
+            <span class="step-number">4</span>
+            <div class="step-content">
+              <h4>下载使用</h4>
+              <p>下载音乐文件并应用到项目中</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 场景6：AI数据分析 -->
+    <div class="scenario-card">
+      <div class="scenario-icon">📊</div>
+      <h3>AI数据分析场景</h3>
+      <p>使用AI工具进行数据分析、生成报告、可视化展示，提升决策效率。</p>
+      <div class="scenario-tags">
+        <span class="scenario-tag">数据分析</span>
+        <span class="scenario-tag">报告生成</span>
+        <span class="scenario-tag">数据可视化</span>
+      </div>
+      <div class="scenario-tools">
+        <span class="tool-badge">ChatGPT</span>
+        <span class="tool-badge">Claude</span>
+        <span class="tool-badge">Perplexity</span>
+      </div>
+      <div class="steps-section">
+        <h4 class="steps-title">使用流程：</h4>
+        <ul class="steps-list">
+          <li class="step-item">
+            <span class="step-number">1</span>
+            <div class="step-content">
+              <h4>数据准备</h4>
+              <p>整理和分析需要处理的数据</p>
+            </div>
+          </li>
+          <li class="step-item">
+            <span class="step-number">2</span>
+            <div class="step-content">
+              <h4>上传数据</h4>
+              <p>将数据上传到Claude或使用API</p>
+            </div>
+          </li>
+          <li class="step-item">
+            <span class="step-number">3</span>
+            <div class="step-content">
+              <h4>生成分析</h4>
+              <p>让AI分析数据并生成洞察</p>
+            </div>
+          </li>
+          <li class="step-item">
+            <span class="step-number">4</span>
+            <div class="step-content">
+              <h4>创建报告</h4>
+              <p>生成可视化图表和总结报告</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- 页脚 -->
+  <footer>
+    <p>© 2026 AI工具导航 - 发现最好用的人工智能工具</p>
+  </footer>
+
+  <!-- 结构化数据 -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "AI工具使用场景与应用案例",
+    "description": "探索AI工具在真实场景中的应用，从内容创作到工作提效",
+    "url": "https://hjouy.github.io/ai-tools-directory/use-cases.html",
+    "inLanguage": "zh-CN",
+    "isPartOf": {
+      "@type": "WebSite",
+      "name": "AI工具导航",
+      "url": "https://hjouy.github.io/ai-tools-directory/"
+    }
+  }
+  </script>
+</body>
+</html>
