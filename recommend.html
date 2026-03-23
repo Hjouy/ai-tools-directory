@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI工具推荐 - 找到最适合你的AI助手</title>
+  <meta name="description" content="根据你的需求智能推荐AI工具。回答几个简单问题，发现最适合你的AI写作、AI绘画、AI编程、AI视频等工具。">
+  <meta name="robots" content="index, follow">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AI工具导航">
+  <link rel="canonical" href="https://hjouy.github.io/ai-tools-directory/recommend.html">
+
+  <style>
+    :root {
+      --primary: #6366f1;
+      --secondary: #a855f7;
+      --accent: #06b6d4;
+      --bg: #0f0f1a;
+      --bg-card: #1a1a2e;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --border: #2d2d4e;
+      --success: #10b981;
+      --warning: #f59e0b;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    a { color: var(--primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* 导航栏 */
+    .navbar {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(15,15,26,0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px; height: 60px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-logo {
+      font-size: 1.3rem; font-weight: 700;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .nav-links { display: flex; gap: 8px; list-style: none; }
+    .nav-links a {
+      color: var(--text-muted); text-decoration: none;
+      padding: 6px 12px; border-radius: 6px; font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--text); background: var(--border); }
+    .nav-btn {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white !important; padding: 6px 16px !important;
+      border-radius: 20px !important; font-weight: 500;
+    }
+
+    /* 面包屑 */
+    .breadcrumb {
+      max-width: 900px; margin: 0 auto; padding: 16px 24px;
+      font-size: 0.85rem; color: var(--text-muted);
+    }
+    .breadcrumb a { color: var(--text-muted); text-decoration: none; }
+    .breadcrumb a:hover { color: var(--primary); }
+
+    /* 主容器 */
+    .container { max-width: 900px; margin: 0 auto; padding: 0 24px 80px; }
+
+    /* 标题区 */
+    .header {
+      text-align: center;
+      padding: 60px 24px 40px;
+      background: radial-gradient(ellipse at top, rgba(99,102,241,0.15) 0%, transparent 70%);
+    }
+    .header h1 {
+      font-size: 2.5rem; font-weight: 800; margin-bottom: 16px;
+    }
+    .header h1 span {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .header p { color: var(--text-muted); font-size: 1.1rem; max-width: 500px; margin: 0 auto; }
+
+    /* 步骤指示器 */
+    .steps {
+      display: flex; justify-content: center; gap: 8px;
+      margin-bottom: 40px;
+    }
+    .step {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: var(--bg-card); border: 2px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 600; color: var(--text-muted);
+    }
+    .step.active {
+      background: var(--primary); border-color: var(--primary); color: white;
+    }
+    .step.completed {
+      background: var(--success); border-color: var(--success); color: white;
+    }
+    .step-line {
+      width: 60px; height: 2px; background: var(--border);
+      align-self: center;
+    }
+    .step-line.active { background: var(--success); }
+
+    /* 卡片容器 */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 24px;
+    }
+
+    /* 问题区域 */
+    .question {
+      text-align: center;
+    }
+    .question h2 {
+      font-size: 1.5rem; font-weight: 700; margin-bottom: 8px;
+    }
+    .question p { color: var(--text-muted); margin-bottom: 32px; }
+
+    /* 选项网格 */
+    .options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+    .option {
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 24px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .option:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+    .option.selected {
+      border-color: var(--primary);
+      background: rgba(99,102,241,0.1);
+    }
+    .option-icon { font-size: 2.5rem; margin-bottom: 12px; }
+    .option-title { font-weight: 600; margin-bottom: 6px; }
+    .option-desc { font-size: 0.85rem; color: var(--text-muted); }
+
+    /* 按钮 */
+    .btn-group { display: flex; gap: 16px; justify-content: center; margin-top: 32px; }
+    .btn {
+      padding: 14px 32px; border-radius: 10px;
+      font-size: 1rem; font-weight: 600;
+      cursor: pointer; transition: all 0.2s;
+      border: none;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+    }
+    .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-secondary {
+      background: var(--bg); border: 1px solid var(--border);
+      color: var(--text);
+    }
+    .btn-secondary:hover { border-color: var(--primary); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* 结果区域 */
+    .results { display: none; }
+    .results.show { display: block; }
+    .result-header {
+      text-align: center; margin-bottom: 40px;
+    }
+    .result-header h2 { font-size: 1.8rem; margin-bottom: 12px; }
+    .result-header p { color: var(--text-muted); }
+
+    /* 推荐工具卡片 */
+    .tool-result {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 20px;
+      display: flex; gap: 24px;
+      transition: all 0.2s;
+    }
+    .tool-result:hover { border-color: var(--primary); }
+    .tool-result.main {
+      border-color: var(--primary);
+      background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(168,85,247,0.05));
+    }
+    .tool-rank {
+      font-size: 2rem; font-weight: 800;
+      color: var(--text-muted); width: 60px;
+      text-align: center; flex-shrink: 0;
+    }
+    .tool-rank.first { color: var(--warning); }
+    .tool-icon {
+      width: 64px; height: 64px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem; flex-shrink: 0;
+    }
+    .tool-info { flex: 1; }
+    .tool-info h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 8px; }
+    .tool-info h3 a { color: var(--text); }
+    .tool-info h3 a:hover { color: var(--primary); text-decoration: none; }
+    .tool-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+    .tool-tag {
+      background: rgba(99,102,241,0.15);
+      color: #a5b4fc; padding: 3px 10px;
+      border-radius: 20px; font-size: 0.75rem;
+    }
+    .tool-desc { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 12px; }
+    .tool-meta {
+      display: flex; gap: 20px; font-size: 0.85rem; color: var(--text-muted);
+    }
+    .tool-meta span { display: flex; align-items: center; gap: 4px; }
+    .tool-action { flex-shrink: 0; display: flex; flex-direction: column; justify-content: center; }
+    .tool-score {
+      text-align: center; margin-bottom: 12px;
+    }
+    .score-num { font-size: 2rem; font-weight: 800; color: var(--primary); }
+    .score-label { font-size: 0.75rem; color: var(--text-muted); }
+    .match-badge {
+      background: linear-gradient(135deg, var(--success), var(--accent));
+      color: white; padding: 8px 16px; border-radius: 8px;
+      font-size: 0.85rem; font-weight: 600;
+    }
+
+    /* 推荐原因 */
+    .reasons { margin-top: 24px; }
+    .reasons h3 { font-size: 1rem; font-weight: 600; margin-bottom: 12px; }
+    .reasons ul { list-style: none; }
+    .reasons li {
+      padding: 8px 0; border-bottom: 1px solid var(--border);
+      display: flex; align-items: flex-start; gap: 12px;
+    }
+    .reasons li:last-child { border-bottom: none; }
+    .reasons li::before { content: '✓'; color: var(--success); font-weight: 600; }
+
+    /* 响应式 */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .tool-result { flex-direction: column; }
+      .tool-rank { text-align: left; width: auto; }
+      .tool-action { flex-direction: row; justify-content: space-between; }
+    }
+
+    /* 底部 */
+    footer {
+      background: var(--bg-card); border-top: 1px solid var(--border);
+      padding: 24px; text-align: center; margin-top: 60px;
+    }
+    footer p { color: var(--text-muted); font-size: 0.875rem; }
+    footer a { color: var(--primary); }
+  </style>
+</head>
+<body>
+
+<!-- 导航栏 -->
+<nav class="navbar">
+  <a href="index.html" class="nav-logo">🤖 AI工具导航</a>
+  <ul class="nav-links">
+    <li><a href="index.html">首页</a></li>
+    <li><a href="ranking.html">排行榜</a></li>
+    <li><a href="compare.html">工具对比</a></li>
+    <li><a href="blog.html">博客</a></li>
+    <li><a href="submit.html" class="nav-btn">提交工具</a></li>
+  </ul>
+</nav>
+
+<!-- 面包屑 -->
+<nav class="breadcrumb">
+  <a href="index.html">首页</a> ›
+  <span>AI工具推荐</span>
+</nav>
+
+<div class="container">
+  <!-- 标题区 -->
+  <header class="header">
+    <h1>找到最适合你的<span>AI工具</span></h1>
+    <p>回答几个简单问题，获得个性化AI工具推荐</p>
+  </header>
+
+  <!-- 步骤指示器 -->
+  <div class="steps">
+    <div class="step active" data-step="1">1</div>
+    <div class="step-line"></div>
+    <div class="step" data-step="2">2</div>
+    <div class="step-line"></div>
+    <div class="step" data-step="3">3</div>
+  </div>
+
+  <!-- 问题容器 -->
+  <div id="questions">
+    <!-- 问题1：用途 -->
+    <div class="card question" data-question="1">
+      <h2>你想用AI做什么？</h2>
+      <p>选择最符合你需求的选项</p>
+      <div class="options">
+        <div class="option" data-value="writing" onclick="selectOption(this, 'useCase')">
+          <div class="option-icon">✍️</div>
+          <div class="option-title">内容创作</div>
+          <div class="option-desc">写作文章、文案、邮件等</div>
+        </div>
+        <div class="option" data-value="image" onclick="selectOption(this, 'useCase')">
+          <div class="option-icon">🎨</div>
+          <div class="option-title">图像生成</div>
+          <div class="option-desc">创作插画、设计素材</div>
+        </div>
+        <div class="option" data-value="video" onclick="selectOption(this, 'useCase')">
+          <div class="option-icon">🎬</div>
+          <div class="option-title">视频制作</div>
+          <div class="option-desc">剪辑、特效、数字人</div>
+        </div>
+        <div class="option" data-value="code" onclick="selectOption(this, 'useCase')">
+          <div class="option-icon">💻</div>
+          <div class="option-title">编程开发</div>
+          <div class="option-desc">写代码、调试、解释</div>
+        </div>
+        <div class="option" data-value="audio" onclick="selectOption(this, 'useCase')">
+          <div class="option-icon">🎵</div>
+          <div class="option-title">音乐/语音</div>
+          <div class="option-desc">生成音乐、配音、语音合成</div>
+        </div>
+        <div class="option" data-value="research" onclick="selectOption(this, 'useCase')">
+          <div class="option-icon">🔍</div>
+          <div class="option-title">搜索/研究</div>
+          <div class="option-desc">查找信息、分析数据</div>
+        </div>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="nextStep()" disabled>下一步 →</button>
+      </div>
+    </div>
+
+    <!-- 问题2：预算 -->
+    <div class="card question" data-question="2" style="display:none;">
+      <h2>你的预算是多少？</h2>
+      <p>选择你愿意为AI工具支付的金额</p>
+      <div class="options">
+        <div class="option" data-value="free" onclick="selectOption(this, 'budget')">
+          <div class="option-icon">🆓</div>
+          <div class="option-title">完全免费</div>
+          <div class="option-desc">只想用免费工具</div>
+        </div>
+        <div class="option" data-value="freemium" onclick="selectOption(this, 'budget')">
+          <div class="option-icon">💫</div>
+          <div class="option-title">免费优先</div>
+          <div class="option-desc">可以接受付费高级功能</div>
+        </div>
+        <div class="option" data-value="cheap" onclick="selectOption(this, 'budget')">
+          <div class="option-icon">💵</div>
+          <div class="option-title">每月$10以内</div>
+          <div class="option-desc">有固定的小额预算</div>
+        </div>
+        <div class="option" data-value="any" onclick="selectOption(this, 'budget')">
+          <div class="option-icon">💎</div>
+          <div class="option-title">价格无所谓</div>
+          <div class="option-desc">只要效果好就行</div>
+        </div>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-secondary" onclick="prevStep()">← 上一步</button>
+        <button class="btn btn-primary" onclick="nextStep()" disabled>下一步 →</button>
+      </div>
+    </div>
+
+    <!-- 问题3：经验水平 -->
+    <div class="card question" data-question="3" style="display:none;">
+      <h2>你的AI使用经验？</h2>
+      <p>这有助于我们推荐适合难度的工具</p>
+      <div class="options">
+        <div class="option" data-value="beginner" onclick="selectOption(this, 'experience')">
+          <div class="option-icon">🌱</div>
+          <div class="option-title">完全新手</div>
+          <div class="option-desc">刚接触AI，不太会用</div>
+        </div>
+        <div class="option" data-value="intermediate" onclick="selectOption(this, 'experience')">
+          <div class="option-icon">🌿</div>
+          <div class="option-title">有些经验</div>
+          <div class="option-desc">用过ChatGPT等工具</div>
+        </div>
+        <div class="option" data-value="advanced" onclick="selectOption(this, 'experience')">
+          <div class="option-icon">🌳</div>
+          <div class="option-title">熟练用户</div>
+          <div class="option-desc">经常使用各种AI工具</div>
+        </div>
+        <div class="option" data-value="expert" onclick="selectOption(this, 'experience')">
+          <div class="option-icon">🚀</div>
+          <div class="option-title">专业用户</div>
+          <div class="option-desc">深入使用，可能需要API</div>
+        </div>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-secondary" onclick="prevStep()">← 上一步</button>
+        <button class="btn btn-primary" onclick="showResults()" disabled>获取推荐 🎯</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 结果区域 -->
+  <div class="card results" id="results">
+    <div class="result-header">
+      <h2>✨ 为你推荐的AI工具</h2>
+      <p>基于你的需求，以下是最佳匹配的工具</p>
+    </div>
+    <div id="recommendedTools"></div>
+    <div class="btn-group">
+      <button class="btn btn-secondary" onclick="resetQuiz()">🔄 重新测试</button>
+      <button class="btn btn-primary" onclick="window.location.href='index.html'">🏠 返回首页</button>
+    </div>
+  </div>
+</div>
+
+<!-- 底部 -->
+<footer>
+  <p>
+    <a href="index.html">AI工具导航</a> · 
+    <a href="compare.html">工具对比</a> · 
+    <a href="blog.html">博客</a> · 
+    © 2026 AI工具导航
+  </p>
+</footer>
+
+<script>
+// 工具数据库
+const toolsDB = {
+  writing: [
+    { id: 'chatgpt', name: 'ChatGPT', icon: '💬', color: '#10b981', tags: ['AI写作', '全能助手'], desc: 'OpenAI出品，全能型AI对话助手，写作能力出色，免费版可用', price: '免费/$20月', users: '1亿+', score: { beginner: 10, intermediate: 10, advanced: 8, expert: 7 } },
+    { id: 'claude', name: 'Claude', icon: '🧠', color: '#d97706', tags: ['AI写作', '长文本'], desc: '200K上下文，长文章和复杂分析首选，中文支持好', price: '免费/$20月', users: '500万+', score: { beginner: 8, intermediate: 9, advanced: 10, expert: 9 } },
+    { id: 'gemini', name: 'Google Gemini', icon: '✨', color: '#4285f4', tags: ['AI对话', '多模态'], desc: 'Google官方AI，超长上下文，多模态能力强', price: '免费', users: '5000万+', score: { beginner: 9, intermediate: 9, advanced: 8, expert: 8 } },
+    { id: 'jasper', name: 'Jasper', icon: '✍️', color: '#f59e0b', tags: ['AI营销', '企业版'], desc: '企业级营销写作，100+模板，SEO优化', price: '$49/月', users: '10万+', score: { beginner: 7, intermediate: 8, advanced: 9, expert: 8 } },
+  ],
+  image: [
+    { id: 'midjourney', name: 'Midjourney', icon: '🎨', color: '#6366f1', tags: ['AI绘画', '效果最佳'], desc: '生成效果最逼真，艺术风格独特，社区活跃', price: '$30/月', users: '1500万+', score: { beginner: 8, intermediate: 10, advanced: 9, expert: 8 } },
+    { id: 'stable-diffusion', name: 'Stable Diffusion', icon: '🖼️', color: '#dc2626', tags: ['AI绘画', '开源免费'], desc: '完全免费开源，本地部署，可高度定制', price: '本地免费', users: '800万+', score: { beginner: 5, intermediate: 8, advanced: 10, expert: 10 } },
+    { id: 'dall-e', name: 'DALL-E 3', icon: '🖼️', color: '#ec4899', tags: ['AI绘画', 'ChatGPT集成'], desc: '与ChatGPT深度集成，理解力强，版权清晰', price: '$15/115张', users: '200万+', score: { beginner: 9, intermediate: 9, advanced: 7, expert: 6 } },
+    { id: 'leonardo', name: 'Leonardo AI', icon: '🎯', color: '#9333ea', tags: ['AI绘画', '游戏美术'], desc: '角色一致性出色，游戏资产生成，ID锁定功能', price: '免费/$10月', users: '500万+', score: { beginner: 7, intermediate: 9, advanced: 9, expert: 8 } },
+  ],
+  video: [
+    { id: 'runway', name: 'Runway', icon: '🎬', color: '#0891b2', tags: ['AI视频', '专业级'], desc: 'Gen-3视频生成，专业剪辑，特效丰富', price: '$35/月', users: '300万+', score: { beginner: 7, intermediate: 9, advanced: 10, expert: 9 } },
+    { id: 'pika', name: 'Pika', icon: '🎞️', color: '#8b5cf6', tags: ['AI视频', '易上手'], desc: '操作简单，文字转视频，适合新手', price: '免费/$8月', users: '500万+', score: { beginner: 9, intermediate: 8, advanced: 7, expert: 6 } },
+    { id: 'heygen', name: 'HeyGen', icon: '🎭', color: '#8b5cf6', tags: ['AI数字人', '企业'], desc: '数字人视频，100+语言配音，营销培训首选', price: '$29/月', users: '100万+', score: { beginner: 6, intermediate: 8, advanced: 9, expert: 8 } },
+  ],
+  code: [
+    { id: 'cursor', name: 'Cursor', icon: '⚡', color: '#818cf8', tags: ['AI编程', '最强编辑'], desc: 'AI代码编辑器，功能最全面，免费版够用', price: '免费/$20月', users: '100万+', score: { beginner: 10, intermediate: 10, advanced: 9, expert: 9 } },
+    { id: 'github-copilot', name: 'GitHub Copilot', icon: '🐙', color: '#1f2937', tags: ['AI编程', '官方'], desc: 'GitHub官方，深度IDE集成，补全准确', price: '$10/月', users: '100万+', score: { beginner: 8, intermediate: 9, advanced: 10, expert: 9 } },
+    { id: 'chatgpt', name: 'ChatGPT', icon: '💬', color: '#10b981', tags: ['AI写作', '代码'], desc: '代码生成和解释能力强，通用性好', price: '免费/$20月', users: '1亿+', score: { beginner: 9, intermediate: 8, advanced: 7, expert: 7 } },
+  ],
+  audio: [
+    { id: 'suno', name: 'Suno', icon: '🎵', color: '#7c3aed', tags: ['AI音乐', '热门'], desc: '最热门AI音乐生成，输入歌词即出歌', price: '免费/$8月', users: '500万+', score: { beginner: 10, intermediate: 9, advanced: 8, expert: 7 } },
+    { id: 'eleven-labs', name: 'ElevenLabs', icon: '🎙️', color: '#f97316', tags: ['AI语音', '配音'], desc: '业界领先语音合成，语音克隆，多语言', price: '免费/$5月', users: '100万+', score: { beginner: 8, intermediate: 9, advanced: 10, expert: 10 } },
+  ],
+  research: [
+    { id: 'perplexity', name: 'Perplexity', icon: '🔎', color: '#0f766e', tags: ['AI搜索', '实时'], desc: 'AI搜索引擎，答案带来源，可追问', price: '免费/$20月', users: '1000万+', score: { beginner: 9, intermediate: 10, advanced: 9, expert: 8 } },
+    { id: 'gemini', name: 'Google Gemini', icon: '✨', color: '#4285f4', tags: ['AI对话', '搜索'], desc: '联网搜索，超长上下文，多模态分析', price: '免费', users: '5000万+', score: { beginner: 9, intermediate: 9, advanced: 9, expert: 9 } },
+    { id: 'chatgpt', name: 'ChatGPT', icon: '💬', color: '#10b981', tags: ['AI写作', '分析'], desc: '数据分析、研究报告，通用性强', price: '免费/$20月', users: '1亿+', score: { beginner: 8, intermediate: 9, advanced: 8, expert: 8 } },
+  ]
+};
+
+// 预算过滤器
+const budgetFilter = {
+  free: (tool) => tool.price.includes('免费') || tool.price.includes('本地免费'),
+  freemium: (tool) => tool.price.includes('免费') || tool.price.includes('/'),
+  cheap: (tool) => !tool.price.includes('联系') && !tool.price.includes('$99') && !tool.price.includes('$49'),
+  any: () => true
+};
+
+// 状态
+let currentStep = 1;
+let answers = { useCase: null, budget: null, experience: null };
+
+// 选择选项
+function selectOption(el, type) {
+  el.parentElement.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+  el.classList.add('selected');
+  answers[type] = el.dataset.value;
+  const btn = el.closest('.question').querySelector('.btn-primary');
+  btn.disabled = false;
+}
+
+// 下一步
+function nextStep() {
+  if (currentStep < 3) {
+    document.querySelector('[data-question="' + currentStep + '"]').style.display = 'none';
+    currentStep++;
+    document.querySelector('[data-question="' + currentStep + '"]').style.display = 'block';
+    updateStepIndicators();
+  }
+}
+
+// 上一步
+function prevStep() {
+  if (currentStep > 1) {
+    document.querySelector('[data-question="' + currentStep + '"]').style.display = 'none';
+    currentStep--;
+    document.querySelector('[data-question="' + currentStep + '"]').style.display = 'block';
+    updateStepIndicators();
+  }
+}
+
+// 更新步骤指示器
+function updateStepIndicators() {
+  document.querySelectorAll('.step').forEach((step, i) => {
+    step.classList.remove('active', 'completed');
+    if (i + 1 < currentStep) step.classList.add('completed');
+    if (i + 1 === currentStep) step.classList.add('active');
+  });
+  document.querySelectorAll('.step-line').forEach((line, i) => {
+    line.classList.toggle('active', i + 1 < currentStep);
+  });
+}
+
+// 显示结果
+function showResults() {
+  document.getElementById('questions').style.display = 'none';
+  document.getElementById('results').classList.add('show');
+
+  const tools = toolsDB[answers.useCase] || [];
+  const budgetFn = budgetFilter[answers.budget];
+
+  let filtered = tools.map(tool => {
+    let score = tool.score[answers.experience] || 5;
+    if (!budgetFn(tool)) score = Math.max(1, score - 3);
+    return { ...tool, matchScore: score };
+  }).filter(t => t.matchScore >= 3);
+
+  filtered.sort((a, b) => b.matchScore - a.matchScore);
+
+  const container = document.getElementById('recommendedTools');
+  container.innerHTML = filtered.slice(0, 4).map((tool, i) => `
+    <div class="tool-result ${i === 0 ? 'main' : ''}">
+      <div class="tool-rank ${i === 0 ? 'first' : ''}">#${i + 1}</div>
+      <div class="tool-icon" style="background: ${tool.color}25; color: ${tool.color};">${tool.icon}</div>
+      <div class="tool-info">
+        <h3><a href="tool.html?id=${tool.id}">${tool.name}</a></h3>
+        <div class="tool-tags">
+          ${tool.tags.map(t => `<span class="tool-tag">${t}</span>`).join('')}
+        </div>
+        <p class="tool-desc">${tool.desc}</p>
+        <div class="tool-meta">
+          <span>💰 ${tool.price}</span>
+          <span>👥 ${tool.users}用户</span>
+        </div>
+        ${i === 0 ? `
+          <div class="reasons">
+            <h3>推荐原因</h3>
+            <ul>
+              ${getReasons(tool, answers)}
+            </ul>
+          </div>
+        ` : ''}
+      </div>
+      <div class="tool-action">
+        <div class="tool-score">
+          <div class="score-num">${tool.matchScore * 10}%</div>
+          <div class="score-label">匹配度</div>
+        </div>
+        ${i === 0 ? '<div class="match-badge">最佳推荐</div>' : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+// 获取推荐原因
+function getReasons(tool, answers) {
+  const reasons = [];
+  if (answers.budget === 'free' || answers.budget === 'freemium') {
+    reasons.push('提供免费额度，可先体验');
+  }
+  if (answers.experience === 'beginner') {
+    reasons.push('界面简洁，新手友好');
+  }
+  if (answers.useCase === 'writing') {
+    reasons.push('对话式交互，易于上手');
+    reasons.push('持续更新，功能强大');
+  } else if (answers.useCase === 'image') {
+    reasons.push('生成效果出色');
+    reasons.push('社区资源丰富');
+  } else if (answers.useCase === 'video') {
+    reasons.push('专业功能齐全');
+    reasons.push('更新迭代快');
+  } else if (answers.useCase === 'code') {
+    reasons.push('编程能力出色');
+    reasons.push('IDE深度集成');
+  } else if (answers.useCase === 'audio') {
+    reasons.push('生成质量高');
+    reasons.push('操作简单');
+  } else if (answers.useCase === 'research') {
+    reasons.push('实时联网搜索');
+    reasons.push('答案带来源');
+  }
+  return reasons.map(r => '<li>' + r + '</li>').join('');
+}
+
+// 重置测试
+function resetQuiz() {
+  currentStep = 1;
+  answers = { useCase: null, budget: null, experience: null };
+
+  document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+  document.querySelectorAll('.question').forEach(q => q.style.display = 'none');
+  document.querySelector('[data-question="1"]').style.display = 'block';
+  document.querySelectorAll('.btn-primary').forEach(btn => btn.disabled = true);
+
+  document.getElementById('questions').style.display = 'block';
+  document.getElementById('results').classList.remove('show');
+
+  updateStepIndicators();
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI工具博客 - 评测、教程与最新资讯 | AI工具导航</title>
+  <meta name="description" content="阅读AI工具最新评测、使用教程和行业资讯。深入了解ChatGPT、Midjourney等热门AI工具的使用技巧和最佳实践。">
+  <meta name="robots" content="index, follow">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AI工具导航">
+  <meta property="og:locale" content="zh_CN">
+  <link rel="canonical" href="https://hjouy.github.io/ai-tools-directory/blog.html">
+
+  <!-- DNS预加载 -->
+  <link rel="dns-prefetch" href="//github.com">
+
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --secondary: #a855f7;
+      --accent: #06b6d4;
+      --bg: #0f0f1a;
+      --bg-card: #1a1a2e;
+      --bg-card2: #16213e;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --border: #2d2d4e;
+      --success: #10b981;
+      --warning: #f59e0b;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    /* 导航栏 */
+    .navbar {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(15,15,26,0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px; height: 60px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-logo {
+      font-size: 1.3rem; font-weight: 700;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .nav-links { display: flex; gap: 8px; list-style: none; }
+    .nav-links a {
+      color: var(--text-muted); text-decoration: none;
+      padding: 6px 12px; border-radius: 6px; font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--text); background: var(--border); }
+    .nav-btn {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white !important; padding: 6px 16px !important;
+      border-radius: 20px !important; font-weight: 500;
+    }
+
+    /* 面包屑 */
+    .breadcrumb {
+      max-width: 1200px; margin: 0 auto; padding: 16px 24px;
+      font-size: 0.85rem; color: var(--text-muted);
+    }
+    .breadcrumb a { color: var(--text-muted); text-decoration: none; }
+    .breadcrumb a:hover { color: var(--primary); }
+
+    /* 主容器 */
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px 80px; }
+
+    /* 页面标题 */
+    .page-header {
+      text-align: center;
+      padding: 48px 24px;
+      background: radial-gradient(ellipse at top, rgba(99,102,241,0.15) 0%, transparent 70%);
+    }
+    .page-header h1 {
+      font-size: 2.5rem; font-weight: 800; margin-bottom: 12px;
+    }
+    .page-header h1 span {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .page-header p { color: var(--text-muted); font-size: 1.1rem; max-width: 600px; margin: 0 auto; }
+
+    /* 分类标签 */
+    .category-tabs {
+      display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+      margin-bottom: 40px;
+    }
+    .category-tab {
+      padding: 8px 20px; border-radius: 20px;
+      background: var(--bg-card); border: 1px solid var(--border);
+      color: var(--text-muted); font-size: 0.9rem;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .category-tab:hover { border-color: var(--primary); color: var(--primary); }
+    .category-tab.active {
+      background: var(--primary); color: white; border-color: var(--primary);
+    }
+
+    /* 文章网格 */
+    .articles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 24px;
+      margin-bottom: 48px;
+    }
+
+    /* 文章卡片 */
+    .article-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    .article-card:hover { transform: translateY(-4px); border-color: var(--primary); }
+
+    .article-image {
+      height: 180px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3rem; position: relative;
+    }
+    .article-image img { width: 100%; height: 100%; object-fit: cover; }
+
+    .article-category {
+      position: absolute; top: 12px; left: 12px;
+      background: rgba(0,0,0,0.6); color: white;
+      padding: 4px 12px; border-radius: 20px;
+      font-size: 0.75rem; font-weight: 500;
+    }
+
+    .article-content { padding: 20px; }
+    .article-title {
+      font-size: 1.1rem; font-weight: 700; margin-bottom: 10px;
+      line-height: 1.4;
+    }
+    .article-title:hover { color: var(--primary); }
+    .article-excerpt {
+      font-size: 0.875rem; color: var(--text-muted);
+      line-height: 1.6; margin-bottom: 16px;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+
+    .article-meta {
+      display: flex; align-items: center; gap: 16px;
+      font-size: 0.8rem; color: var(--text-muted);
+    }
+    .article-meta span { display: flex; align-items: center; gap: 4px; }
+
+    /* 热门文章 */
+    .featured-article {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      display: grid; grid-template-columns: 1fr 300px;
+      gap: 32px; margin-bottom: 48px;
+    }
+    .featured-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: linear-gradient(135deg, var(--warning), #d97706);
+      color: white; padding: 4px 12px; border-radius: 20px;
+      font-size: 0.75rem; font-weight: 600; margin-bottom: 16px;
+    }
+    .featured-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 12px; }
+    .featured-title:hover { color: var(--primary); }
+    .featured-excerpt { font-size: 1rem; color: var(--text-muted); line-height: 1.8; margin-bottom: 20px; }
+    .featured-image {
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 4rem;
+    }
+
+    /* 订阅区域 */
+    .subscribe-section {
+      background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(168,85,247,0.1));
+      border: 1px solid rgba(99,102,241,0.2);
+      border-radius: 16px; padding: 40px; text-align: center;
+    }
+    .subscribe-section h2 { font-size: 1.5rem; margin-bottom: 12px; }
+    .subscribe-section p { color: var(--text-muted); margin-bottom: 24px; }
+    .subscribe-form { display: flex; gap: 12px; max-width: 500px; margin: 0 auto; }
+    .subscribe-form input {
+      flex: 1; padding: 12px 20px; border-radius: 8px;
+      background: var(--bg); border: 1px solid var(--border);
+      color: var(--text); font-size: 1rem; outline: none;
+    }
+    .subscribe-form input:focus { border-color: var(--primary); }
+    .subscribe-form button {
+      padding: 12px 24px; border-radius: 8px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border: none; color: white; font-size: 1rem; font-weight: 500;
+      cursor: pointer; transition: opacity 0.2s;
+    }
+    .subscribe-form button:hover { opacity: 0.9; }
+
+    /* 响应式 */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .featured-article { grid-template-columns: 1fr; }
+      .articles-grid { grid-template-columns: 1fr; }
+      .subscribe-form { flex-direction: column; }
+    }
+
+    /* 加载动画 */
+    .skeleton {
+      background: linear-gradient(90deg, var(--bg-card) 25%, var(--border) 50%, var(--bg-card) 75%);
+      background-size: 200% 100%;
+      animation: loading 1.5s infinite;
+    }
+    @keyframes loading {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* 底部 */
+    footer {
+      background: var(--bg-card); border-top: 1px solid var(--border);
+      padding: 48px 24px 24px; margin-top: 80px;
+    }
+    .footer-content {
+      max-width: 1200px; margin: 0 auto;
+      display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px;
+    }
+    .footer-brand p { color: var(--text-muted); font-size: 0.875rem; margin: 12px 0; }
+    .footer-col h4 { font-size: 0.9rem; font-weight: 600; margin-bottom: 16px; }
+    .footer-col ul { list-style: none; }
+    .footer-col ul li { margin-bottom: 8px; }
+    .footer-col ul li a { color: var(--text-muted); font-size: 0.875rem; transition: color 0.2s; }
+    .footer-col ul li a:hover { color: var(--primary); }
+    .footer-bottom {
+      max-width: 1200px; margin: 32px auto 0;
+      padding-top: 24px; border-top: 1px solid var(--border);
+      text-align: center; font-size: 0.8rem; color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+<!-- 导航栏 -->
+<nav class="navbar">
+  <a href="index.html" class="nav-logo">🤖 AI工具导航</a>
+  <ul class="nav-links">
+    <li><a href="index.html">首页</a></li>
+    <li><a href="ranking.html">排行榜</a></li>
+    <li><a href="news.html">AI资讯</a></li>
+    <li><a href="blog.html" class="active">博客</a></li>
+    <li><a href="submit.html" class="nav-btn">提交工具</a></li>
+  </ul>
+</nav>
+
+<!-- 面包屑 -->
+<nav class="breadcrumb">
+  <a href="index.html">首页</a> ›
+  <span>博客</span>
+</nav>
+
+<div class="container">
+  <!-- 页面标题 -->
+  <header class="page-header">
+    <h1>AI工具<span>博客</span></h1>
+    <p>深度评测、使用教程、行业资讯，让AI工具成为你的效率利器</p>
+  </header>
+
+  <!-- 分类标签 -->
+  <div class="category-tabs">
+    <button class="category-tab active" data-category="all">全部文章</button>
+    <button class="category-tab" data-category="review">工具评测</button>
+    <button class="category-tab" data-category="tutorial">使用教程</button>
+    <button class="category-tab" data-category="news">行业资讯</button>
+    <button class="category-tab" data-category="guide">入门指南</button>
+  </div>
+
+  <!-- 置顶文章 -->
+  <article class="featured-article" onclick="openArticle('chatgpt-vs-claude')">
+    <div>
+      <span class="featured-badge">🔥 热门文章</span>
+      <h2 class="featured-title">ChatGPT vs Claude：2024年AI助手全面对比评测</h2>
+      <p class="featured-excerpt">作为当前最受欢迎的两款AI对话工具，ChatGPT和Claude各有特色。本文从语言理解、代码能力、长文本处理、创意写作等多个维度进行深度对比，帮助你选择最适合的AI助手...</p>
+      <div class="article-meta">
+        <span>👤 AI工具导航</span>
+        <span>📅 2026年3月15日</span>
+        <span>⏱️ 12分钟阅读</span>
+      </div>
+    </div>
+    <div class="featured-image">💬🧠</div>
+  </article>
+
+  <!-- 文章列表 -->
+  <div class="articles-grid" id="articlesGrid">
+    <!-- 文章将通过JavaScript渲染 -->
+  </div>
+
+  <!-- 订阅区域 -->
+  <section class="subscribe-section">
+    <h2>📬 订阅最新文章</h2>
+    <p>订阅我们的Newsletter，第一时间获取AI工具最新资讯和使用技巧</p>
+    <form class="subscribe-form" onsubmit="handleSubscribe(event)">
+      <input type="email" placeholder="输入你的邮箱地址" required>
+      <button type="submit">立即订阅</button>
+    </form>
+  </section>
+</div>
+
+<!-- 底部 -->
+<footer>
+  <div class="footer-content">
+    <div class="footer-brand">
+      <div style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">🤖 AI工具导航</div>
+      <p>发现最好用的AI工具，提升你的工作效率。收录500+人工智能工具，每日更新。</p>
+      <p style="font-size:0.8rem;">© 2026 AI工具导航</p>
+    </div>
+    <div class="footer-col">
+      <h4>工具分类</h4>
+      <ul>
+        <li><a href="writing.html">AI写作</a></li>
+        <li><a href="image.html">AI绘画</a></li>
+        <li><a href="video.html">AI视频</a></li>
+        <li><a href="code.html">AI编程</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>关于</h4>
+      <ul>
+        <li><a href="about.html">关于我们</a></li>
+        <li><a href="contact.html">联系我们</a></li>
+        <li><a href="submit.html">提交工具</a></li>
+        <li><a href="sitemap.xml">网站地图</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    © 2026 AI工具导航 · 专注发现最好用的AI工具
+  </div>
+</footer>
+
+<script>
+// 文章数据
+const articles = [
+  {
+    id: 'midjourney-v6-guide',
+    title: 'Midjourney V6完全指南：从入门到精通',
+    excerpt: 'Midjourney V6带来了革命性的升级，包括更强的文字理解能力、角色一致性和图像质量提升。本指南详细讲解V6的所有新功能和实用技巧...',
+    category: 'tutorial',
+    categoryName: '使用教程',
+    icon: '🎨',
+    date: '2026-03-18',
+    readTime: '15分钟'
+  },
+  {
+    id: 'cursor-vs-copilot',
+    title: 'Cursor vs GitHub Copilot：哪个更适合你？',
+    excerpt: '作为两大AI编程工具，Cursor和Copilot各有特色。本文从功能、价格、使用体验等角度进行全面对比，帮你做出选择...',
+    category: 'review',
+    categoryName: '工具评测',
+    icon: '⚡',
+    date: '2026-03-16',
+    readTime: '10分钟'
+  },
+  {
+    id: 'ai-image-generate',
+    title: '2024年最值得尝试的5款AI图像生成工具',
+    excerpt: '从Midjourney到Stable Diffusion，从DALL-E到Leonardo AI，本文为你盘点当前最热门的AI图像生成工具及其适用场景...',
+    category: 'guide',
+    categoryName: '入门指南',
+    icon: '🖼️',
+    date: '2026-03-14',
+    readTime: '8分钟'
+  },
+  {
+    id: 'suno-music-creation',
+    title: '用Suno创作音乐：从歌词到完整歌曲的完整流程',
+    excerpt: 'Suno让没有音乐基础的人也能创作歌曲。本文手把手教你如何使用Suno，从写歌词到生成完整音乐作品...',
+    category: 'tutorial',
+    categoryName: '使用教程',
+    icon: '🎵',
+    date: '2026-03-12',
+    readTime: '12分钟'
+  },
+  {
+    id: 'ai-video-trend',
+    title: 'AI视频生成爆发：Runway、Pika、HeyGen谁更强？',
+    excerpt: '2024年AI视频生成领域竞争激烈。本文对比Runway Gen-3、Pika和HeyGen三大平台的功能和效果...',
+    category: 'news',
+    categoryName: '行业资讯',
+    icon: '🎬',
+    date: '2026-03-10',
+    readTime: '9分钟'
+  },
+  {
+    id: 'claude-long-context',
+    title: 'Claude 200K上下文实测：真的能读完一本书？',
+    excerpt: 'Anthropic宣称Claude支持200K token上下文，相当于约15万字。本期测评验证其实际表现...',
+    category: 'review',
+    categoryName: '工具评测',
+    icon: '🧠',
+    date: '2026-03-08',
+    readTime: '11分钟'
+  },
+  {
+    id: 'gemini-multimodal',
+    title: 'Google Gemini多模态能力深度解析',
+    excerpt: 'Gemini是Google迄今为止最强大的多模态AI模型。本文深入分析其图像理解、代码生成等能力...',
+    category: 'review',
+    categoryName: '工具评测',
+    icon: '✨',
+    date: '2026-03-06',
+    readTime: '13分钟'
+  },
+  {
+    id: 'ai-writing-tools',
+    title: '写作效率提升10倍：AI写作工具实战技巧',
+    excerpt: 'ChatGPT、Claude、Jasper...市面上的AI写作工具太多了。本文分享如何选择和使用AI写作工具，以及实用的prompt技巧...',
+    category: 'guide',
+    categoryName: '入门指南',
+    icon: '✍️',
+    date: '2026-03-04',
+    readTime: '14分钟'
+  },
+  {
+    id: 'stable-diffusion-local',
+    title: 'Stable Diffusion本地部署完整教程',
+    excerpt: '不想花钱订阅Midjourney？本文教你如何在本地电脑免费部署Stable Diffusion，包括硬件要求、软件安装和基础使用...',
+    category: 'tutorial',
+    categoryName: '使用教程',
+    icon: '💻',
+    date: '2026-03-02',
+    readTime: '20分钟'
+  }
+];
+
+// 渲染文章列表
+function renderArticles(category = 'all') {
+  const grid = document.getElementById('articlesGrid');
+  const filtered = category === 'all' ? articles : articles.filter(a => a.category === category);
+
+  grid.innerHTML = filtered.map(article => `
+    <article class="article-card" onclick="openArticle('${article.id}')">
+      <div class="article-image" style="background: linear-gradient(135deg, ${getGradientColor(article.category)});">
+        ${article.icon}
+        <span class="article-category">${article.categoryName}</span>
+      </div>
+      <div class="article-content">
+        <h3 class="article-title">${article.title}</h3>
+        <p class="article-excerpt">${article.excerpt}</p>
+        <div class="article-meta">
+          <span>📅 ${article.date}</span>
+          <span>⏱️ ${article.readTime}</span>
+        </div>
+      </div>
+    </article>
+  `).join('');
+}
+
+// 获取分类渐变色
+function getGradientColor(category) {
+  const colors = {
+    review: '#6366f1, #a855f7',
+    tutorial: '#10b981, #06b6d4',
+    news: '#f59e0b, #d97706',
+    guide: '#ec4899, #f43f5e'
+  };
+  return colors[category] || colors.review;
+}
+
+// 分类切换
+document.querySelectorAll('.category-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    renderArticles(tab.dataset.category);
+  });
+});
+
+// 打开文章（目前显示提示，后续可扩展为完整文章页面）
+function openArticle(id) {
+  alert('文章详情页开发中，敬请期待！\n\n你可以在 AI资讯 页面查看更多内容。');
+}
+
+// 订阅处理
+function handleSubscribe(e) {
+  e.preventDefault();
+  const email = e.target.querySelector('input').value;
+  alert('订阅成功！我们会不定期发送最新资讯到你的邮箱。');
+  e.target.reset();
+}
+
+// 初始化
+renderArticles();
+</script>
+
+</body>
+</html>
