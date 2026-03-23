@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+# 不允许爬取临时文件
+Disallow: /.git/
+Disallow: /node_modules/
+
+# 站点地图
+Sitemap: https://hjouy.github.io/ai-tools-directory/sitemap.xml
+
+# 爬取延迟（避免服务器压力）
+Crawl-delay: 1

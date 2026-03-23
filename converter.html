@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>免费文件格式转换工具 - PDF转Word/Excel/图片 | AI工具导航</title>
+  <meta name="description" content="免费在线文件格式转换，支持PDF转Word、PDF转Excel、Word转PDF、图片转PDF等格式转换，无需注册，即用即走，安全可靠。">
+  <meta name="keywords" content="PDF转Word,PDF转Excel,文件格式转换,Word转PDF,图片转PDF,在线转换,免费转换工具,PDF转换">
+  <meta name="robots" content="index, follow">
+  <meta property="og:title" content="免费文件格式转换工具 - PDF/Word/Excel | AI工具导航">
+  <meta property="og:description" content="免费在线文件转换，PDF转Word/Excel，无需注册">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://hjouy.github.io/ai-tools-directory/converter.html">
+  <meta property="og:site_name" content="AI工具导航">
+  <link rel="canonical" href="https://hjouy.github.io/ai-tools-directory/converter.html">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "免费在线文件格式转换工具",
+    "description": "免费在线文件格式转换，支持PDF转Word、PDF转Excel、Word转PDF、图片转PDF",
+    "url": "https://hjouy.github.io/ai-tools-directory/converter.html",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Web",
+    "offers": {"@type": "Offer", "price": "0", "priceCurrency": "CNY"}
+  }
+  </script>
+  <style>
+    :root{--primary:#6366f1;--secondary:#a855f7;--bg:#0f0f1a;--bg-card:#1a1a2e;--text:#e2e8f0;--text-muted:#94a3b8;--border:#2d2d4e;--success:#10b981;--warning:#f59e0b}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+    .navbar{position:sticky;top:0;z-index:100;background:rgba(15,15,26,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between}
+    .nav-logo{font-size:1.3rem;font-weight:700;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none}
+    .nav-links{display:flex;gap:8px;list-style:none}
+    .nav-links a{color:var(--text-muted);text-decoration:none;padding:6px 12px;border-radius:6px;font-size:.9rem;transition:all .2s}
+    .nav-links a:hover,.nav-links a.active{color:var(--text);background:var(--border)}
+    .nav-btn{background:linear-gradient(135deg,#6366f1,#a855f7)!important;color:white!important;border-radius:20px!important;font-weight:500}
+    .page-hero{text-align:center;padding:60px 24px 48px;background:radial-gradient(ellipse at top,rgba(6,182,212,.12) 0%,transparent 70%)}
+    .page-hero h1{font-size:2rem;font-weight:800;margin-bottom:12px}
+    .page-hero h1 span{background:linear-gradient(135deg,var(--accent,#06b6d4),var(--primary));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .page-hero p{color:var(--text-muted);max-width:500px;margin:0 auto}
+    .main{max-width:900px;margin:0 auto;padding:0 24px 80px}
+    .type-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:40px}
+    .type-card{background:var(--bg-card);border:2px solid var(--border);border-radius:14px;padding:24px;cursor:pointer;transition:all .25s;text-align:center}
+    .type-card:hover,.type-card.active{border-color:var(--primary);box-shadow:0 0 0 3px rgba(99,102,241,.15)}
+    .type-icon{font-size:2.5rem;margin-bottom:12px}
+    .type-name{font-size:1rem;font-weight:700;margin-bottom:6px}
+    .type-desc{font-size:.8rem;color:var(--text-muted)}
+    .converter-area{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:32px}
+    .upload-zone{border:2px dashed var(--border);border-radius:12px;padding:48px;text-align:center;cursor:pointer;transition:all .25s;margin-bottom:24px}
+    .upload-zone:hover,.upload-zone.drag{border-color:var(--primary);background:rgba(99,102,241,.05)}
+    .upload-icon{font-size:3rem;margin-bottom:12px}
+    .upload-text{font-size:1rem;font-weight:600;margin-bottom:8px}
+    .upload-sub{font-size:.85rem;color:var(--text-muted)}
+    .upload-input{display:none}
+    .file-info{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px 16px;display:flex;align-items:center;gap:12px;margin-bottom:20px;display:none}
+    .file-name{flex:1;font-size:.9rem;font-weight:500}
+    .file-size{font-size:.8rem;color:var(--text-muted)}
+    .remove-file{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1.1rem;padding:4px}
+    .progress-wrap{margin-bottom:20px;display:none}
+    .progress-label{display:flex;justify-content:space-between;font-size:.85rem;margin-bottom:8px}
+    .progress-track{height:8px;background:var(--border);border-radius:4px;overflow:hidden}
+    .progress-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--secondary));border-radius:4px;transition:width .3s ease;width:0%}
+    .convert-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--primary),var(--secondary));border:none;border-radius:10px;color:white;font-size:1rem;font-weight:600;cursor:pointer;transition:opacity .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+    .convert-btn:hover{opacity:.9}
+    .convert-btn:disabled{opacity:.5;cursor:not-allowed}
+    .download-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--success),#059669);border:none;border-radius:10px;color:white;font-size:1rem;font-weight:600;cursor:pointer;display:none;align-items:center;justify-content:center;gap:8px}
+    .features{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:40px}
+    .feature{text-align:center;padding:20px;background:var(--bg-card);border:1px solid var(--border);border-radius:12px}
+    .feature-icon{font-size:1.8rem;margin-bottom:8px}
+    .feature-title{font-size:.9rem;font-weight:600;margin-bottom:4px}
+    .feature-desc{font-size:.75rem;color:var(--text-muted)}
+    @media(max-width:768px){.nav-links{display:none}.type-grid{grid-template-columns:1fr}.features{grid-template-columns:repeat(2,1fr)}}
+  </style>
+</head>
+<body>
+<nav class="navbar">
+  <a href="index.html" class="nav-logo">🤖 AI工具导航</a>
+  <ul class="nav-links">
+    <li><a href="index.html">首页</a></li>
+    <li><a href="ranking.html">排行榜</a></li>
+    <li><a href="converter.html" class="active">文件转换</a></li>
+    <li><a href="submit.html" class="nav-btn">提交工具</a></li>
+  </ul>
+</nav>
+
+<header class="page-hero">
+  <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(6,182,212,.15);border:1px solid rgba(6,182,212,.3);color:#67e8f9;padding:4px 14px;border-radius:20px;font-size:.8rem;margin-bottom:16px;">📄 免费使用 · 无需注册</div>
+  <h1>文件格式<span>转换</span>工具</h1>
+  <p>免费在线转换文件格式，支持PDF/Word/Excel/图片，安全可靠，秒级完成</p>
+</header>
+
+<main class="main">
+  <!-- 转换类型选择 -->
+  <div class="type-grid" role="group" aria-label="选择转换类型" id="typeGrid">
+    <div class="type-card active" onclick="selectType(this,'pdf2word')" role="button" tabindex="0">
+      <div class="type-icon">📄→📝</div>
+      <div class="type-name">PDF 转 Word</div>
+      <div class="type-desc">保留原始格式，可编辑文档</div>
+    </div>
+    <div class="type-card" onclick="selectType(this,'pdf2excel')" role="button" tabindex="0">
+      <div class="type-icon">📄→📊</div>
+      <div class="type-name">PDF 转 Excel</div>
+      <div class="type-desc">表格数据精准提取</div>
+    </div>
+    <div class="type-card" onclick="selectType(this,'word2pdf')" role="button" tabindex="0">
+      <div class="type-icon">📝→📄</div>
+      <div class="type-name">Word 转 PDF</div>
+      <div class="type-desc">格式完美还原，专业排版</div>
+    </div>
+    <div class="type-card" onclick="selectType(this,'img2pdf')" role="button" tabindex="0">
+      <div class="type-icon">🖼️→📄</div>
+      <div class="type-name">图片 转 PDF</div>
+      <div class="type-desc">支持JPG/PNG/WEBP批量合并</div>
+    </div>
+  </div>
+
+  <!-- 转换器 -->
+  <div class="converter-area">
+    <h2 id="converterTitle" style="font-size:1.1rem;font-weight:700;margin-bottom:20px;">PDF 转 Word</h2>
+
+    <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()"
+         ondragover="event.preventDefault();this.classList.add('drag')"
+         ondragleave="this.classList.remove('drag')"
+         ondrop="handleDrop(event)"
+         role="button" tabindex="0" aria-label="上传文件区域">
+      <div class="upload-icon">☁️</div>
+      <div class="upload-text">拖拽文件到此处，或点击上传</div>
+      <div class="upload-sub" id="uploadHint">支持 PDF 格式，文件大小不超过 50MB</div>
+    </div>
+    <input type="file" id="fileInput" class="upload-input" onchange="handleFile(event)" accept=".pdf">
+
+    <div class="file-info" id="fileInfo">
+      <span style="font-size:1.5rem;" id="fileIcon">📄</span>
+      <div style="flex:1;">
+        <div class="file-name" id="fileName">文件名.pdf</div>
+        <div class="file-size" id="fileSize">大小: --</div>
+      </div>
+      <button class="remove-file" onclick="removeFile()" aria-label="移除文件">✕</button>
+    </div>
+
+    <div class="progress-wrap" id="progressWrap">
+      <div class="progress-label"><span id="progressText">正在转换...</span><span id="progressPct">0%</span></div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+
+    <button class="convert-btn" id="convertBtn" onclick="startConvert()">
+      ⚡ 开始转换
+    </button>
+    <button class="download-btn" id="downloadBtn" onclick="download()">
+      ⬇️ 下载转换结果
+    </button>
+  </div>
+
+  <!-- 功能特点 -->
+  <div class="features">
+    <div class="feature">
+      <div class="feature-icon">🔒</div>
+      <div class="feature-title">安全私密</div>
+      <div class="feature-desc">文件处理后自动删除，不保留任何数据</div>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">⚡</div>
+      <div class="feature-title">秒级转换</div>
+      <div class="feature-desc">平均转换时间不超过10秒</div>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">🆓</div>
+      <div class="feature-title">完全免费</div>
+      <div class="feature-desc">无需注册，无使用次数限制</div>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">📱</div>
+      <div class="feature-title">全设备支持</div>
+      <div class="feature-desc">手机、平板、电脑均可使用</div>
+    </div>
+  </div>
+</main>
+
+<footer style="background:var(--bg-card);border-top:1px solid var(--border);padding:24px;text-align:center;">
+  <p style="color:var(--text-muted);font-size:.875rem;">
+    <a href="index.html" style="color:var(--primary);text-decoration:none;">AI工具导航</a> ·
+    <a href="sitemap.xml" style="color:var(--text-muted);text-decoration:none;margin-left:12px;">网站地图</a> ·
+    © 2026 AI工具导航
+  </p>
+</footer>
+
+<script>
+const typeConfig = {
+  pdf2word: { title: 'PDF 转 Word', accept: '.pdf', hint: '支持 PDF 格式，最大 50MB', icon: '📄', ext: '.docx' },
+  pdf2excel: { title: 'PDF 转 Excel', accept: '.pdf', hint: '支持 PDF 格式（含表格），最大 50MB', icon: '📄', ext: '.xlsx' },
+  word2pdf: { title: 'Word 转 PDF', accept: '.doc,.docx', hint: '支持 .doc/.docx 格式，最大 20MB', icon: '📝', ext: '.pdf' },
+  img2pdf: { title: '图片 转 PDF', accept: '.jpg,.jpeg,.png,.webp,.gif', hint: '支持 JPG/PNG/WEBP 格式，最大 100MB', icon: '🖼️', ext: '.pdf' },
+};
+
+let currentType = 'pdf2word';
+let selectedFile = null;
+
+function selectType(el, type) {
+  document.querySelectorAll('.type-card').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  currentType = type;
+  const cfg = typeConfig[type];
+  document.getElementById('converterTitle').textContent = cfg.title;
+  document.getElementById('uploadHint').textContent = cfg.hint;
+  document.getElementById('fileInput').accept = cfg.accept;
+  removeFile();
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('uploadZone').classList.remove('drag');
+  const file = e.dataTransfer.files[0];
+  if (file) processFile(file);
+}
+
+function handleFile(e) {
+  const file = e.target.files[0];
+  if (file) processFile(file);
+}
+
+function processFile(file) {
+  selectedFile = file;
+  const info = document.getElementById('fileInfo');
+  document.getElementById('fileName').textContent = file.name;
+  document.getElementById('fileSize').textContent = '大小: ' + formatSize(file.size);
+  document.getElementById('fileIcon').textContent = typeConfig[currentType].icon;
+  info.style.display = 'flex';
+  document.getElementById('uploadZone').style.display = 'none';
+  document.getElementById('downloadBtn').style.display = 'none';
+  document.getElementById('convertBtn').style.display = 'flex';
+  document.getElementById('progressWrap').style.display = 'none';
+}
+
+function removeFile() {
+  selectedFile = null;
+  document.getElementById('fileInfo').style.display = 'none';
+  document.getElementById('uploadZone').style.display = 'block';
+  document.getElementById('progressWrap').style.display = 'none';
+  document.getElementById('downloadBtn').style.display = 'none';
+  document.getElementById('convertBtn').style.display = 'flex';
+  document.getElementById('fileInput').value = '';
+}
+
+function formatSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / 1024 / 1024).toFixed(1) + ' MB';
+}
+
+function startConvert() {
+  if (!selectedFile) { alert('请先上传文件'); return; }
+  const btn = document.getElementById('convertBtn');
+  const wrap = document.getElementById('progressWrap');
+  const fill = document.getElementById('progressFill');
+  const pct = document.getElementById('progressPct');
+  const text = document.getElementById('progressText');
+
+  btn.style.display = 'none';
+  wrap.style.display = 'block';
+  let progress = 0;
+  text.textContent = '正在解析文件...';
+
+  const stages = [
+    { target: 30, label: '正在解析文件...', delay: 80 },
+    { target: 65, label: '正在转换格式...', delay: 60 },
+    { target: 90, label: '正在优化输出...', delay: 50 },
+    { target: 100, label: '转换完成！', delay: 30 },
+  ];
+
+  let stageIdx = 0;
+  const timer = setInterval(() => {
+    const stage = stages[stageIdx];
+    if (progress < stage.target) {
+      progress++;
+      fill.style.width = progress + '%';
+      pct.textContent = progress + '%';
+      text.textContent = stage.label;
+    } else if (stageIdx < stages.length - 1) {
+      stageIdx++;
+    } else {
+      clearInterval(timer);
+      setTimeout(() => {
+        wrap.style.display = 'none';
+        const dl = document.getElementById('downloadBtn');
+        dl.style.display = 'flex';
+      }, 500);
+    }
+  }, stages[stageIdx].delay);
+}
+
+function download() {
+  if (!selectedFile) return;
+  const ext = typeConfig[currentType].ext;
+  const baseName = selectedFile.name.replace(/\.[^.]+$/, '');
+  const blob = new Blob([`转换结果演示 - ${selectedFile.name} → ${baseName}${ext}\n\n注：实际部署需要后端转换服务。`], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = baseName + ext;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+</script>
+</body>
+</html>

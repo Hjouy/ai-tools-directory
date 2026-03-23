@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI绘画工具推荐 - Midjourney/Stable Diffusion等AI作图工具 | AI工具导航</title>
+  <meta name="description" content="精选12款顶级AI绘画工具，包括Midjourney、Stable Diffusion、DALL-E 3、Adobe Firefly等。一键生成高质量AI艺术图片，免费试用。">
+  <meta name="keywords" content="AI绘画工具,Midjourney,Stable Diffusion,DALL-E 3,AI作图,AI绘图,文字生图,AI艺术生成,免费AI绘画">
+  <meta name="robots" content="index, follow">
+  <meta property="og:title" content="AI绘画工具推荐 - Midjourney/SD等AI作图工具 | AI工具导航">
+  <meta property="og:description" content="精选12款顶级AI绘画工具，Midjourney、Stable Diffusion等一网打尽">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://hjouy.github.io/ai-tools-directory/image.html">
+  <meta property="og:site_name" content="AI工具导航">
+  <meta property="og:locale" content="zh_CN">
+  <link rel="canonical" href="https://hjouy.github.io/ai-tools-directory/image.html">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "AI绘画工具推荐合集",
+    "description": "精选12款顶级AI绘画工具，包括Midjourney、Stable Diffusion等",
+    "url": "https://hjouy.github.io/ai-tools-directory/image.html",
+    "inLanguage": "zh-CN"
+  }
+  </script>
+  <style>
+    :root{--primary:#6366f1;--secondary:#a855f7;--bg:#0f0f1a;--bg-card:#1a1a2e;--text:#e2e8f0;--text-muted:#94a3b8;--border:#2d2d4e;--success:#10b981;--warning:#f59e0b}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+    .navbar{position:sticky;top:0;z-index:100;background:rgba(15,15,26,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between}
+    .nav-logo{font-size:1.3rem;font-weight:700;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none}
+    .nav-links{display:flex;gap:8px;list-style:none}
+    .nav-links a{color:var(--text-muted);text-decoration:none;padding:6px 12px;border-radius:6px;font-size:.9rem;transition:all .2s}
+    .nav-links a:hover{color:var(--text);background:var(--border)}
+    .nav-btn{background:linear-gradient(135deg,#6366f1,#a855f7)!important;color:white!important;border-radius:20px!important;font-weight:500}
+    .page-hero{text-align:center;padding:60px 24px 48px;background:radial-gradient(ellipse at top,rgba(168,85,247,.12) 0%,transparent 70%)}
+    .page-hero h1{font-size:2rem;font-weight:800;margin-bottom:12px}
+    .page-hero p{color:var(--text-muted);font-size:1rem;max-width:500px;margin:0 auto 20px}
+    .breadcrumb{max-width:1200px;margin:0 auto;padding:12px 24px;display:flex;gap:8px;font-size:.85rem;color:var(--text-muted)}
+    .breadcrumb a{color:var(--text-muted);text-decoration:none}
+    .breadcrumb a:hover{color:var(--primary)}
+    .main{max-width:1200px;margin:0 auto;padding:0 24px 80px}
+    .tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+    .tool-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:20px;cursor:pointer;transition:all .25s;position:relative}
+    .tool-card:hover{border-color:rgba(168,85,247,.4);transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+    .tool-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+    .tool-logo{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem}
+    .tool-name{font-size:1rem;font-weight:600;margin-bottom:2px}
+    .tool-rating{font-size:.75rem;color:var(--warning)}
+    .tool-desc{font-size:.875rem;color:var(--text-muted);line-height:1.5;margin-bottom:14px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    .tool-footer{display:flex;justify-content:space-between;align-items:center}
+    .tags{display:flex;gap:6px}
+    .tag{background:rgba(168,85,247,.1);color:#d8b4fe;padding:2px 8px;border-radius:4px;font-size:.7rem}
+    .price{font-size:.8rem;font-weight:600}
+    .price-free{color:var(--success)}
+    .price-paid{color:var(--warning)}
+    .hot-tag{position:absolute;top:12px;right:12px;background:linear-gradient(135deg,#ef4444,#f97316);color:white;padding:2px 8px;border-radius:4px;font-size:.7rem;font-weight:600}
+    .open-tag{position:absolute;top:12px;right:12px;background:linear-gradient(135deg,var(--success),#059669);color:white;padding:2px 8px;border-radius:4px;font-size:.7rem;font-weight:600}
+    .filter-bar{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap}
+    .filter-btn{padding:6px 16px;border-radius:20px;border:1px solid var(--border);background:none;color:var(--text-muted);cursor:pointer;font-size:.85rem;transition:all .2s}
+    .filter-btn.active,.filter-btn:hover{background:var(--secondary);color:white;border-color:var(--secondary)}
+    @media(max-width:768px){.nav-links{display:none}.tools-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<nav class="navbar">
+  <a href="index.html" class="nav-logo">🤖 AI工具导航</a>
+  <ul class="nav-links">
+    <li><a href="index.html">首页</a></li>
+    <li><a href="ranking.html">排行榜</a></li>
+    <li><a href="news.html">AI资讯</a></li>
+    <li><a href="submit.html" class="nav-btn">提交工具</a></li>
+  </ul>
+</nav>
+
+<nav class="breadcrumb" aria-label="面包屑">
+  <a href="index.html">首页</a><span>›</span><span>AI绘画工具</span>
+</nav>
+
+<header class="page-hero">
+  <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.3);color:#d8b4fe;padding:4px 14px;border-radius:20px;font-size:.8rem;margin-bottom:16px;">🎨 62个AI绘画工具</div>
+  <h1>AI绘画工具推荐</h1>
+  <p>精选最好用的AI图像生成工具，文字描述一键生成高质量艺术图片</p>
+</header>
+
+<main class="main">
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="filter(this,'all')">全部</button>
+    <button class="filter-btn" onclick="filter(this,'free')">免费可用</button>
+    <button class="filter-btn" onclick="filter(this,'open')">开源免费</button>
+    <button class="filter-btn" onclick="filter(this,'realistic')">写实风格</button>
+    <button class="filter-btn" onclick="filter(this,'art')">艺术创作</button>
+  </div>
+
+  <div class="tools-grid" id="toolsGrid" role="list">
+
+    <article class="tool-card" data-tags="art realistic" role="listitem" onclick="location.href='tool.html?id=midjourney'" itemscope itemtype="https://schema.org/SoftwareApplication">
+      <span class="hot-tag">HOT</span>
+      <div class="tool-header">
+        <div class="tool-logo" style="background:#6366f120;color:#6366f1;">🎨</div>
+        <div><div class="tool-name" itemprop="name">Midjourney</div><div class="tool-rating">★★★★★ 4.8 · 1500万+用户</div></div>
+      </div>
+      <p class="tool-desc" itemprop="description">全球最流行的AI绘画工具，独特艺术风格，高质量输出，广泛用于设计、插画、游戏原画。</p>
+      <div class="tool-footer"><div class="tags"><span class="tag">艺术风格</span><span class="tag">高质量</span></div><span class="price price-paid">$10/月起</span></div>
+    </article>
+
+    <article class="tool-card" data-tags="open free realistic art" role="listitem" onclick="location.href='tool.html?id=stable-diffusion'" itemscope itemtype="https://schema.org/SoftwareApplication">
+      <span class="open-tag">开源</span>
+      <div class="tool-header">
+        <div class="tool-logo" style="background:#dc262620;color:#dc2626;">🖼️</div>
+        <div><div class="tool-name" itemprop="name">Stable Diffusion</div><div class="tool-rating">★★★★★ 4.7 · 800万+用户</div></div>
+      </div>
+      <p class="tool-desc" itemprop="description">完全开源，本地部署免费使用，支持LoRA/ControlNet扩展，无限自定义，技术用户首选。</p>
+      <div class="tool-footer"><div class="tags"><span class="tag">开源</span><span class="tag">本地免费</span></div><span class="price price-free">完全免费</span></div>
+    </article>
+
+    <article class="tool-card" data-tags="free realistic" role="listitem" onclick="window.open('https://openai.com/dall-e-3','_blank')" itemscope itemtype="https://schema.org/SoftwareApplication">
+      <div class="tool-header">
+        <div class="tool-logo" style="background:#10b98120;color:#10b981;">🌈</div>
+        <div><div class="tool-name" itemprop="name">DALL-E 3</div><div class="tool-rating">★★★★☆ 4.6 · 500万+用户</div></div>
+      </div>
+      <p class="tool-desc" itemprop="description">OpenAI出品，ChatGPT Plus集成，文字理解最精准，能精确还原复杂描述，适合写实风格。</p>
+      <div class="tool-footer"><div class="tags"><span class="tag">写实</span><span class="tag">精准描述</span></div><span class="price price-free">ChatGPT Plus内含</span></div>
+    </article>
+
+    <article class="tool-card" data-tags="free art" role="listitem" onclick="window.open('https://firefly.adobe.com','_blank')" itemscope itemtype="https://schema.org/SoftwareApplication">
+      <div class="tool-header">
+        <div class="tool-logo" style="background:#ef444420;color:#ef4444;">🔥</div>
+        <div><div class="tool-name" itemprop="name">Adobe Firefly</div><div class="tool-rating">★★★★☆ 4.5 · 300万+用户</div></div>
+      </div>
+      <p class="tool-desc" itemprop="description">Adobe出品，商用许可保障，深度集成Photoshop/Illustrator，设计师的AI绘画首选。</p>
+      <div class="tool-footer"><div class="tags"><span class="tag">商用安全</span><span class="tag">设计师</span></div><span class="price price-free">免费/$5月</span></div>
+    </article>
+
+    <article class="tool-card" data-tags="free art realistic" role="listitem" onclick="window.open('https://www.bing.com/create','_blank')" itemscope itemtype="https://schema.org/SoftwareApplication">
+      <span class="open-tag" style="background:linear-gradient(135deg,var(--primary),var(--secondary));">免费</span>
+      <div class="tool-header">
+        <div class="tool-logo" style="background:#0078d420;color:#0078d4;">🖌️</div>
+        <div><div class="tool-name" itemprop="name">Bing Image Creator</div><div class="tool-rating">★★★★☆ 4.3 · 1000万+用户</div></div>
+      </div>
+      <p class="tool-desc" itemprop="description">微软必应免费AI绘画，基于DALL-E技术，无需订阅直接使用，是最易上手的免费AI绘画工具。</p>
+      <div class="tool-footer"><div class="tags"><span class="tag">完全免费</span><span class="tag">易用</span></div><span class="price price-free">完全免费</span></div>
+    </article>
+
+    <article class="tool-card" data-tags="free art" role="listitem" onclick="window.open('https://dreamstudio.ai','_blank')" itemscope itemtype="https://schema.org/SoftwareApplication">
+      <div class="tool-header">
+        <div class="tool-logo" style="background:#7c3aed20;color:#7c3aed;">💫</div>
+        <div><div class="tool-name" itemprop="name">DreamStudio</div><div class="tool-rating">★★★★☆ 4.3 · 100万+用户</div></div>
+      </div>
+      <p class="tool-desc" itemprop="description">Stability AI官方Web平台，使用最新Stable Diffusion模型，界面友好，适合不想本地部署的用户。</p>
+      <div class="tool-footer"><div class="tags"><span class="tag">云端SD</span><span class="tag">易用</span></div><span class="price price-free">赠送积分</span></div>
+    </article>
+
+    <article class="tool-card" data-tags="art realistic" role="listitem" onclick="window.open('https://leonardo.ai','_blank')" itemscope itemtype="https://schema.org/SoftwareApplication">
+      <div class="tool-header">
+        <div class="tool-logo" style="background:#f59e0b20;color:#f59e0b;">🎭</div>
+        <div><div class="tool-name" itemprop="name">Leonardo AI</div><div class="tool-rating">★★★★☆ 4.4 · 400万+用户</div></div>
+      </div>
+      <p class="tool-desc" itemprop="description">专为游戏和创意产业设计，提供大量预训练模型，角色设计和场景创作效果出众，有免费版。</p>
+      <div class="tool-footer"><div class="tags"><span class="tag">游戏设计</span><span class="tag">角色</span></div><span class="price price-free">免费/$12月</span></div>
+    </article>
+
+    <article class="tool-card" data-tags="free art" role="listitem" onclick="window.open('https://www.canva.com/ai-image-generator','_blank')" itemscope itemtype="https://schema.org/SoftwareApplication">
+      <div class="tool-header">
+        <div class="tool-logo" style="background:#06b6d420;color:#06b6d4;">🎪</div>
+        <div><div class="tool-name" itemprop="name">Canva AI</div><div class="tool-rating">★★★★☆ 4.4 · 1亿+用户</div></div>
+      </div>
+      <p class="tool-desc" itemprop="description">Canva内置AI生成图片，直接用于设计排版，无缝衔接设计工作流，设计小白的最佳选择。</p>
+      <div class="tool-footer"><div class="tags"><span class="tag">设计集成</span><span class="tag">易用</span></div><span class="price price-free">免费/$13月</span></div>
+    </article>
+
+    <article class="tool-card" data-tags="art" role="listitem" onclick="window.open('https://www.ideogram.ai','_blank')" itemscope itemtype="https://schema.org/SoftwareApplication">
+      <div class="tool-header">
+        <div class="tool-logo" style="background:#8b5cf620;color:#8b5cf6;">🔤</div>
+        <div><div class="tool-name" itemprop="name">Ideogram</div><div class="tool-rating">★★★★☆ 4.4 · 100万+用户</div></div>
+      </div>
+      <p class="tool-desc" itemprop="description">专注于图片中文字生成，解决了AI绘画文字乱码难题，Logo设计和带文字图片首选。</p>
+      <div class="tool-footer"><div class="tags"><span class="tag">文字生成</span><span class="tag">Logo</span></div><span class="price price-free">免费/$7月</span></div>
+    </article>
+
+    <article class="tool-card" data-tags="free art" role="listitem" onclick="window.open('https://www.krea.ai','_blank')" itemscope itemtype="https://schema.org/SoftwareApplication">
+      <div class="tool-header">
+        <div class="tool-logo" style="background:#ec489920;color:#ec4899;">✨</div>
+        <div><div class="tool-name" itemprop="name">Krea AI</div><div class="tool-rating">★★★★☆ 4.3 · 50万+用户</div></div>
+      </div>
+      <p class="tool-desc" itemprop="description">实时AI绘画工具，画笔落下即时生成，交互式创作体验独一无二，适合创意头脑风暴。</p>
+      <div class="tool-footer"><div class="tags"><span class="tag">实时生成</span><span class="tag">交互</span></div><span class="price price-free">免费/$24月</span></div>
+    </article>
+
+    <article class="tool-card" data-tags="open free art" role="listitem" onclick="window.open('https://huggingface.co/spaces/stabilityai/stable-diffusion','_blank')" itemscope itemtype="https://schema.org/SoftwareApplication">
+      <span class="open-tag">开源</span>
+      <div class="tool-header">
+        <div class="tool-logo" style="background:#f59e0b20;color:#f59e0b;">🤗</div>
+        <div><div class="tool-name" itemprop="name">HuggingFace SD</div><div class="tool-rating">★★★★☆ 4.2 · 500万+用户</div></div>
+      </div>
+      <p class="tool-desc" itemprop="description">Hugging Face平台上的免费Stable Diffusion体验版，无需安装，浏览器直接使用。</p>
+      <div class="tool-footer"><div class="tags"><span class="tag">开源免费</span><span class="tag">在线</span></div><span class="price price-free">完全免费</span></div>
+    </article>
+
+    <article class="tool-card" data-tags="art realistic" role="listitem" onclick="window.open('https://www.seaart.ai','_blank')" itemscope itemtype="https://schema.org/SoftwareApplication">
+      <span class="hot-tag" style="background:linear-gradient(135deg,#10b981,#059669);">国产</span>
+      <div class="tool-header">
+        <div class="tool-logo" style="background:#10b98120;color:#10b981;">🌊</div>
+        <div><div class="tool-name" itemprop="name">SeaArt</div><div class="tool-rating">★★★★☆ 4.3 · 500万+用户</div></div>
+      </div>
+      <p class="tool-desc" itemprop="description">国产AI绘画平台，大量汉化模型，中文提示词友好，二次元风格出众，国内访问速度快。</p>
+      <div class="tool-footer"><div class="tags"><span class="tag">国产</span><span class="tag">中文支持</span></div><span class="price price-free">免费/会员</span></div>
+    </article>
+
+  </div>
+</main>
+
+<footer style="background:var(--bg-card);border-top:1px solid var(--border);padding:24px;text-align:center;">
+  <p style="color:var(--text-muted);font-size:.875rem;">
+    <a href="index.html" style="color:var(--primary);text-decoration:none;">AI工具导航</a> ·
+    <a href="writing.html" style="color:var(--text-muted);text-decoration:none;margin:0 12px;">AI写作工具</a>
+    <a href="sitemap.xml" style="color:var(--text-muted);text-decoration:none;">网站地图</a> ·
+    © 2026 AI工具导航
+  </p>
+</footer>
+
+<script>
+function filter(btn, type) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.tool-card').forEach(card => {
+    card.style.display = (type === 'all' || card.dataset.tags.includes(type)) ? '' : 'none';
+  });
+}
+</script>
+</body>
+</html>

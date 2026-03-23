@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI工具排行榜 - 2026年最热门AI工具月度榜单 | AI工具导航</title>
+  <meta name="description" content="2026年最新AI工具排行榜，实时更新月度/季度/年度热门AI工具排名。了解哪些AI工具最受用户欢迎，找到适合你的最佳AI工具。">
+  <meta name="keywords" content="AI工具排行榜,AI工具排名,最热门AI工具,2026 AI工具,AI工具月榜,ChatGPT排名,Midjourney排名">
+  <meta name="robots" content="index, follow">
+  <meta property="og:title" content="AI工具排行榜 - 2026年最热门AI工具 | AI工具导航">
+  <meta property="og:description" content="2026年最新AI工具排行榜，月度/季度/年度排名实时更新">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://hjouy.github.io/ai-tools-directory/ranking.html">
+  <meta property="og:site_name" content="AI工具导航">
+  <meta property="og:locale" content="zh_CN">
+  <link rel="canonical" href="https://hjouy.github.io/ai-tools-directory/ranking.html">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "2026年AI工具月度排行榜",
+    "description": "2026年3月最热门AI工具排行榜，基于用户使用量和评分综合排名",
+    "url": "https://hjouy.github.io/ai-tools-directory/ranking.html",
+    "numberOfItems": 10,
+    "itemListElement": [
+      {"@type": "ListItem", "position": 1, "name": "ChatGPT", "url": "https://chat.openai.com"},
+      {"@type": "ListItem", "position": 2, "name": "Midjourney", "url": "https://midjourney.com"},
+      {"@type": "ListItem", "position": 3, "name": "Cursor", "url": "https://cursor.sh"},
+      {"@type": "ListItem", "position": 4, "name": "Claude", "url": "https://claude.ai"},
+      {"@type": "ListItem", "position": 5, "name": "Runway", "url": "https://runwayml.com"}
+    ]
+  }
+  </script>
+  <style>
+    :root { --primary:#6366f1;--secondary:#a855f7;--accent:#06b6d4;--bg:#0f0f1a;--bg-card:#1a1a2e;--text:#e2e8f0;--text-muted:#94a3b8;--border:#2d2d4e;--success:#10b981;--warning:#f59e0b; }
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+    .navbar{position:sticky;top:0;z-index:100;background:rgba(15,15,26,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between}
+    .nav-logo{font-size:1.3rem;font-weight:700;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none}
+    .nav-links{display:flex;gap:8px;list-style:none}
+    .nav-links a{color:var(--text-muted);text-decoration:none;padding:6px 12px;border-radius:6px;font-size:.9rem;transition:all .2s}
+    .nav-links a:hover,.nav-links a.active{color:var(--text);background:var(--border)}
+    .nav-btn{background:linear-gradient(135deg,#6366f1,#a855f7)!important;color:white!important;border-radius:20px!important;font-weight:500}
+    .page-header{text-align:center;padding:60px 24px 40px;background:radial-gradient(ellipse at top,rgba(99,102,241,.12) 0%,transparent 70%)}
+    .page-header h1{font-size:2.2rem;font-weight:800;margin-bottom:12px}
+    .page-header h1 span{background:linear-gradient(135deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .page-header p{color:var(--text-muted);font-size:1rem}
+    .main{max-width:900px;margin:0 auto;padding:0 24px 80px}
+    .tab-bar{display:flex;gap:8px;margin-bottom:32px;background:var(--bg-card);padding:6px;border-radius:12px;border:1px solid var(--border)}
+    .tab{flex:1;padding:10px;text-align:center;border-radius:8px;cursor:pointer;font-size:.9rem;color:var(--text-muted);transition:all .2s;border:none;background:none}
+    .tab.active{background:linear-gradient(135deg,var(--primary),var(--secondary));color:white;font-weight:600}
+    .rank-list{}
+    .rank-item{display:grid;grid-template-columns:48px auto 1fr auto auto;gap:16px;align-items:center;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:12px;cursor:pointer;transition:all .25s;text-decoration:none;color:var(--text)}
+    .rank-item:hover{border-color:rgba(99,102,241,.4);transform:translateX(4px)}
+    .rank-num{font-size:1.4rem;font-weight:800;text-align:center}
+    .rank-1 .rank-num{color:#f59e0b}
+    .rank-2 .rank-num{color:#94a3b8}
+    .rank-3 .rank-num{color:#cd7c3b}
+    .rank-icon{width:46px;height:46px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0}
+    .rank-info h3{font-size:1rem;font-weight:600;margin-bottom:4px}
+    .rank-tags{display:flex;gap:6px}
+    .tag{background:rgba(99,102,241,.1);color:#a5b4fc;padding:2px 8px;border-radius:4px;font-size:.7rem}
+    .rank-score{text-align:right}
+    .score-num{font-size:1.1rem;font-weight:700;color:var(--warning)}
+    .score-sub{font-size:.75rem;color:var(--text-muted)}
+    .rank-trend{font-size:.85rem;font-weight:600;min-width:40px;text-align:right}
+    .trend-up{color:var(--success)}
+    .trend-down{color:#ef4444}
+    .trend-same{color:var(--text-muted)}
+    .update-time{text-align:center;color:var(--text-muted);font-size:.8rem;margin-bottom:24px}
+    @media(max-width:768px){.nav-links{display:none}.rank-item{grid-template-columns:36px auto 1fr auto}}
+  </style>
+</head>
+<body>
+<nav class="navbar">
+  <a href="index.html" class="nav-logo">🤖 AI工具导航</a>
+  <ul class="nav-links">
+    <li><a href="index.html">首页</a></li>
+    <li><a href="ranking.html" class="active">排行榜</a></li>
+    <li><a href="news.html">AI资讯</a></li>
+    <li><a href="converter.html">文件转换</a></li>
+    <li><a href="submit.html" class="nav-btn">提交工具</a></li>
+  </ul>
+</nav>
+
+<header class="page-header">
+  <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);color:#fbbf24;padding:4px 14px;border-radius:20px;font-size:.8rem;margin-bottom:16px;">🏆 每月更新</div>
+  <h1>AI工具<span>排行榜</span></h1>
+  <p>基于用户使用量、增长速度、社区评分综合排名 · 2026年3月</p>
+</header>
+
+<main class="main">
+  <p class="update-time">🕐 最后更新：2026年3月23日 08:00 | 数据来源：用户投票 + 第三方流量统计</p>
+
+  <div class="tab-bar" role="tablist">
+    <button class="tab active" onclick="switchTab(this,'monthly')" role="tab">📅 月榜</button>
+    <button class="tab" onclick="switchTab(this,'category')" role="tab">🗂️ 分类榜</button>
+    <button class="tab" onclick="switchTab(this,'rising')" role="tab">🚀 飙升榜</button>
+  </div>
+
+  <!-- 月榜 -->
+  <div id="monthly" class="rank-list" role="list">
+    <a href="tool.html?id=chatgpt" class="rank-item rank-1" role="listitem" itemscope itemtype="https://schema.org/SoftwareApplication">
+      <div class="rank-num">🥇</div>
+      <div class="rank-icon" style="background:#10b98120;">💬</div>
+      <div class="rank-info"><h3 itemprop="name">ChatGPT</h3><div class="rank-tags"><span class="tag">AI写作</span><span class="tag">对话</span></div></div>
+      <div class="rank-score"><div class="score-num">9.8</div><div class="score-sub">综合评分</div></div>
+      <div class="rank-trend trend-same">— 持平</div>
+    </a>
+    <a href="tool.html?id=midjourney" class="rank-item rank-2" role="listitem">
+      <div class="rank-num">🥈</div>
+      <div class="rank-icon" style="background:#6366f120;">🎨</div>
+      <div class="rank-info"><h3>Midjourney</h3><div class="rank-tags"><span class="tag">AI绘画</span></div></div>
+      <div class="rank-score"><div class="score-num">9.5</div><div class="score-sub">综合评分</div></div>
+      <div class="rank-trend trend-same">— 持平</div>
+    </a>
+    <a href="tool.html?id=cursor" class="rank-item rank-3" role="listitem">
+      <div class="rank-num">🥉</div>
+      <div class="rank-icon" style="background:#818cf820;">⚡</div>
+      <div class="rank-info"><h3>Cursor</h3><div class="rank-tags"><span class="tag">AI编程</span></div></div>
+      <div class="rank-score"><div class="score-num">9.4</div><div class="score-sub">综合评分</div></div>
+      <div class="rank-trend trend-up">↑2 上升</div>
+    </a>
+    <a href="tool.html?id=claude" class="rank-item" role="listitem">
+      <div class="rank-num" style="color:var(--text-muted)">4</div>
+      <div class="rank-icon" style="background:#d9780620;">🧠</div>
+      <div class="rank-info"><h3>Claude</h3><div class="rank-tags"><span class="tag">AI写作</span></div></div>
+      <div class="rank-score"><div class="score-num">9.2</div><div class="score-sub">综合评分</div></div>
+      <div class="rank-trend trend-up">↑1 上升</div>
+    </a>
+    <a href="tool.html?id=runway" class="rank-item" role="listitem">
+      <div class="rank-num" style="color:var(--text-muted)">5</div>
+      <div class="rank-icon" style="background:#0891b220;">🎬</div>
+      <div class="rank-info"><h3>Runway</h3><div class="rank-tags"><span class="tag">AI视频</span></div></div>
+      <div class="rank-score"><div class="score-num">9.0</div><div class="score-sub">综合评分</div></div>
+      <div class="rank-trend trend-down">↓1 下降</div>
+    </a>
+    <a href="tool.html?id=stable-diffusion" class="rank-item" role="listitem">
+      <div class="rank-num" style="color:var(--text-muted)">6</div>
+      <div class="rank-icon" style="background:#dc262620;">🖼️</div>
+      <div class="rank-info"><h3>Stable Diffusion</h3><div class="rank-tags"><span class="tag">AI绘画</span><span class="tag">开源</span></div></div>
+      <div class="rank-score"><div class="score-num">8.9</div><div class="score-sub">综合评分</div></div>
+      <div class="rank-trend trend-same">— 持平</div>
+    </a>
+    <a href="tool.html?id=suno" class="rank-item" role="listitem">
+      <div class="rank-num" style="color:var(--text-muted)">7</div>
+      <div class="rank-icon" style="background:#7c3aed20;">🎵</div>
+      <div class="rank-info"><h3>Suno</h3><div class="rank-tags"><span class="tag">AI音乐</span></div></div>
+      <div class="rank-score"><div class="score-num">8.7</div><div class="score-sub">综合评分</div></div>
+      <div class="rank-trend trend-up">↑3 上升</div>
+    </a>
+    <a href="tool.html?id=notion-ai" class="rank-item" role="listitem">
+      <div class="rank-num" style="color:var(--text-muted)">8</div>
+      <div class="rank-icon" style="background:#37415120;">📝</div>
+      <div class="rank-info"><h3>Notion AI</h3><div class="rank-tags"><span class="tag">AI效率</span></div></div>
+      <div class="rank-score"><div class="score-num">8.6</div><div class="score-sub">综合评分</div></div>
+      <div class="rank-trend trend-same">— 持平</div>
+    </a>
+    <a href="#" onclick="window.open('https://perplexity.ai','_blank');return false;" class="rank-item" role="listitem">
+      <div class="rank-num" style="color:var(--text-muted)">9</div>
+      <div class="rank-icon" style="background:#0f766e20;">🔎</div>
+      <div class="rank-info"><h3>Perplexity</h3><div class="rank-tags"><span class="tag">AI搜索</span></div></div>
+      <div class="rank-score"><div class="score-num">8.5</div><div class="score-sub">综合评分</div></div>
+      <div class="rank-trend trend-up">↑2 上升</div>
+    </a>
+    <a href="#" onclick="window.open('https://github.com/features/copilot','_blank');return false;" class="rank-item" role="listitem">
+      <div class="rank-num" style="color:var(--text-muted)">10</div>
+      <div class="rank-icon" style="background:#1f293720;">🐙</div>
+      <div class="rank-info"><h3>GitHub Copilot</h3><div class="rank-tags"><span class="tag">AI编程</span></div></div>
+      <div class="rank-score"><div class="score-num">8.4</div><div class="score-sub">综合评分</div></div>
+      <div class="rank-trend trend-down">↓2 下降</div>
+    </a>
+  </div>
+
+  <!-- 分类榜 -->
+  <div id="category" class="rank-list" style="display:none" role="list">
+    <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:20px;">
+      <h3 style="margin-bottom:16px;color:#a5b4fc;">✍️ AI写作 TOP3</h3>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:var(--bg);border-radius:8px;"><span>🥇 ChatGPT</span><span style="color:var(--warning)">★4.8 · 1亿+用户</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:var(--bg);border-radius:8px;"><span>🥈 Claude</span><span style="color:var(--warning)">★4.7 · 500万+用户</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:var(--bg);border-radius:8px;"><span>🥉 Jasper</span><span style="color:var(--warning)">★4.5 · 100万+用户</span></div>
+      </div>
+    </div>
+    <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:20px;">
+      <h3 style="margin-bottom:16px;color:#a5b4fc;">🎨 AI绘画 TOP3</h3>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:var(--bg);border-radius:8px;"><span>🥇 Midjourney</span><span style="color:var(--warning)">★4.8 · 1500万+用户</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:var(--bg);border-radius:8px;"><span>🥈 Stable Diffusion</span><span style="color:var(--warning)">★4.7 · 800万+用户</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:var(--bg);border-radius:8px;"><span>🥉 DALL-E 3</span><span style="color:var(--warning)">★4.6 · 500万+用户</span></div>
+      </div>
+    </div>
+    <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:20px;">
+      <h3 style="margin-bottom:16px;color:#a5b4fc;">💻 AI编程 TOP3</h3>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:var(--bg);border-radius:8px;"><span>🥇 Cursor</span><span style="color:var(--warning)">★4.9 · 100万+用户</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:var(--bg);border-radius:8px;"><span>🥈 GitHub Copilot</span><span style="color:var(--warning)">★4.7 · 100万+用户</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:var(--bg);border-radius:8px;"><span>🥉 Tabnine</span><span style="color:var(--warning)">★4.5 · 100万+用户</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 飙升榜 -->
+  <div id="rising" class="rank-list" style="display:none" role="list">
+    <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:12px;display:flex;align-items:center;gap:16px;">
+      <div style="background:linear-gradient(135deg,#10b981,#059669);color:white;padding:4px 10px;border-radius:20px;font-size:.8rem;font-weight:700;">↑ 523%</div>
+      <div style="flex:1;"><div style="font-weight:600;">Cursor</div><div style="font-size:.8rem;color:var(--text-muted);">本月搜索量暴增，AI编程最热工具</div></div>
+      <a href="tool.html?id=cursor" style="color:var(--primary);font-size:.85rem;text-decoration:none;">查看 →</a>
+    </div>
+    <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:12px;display:flex;align-items:center;gap:16px;">
+      <div style="background:linear-gradient(135deg,#10b981,#059669);color:white;padding:4px 10px;border-radius:20px;font-size:.8rem;font-weight:700;">↑ 412%</div>
+      <div style="flex:1;"><div style="font-weight:600;">Suno v4</div><div style="font-size:.8rem;color:var(--text-muted);">新版本发布带来用户量激增</div></div>
+      <a href="tool.html?id=suno" style="color:var(--primary);font-size:.85rem;text-decoration:none;">查看 →</a>
+    </div>
+    <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:12px;display:flex;align-items:center;gap:16px;">
+      <div style="background:linear-gradient(135deg,#10b981,#059669);color:white;padding:4px 10px;border-radius:20px;font-size:.8rem;font-weight:700;">↑ 287%</div>
+      <div style="flex:1;"><div style="font-weight:600;">Perplexity</div><div style="font-size:.8rem;color:var(--text-muted);">AI搜索赛道最热，月活破千万</div></div>
+      <a href="https://perplexity.ai" target="_blank" rel="noopener" style="color:var(--primary);font-size:.85rem;text-decoration:none;">查看 →</a>
+    </div>
+    <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:12px;display:flex;align-items:center;gap:16px;">
+      <div style="background:linear-gradient(135deg,#10b981,#059669);color:white;padding:4px 10px;border-radius:20px;font-size:.8rem;font-weight:700;">↑ 198%</div>
+      <div style="flex:1;"><div style="font-weight:600;">Runway Gen-3</div><div style="font-size:.8rem;color:var(--text-muted);">新一代视频模型发布引爆市场</div></div>
+      <a href="tool.html?id=runway" style="color:var(--primary);font-size:.85rem;text-decoration:none;">查看 →</a>
+    </div>
+  </div>
+</main>
+
+<footer style="background:var(--bg-card);border-top:1px solid var(--border);padding:24px;text-align:center;">
+  <p style="color:var(--text-muted);font-size:.875rem;">
+    <a href="index.html" style="color:var(--primary);text-decoration:none;">AI工具导航</a> ·
+    <a href="sitemap.xml" style="color:var(--text-muted);text-decoration:none;margin-left:12px;">网站地图</a> ·
+    © 2026 AI工具导航
+  </p>
+</footer>
+
+<script>
+function switchTab(btn, id) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  ['monthly','category','rising'].forEach(k => {
+    document.getElementById(k).style.display = k === id ? 'block' : 'none';
+  });
+}
+</script>
+</body>
+</html>

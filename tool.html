@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI工具详情 | AI工具导航</title>
+  <meta name="description" content="查看AI工具的详细介绍、功能特点、定价方案和用户评价。">
+  <meta name="robots" content="index, follow">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="AI工具导航">
+  <meta property="og:locale" content="zh_CN">
+  <link rel="canonical" href="https://hjouy.github.io/ai-tools-directory/tool.html">
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --secondary: #a855f7;
+      --accent: #06b6d4;
+      --bg: #0f0f1a;
+      --bg-card: #1a1a2e;
+      --bg-card2: #16213e;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --border: #2d2d4e;
+      --success: #10b981;
+      --warning: #f59e0b;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+
+    .navbar {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(15,15,26,0.95); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px; height: 60px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-logo { font-size:1.3rem;font-weight:700;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none; }
+    .nav-links { display:flex;gap:8px;list-style:none; }
+    .nav-links a { color:var(--text-muted);text-decoration:none;padding:6px 12px;border-radius:6px;font-size:0.9rem;transition:all 0.2s; }
+    .nav-links a:hover { color:var(--text);background:var(--border); }
+    .nav-btn { background:linear-gradient(135deg,#6366f1,#a855f7);color:white!important;padding:6px 16px!important;border-radius:20px!important;font-weight:500; }
+
+    /* 面包屑 */
+    .breadcrumb {
+      max-width: 1100px; margin: 0 auto; padding: 16px 24px;
+      display: flex; align-items: center; gap: 8px;
+      font-size: 0.85rem; color: var(--text-muted);
+    }
+    .breadcrumb a { color: var(--text-muted); text-decoration: none; }
+    .breadcrumb a:hover { color: var(--primary); }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px 80px; }
+
+    /* 工具头部 */
+    .tool-header {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 24px;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .tool-logo-big {
+      width: 80px; height: 80px;
+      border-radius: 18px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.2rem;
+      flex-shrink: 0;
+    }
+
+    .tool-header-info h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 6px; }
+
+    .tool-header-meta {
+      display: flex; align-items: center; gap: 16px;
+      margin-bottom: 12px; flex-wrap: wrap;
+    }
+
+    .rating-stars { color: var(--warning); font-size: 1rem; }
+    .rating-val { font-weight: 700; font-size: 1rem; }
+    .meta-badge {
+      background: rgba(99,102,241,0.15);
+      border: 1px solid rgba(99,102,241,0.3);
+      color: #a5b4fc;
+      padding: 3px 10px; border-radius: 20px; font-size: 0.8rem;
+    }
+
+    .tool-header-desc { color: var(--text-muted); font-size: 1rem; max-width: 600px; }
+
+    .tool-header-actions { display: flex; flex-direction: column; gap: 10px; align-items: flex-end; }
+
+    .btn-visit {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white; text-decoration: none;
+      padding: 12px 28px; border-radius: 10px;
+      font-size: 0.95rem; font-weight: 600;
+      transition: all 0.2s; white-space: nowrap;
+      display: inline-flex; align-items: center; gap: 8px;
+    }
+    .btn-visit:hover { opacity: 0.9; transform: translateY(-1px); }
+
+    .tool-price-badge {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 8px 16px; border-radius: 8px;
+      font-size: 0.9rem; text-align: center;
+    }
+
+    .tool-price-badge .price-label { color: var(--text-muted); font-size: 0.75rem; margin-bottom: 2px; }
+    .tool-price-badge .price-val { font-weight: 700; color: var(--success); }
+
+    /* 内容区 */
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 24px;
+    }
+
+    /* 卡片通用 */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+
+    .card h2 {
+      font-size: 1.1rem; font-weight: 700;
+      margin-bottom: 16px;
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    /* 功能特点 */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .feature-item {
+      display: flex; gap: 12px;
+      padding: 14px;
+      background: var(--bg);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    .feature-icon { font-size: 1.3rem; flex-shrink: 0; }
+    .feature-text h4 { font-size: 0.9rem; font-weight: 600; margin-bottom: 4px; }
+    .feature-text p { font-size: 0.8rem; color: var(--text-muted); }
+
+    /* 场景标签 */
+    .tags-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
+    .scene-tag {
+      background: rgba(99,102,241,0.1);
+      border: 1px solid rgba(99,102,241,0.2);
+      color: #a5b4fc;
+      padding: 6px 14px; border-radius: 20px;
+      font-size: 0.85rem;
+    }
+
+    /* 定价表 */
+    .pricing-table { width: 100%; border-collapse: collapse; }
+    .pricing-table th, .pricing-table td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.875rem; }
+    .pricing-table th { background: var(--bg); color: var(--text-muted); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .pricing-table td:last-child { color: var(--success); font-weight: 600; }
+
+    /* 用户评价 */
+    .review-item {
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .review-item:last-child { border-bottom: none; }
+    .review-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .reviewer-avatar {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.9rem; font-weight: 700; color: white;
+    }
+    .reviewer-name { font-weight: 600; font-size: 0.9rem; }
+    .reviewer-role { font-size: 0.75rem; color: var(--text-muted); }
+    .review-rating { margin-left: auto; color: var(--warning); font-size: 0.85rem; }
+    .review-text { font-size: 0.875rem; color: var(--text-muted); line-height: 1.6; }
+
+    /* 侧边栏 */
+    .sidebar .card { margin-bottom: 16px; }
+
+    .info-table { width: 100%; }
+    .info-table tr td { padding: 8px 0; font-size: 0.875rem; border-bottom: 1px solid var(--border); }
+    .info-table tr:last-child td { border-bottom: none; }
+    .info-table td:first-child { color: var(--text-muted); width: 40%; }
+    .info-table td:last-child { font-weight: 500; }
+
+    /* 相关工具 */
+    .related-tool {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.15s;
+      text-decoration: none; color: var(--text);
+    }
+    .related-tool:hover { background: var(--bg); }
+    .related-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+    .related-name { font-size: 0.9rem; font-weight: 600; }
+    .related-tag { font-size: 0.75rem; color: var(--text-muted); }
+
+    /* 评分条 */
+    .score-bar { margin-bottom: 12px; }
+    .score-label { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px; }
+    .score-track { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+    .score-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--primary), var(--secondary)); transition: width 1s ease; }
+
+    /* 不显示/隐藏 */
+    .tool-section { display: none; }
+    .tool-section.active { display: block; }
+
+    @media (max-width: 768px) {
+      .tool-header { grid-template-columns: auto 1fr; }
+      .tool-header-actions { grid-column: 1 / -1; flex-direction: row; }
+      .content-grid { grid-template-columns: 1fr; }
+      .features-grid { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="index.html" class="nav-logo">🤖 AI工具导航</a>
+  <ul class="nav-links">
+    <li><a href="index.html">首页</a></li>
+    <li><a href="ranking.html">排行榜</a></li>
+    <li><a href="news.html">AI资讯</a></li>
+    <li><a href="submit.html" class="nav-btn">提交工具</a></li>
+  </ul>
+</nav>
+
+<!-- 面包屑 -->
+<nav class="breadcrumb" aria-label="面包屑导航">
+  <a href="index.html">首页</a>
+  <span>›</span>
+  <span id="breadcrumb-category">工具</span>
+  <span>›</span>
+  <span id="breadcrumb-tool">工具详情</span>
+</nav>
+
+<div class="container">
+
+  <!-- 工具头部 -->
+  <header class="tool-header" id="toolHeader">
+    <div class="tool-logo-big" id="toolLogo">🤖</div>
+    <div class="tool-header-info">
+      <h1 id="toolName">加载中...</h1>
+      <div class="tool-header-meta">
+        <span class="rating-stars" id="toolStars">★★★★★</span>
+        <span class="rating-val" id="toolRating">4.8</span>
+        <span class="meta-badge" id="toolCategory">AI工具</span>
+        <span class="meta-badge" id="toolUsers">--用户</span>
+        <span id="toolStatus" class="meta-badge" style="background:rgba(16,185,129,0.15);border-color:rgba(16,185,129,0.3);color:#6ee7b7;">✓ 可访问</span>
+      </div>
+      <p class="tool-header-desc" id="toolDesc">正在加载工具信息...</p>
+    </div>
+    <div class="tool-header-actions">
+      <a href="#" id="toolLink" target="_blank" rel="noopener noreferrer" class="btn-visit">
+        🚀 立即使用
+      </a>
+      <div class="tool-price-badge">
+        <div class="price-label">定价</div>
+        <div class="price-val" id="toolPrice">--</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="content-grid">
+    <!-- 主内容 -->
+    <main>
+
+      <!-- 功能特点 -->
+      <div class="card">
+        <h2>✨ 核心功能</h2>
+        <div class="features-grid" id="toolFeatures"></div>
+      </div>
+
+      <!-- 使用场景 -->
+      <div class="card">
+        <h2>🎯 适用场景</h2>
+        <div class="tags-wrap" id="toolScenes"></div>
+      </div>
+
+      <!-- 定价方案 -->
+      <div class="card">
+        <h2>💰 定价方案</h2>
+        <table class="pricing-table" id="toolPricing">
+          <thead>
+            <tr><th>套餐</th><th>价格</th><th>主要功能</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <!-- 用户评价 -->
+      <div class="card">
+        <h2>💬 用户评价</h2>
+
+        <!-- 评分汇总 -->
+        <div style="display:grid;grid-template-columns:auto 1fr;gap:24px;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border);">
+          <div style="text-align:center;">
+            <div style="font-size:3rem;font-weight:800;color:var(--warning);" id="scoreNum">4.8</div>
+            <div style="color:var(--warning);font-size:1.1rem;">★★★★★</div>
+            <div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;" id="reviewCount">基于2847条评价</div>
+          </div>
+          <div style="padding-top:4px;">
+            <div class="score-bar"><div class="score-label"><span>5星</span><span id="s5p">72%</span></div><div class="score-track"><div class="score-fill" id="s5f" style="width:72%"></div></div></div>
+            <div class="score-bar"><div class="score-label"><span>4星</span><span id="s4p">18%</span></div><div class="score-track"><div class="score-fill" id="s4f" style="width:18%;background:linear-gradient(90deg,#a5b4fc,#6366f1)"></div></div></div>
+            <div class="score-bar"><div class="score-label"><span>3星</span><span id="s3p">6%</span></div><div class="score-track"><div class="score-fill" id="s3f" style="width:6%;background:linear-gradient(90deg,#fbbf24,#f59e0b)"></div></div></div>
+            <div class="score-bar"><div class="score-label"><span>2星</span><span id="s2p">3%</span></div><div class="score-track"><div class="score-fill" id="s2f" style="width:3%;background:linear-gradient(90deg,#f87171,#ef4444)"></div></div></div>
+            <div class="score-bar"><div class="score-label"><span>1星</span><span id="s1p">1%</span></div><div class="score-track"><div class="score-fill" id="s1f" style="width:1%;background:linear-gradient(90deg,#f87171,#ef4444)"></div></div></div>
+          </div>
+        </div>
+
+        <div id="toolReviews"></div>
+      </div>
+
+    </main>
+
+    <!-- 侧边栏 -->
+    <aside class="sidebar">
+      <div class="card">
+        <h2>ℹ️ 工具信息</h2>
+        <table class="info-table" id="toolInfoTable"></table>
+      </div>
+
+      <div class="card">
+        <h2>🔗 相关工具</h2>
+        <div id="relatedTools"></div>
+      </div>
+
+      <div class="card" style="background:linear-gradient(135deg,rgba(99,102,241,0.05),rgba(168,85,247,0.05));border-color:rgba(99,102,241,0.2);">
+        <h2>📢 广告位</h2>
+        <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:12px;">在此展示你的AI产品，精准触达目标用户</p>
+        <a href="submit.html" style="color:var(--primary);font-size:0.875rem;text-decoration:none;">了解推广方案 →</a>
+      </div>
+    </aside>
+  </div>
+
+</div>
+
+<footer style="background:var(--bg-card);border-top:1px solid var(--border);padding:24px;text-align:center;">
+  <p style="color:var(--text-muted);font-size:0.875rem;">
+    <a href="index.html" style="color:var(--primary);text-decoration:none;">AI工具导航</a> · 
+    <a href="sitemap.xml" style="color:var(--text-muted);text-decoration:none;">网站地图</a> · 
+    © 2026 AI工具导航
+  </p>
+</footer>
+
+<script>
+// 工具完整数据库
+const TOOLS = {
+  chatgpt: {
+    name: 'ChatGPT', icon: '💬', color: '#10b981',
+    category: 'AI写作', users: '1亿+用户', rating: 4.8, price: '免费/$20月',
+    url: 'https://chat.openai.com',
+    desc: 'OpenAI开发的超强AI对话助手，支持写作、编程、分析、翻译等多种任务，是全球使用最广泛的AI工具，GPT-4支持多模态输入输出。',
+    features: [
+      { icon: '✍️', title: '智能写作', desc: '生成文章、邮件、文案、故事，质量远超普通AI' },
+      { icon: '💻', title: '代码助手', desc: '生成、调试、解释代码，支持50+编程语言' },
+      { icon: '🔍', title: '深度分析', desc: '数据分析、研究报告、复杂问题深度剖析' },
+      { icon: '🌐', title: '多语言翻译', desc: '支持100+语言的高质量翻译，保留语气语境' },
+      { icon: '🎨', title: '图像理解', desc: 'GPT-4V支持上传图片进行分析和问答' },
+      { icon: '🔌', title: '插件生态', desc: '500+官方插件扩展，联网搜索、代码执行等' },
+    ],
+    scenes: ['内容创作', '学术写作', '代码开发', '客户服务', '教育学习', '市场营销', '数据分析', '语言翻译'],
+    pricing: [
+      { name: 'Free', price: '免费', features: 'GPT-3.5，基础对话' },
+      { name: 'Plus', price: '$20/月', features: 'GPT-4，DALL-E 3，插件' },
+      { name: 'Team', price: '$30/月/人', features: 'GPT-4，团队协作，更高限额' },
+      { name: 'Enterprise', price: '联系销售', features: '企业定制，SSO，数据安全' },
+    ],
+    reviews: [
+      { name: '张明', role: '内容创作者', rating: 5, text: 'ChatGPT彻底改变了我的工作方式，以前写一篇文章需要2小时，现在30分钟就能完成高质量初稿。GPT-4的理解能力真的非常出色！' },
+      { name: 'Lisa Wang', role: '全栈工程师', rating: 5, text: '用ChatGPT辅助编程已经快1年了，解决bug的效率提升了至少3倍。有些复杂的架构问题它能给出非常专业的建议。' },
+      { name: '王芳', role: '英语老师', rating: 4, text: '用来辅助备课和批改作文非常方便，翻译质量也很高。偶尔会有一些小错误，需要自己核实，但总体非常实用。' },
+    ],
+    info: { developer: 'OpenAI', released: '2022年11月', platform: '网页/iOS/Android/API', language: '100+语言', update: '持续更新', category: 'AI对话助手' },
+    related: [
+      { id: 'claude', name: 'Claude', icon: '🧠', color: '#d97706', tag: 'AI写作' },
+      { id: 'perplexity', name: 'Perplexity', icon: '🔎', color: '#0f766e', tag: 'AI搜索' },
+      { id: 'notion-ai', name: 'Notion AI', icon: '📝', color: '#374151', tag: 'AI效率' },
+    ],
+    reviewCount: 28470, score5: 72, score4: 18, score3: 6, score2: 3, score1: 1,
+  },
+
+  midjourney: {
+    name: 'Midjourney', icon: '🎨', color: '#6366f1',
+    category: 'AI绘画', users: '1500万+用户', rating: 4.8, price: '$30/月起',
+    url: 'https://www.midjourney.com',
+    desc: '全球最流行的AI绘画工具，通过文字描述生成高质量艺术图片，拥有独特的艺术风格和强大的创意能力，广泛用于商业设计、游戏原画、概念设计等领域。',
+    features: [
+      { icon: '✏️', title: '文字生图', desc: '输入描述词，几秒生成高质量AI艺术图像' },
+      { icon: '🖼️', title: '多种风格', desc: '写实、卡通、水彩、油画、赛博朋克等无限风格' },
+      { icon: '🔍', title: '超高分辨率', desc: '支持生成最高4K分辨率，细节清晰锐利' },
+      { icon: '🎭', title: '角色一致性', desc: 'V6支持角色参考，保持人物外观一致' },
+      { icon: '🖌️', title: '图像编辑', desc: '局部重绘、放大细节、扩展画面边界' },
+      { icon: '🤝', title: 'Discord社区', desc: '百万用户社区，海量灵感来源和提示词技巧' },
+    ],
+    scenes: ['商业插画', '游戏原画', '概念设计', '产品展示', '社交媒体', '书籍封面', '壁纸创作', '角色设计'],
+    pricing: [
+      { name: 'Basic', price: '$10/月', features: '约200图/月，Web访问' },
+      { name: 'Standard', price: '$30/月', features: '无限慢速图，15小时快速图' },
+      { name: 'Pro', price: '$60/月', features: '无限慢速+30小时快速，隐私模式' },
+      { name: 'Mega', price: '$120/月', features: '60小时快速图，最高优先级' },
+    ],
+    reviews: [
+      { name: '陈设计', role: 'UI设计师', rating: 5, text: 'V6版本真的太惊艳了！生成的图片质量极高，很多时候直接可以商用，大大缩短了设计周期。提示词越用越有技巧，值得深入学习！' },
+      { name: 'Anya K', role: '游戏原画师', rating: 5, text: 'As a concept artist, Midjourney has become an essential brainstorming tool. The consistency features in V6 are a game changer for character design workflows.' },
+      { name: '李文博', role: '自媒体运营', rating: 4, text: '用来做公众号封面图和配图非常好用，质量甩其他图库好几条街。唯一缺点是订阅费有点贵，希望出更低价的基础版。' },
+    ],
+    info: { developer: 'Midjourney Inc.', released: '2022年7月', platform: 'Discord/Web', language: '多语言', update: '持续更新', category: 'AI图像生成' },
+    related: [
+      { id: 'stable-diffusion', name: 'Stable Diffusion', icon: '🖼️', color: '#dc2626', tag: 'AI绘画' },
+      { id: 'runway', name: 'Runway', icon: '🎬', color: '#0891b2', tag: 'AI视频' },
+    ],
+    reviewCount: 15320, score5: 70, score4: 20, score3: 7, score2: 2, score1: 1,
+  },
+
+  cursor: {
+    name: 'Cursor', icon: '⚡', color: '#818cf8',
+    category: 'AI编程', users: '100万+用户', rating: 4.9, price: '免费/$20月',
+    url: 'https://cursor.sh',
+    desc: '基于VS Code的AI代码编辑器，深度集成GPT-4能力，支持代码自动补全、智能重构、自然语言生成代码，是目前开发者增长最快的AI编程工具，2024年ARR突破1亿美元。',
+    features: [
+      { icon: '🤖', title: 'AI代码补全', desc: '基于上下文的智能多行代码补全，准确率极高' },
+      { icon: '💬', title: '对话编程', desc: 'Ctrl+K直接用自然语言描述需求，自动生成代码' },
+      { icon: '🔧', title: '一键重构', desc: '选中代码，AI自动优化结构、提升性能' },
+      { icon: '🐛', title: '智能Debug', desc: '自动识别错误原因，给出修复方案' },
+      { icon: '📚', title: '代码库理解', desc: 'Codebase功能理解整个项目，回答架构问题' },
+      { icon: '🔌', title: 'VS Code兼容', desc: '无缝迁移VS Code配置、插件和快捷键' },
+    ],
+    scenes: ['Web开发', '后端开发', '移动开发', '数据科学', '代码重构', '学习编程', '代码审查', '快速原型'],
+    pricing: [
+      { name: 'Free', price: '免费', features: '2000次基础补全/月，50次高级模型请求' },
+      { name: 'Pro', price: '$20/月', features: '无限补全，500次高级请求，GPT-4o' },
+      { name: 'Business', price: '$40/月/人', features: '团队功能，集中管理，隐私模式' },
+    ],
+    reviews: [
+      { name: '王开发', role: '前端工程师', rating: 5, text: '用了Cursor之后，真的再也回不去普通编辑器了。Tab补全简直神了，经常连我下一步想干什么都能猜到。每天节省至少2小时！' },
+      { name: 'David Chen', role: 'Full Stack Dev', rating: 5, text: "Cursor's codebase understanding is unreal. It can answer questions about my entire 100k+ line codebase in seconds. Absolute game changer for solo developers." },
+      { name: '赵小鱼', role: '独立开发者', rating: 5, text: '刚开始学编程就遇到了Cursor，真的降低了太多门槛。遇到不懂的直接问，它不仅给答案还解释原因，比Stack Overflow方便多了！' },
+    ],
+    info: { developer: 'Anysphere Inc.', released: '2023年3月', platform: 'Windows/Mac/Linux', language: '50+编程语言', update: '双周更新', category: 'AI代码编辑器' },
+    related: [
+      { id: 'github-copilot', name: 'GitHub Copilot', icon: '🐙', color: '#1f2937', tag: 'AI编程' },
+      { id: 'chatgpt', name: 'ChatGPT', icon: '💬', color: '#10b981', tag: 'AI写作' },
+    ],
+    reviewCount: 8920, score5: 78, score4: 16, score3: 4, score2: 1, score1: 1,
+  },
+
+  'stable-diffusion': {
+    name: 'Stable Diffusion', icon: '🖼️', color: '#dc2626',
+    category: 'AI绘画', users: '800万+用户', rating: 4.7, price: '本地免费',
+    url: 'https://stability.ai',
+    desc: '由Stability AI开发的开源AI图像生成模型，可在本地免费部署运行，支持无限自定义，拥有庞大的模型社区，是技术用户和创作者的首选AI绘画工具。',
+    features: [
+      { icon: '🆓', title: '完全开源免费', desc: '代码和模型完全开源，本地部署0成本' },
+      { icon: '🎨', title: '无限生成', desc: '本地运行无次数限制，不用担心配额' },
+      { icon: '🔧', title: '高度可定制', desc: '支持LoRA、ControlNet等扩展，精细控制生成' },
+      { icon: '🌐', title: '海量模型', desc: 'Civitai等社区提供数万个精调模型免费下载' },
+      { icon: '🎭', title: 'ControlNet控制', desc: '骨骼/线稿/深度图精准控制生成结果' },
+      { icon: '📦', title: 'WebUI界面', desc: 'AUTOMATIC1111提供友好的本地Web界面' },
+    ],
+    scenes: ['角色设计', '场景创作', '风格迁移', '图像修复', '批量生成', '艺术创作', '商业插图', '个人项目'],
+    pricing: [
+      { name: '本地部署', price: '免费', features: '需要GPU，VRAM 4GB+' },
+      { name: 'DreamStudio', price: '按点数计费', features: 'Stability AI官方云端API' },
+      { name: 'ClipDrop API', price: '$7/月起', features: '商业API，无需本地GPU' },
+    ],
+    reviews: [
+      { name: '技术宅小明', role: 'AI研究员', rating: 5, text: '开源生态真的太强大了！通过ControlNet+LoRA可以实现非常精准的生图控制，比商业服务灵活得多。对于有技术背景的用户来说是最佳选择。' },
+      { name: 'Pixel Artist', role: '数字艺术家', rating: 5, text: 'The flexibility of Stable Diffusion is unmatched. With the right models and controlnets, you can achieve results that are impossible with closed-source tools.' },
+      { name: '小白用户', role: '设计爱好者', rating: 4, text: '效果很好，免费也是大优势。但是配置环境确实有点麻烦，对于不懂技术的人有一定门槛。建议先从WebUI版本入手。' },
+    ],
+    info: { developer: 'Stability AI', released: '2022年8月', platform: 'Windows/Mac/Linux/云端', language: '多语言', update: '持续更新', category: 'AI图像生成' },
+    related: [
+      { id: 'midjourney', name: 'Midjourney', icon: '🎨', color: '#6366f1', tag: 'AI绘画' },
+      { id: 'runway', name: 'Runway', icon: '🎬', color: '#0891b2', tag: 'AI视频' },
+    ],
+    reviewCount: 12450, score5: 65, score4: 22, score3: 8, score2: 3, score1: 2,
+  },
+
+  runway: {
+    name: 'Runway', icon: '🎬', color: '#0891b2',
+    category: 'AI视频', users: '300万+用户', rating: 4.6, price: '$35/月',
+    url: 'https://runwayml.com',
+    desc: '专业AI创意工具平台，提供文字/图片生成视频、视频编辑、背景移除等30+AI功能，被好莱坞电影工作室、广告公司和内容创作者广泛使用。',
+    features: [
+      { icon: '🎥', title: 'Gen-3视频生成', desc: '最新一代AI视频模型，文字/图片生成高质量视频' },
+      { icon: '✂️', title: 'AI视频剪辑', desc: '智能剪辑、场景切换、自动配音，一键专业化' },
+      { icon: '🎭', title: '背景移除', desc: '无需绿幕，AI自动识别并移除视频背景' },
+      { icon: '🔊', title: '声音设计', desc: 'AI生成音效、配乐，与视频内容智能匹配' },
+      { icon: '🎨', title: '风格迁移', desc: '将普通视频转换为动画、油画等艺术风格' },
+      { icon: '☁️', title: '云端处理', desc: '无需本地GPU，全程云端处理，随时随地创作' },
+    ],
+    scenes: ['短视频创作', '广告制作', '影视特效', '社交媒体', '教育内容', '产品展示', '音乐MV', '概念演示'],
+    pricing: [
+      { name: 'Basic', price: '免费', features: '125积分，720p，水印' },
+      { name: 'Standard', price: '$15/月', features: '625积分/月，无水印，1080p' },
+      { name: 'Pro', price: '$35/月', features: '2250积分/月，4K，优先队列' },
+      { name: 'Unlimited', price: '$95/月', features: '无限次标准代，无限存储' },
+    ],
+    reviews: [
+      { name: '影视工作者', role: '独立导演', rating: 5, text: 'Gen-3的视频生成质量让我震惊，配合真实素材后期几乎看不出差异。制作成本大幅降低，小团队也能做出大片质感的内容！' },
+      { name: 'Creative Studio', role: '广告创意总监', rating: 4, text: "Runway has become essential in our production pipeline. The background removal alone saves us hours of rotoscoping work. Gen-3 is impressive but still has consistency issues." },
+      { name: '小红书博主', role: '内容创作者', rating: 5, text: '用Runway做短视频特效真的太好了！以前做不到的效果现在几分钟就能搞定，粉丝增长明显加快。虽然有点贵但值得！' },
+    ],
+    info: { developer: 'Runway AI Inc.', released: '2019年', platform: 'Web/iOS', language: '多语言', update: '持续更新', category: 'AI视频创作' },
+    related: [
+      { id: 'suno', name: 'Suno', icon: '🎵', color: '#7c3aed', tag: 'AI音乐' },
+      { id: 'midjourney', name: 'Midjourney', icon: '🎨', color: '#6366f1', tag: 'AI绘画' },
+    ],
+    reviewCount: 6830, score5: 60, score4: 25, score3: 10, score2: 3, score1: 2,
+  },
+
+  suno: {
+    name: 'Suno', icon: '🎵', color: '#7c3aed',
+    category: 'AI音乐', users: '500万+用户', rating: 4.5, price: '免费/$8月',
+    url: 'https://suno.com',
+    desc: '最热门的AI音乐生成工具，输入歌词和风格描述，即可在60秒内生成带人声、伴奏的完整歌曲，支持流行、说唱、摇滚、古典等几乎所有音乐风格。',
+    features: [
+      { icon: '🎼', title: '完整歌曲生成', desc: '60秒内生成带人声和伴奏的完整歌曲' },
+      { icon: '🎸', title: '多种音乐风格', desc: '流行/摇滚/说唱/电子/古典/民谣等50+风格' },
+      { icon: '🔊', title: '高质量人声', desc: 'AI演唱，音色自然，支持多种人声风格' },
+      { icon: '✏️', title: '歌词编辑', desc: '可自定义歌词，也可让AI自动创作歌词' },
+      { icon: '🎚️', title: '音频质量', desc: '输出高质量MP3，可直接用于发布' },
+      { icon: '🔄', title: '无限延伸', desc: '对喜欢的片段进行续写，构建完整音乐作品' },
+    ],
+    scenes: ['个人创作', '背景音乐', '短视频配乐', '游戏BGM', '广告配乐', '个人专辑', '音乐教育', '娱乐玩耍'],
+    pricing: [
+      { name: 'Free', price: '免费', features: '每天50积分，约10首歌' },
+      { name: 'Pro', price: '$8/月', features: '每月2500积分，约500首' },
+      { name: 'Premier', price: '$24/月', features: '每月10000积分，商用授权' },
+    ],
+    reviews: [
+      { name: '音乐爱好者', role: '业余创作人', rating: 5, text: '终于实现了从小的音乐梦！虽然不会乐器和编曲，但用Suno能创作出真正好听的歌。朋友们都以为我请了专业团队，哈哈！' },
+      { name: 'Video Creator', role: 'YouTuber', rating: 5, text: "Suno has solved my biggest headache - finding copyright-free background music. I generate custom tracks that perfectly fit my content in minutes. Absolutely worth it!" },
+      { name: '博主小燕', role: '短视频创作者', rating: 4, text: '配乐质量很不错，特别是风格描述越具体效果越好。免费版每天10首对个人够用了。唯一希望能更精准控制节奏和情绪。' },
+    ],
+    info: { developer: 'Suno Inc.', released: '2023年12月', platform: 'Web/iOS/Android', language: '多语言', update: '持续更新', category: 'AI音乐生成' },
+    related: [
+      { id: 'runway', name: 'Runway', icon: '🎬', color: '#0891b2', tag: 'AI视频' },
+      { id: 'chatgpt', name: 'ChatGPT', icon: '💬', color: '#10b981', tag: 'AI写作' },
+    ],
+    reviewCount: 9240, score5: 58, score4: 26, score3: 11, score2: 3, score1: 2,
+  },
+
+  claude: {
+    name: 'Claude', icon: '🧠', color: '#d97706',
+    category: 'AI写作', users: '500万+用户', rating: 4.7, price: '免费/$20月',
+    url: 'https://claude.ai',
+    desc: 'Anthropic开发的AI助手，以安全性和准确性著称，支持200K上下文窗口（业界最大），擅长长文本处理、代码分析、学术研究和复杂推理任务。',
+    features: [
+      { icon: '📖', title: '超长上下文', desc: '200K token上下文窗口，可处理整本书的内容' },
+      { icon: '🔒', title: '安全可靠', desc: '宪法AI训练，有害内容拒绝率业界最低' },
+      { icon: '📊', title: '数据分析', desc: '上传CSV/Excel文件，智能分析数据并生成图表' },
+      { icon: '💻', title: '代码能力', desc: '编写、调试、解释代码，支持主流编程语言' },
+      { icon: '🔬', title: '学术研究', desc: '分析论文、总结研究、生成参考文献' },
+      { icon: '🗣️', title: '自然对话', desc: '对话风格自然流畅，很少出现机器感' },
+    ],
+    scenes: ['学术写作', '长文档处理', '代码审查', '研究分析', '法律文书', '商业报告', '内容摘要', '深度对话'],
+    pricing: [
+      { name: 'Free', price: '免费', features: 'Claude 3 Sonnet，有限次数' },
+      { name: 'Pro', price: '$20/月', features: 'Claude 3 Opus，5倍使用限额' },
+      { name: 'Team', price: '$30/月/人', features: '更高限额，集中计费，Admin' },
+      { name: 'API', price: '按量计费', features: '开发者API，多模型可选' },
+    ],
+    reviews: [
+      { name: '研究员', role: '大学教授', rating: 5, text: 'Claude分析长篇学术文献的能力非常出色，可以上传整篇论文然后进行深度问答。处理中文学术内容也毫无压力，是我科研工作的重要助手。' },
+      { name: 'Legal Pro', role: '律师', rating: 5, text: "Claude's ability to analyze lengthy contracts without losing context is invaluable for legal work. Its careful approach to accuracy makes it more reliable than other AI tools." },
+      { name: '产品经理', role: '互联网公司', rating: 4, text: '用来写PRD和分析竞品报告非常高效。中文理解能力很强，回复也比较有条理。比较美中不足是有时候回复太长，需要指定简洁模式。' },
+    ],
+    info: { developer: 'Anthropic', released: '2023年3月', platform: 'Web/iOS/API', language: '多语言', update: '持续更新', category: 'AI对话助手' },
+    related: [
+      { id: 'chatgpt', name: 'ChatGPT', icon: '💬', color: '#10b981', tag: 'AI写作' },
+      { id: 'perplexity', name: 'Perplexity', icon: '🔎', color: '#0f766e', tag: 'AI搜索' },
+    ],
+    reviewCount: 11520, score5: 67, score4: 21, score3: 8, score2: 3, score1: 1,
+  },
+
+  'notion-ai': {
+    name: 'Notion AI', icon: '📝', color: '#374151',
+    category: 'AI效率', users: '2000万+用户', rating: 4.6, price: '$10/月',
+    url: 'https://notion.so',
+    desc: 'Notion内置的AI写作和工作助手，无缝集成在笔记和文档工作流中，支持智能续写、内容总结、翻译、生成会议纪要、脑暴创意等功能。',
+    features: [
+      { icon: '✍️', title: '智能续写', desc: '光标位置直接调用AI，续写任何文档内容' },
+      { icon: '📋', title: '一键总结', desc: '自动总结长文档、会议记录、研究资料' },
+      { icon: '🌐', title: '多语言翻译', desc: '文档内翻译，保留格式，支持多种语言' },
+      { icon: '💡', title: '头脑风暴', desc: '快速生成创意列表、内容提纲、解决方案' },
+      { icon: '🗃️', title: '数据库AI', desc: 'Notion数据库可用AI自动填充字段内容' },
+      { icon: '🤝', title: '团队协作', desc: '多人同时使用AI功能，团队效率整体提升' },
+    ],
+    scenes: ['团队文档', '项目管理', '会议记录', '内容创作', '知识库建设', '任务管理', '研究笔记', 'OKR制定'],
+    pricing: [
+      { name: 'Free', price: '免费', features: 'Notion基础功能，有限AI次数' },
+      { name: 'Plus', price: '$8/月', features: 'Notion完整功能，AI 20次/月' },
+      { name: 'AI Add-on', price: '$10/月/人', features: 'Notion AI无限次使用' },
+      { name: 'Business', price: '$15/月/人', features: '企业版，SSO，高级权限' },
+    ],
+    reviews: [
+      { name: '产品设计师', role: '创业公司CTO', rating: 5, text: '团队用Notion管理所有文档，现在配合AI功能，整个团队的文档质量和效率提升了很多。会议总结和PRD生成特别好用！' },
+      { name: 'Student', role: '研究生', rating: 4, text: "Notion AI is perfect for taking lecture notes and generating study guides. The summarization feature has saved me countless hours of reviewing long papers." },
+      { name: '内容运营', role: '新媒体公司', rating: 5, text: '用Notion AI管理内容日历，AI帮我生成选题、拟标题、写初稿，整个内容生产流水线的效率提升了三四倍，真的很值！' },
+    ],
+    info: { developer: 'Notion Labs', released: '2023年2月（AI功能）', platform: 'Web/Windows/Mac/iOS/Android', language: '多语言', update: '持续更新', category: 'AI效率工具' },
+    related: [
+      { id: 'chatgpt', name: 'ChatGPT', icon: '💬', color: '#10b981', tag: 'AI写作' },
+      { id: 'claude', name: 'Claude', icon: '🧠', color: '#d97706', tag: 'AI写作' },
+    ],
+    reviewCount: 34620, score5: 62, score4: 24, score3: 9, score2: 3, score1: 2,
+  },
+};
+
+// 渲染工具详情
+function renderTool(id) {
+  const tool = TOOLS[id];
+  if (!tool) {
+    document.getElementById('toolName').textContent = '工具未找到';
+    document.getElementById('toolDesc').textContent = '请返回首页浏览其他工具。';
+    return;
+  }
+
+  // 更新页面标题 & Meta
+  document.title = `${tool.name} - ${tool.category}工具详情介绍、定价与评价 | AI工具导航`;
+  document.querySelector('meta[name="description"]').setAttribute('content',
+    `${tool.name}详细介绍：${tool.desc.slice(0,80)}...查看功能特点、定价方案和真实用户评价。`
+  );
+
+  // 结构化数据
+  const ldScript = document.createElement('script');
+  ldScript.type = 'application/ld+json';
+  ldScript.textContent = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": tool.name,
+    "description": tool.desc,
+    "url": tool.url,
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Web",
+    "offers": {
+      "@type": "Offer",
+      "description": tool.price,
+      "priceCurrency": "USD"
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": tool.rating,
+      "bestRating": "5",
+      "worstRating": "1",
+      "ratingCount": tool.reviewCount
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "AI工具导航",
+      "url": "https://hjouy.github.io/ai-tools-directory/"
+    }
+  });
+  document.head.appendChild(ldScript);
+
+  // Canonical
+  const canonical = document.querySelector('link[rel="canonical"]');
+  if (canonical) canonical.href = `https://hjouy.github.io/ai-tools-directory/tool.html?id=${id}`;
+
+  // 面包屑
+  document.getElementById('breadcrumb-category').textContent = tool.category;
+  document.getElementById('breadcrumb-tool').textContent = tool.name;
+
+  // 头部
+  const logo = document.getElementById('toolLogo');
+  logo.textContent = tool.icon;
+  logo.style.background = `${tool.color}25`;
+  logo.style.color = tool.color;
+  document.getElementById('toolName').textContent = tool.name;
+  document.getElementById('toolRating').textContent = tool.rating;
+  document.getElementById('toolCategory').textContent = tool.category;
+  document.getElementById('toolUsers').textContent = tool.users;
+  document.getElementById('toolDesc').textContent = tool.desc;
+  document.getElementById('toolPrice').textContent = tool.price;
+  document.getElementById('toolLink').href = tool.url;
+
+  const starsEl = document.getElementById('toolStars');
+  const fullStars = Math.floor(tool.rating);
+  const hasHalf = tool.rating % 1 >= 0.5;
+  starsEl.textContent = '★'.repeat(fullStars) + (hasHalf ? '½' : '') + '☆'.repeat(5 - fullStars - (hasHalf ? 1 : 0));
+
+  // 功能特点
+  const featEl = document.getElementById('toolFeatures');
+  featEl.innerHTML = tool.features.map(f => `
+    <div class="feature-item">
+      <div class="feature-icon">${f.icon}</div>
+      <div class="feature-text">
+        <h4>${f.title}</h4>
+        <p>${f.desc}</p>
+      </div>
+    </div>
+  `).join('');
+
+  // 使用场景
+  document.getElementById('toolScenes').innerHTML = tool.scenes.map(s =>
+    `<span class="scene-tag">${s}</span>`
+  ).join('');
+
+  // 定价
+  const pricingBody = document.querySelector('#toolPricing tbody');
+  pricingBody.innerHTML = tool.pricing.map(p => `
+    <tr>
+      <td><strong>${p.name}</strong></td>
+      <td>${p.features}</td>
+      <td>${p.price}</td>
+    </tr>
+  `).join('');
+
+  // 评分
+  document.getElementById('scoreNum').textContent = tool.rating;
+  document.getElementById('reviewCount').textContent = `基于${tool.reviewCount.toLocaleString()}条评价`;
+  document.getElementById('s5p').textContent = tool.score5 + '%';
+  document.getElementById('s4p').textContent = tool.score4 + '%';
+  document.getElementById('s3p').textContent = tool.score3 + '%';
+  document.getElementById('s2p').textContent = tool.score2 + '%';
+  document.getElementById('s1p').textContent = tool.score1 + '%';
+  setTimeout(() => {
+    document.getElementById('s5f').style.width = tool.score5 + '%';
+    document.getElementById('s4f').style.width = tool.score4 + '%';
+    document.getElementById('s3f').style.width = tool.score3 + '%';
+    document.getElementById('s2f').style.width = tool.score2 + '%';
+    document.getElementById('s1f').style.width = tool.score1 + '%';
+  }, 200);
+
+  // 用户评价
+  document.getElementById('toolReviews').innerHTML = tool.reviews.map(r => `
+    <div class="review-item" itemprop="review" itemscope itemtype="https://schema.org/Review">
+      <div class="review-header">
+        <div class="reviewer-avatar">${r.name.charAt(0)}</div>
+        <div>
+          <div class="reviewer-name" itemprop="author">${r.name}</div>
+          <div class="reviewer-role">${r.role}</div>
+        </div>
+        <div class="review-rating" itemprop="reviewRating" itemscope itemtype="https://schema.org/Rating">
+          <span itemprop="ratingValue">${r.rating}</span>/5 ${'★'.repeat(r.rating)}
+        </div>
+      </div>
+      <p class="review-text" itemprop="reviewBody">${r.text}</p>
+    </div>
+  `).join('');
+
+  // 工具信息表
+  document.getElementById('toolInfoTable').innerHTML = Object.entries(tool.info).map(([k, v]) => {
+    const labels = { developer: '开发商', released: '发布时间', platform: '支持平台', language: '支持语言', update: '更新频率', category: '工具分类' };
+    return `<tr><td>${labels[k] || k}</td><td>${v}</td></tr>`;
+  }).join('');
+
+  // 相关工具
+  document.getElementById('relatedTools').innerHTML = tool.related.map(r => `
+    <a class="related-tool" href="tool.html?id=${r.id}">
+      <div class="related-icon" style="background:${r.color}25;color:${r.color};">${r.icon}</div>
+      <div>
+        <div class="related-name">${r.name}</div>
+        <div class="related-tag">${r.tag}</div>
+      </div>
+    </a>
+  `).join('');
+}
+
+// 初始化
+const params = new URLSearchParams(window.location.search);
+const toolId = params.get('id') || 'chatgpt';
+renderTool(toolId);
+</script>
+
+</body>
+</html>

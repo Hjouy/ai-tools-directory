@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI行业资讯 - 最新人工智能工具新闻动态 | AI工具导航</title>
+  <meta name="description" content="每日更新最新AI行业资讯，包括AI工具发布、AI技术突破、AI公司动态等。第一时间掌握人工智能领域最新动态。">
+  <meta name="keywords" content="AI资讯,AI新闻,人工智能动态,AI工具更新,AI技术新闻,GPT新闻,AI行业资讯,2026人工智能">
+  <meta name="robots" content="index, follow">
+  <meta property="og:title" content="AI行业资讯 - 最新AI工具新闻 | AI工具导航">
+  <meta property="og:description" content="每日更新最新AI行业资讯，掌握人工智能领域最新动态">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://hjouy.github.io/ai-tools-directory/news.html">
+  <meta property="og:site_name" content="AI工具导航">
+  <meta property="og:locale" content="zh_CN">
+  <link rel="canonical" href="https://hjouy.github.io/ai-tools-directory/news.html">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    "name": "AI行业资讯 - AI工具导航",
+    "description": "每日更新最新AI工具动态、AI技术突破、AI行业新闻",
+    "url": "https://hjouy.github.io/ai-tools-directory/news.html",
+    "inLanguage": "zh-CN",
+    "publisher": {
+      "@type": "Organization",
+      "name": "AI工具导航",
+      "url": "https://hjouy.github.io/ai-tools-directory/"
+    }
+  }
+  </script>
+  <style>
+    :root{--primary:#6366f1;--secondary:#a855f7;--accent:#06b6d4;--bg:#0f0f1a;--bg-card:#1a1a2e;--text:#e2e8f0;--text-muted:#94a3b8;--border:#2d2d4e;--success:#10b981;--warning:#f59e0b}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+    .navbar{position:sticky;top:0;z-index:100;background:rgba(15,15,26,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between}
+    .nav-logo{font-size:1.3rem;font-weight:700;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none}
+    .nav-links{display:flex;gap:8px;list-style:none}
+    .nav-links a{color:var(--text-muted);text-decoration:none;padding:6px 12px;border-radius:6px;font-size:.9rem;transition:all .2s}
+    .nav-links a:hover,.nav-links a.active{color:var(--text);background:var(--border)}
+    .nav-btn{background:linear-gradient(135deg,#6366f1,#a855f7)!important;color:white!important;border-radius:20px!important;font-weight:500}
+    .page-header{text-align:center;padding:60px 24px 40px;background:radial-gradient(ellipse at top,rgba(6,182,212,.1) 0%,transparent 70%)}
+    .page-header h1{font-size:2.2rem;font-weight:800;margin-bottom:12px}
+    .page-header h1 span{background:linear-gradient(135deg,var(--accent),var(--primary));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .main{max-width:1000px;margin:0 auto;padding:0 24px 80px;display:grid;grid-template-columns:1fr 300px;gap:32px}
+    .news-list{}
+    .news-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:16px;cursor:pointer;transition:all .25s}
+    .news-card:hover{border-color:rgba(99,102,241,.4);transform:translateY(-2px)}
+    .news-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+    .news-source{background:rgba(99,102,241,.15);color:#a5b4fc;padding:3px 10px;border-radius:4px;font-size:.75rem;font-weight:600}
+    .news-date{color:var(--text-muted);font-size:.8rem;margin-left:auto}
+    .news-title{font-size:1.05rem;font-weight:700;margin-bottom:8px;line-height:1.4}
+    .news-desc{color:var(--text-muted);font-size:.875rem;line-height:1.6;margin-bottom:14px}
+    .news-tags{display:flex;gap:6px;flex-wrap:wrap}
+    .tag{background:rgba(99,102,241,.1);color:#a5b4fc;padding:2px 8px;border-radius:4px;font-size:.7rem}
+    .news-feat{background:linear-gradient(135deg,rgba(99,102,241,.1),rgba(168,85,247,.1));border:1px solid rgba(99,102,241,.3);border-radius:12px;padding:24px;margin-bottom:16px}
+    .feat-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);color:#fbbf24;padding:3px 12px;border-radius:20px;font-size:.75rem;font-weight:600;margin-bottom:12px}
+    .sidebar-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px}
+    .sidebar-card h3{font-size:1rem;font-weight:700;margin-bottom:16px}
+    .hot-topic{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:.875rem;cursor:pointer;transition:color .2s}
+    .hot-topic:last-child{border-bottom:none}
+    .hot-topic:hover{color:var(--primary)}
+    .hot-num{color:var(--text-muted);min-width:20px;font-weight:600}
+    .hot-num.top{color:var(--warning)}
+    @media(max-width:768px){.main{grid-template-columns:1fr}.nav-links{display:none}}
+  </style>
+</head>
+<body>
+<nav class="navbar">
+  <a href="index.html" class="nav-logo">🤖 AI工具导航</a>
+  <ul class="nav-links">
+    <li><a href="index.html">首页</a></li>
+    <li><a href="ranking.html">排行榜</a></li>
+    <li><a href="news.html" class="active">AI资讯</a></li>
+    <li><a href="converter.html">文件转换</a></li>
+    <li><a href="submit.html" class="nav-btn">提交工具</a></li>
+  </ul>
+</nav>
+
+<header class="page-header">
+  <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(6,182,212,.15);border:1px solid rgba(6,182,212,.3);color:#67e8f9;padding:4px 14px;border-radius:20px;font-size:.8rem;margin-bottom:16px;">📰 每日更新</div>
+  <h1>AI行业<span>资讯</span></h1>
+  <p>掌握最新人工智能动态，第一时间了解AI工具发布与技术突破</p>
+</header>
+
+<main class="main">
+  <div class="news-list">
+    <!-- 头条 -->
+    <article class="news-feat" itemscope itemtype="https://schema.org/NewsArticle">
+      <div class="feat-badge">🔥 头条</div>
+      <h2 class="news-title" style="font-size:1.2rem;margin-bottom:12px;" itemprop="headline">Cursor 发布 v0.45 版本：引入 Agent 模式，AI可自主完成复杂编程任务</h2>
+      <p class="news-desc" itemprop="description">Cursor 最新版本引入了全新的 Agent 模式，AI可以自主分析需求、规划步骤、执行代码修改，无需用户逐步指引。在测试中，Agent 可以独立完成功能开发、Bug修复等完整任务，开发效率再次大幅提升。早期用户反馈显示，某些场景下工作效率提升高达 10 倍。</p>
+      <div class="news-tags"><span class="tag">AI编程</span><span class="tag">Cursor</span><span class="tag">重大更新</span></div>
+      <div style="margin-top:12px;font-size:.8rem;color:var(--text-muted)" itemprop="datePublished" content="2026-03-23">📅 2026-03-23 · 来源：Cursor官方博客</div>
+    </article>
+
+    <article class="news-card" itemscope itemtype="https://schema.org/NewsArticle">
+      <div class="news-header">
+        <span class="news-source">AI绘画</span>
+        <span class="news-date">2026-03-22</span>
+      </div>
+      <h3 class="news-title" itemprop="headline">Midjourney V7 开始内测：一致性大幅提升，角色细节更精准</h3>
+      <p class="news-desc" itemprop="description">Midjourney 宣布 V7 模型开始对 Pro 及以上用户内测。新版本在角色一致性、细节还原度、光影效果方面均有显著提升，据内测用户反馈，生成的人物面部细节和场景一致性已接近真实照片水平。</p>
+      <div class="news-tags"><span class="tag">Midjourney</span><span class="tag">AI绘画</span><span class="tag">内测</span></div>
+    </article>
+
+    <article class="news-card" itemscope itemtype="https://schema.org/NewsArticle">
+      <div class="news-header">
+        <span class="news-source">AI音乐</span>
+        <span class="news-date">2026-03-21</span>
+      </div>
+      <h3 class="news-title" itemprop="headline">Suno v4 正式发布：音质达到商业专辑水准，支持多段式结构创作</h3>
+      <p class="news-desc" itemprop="description">Suno 发布第四代模型，音频质量和人声自然度大幅提升，多位音乐制作人表示已达到商业发行标准。新增多段式结构功能，可创建包含前奏、主歌、副歌、间奏的完整歌曲结构。</p>
+      <div class="news-tags"><span class="tag">Suno</span><span class="tag">AI音乐</span><span class="tag">新版本</span></div>
+    </article>
+
+    <article class="news-card" itemscope itemtype="https://schema.org/NewsArticle">
+      <div class="news-header">
+        <span class="news-source">AI视频</span>
+        <span class="news-date">2026-03-20</span>
+      </div>
+      <h3 class="news-title" itemprop="headline">Runway Gen-3 Turbo 上线：视频生成速度提升 4 倍，价格降低 50%</h3>
+      <p class="news-desc" itemprop="description">Runway 推出 Gen-3 Turbo 模型，在保持基本质量的前提下，生成速度提升 4 倍，积分消耗降低 50%。这使 Runway 在成本效益方面更具竞争力，将吸引更多中小创作者使用。</p>
+      <div class="news-tags"><span class="tag">Runway</span><span class="tag">AI视频</span><span class="tag">降价</span></div>
+    </article>
+
+    <article class="news-card" itemscope itemtype="https://schema.org/NewsArticle">
+      <div class="news-header">
+        <span class="news-source">行业动态</span>
+        <span class="news-date">2026-03-19</span>
+      </div>
+      <h3 class="news-title" itemprop="headline">OpenAI 发布 GPT-5 技术报告：多模态推理能力全面超越前代</h3>
+      <p class="news-desc" itemprop="description">OpenAI 发布 GPT-5 模型技术报告，在代码生成、数学推理、多模态理解等核心基准上全面超越 GPT-4o。GPT-5 支持实时语音对话、视频理解，并具备更强的长期记忆能力，预计于 2026 年 Q2 向公众开放。</p>
+      <div class="news-tags"><span class="tag">OpenAI</span><span class="tag">GPT-5</span><span class="tag">重磅</span></div>
+    </article>
+
+    <article class="news-card" itemscope itemtype="https://schema.org/NewsArticle">
+      <div class="news-header">
+        <span class="news-source">融资</span>
+        <span class="news-date">2026-03-18</span>
+      </div>
+      <h3 class="news-title" itemprop="headline">Cursor 完成 1 亿美元 B 轮融资，估值达 25 亿美元</h3>
+      <p class="news-desc" itemprop="description">AI编程工具 Cursor 完成 1 亿美元 B 轮融资，由 Andreessen Horowitz 领投，估值达到 25 亿美元。Cursor 目前年收入已突破 1 亿美元，用户数超过 100 万，是 AI 编程工具赛道最快独角兽。</p>
+      <div class="news-tags"><span class="tag">Cursor</span><span class="tag">融资</span><span class="tag">独角兽</span></div>
+    </article>
+
+    <article class="news-card" itemscope itemtype="https://schema.org/NewsArticle">
+      <div class="news-header">
+        <span class="news-source">AI写作</span>
+        <span class="news-date">2026-03-17</span>
+      </div>
+      <h3 class="news-title" itemprop="headline">Claude 3.7 发布：200K上下文窗口，长文档处理能力业界第一</h3>
+      <p class="news-desc" itemprop="description">Anthropic 发布 Claude 3.7，进一步扩大上下文窗口至 200K token，相当于约 150 万个中文字符。新模型在长文档处理、代码分析和学术研究场景中表现优异，多项基准测试超越 GPT-4o。</p>
+      <div class="news-tags"><span class="tag">Claude</span><span class="tag">Anthropic</span><span class="tag">新模型</span></div>
+    </article>
+  </div>
+
+  <!-- 侧边栏 -->
+  <aside>
+    <div class="sidebar-card">
+      <h3>🔥 热门话题</h3>
+      <div class="hot-topic"><span class="hot-num top">1</span><span>Cursor v0.45 Agent模式</span></div>
+      <div class="hot-topic"><span class="hot-num top">2</span><span>Midjourney V7 内测</span></div>
+      <div class="hot-topic"><span class="hot-num top">3</span><span>GPT-5技术报告</span></div>
+      <div class="hot-topic"><span class="hot-num">4</span><span>Suno v4 正式发布</span></div>
+      <div class="hot-topic"><span class="hot-num">5</span><span>Runway Gen-3 降价</span></div>
+      <div class="hot-topic"><span class="hot-num">6</span><span>Claude 3.7上线</span></div>
+      <div class="hot-topic"><span class="hot-num">7</span><span>AI工具市场规模突破</span></div>
+    </div>
+
+    <div class="sidebar-card">
+      <h3>📊 本周数据</h3>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:.875rem;color:var(--text-muted);">新增AI工具</span><span style="font-weight:700;color:var(--success);">+23个</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:.875rem;color:var(--text-muted);">重大版本更新</span><span style="font-weight:700;color:var(--warning);">8个</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:.875rem;color:var(--text-muted);">融资事件</span><span style="font-weight:700;color:var(--primary);">3件</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:.875rem;color:var(--text-muted);">免费工具</span><span style="font-weight:700;color:var(--success);">12个</span></div>
+      </div>
+    </div>
+
+    <div class="sidebar-card" style="background:linear-gradient(135deg,rgba(99,102,241,.05),rgba(168,85,247,.05));border-color:rgba(99,102,241,.2);">
+      <h3>📢 推广位</h3>
+      <p style="font-size:.85rem;color:var(--text-muted);margin-bottom:12px;">在资讯页面展示你的产品新闻，精准触达关注AI动态的用户</p>
+      <a href="submit.html" style="color:var(--primary);font-size:.875rem;text-decoration:none;">了解合作 →</a>
+    </div>
+  </aside>
+</main>
+
+<footer style="background:var(--bg-card);border-top:1px solid var(--border);padding:24px;text-align:center;">
+  <p style="color:var(--text-muted);font-size:.875rem;">
+    <a href="index.html" style="color:var(--primary);text-decoration:none;">AI工具导航</a> ·
+    <a href="sitemap.xml" style="color:var(--text-muted);text-decoration:none;margin-left:12px;">网站地图</a> ·
+    © 2026 AI工具导航
+  </p>
+</footer>
+</body>
+</html>
