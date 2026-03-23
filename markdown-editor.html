@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="免费在线Markdown编辑器 - 实时预览、代码高亮、导出HTML/PDF，技术写作必备工具">
+    <meta name="keywords" content="Markdown编辑器,在线编辑器,实时预览,代码高亮,Markdown转换">
+    <meta name="author" content="AI工具导航站">
+    <title>在线Markdown编辑器 | AI工具导航站</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            height: calc(100vh - 40px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            background: linear-gradient(90deg, #00d4ff, #9b59b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #aaa;
+            font-size: 1.1em;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            flex-wrap: wrap;
+        }
+
+        .tool-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            padding-right: 20px;
+            border-right: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tool-group:last-child {
+            border-right: none;
+        }
+
+        .btn {
+            padding: 8px 14px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #fff;
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #00d4ff;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            border: none;
+        }
+
+        .workspace {
+            display: flex;
+            gap: 20px;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .editor-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .editor-header {
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .editor-header h3 {
+            font-size: 14px;
+            color: #00d4ff;
+        }
+
+        .editor-content {
+            flex: 1;
+            position: relative;
+        }
+
+        #markdownEditor {
+            width: 100%;
+            height: 100%;
+            background: #1a1a2e;
+            color: #e2e8f0;
+            border: none;
+            padding: 20px;
+            font-family: 'Fira Code', 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            resize: none;
+            outline: none;
+            overflow: auto;
+        }
+
+        #markdownEditor:focus {
+            background: #1e1e3a;
+        }
+
+        .preview-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .preview-header {
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .preview-content {
+            flex: 1;
+            overflow: auto;
+            padding: 30px;
+        }
+
+        .preview-content {
+            background: #fff;
+            color: #333;
+        }
+
+        .preview-content h1 {
+            font-size: 2em;
+            margin-bottom: 0.5em;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 0.3em;
+        }
+
+        .preview-content h2 {
+            font-size: 1.5em;
+            margin-bottom: 0.5em;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.3em;
+        }
+
+        .preview-content h3 {
+            font-size: 1.25em;
+            margin-bottom: 0.5em;
+        }
+
+        .preview-content p {
+            margin-bottom: 1em;
+            line-height: 1.6;
+        }
+
+        .preview-content ul,
+        .preview-content ol {
+            margin-bottom: 1em;
+            padding-left: 2em;
+        }
+
+        .preview-content li {
+            margin-bottom: 0.3em;
+        }
+
+        .preview-content code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 0.9em;
+        }
+
+        .preview-content pre {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin-bottom: 1em;
+        }
+
+        .preview-content pre code {
+            background: none;
+            padding: 0;
+            color: inherit;
+        }
+
+        .preview-content blockquote {
+            border-left: 4px solid #ddd;
+            padding-left: 1em;
+            margin-bottom: 1em;
+            color: #666;
+            font-style: italic;
+        }
+
+        .preview-content a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .preview-content a:hover {
+            text-decoration: underline;
+        }
+
+        .preview-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1em;
+        }
+
+        .preview-content th,
+        .preview-content td {
+            border: 1px solid #ddd;
+            padding: 8px 12px;
+            text-align: left;
+        }
+
+        .preview-content th {
+            background: #f4f4f4;
+            font-weight: bold;
+        }
+
+        .preview-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+
+        .preview-content hr {
+            border: none;
+            border-top: 1px solid #ddd;
+            margin: 1.5em 0;
+        }
+
+        .stats {
+            display: flex;
+            gap: 20px;
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 12px;
+            color: #aaa;
+        }
+
+        .stat-item span {
+            color: #00d4ff;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .workspace {
+                flex-direction: column;
+            }
+
+            .toolbar {
+                flex-direction: column;
+            }
+
+            .tool-group {
+                border-right: none;
+                border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+                padding-bottom: 10px;
+                padding-right: 0;
+                width: 100%;
+            }
+
+            .tool-group:last-child {
+                border-bottom: none;
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📝 Markdown编辑器</h1>
+            <p>实时预览、代码高亮、导出HTML/PDF</p>
+        </div>
+
+        <div class="toolbar">
+            <div class="tool-group">
+                <button class="btn" onclick="insertMarkdown('**', '**')">
+                    <i class="fas fa-bold"></i> 粗体
+                </button>
+                <button class="btn" onclick="insertMarkdown('*', '*')">
+                    <i class="fas fa-italic"></i> 斜体
+                </button>
+                <button class="btn" onclick="insertMarkdown('~~', '~~')">
+                    <i class="fas fa-strikethrough"></i> 删除线
+                </button>
+            </div>
+
+            <div class="tool-group">
+                <button class="btn" onclick="insertMarkdown('# ', '')">
+                    <i class="fas fa-heading"></i> 标题
+                </button>
+                <button class="btn" onclick="insertMarkdown('`', '`')">
+                    <i class="fas fa-code"></i> 代码
+                </button>
+                <button class="btn" onclick="insertMarkdown('> ', '')">
+                    <i class="fas fa-quote-right"></i> 引用
+                </button>
+            </div>
+
+            <div class="tool-group">
+                <button class="btn" onclick="insertMarkdown('- ', '')">
+                    <i class="fas fa-list-ul"></i> 列表
+                </button>
+                <button class="btn" onclick="insertMarkdown('1. ', '')">
+                    <i class="fas fa-list-ol"></i> 有序列表
+                </button>
+                <button class="btn" onclick="insertMarkdown('[', '](url)')">
+                    <i class="fas fa-link"></i> 链接
+                </button>
+            </div>
+
+            <div class="tool-group">
+                <button class="btn" onclick="insertMarkdown('![alt](', ')')">
+                    <i class="fas fa-image"></i> 图片
+                </button>
+                <button class="btn" onclick="insertMarkdown('---\n', '')">
+                    <i class="fas fa-minus"></i> 分割线
+                </button>
+                <button class="btn" onclick="insertMarkdown('```', '```')">
+                    <i class="fas fa-file-code"></i> 代码块
+                </button>
+            </div>
+
+            <div class="tool-group">
+                <button class="btn" onclick="clearAll()">
+                    <i class="fas fa-trash"></i> 清空
+                </button>
+                <button class="btn" onclick="loadSample()">
+                    <i class="fas fa-file-alt"></i> 示例
+                </button>
+            </div>
+
+            <div class="tool-group" style="margin-left: auto; border: none;">
+                <button class="btn btn-success" onclick="exportHTML()">
+                    <i class="fas fa-file-code"></i> 导出HTML
+                </button>
+                <button class="btn btn-primary" onclick="exportPDF()">
+                    <i class="fas fa-file-pdf"></i> 导出PDF
+                </button>
+            </div>
+        </div>
+
+        <div class="workspace">
+            <div class="editor-container">
+                <div class="editor-header">
+                    <h3>编辑器</h3>
+                </div>
+                <div class="editor-content">
+                    <textarea id="markdownEditor" placeholder="在此输入Markdown内容..." oninput="updatePreview()"></textarea>
+                </div>
+                <div class="stats">
+                    <div class="stat-item">字符数: <span id="charCount">0</span></div>
+                    <div class="stat-item">单词数: <span id="wordCount">0</span></div>
+                    <div class="stat-item">行数: <span id="lineCount">0</span></div>
+                </div>
+            </div>
+
+            <div class="preview-container">
+                <div class="preview-header">
+                    <h3>预览</h3>
+                </div>
+                <div class="preview-content" id="preview">
+                    <p style="color: #999; text-align: center; margin-top: 100px;">
+                        <i class="fas fa-eye" style="font-size: 48px; margin-bottom: 20px; display: block;"></i>
+                        在左侧编辑器中输入Markdown内容，此处将实时预览
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 初始化marked配置
+        marked.setOptions({
+            highlight: function(code, lang) {
+                if (lang && hljs.getLanguage(lang)) {
+                    return hljs.highlight(code, { language: lang }).value;
+                }
+                return hljs.highlightAuto(code).value;
+            },
+            breaks: true,
+            gfm: true
+        });
+
+        const editor = document.getElementById('markdownEditor');
+        const preview = document.getElementById('preview');
+
+        function updatePreview() {
+            const markdown = editor.value;
+            if (!markdown.trim()) {
+                preview.innerHTML = `
+                    <p style="color: #999; text-align: center; margin-top: 100px;">
+                        <i class="fas fa-eye" style="font-size: 48px; margin-bottom: 20px; display: block;"></i>
+                        在左侧编辑器中输入Markdown内容，此处将实时预览
+                    </p>
+                `;
+                updateStats(markdown);
+                return;
+            }
+
+            try {
+                const html = marked.parse(markdown);
+                preview.innerHTML = html;
+                updateStats(markdown);
+            } catch (e) {
+                console.error('解析错误:', e);
+            }
+        }
+
+        function updateStats(markdown) {
+            const charCount = markdown.length;
+            const wordCount = markdown.trim() ? markdown.trim().split(/\s+/).length : 0;
+            const lineCount = markdown.split('\n').length;
+
+            document.getElementById('charCount').textContent = charCount;
+            document.getElementById('wordCount').textContent = wordCount;
+            document.getElementById('lineCount').textContent = lineCount;
+        }
+
+        function insertMarkdown(before, after) {
+            const start = editor.selectionStart;
+            const end = editor.selectionEnd;
+            const text = editor.value;
+            const selectedText = text.substring(start, end);
+
+            const newText = text.substring(0, start) + before + selectedText + after + text.substring(end);
+            editor.value = newText;
+
+            // 设置光标位置
+            const newCursorPos = start + before.length + selectedText.length;
+            editor.setSelectionRange(newCursorPos, newCursorPos);
+            editor.focus();
+
+            updatePreview();
+        }
+
+        function clearAll() {
+            if (editor.value.trim() && confirm('确定要清空所有内容吗？')) {
+                editor.value = '';
+                updatePreview();
+            }
+        }
+
+        function loadSample() {
+            const sample = `# 欢迎使用Markdown编辑器
+
+## 什么是Markdown？
+
+Markdown是一种轻量级标记语言，它允许人们使用易读易写的纯文本格式编写文档。
+
+## 基础语法
+
+### 文本样式
+
+- **粗体文本**
+- *斜体文本*
+- ~~删除线文本~~
+
+### 列表
+
+#### 无序列表
+- 项目1
+- 项目2
+  - 子项目1
+  - 子项目2
+
+#### 有序列表
+1. 第一项
+2. 第二项
+3. 第三项
+
+### 代码
+
+行内代码：\`console.log('Hello World')\`
+
+代码块：
+
+\`\`\`javascript
+function greet(name) {
+    console.log(\`Hello, \${name}!\`);
+}
+
+greet('World');
+\`\`\`
+
+### 引用
+
+> 这是一段引用文本
+> 可以有多行
+
+### 链接和图片
+
+[访问GitHub](https://github.com)
+
+### 表格
+
+| 姓名 | 年龄 | 职业 |
+|------|------|------|
+| 张三 | 28 | 工程师 |
+| 李四 | 32 | 设计师 |
+
+---
+
+## 高级功能
+
+1. 支持实时预览
+2. 支持代码高亮
+3. 支持导出HTML和PDF
+4. 完全免费，无需注册
+
+开始你的写作之旅吧！✍️
+`;
+
+            editor.value = sample;
+            updatePreview();
+        }
+
+        function exportHTML() {
+            const markdown = editor.value;
+            if (!markdown.trim()) {
+                alert('没有内容可导出');
+                return;
+            }
+
+            const htmlContent = marked.parse(markdown);
+            const fullHtml = `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown文档</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            line-height: 1.6;
+            color: #333;
+        }
+        h1 { border-bottom: 2px solid #eee; padding-bottom: 0.3em; }
+        h2 { border-bottom: 1px solid #eee; padding-bottom: 0.3em; }
+        code { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: monospace; }
+        pre { background: #282c34; color: #abb2bf; padding: 15px; border-radius: 8px; overflow-x: auto; }
+        pre code { background: none; padding: 0; color: inherit; }
+        blockquote { border-left: 4px solid #ddd; padding-left: 1em; color: #666; font-style: italic; }
+        table { width: 100%; border-collapse: collapse; margin: 1em 0; }
+        th, td { border: 1px solid #ddd; padding: 8px 12px; text-align: left; }
+        th { background: #f4f4f4; }
+        img { max-width: 100%; height: auto; }
+    </style>
+</head>
+<body>
+${htmlContent}
+</body>
+</html>`;
+
+            const blob = new Blob([fullHtml], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'document.html';
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function exportPDF() {
+            const markdown = editor.value;
+            if (!markdown.trim()) {
+                alert('没有内容可导出');
+                return;
+            }
+
+            alert('PDF导出功能需要使用jsPDF或html2canvas库，当前为演示版本。\n\n请使用"导出HTML"功能，然后在浏览器中打印为PDF。');
+        }
+
+        // 自动保存到localStorage
+        let saveTimeout;
+        editor.addEventListener('input', function() {
+            clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(() => {
+                localStorage.setItem('markdown-content', editor.value);
+            }, 1000);
+        });
+
+        // 页面加载时恢复内容
+        window.onload = function() {
+            const savedContent = localStorage.getItem('markdown-content');
+            if (savedContent && savedContent.trim()) {
+                editor.value = savedContent;
+                updatePreview();
+            }
+        };
+    </script>
+</body>
+</html>

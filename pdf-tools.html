@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="免费在线PDF工具 - 支持PDF合并、PDF拆分、PDF转图片、PDF压缩，办公必备工具">
+    <meta name="keywords" content="PDF合并,PDF拆分,PDF转图片,PDF压缩,在线PDF工具">
+    <meta name="author" content="AI工具导航站">
+    <title>在线PDF工具 | AI工具导航站</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            background: linear-gradient(90deg, #00d4ff, #9b59b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #aaa;
+            font-size: 1.1em;
+        }
+
+        .tool-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            flex: 1;
+            min-width: 150px;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #00d4ff;
+        }
+
+        .tab-btn i {
+            font-size: 20px;
+        }
+
+        .tool-content {
+            display: none;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 30px;
+        }
+
+        .tool-content.active {
+            display: block;
+        }
+
+        .upload-area {
+            border: 2px dashed rgba(0, 212, 255, 0.5);
+            border-radius: 12px;
+            padding: 60px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 30px;
+        }
+
+        .upload-area:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #00d4ff;
+        }
+
+        .upload-area i {
+            font-size: 64px;
+            color: #00d4ff;
+            margin-bottom: 20px;
+        }
+
+        .upload-area h3 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .upload-area p {
+            color: #aaa;
+            font-size: 14px;
+        }
+
+        .file-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .file-icon {
+            font-size: 40px;
+            color: #ef4444;
+        }
+
+        .file-info {
+            flex: 1;
+        }
+
+        .file-info h4 {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .file-info p {
+            font-size: 13px;
+            color: #aaa;
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+
+        .btn-delete {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .btn-delete:hover {
+            background: rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-move {
+            background: rgba(0, 212, 255, 0.2);
+            color: #00d4ff;
+        }
+
+        .btn-move:hover {
+            background: rgba(0, 212, 255, 0.4);
+        }
+
+        .process-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+
+        .process-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .process-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .split-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .split-option {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid transparent;
+            border-radius: 8px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .split-option:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .split-option.active {
+            border-color: #00d4ff;
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .split-option h4 {
+            margin-bottom: 8px;
+            color: #00d4ff;
+        }
+
+        .split-option p {
+            font-size: 13px;
+            color: #aaa;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ccc;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #00d4ff;
+        }
+
+        .result-area {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .result-area.active {
+            display: block;
+        }
+
+        .success-message {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .success-message i {
+            font-size: 48px;
+            color: #10b981;
+            margin-bottom: 15px;
+        }
+
+        .success-message h3 {
+            color: #10b981;
+            margin-bottom: 10px;
+        }
+
+        .success-message p {
+            color: #aaa;
+            margin-bottom: 15px;
+        }
+
+        .download-btn {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(17, 153, 142, 0.4);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .loading i {
+            font-size: 48px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+            color: #00d4ff;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .tool-tabs {
+                flex-direction: column;
+            }
+
+            .file-item {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📄 在线PDF工具</h1>
+            <p>PDF合并、拆分、转图片、压缩，办公必备</p>
+        </div>
+
+        <div class="tool-tabs">
+            <button class="tab-btn active" onclick="switchTool('merge')">
+                <i class="fas fa-object-group"></i> PDF合并
+            </button>
+            <button class="tab-btn" onclick="switchTool('split')">
+                <i class="fas fa-cut"></i> PDF拆分
+            </button>
+            <button class="tab-btn" onclick="switchTool('toimage')">
+                <i class="fas fa-image"></i> PDF转图片
+            </button>
+            <button class="tab-btn" onclick="switchTool('compress')">
+                <i class="fas fa-compress"></i> PDF压缩
+            </button>
+        </div>
+
+        <!-- PDF合并 -->
+        <div class="tool-content active" id="merge">
+            <div class="upload-area" onclick="document.getElementById('mergeFiles').click()">
+                <input type="file" id="mergeFiles" multiple accept=".pdf" style="display: none;" onchange="handleMergeFiles(this.files)">
+                <i class="fas fa-file-pdf"></i>
+                <h3>选择要合并的PDF文件</h3>
+                <p>支持多文件上传，可调整顺序</p>
+            </div>
+
+            <div class="file-list" id="mergeFileList"></div>
+
+            <button class="process-btn" onclick="mergePDFs()" id="mergeBtn" disabled>
+                <i class="fas fa-object-group"></i> 开始合并
+            </button>
+
+            <div class="loading" id="mergeLoading">
+                <i class="fas fa-spinner"></i>
+                <p>正在处理，请稍候...</p>
+            </div>
+
+            <div class="result-area" id="mergeResult"></div>
+        </div>
+
+        <!-- PDF拆分 -->
+        <div class="tool-content" id="split">
+            <div class="upload-area" onclick="document.getElementById('splitFile').click()">
+                <input type="file" id="splitFile" accept=".pdf" style="display: none;" onchange="handleSplitFile(this.files)">
+                <i class="fas fa-file-pdf"></i>
+                <h3>选择要拆分的PDF文件</h3>
+            </div>
+
+            <div class="split-options">
+                <div class="split-option active" onclick="selectSplitMode('all')">
+                    <h4>拆分为单页</h4>
+                    <p>将每一页拆分成单独的PDF</p>
+                </div>
+                <div class="split-option" onclick="selectSplitMode('range')">
+                    <h4>按页码范围</h4>
+                    <p>提取指定页码范围</p>
+                </div>
+                <div class="split-option" onclick="selectSplitMode('extract')">
+                    <h4>提取特定页面</h4>
+                    <p>提取指定的页面</p>
+                </div>
+            </div>
+
+            <div class="input-group" id="rangeInput" style="display: none;">
+                <label>页码范围（例如：1-5, 8-10）</label>
+                <input type="text" id="pageRange" placeholder="输入页码范围">
+            </div>
+
+            <div class="input-group" id="extractInput" style="display: none;">
+                <label>页面号（例如：1, 3, 5-7）</label>
+                <input type="text" id="extractPages" placeholder="输入要提取的页面">
+            </div>
+
+            <div class="file-list" id="splitFileList"></div>
+
+            <button class="process-btn" onclick="splitPDF()" id="splitBtn" disabled>
+                <i class="fas fa-cut"></i> 开始拆分
+            </button>
+
+            <div class="loading" id="splitLoading">
+                <i class="fas fa-spinner"></i>
+                <p>正在处理，请稍候...</p>
+            </div>
+
+            <div class="result-area" id="splitResult"></div>
+        </div>
+
+        <!-- PDF转图片 -->
+        <div class="tool-content" id="toimage">
+            <div class="upload-area" onclick="document.getElementById('toImageFile').click()">
+                <input type="file" id="toImageFile" accept=".pdf" style="display: none;" onchange="handleToImageFile(this.files)">
+                <i class="fas fa-file-pdf"></i>
+                <h3>选择PDF文件</h3>
+                <p>将PDF转换为JPG图片</p>
+            </div>
+
+            <div class="file-list" id="toImageFileList"></div>
+
+            <button class="process-btn" onclick="pdfToImage()" id="toImageBtn" disabled>
+                <i class="fas fa-image"></i> 开始转换
+            </button>
+
+            <div class="loading" id="toImageLoading">
+                <i class="fas fa-spinner"></i>
+                <p>正在转换，请稍候...</p>
+            </div>
+
+            <div class="result-area" id="toImageResult"></div>
+        </div>
+
+        <!-- PDF压缩 -->
+        <div class="tool-content" id="compress">
+            <div class="upload-area" onclick="document.getElementById('compressFile').click()">
+                <input type="file" id="compressFile" accept=".pdf" style="display: none;" onchange="handleCompressFile(this.files)">
+                <i class="fas fa-file-pdf"></i>
+                <h3>选择要压缩的PDF文件</h3>
+                <p>减小PDF文件大小</p>
+            </div>
+
+            <div class="file-list" id="compressFileList"></div>
+
+            <button class="process-btn" onclick="compressPDF()" id="compressBtn" disabled>
+                <i class="fas fa-compress"></i> 开始压缩
+            </button>
+
+            <div class="loading" id="compressLoading">
+                <i class="fas fa-spinner"></i>
+                <p>正在压缩，请稍候...</p>
+            </div>
+
+            <div class="result-area" id="compressResult"></div>
+        </div>
+    </div>
+
+    <script>
+        let mergeFiles = [];
+        let splitFile = null;
+        let toImageFile = null;
+        let compressFile = null;
+        let splitMode = 'all';
+
+        function switchTool(tool) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tool-content').forEach(content => content.classList.remove('active'));
+
+            event.target.closest('.tab-btn').classList.add('active');
+            document.getElementById(tool).classList.add('active');
+        }
+
+        function selectSplitMode(mode) {
+            splitMode = mode;
+            document.querySelectorAll('.split-option').forEach(option => option.classList.remove('active'));
+            event.target.closest('.split-option').classList.add('active');
+
+            document.getElementById('rangeInput').style.display = mode === 'range' ? 'block' : 'none';
+            document.getElementById('extractInput').style.display = mode === 'extract' ? 'block' : 'none';
+        }
+
+        function handleMergeFiles(files) {
+            mergeFiles = Array.from(files);
+            const fileList = document.getElementById('mergeFileList');
+            fileList.innerHTML = '';
+
+            mergeFiles.forEach((file, index) => {
+                const item = document.createElement('div');
+                item.className = 'file-item';
+                item.innerHTML = `
+                    <div class="file-icon"><i class="fas fa-file-pdf"></i></div>
+                    <div class="file-info">
+                        <h4>${file.name}</h4>
+                        <p>${formatSize(file.size)}</p>
+                    </div>
+                    <div class="file-actions">
+                        <button class="action-btn btn-move" onclick="moveFile(${index}, -1)" ${index === 0 ? 'disabled' : ''}>↑</button>
+                        <button class="action-btn btn-move" onclick="moveFile(${index}, 1)" ${index === mergeFiles.length - 1 ? 'disabled' : ''}>↓</button>
+                        <button class="action-btn btn-delete" onclick="removeMergeFile(${index})">删除</button>
+                    </div>
+                `;
+                fileList.appendChild(item);
+            });
+
+            document.getElementById('mergeBtn').disabled = mergeFiles.length < 2;
+        }
+
+        function moveFile(index, direction) {
+            const newIndex = index + direction;
+            if (newIndex >= 0 && newIndex < mergeFiles.length) {
+                [mergeFiles[index], mergeFiles[newIndex]] = [mergeFiles[newIndex], mergeFiles[index]];
+                handleMergeFiles(mergeFiles);
+            }
+        }
+
+        function removeMergeFile(index) {
+            mergeFiles.splice(index, 1);
+            handleMergeFiles(mergeFiles);
+        }
+
+        async function mergePDFs() {
+            if (mergeFiles.length < 2) return;
+
+            document.getElementById('mergeLoading').classList.add('active');
+            document.getElementById('mergeResult').classList.remove('active');
+
+            try {
+                const pdfDoc = await PDFLib.PDFDocument.create();
+
+                for (const file of mergeFiles) {
+                    const arrayBuffer = await file.arrayBuffer();
+                    const srcDoc = await PDFLib.PDFDocument.load(arrayBuffer);
+                    const pages = await pdfDoc.copyPages(srcDoc, srcDoc.getPageIndices());
+                    pages.forEach(page => pdfDoc.addPage(page));
+                }
+
+                const pdfBytes = await pdfDoc.save();
+                const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+                showResult('mergeResult', '合并成功', '合并后的PDF文件大小：' + formatSize(blob.size), blob, 'merged.pdf');
+            } catch (e) {
+                alert('合并失败: ' + e.message);
+            }
+
+            document.getElementById('mergeLoading').classList.remove('active');
+        }
+
+        function handleSplitFile(files) {
+            if (files.length === 0) return;
+            splitFile = files[0];
+
+            const fileList = document.getElementById('splitFileList');
+            fileList.innerHTML = `
+                <div class="file-item">
+                    <div class="file-icon"><i class="fas fa-file-pdf"></i></div>
+                    <div class="file-info">
+                        <h4>${splitFile.name}</h4>
+                        <p>${formatSize(splitFile.size)}</p>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('splitBtn').disabled = false;
+        }
+
+        async function splitPDF() {
+            if (!splitFile) return;
+
+            document.getElementById('splitLoading').classList.add('active');
+            document.getElementById('splitResult').classList.remove('active');
+
+            try {
+                const arrayBuffer = await splitFile.arrayBuffer();
+                const srcDoc = await PDFLib.PDFDocument.load(arrayBuffer);
+                const totalPages = srcDoc.getPageCount();
+
+                if (splitMode === 'all') {
+                    // 拆分为单页
+                    const pdfs = [];
+                    for (let i = 0; i < totalPages; i++) {
+                        const newDoc = await PDFLib.PDFDocument.create();
+                        const [page] = await newDoc.copyPages(srcDoc, [i]);
+                        newDoc.addPage(page);
+                        const pdfBytes = await newDoc.save();
+                        pdfs.push({
+                            name: `${splitFile.name.replace('.pdf', '')}_page_${i + 1}.pdf`,
+                            blob: new Blob([pdfBytes], { type: 'application/pdf' })
+                        });
+                    }
+                    downloadMultiple(pdfs);
+                    showResult('splitResult', '拆分成功', `已拆分为 ${totalPages} 个文件`, null, null);
+                } else if (splitMode === 'range') {
+                    // 按页码范围拆分
+                    const range = document.getElementById('pageRange').value;
+                    const ranges = parseRanges(range);
+                    const pdfs = [];
+
+                    for (const [start, end] of ranges) {
+                        const newDoc = await PDFLib.PDFDocument.create();
+                        const pageIndices = [];
+                        for (let i = start - 1; i < end && i < totalPages; i++) {
+                            pageIndices.push(i);
+                        }
+                        const pages = await newDoc.copyPages(srcDoc, pageIndices);
+                        pages.forEach(page => newDoc.addPage(page));
+                        const pdfBytes = await newDoc.save();
+                        pdfs.push({
+                            name: `${splitFile.name.replace('.pdf', '')}_${start}-${end}.pdf`,
+                            blob: new Blob([pdfBytes], { type: 'application/pdf' })
+                        });
+                    }
+                    downloadMultiple(pdfs);
+                    showResult('splitResult', '拆分成功', `已拆分为 ${pdfs.length} 个文件`, null, null);
+                } else if (splitMode === 'extract') {
+                    // 提取特定页面
+                    const pagesText = document.getElementById('extractPages').value;
+                    const pageIndices = parsePages(pagesText, totalPages);
+                    const newDoc = await PDFLib.PDFDocument.create();
+                    const pages = await newDoc.copyPages(srcDoc, pageIndices);
+                    pages.forEach(page => newDoc.addPage(page));
+                    const pdfBytes = await newDoc.save();
+                    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+                    showResult('splitResult', '提取成功', `已提取 ${pageIndices.length} 页`, blob, 'extracted.pdf');
+                }
+            } catch (e) {
+                alert('拆分失败: ' + e.message);
+            }
+
+            document.getElementById('splitLoading').classList.remove('active');
+        }
+
+        function parseRanges(text) {
+            const ranges = [];
+            const parts = text.split(',');
+            parts.forEach(part => {
+                const [start, end] = part.trim().split('-').map(num => parseInt(num.trim()));
+                if (!isNaN(start) && !isNaN(end)) {
+                    ranges.push([start, end]);
+                }
+            });
+            return ranges;
+        }
+
+        function parsePages(text, maxPages) {
+            const indices = [];
+            const parts = text.split(',');
+            parts.forEach(part => {
+                part = part.trim();
+                if (part.includes('-')) {
+                    const [start, end] = part.split('-').map(num => parseInt(num.trim()));
+                    if (!isNaN(start) && !isNaN(end)) {
+                        for (let i = Math.max(1, start); i <= Math.min(end, maxPages); i++) {
+                            indices.push(i - 1);
+                        }
+                    }
+                } else {
+                    const page = parseInt(part);
+                    if (!isNaN(page) && page >= 1 && page <= maxPages) {
+                        indices.push(page - 1);
+                    }
+                }
+            });
+            return [...new Set(indices)].sort((a, b) => a - b);
+        }
+
+        function handleToImageFile(files) {
+            if (files.length === 0) return;
+            toImageFile = files[0];
+
+            const fileList = document.getElementById('toImageFileList');
+            fileList.innerHTML = `
+                <div class="file-item">
+                    <div class="file-icon"><i class="fas fa-file-pdf"></i></div>
+                    <div class="file-info">
+                        <h4>${toImageFile.name}</h4>
+                        <p>${formatSize(toImageFile.size)}</p>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('toImageBtn').disabled = false;
+        }
+
+        async function pdfToImage() {
+            alert('PDF转图片功能需要使用PDF.js库，当前为演示版本。实际实现需要添加PDF.js库并实现渲染逻辑。');
+        }
+
+        function handleCompressFile(files) {
+            if (files.length === 0) return;
+            compressFile = files[0];
+
+            const fileList = document.getElementById('compressFileList');
+            fileList.innerHTML = `
+                <div class="file-item">
+                    <div class="file-icon"><i class="fas fa-file-pdf"></i></div>
+                    <div class="file-info">
+                        <h4>${compressFile.name}</h4>
+                        <p>${formatSize(compressFile.size)}</p>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('compressBtn').disabled = false;
+        }
+
+        async function compressPDF() {
+            alert('PDF压缩功能需要使用pdf-lib的高级特性，当前为演示版本。实际实现需要压缩图片、字体等资源。');
+        }
+
+        function formatSize(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function showResult(resultId, title, message, blob, filename) {
+            const result = document.getElementById(resultId);
+            let html = `
+                <div class="success-message">
+                    <i class="fas fa-check-circle"></i>
+                    <h3>${title}</h3>
+                    <p>${message}</p>
+            `;
+
+            if (blob && filename) {
+                html += `<button class="download-btn" onclick="downloadBlob('${filename}', ${JSON.stringify(Array.from(blob))})">下载文件</button>`;
+            }
+
+            html += '</div>';
+            result.innerHTML = html;
+            result.classList.add('active');
+
+            if (blob && filename) {
+                window.currentBlob = blob;
+                window.currentFilename = filename;
+            }
+        }
+
+        function downloadBlob(filename, arrayBuffer) {
+            const blob = new Blob([new Uint8Array(arrayBuffer)], { type: 'application/pdf' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function downloadMultiple(pdfs) {
+            pdfs.forEach((pdf, index) => {
+                setTimeout(() => {
+                    const url = URL.createObjectURL(pdf.blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = pdf.name;
+                    link.click();
+                    URL.revokeObjectURL(url);
+                }, index * 500);
+            });
+        }
+    </script>
+</body>
+</html>
