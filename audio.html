@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI音乐工具推荐 - 最好用的AI作曲软件 | AI工具导航</title>
+  <meta name="description" content="精选10款最好用的AI音乐工具，包括Suno、Udio、AIVA等。AI作曲、音乐生成、人声合成，让音乐创作更简单。">
+  <meta name="keywords" content="AI音乐工具,AI作曲,Suno,Udio,AIVA,AI音乐生成,AI作曲软件,AI人声合成">
+  <meta name="robots" content="index, follow">
+  <meta property="og:title" content="AI音乐工具推荐 - 最好用的AI作曲软件 | AI工具导航">
+  <meta property="og:description" content="精选10款最好用的AI音乐工具，Suno、Udio、AIVA等一网打尽">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://hjouy.github.io/ai-tools-directory/audio.html">
+  <meta property="og:site_name" content="AI工具导航">
+  <meta property="og:locale" content="zh_CN">
+  <link rel="canonical" href="https://hjouy.github.io/ai-tools-directory/audio.html">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "AI音乐工具推荐合集",
+    "description": "精选10款最好用的AI音乐工具，包括Suno、Udio、AIVA等",
+    "url": "https://hjouy.github.io/ai-tools-directory/audio.html",
+    "inLanguage": "zh-CN"
+  }
+  </script>
+  <style>
+    :root{--primary:#6366f1;--secondary:#a855f7;--bg:#0f0f1a;--bg-card:#1a1a2e;--text:#e2e8f0;--text-muted:#94a3b8;--border:#2d2d4e;--success:#10b981;--warning:#f59e0b}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+    .navbar{position:sticky;top:0;z-index:100;background:rgba(15,15,26,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between}
+    .nav-logo{font-size:1.3rem;font-weight:700;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none}
+    .nav-links{display:flex;gap:8px;list-style:none}
+    .nav-links a{color:var(--text-muted);text-decoration:none;padding:6px 12px;border-radius:6px;font-size:.9rem;transition:all .2s}
+    .nav-links a:hover{color:var(--text);background:var(--border)}
+    .nav-btn{background:linear-gradient(135deg,#6366f1,#a855f7)!important;color:white!important;border-radius:20px!important;font-weight:500}
+    .page-hero{text-align:center;padding:60px 24px 48px;background:radial-gradient(ellipse at top,rgba(99,102,241,.12) 0%,transparent 70%)}
+    .page-hero h1{font-size:2rem;font-weight:800;margin-bottom:12px}
+    .page-hero p{color:var(--text-muted);font-size:1rem;max-width:500px;margin:0 auto 20px}
+    .breadcrumb{max-width:1200px;margin:0 auto;padding:12px 24px;display:flex;gap:8px;font-size:.85rem;color:var(--text-muted)}
+    .breadcrumb a{color:var(--text-muted);text-decoration:none}
+    .breadcrumb a:hover{color:var(--primary)}
+    .main{max-width:1200px;margin:0 auto;padding:0 24px 80px}
+    .tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+    .tool-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:20px;cursor:pointer;transition:all .25s;position:relative}
+    .tool-card:hover{border-color:rgba(99,102,241,.4);transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+    .tool-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+    .tool-logo{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0}
+    .tool-name{font-size:1rem;font-weight:600;margin-bottom:2px}
+    .tool-rating{font-size:.75rem;color:var(--warning)}
+    .tool-desc{font-size:.875rem;color:var(--text-muted);line-height:1.5;margin-bottom:14px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    .tool-footer{display:flex;justify-content:space-between;align-items:center}
+    .tags{display:flex;gap:6px}
+    .tag{background:rgba(99,102,241,.1);color:#a5b4fc;padding:2px 8px;border-radius:4px;font-size:.7rem}
+    .price{font-size:.8rem;font-weight:600}
+    .price-free{color:var(--success)}
+    .price-paid{color:var(--warning)}
+    .hot-tag{position:absolute;top:12px;right:12px;background:linear-gradient(135deg,#ef4444,#f97316);color:white;padding:2px 8px;border-radius:4px;font-size:.7rem;font-weight:600}
+    .filter-bar{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap}
+    .filter-btn{padding:6px 16px;border-radius:20px;border:1px solid var(--border);background:none;color:var(--text-muted);cursor:pointer;font-size:.85rem;transition:all .2s}
+    .filter-btn.active,.filter-btn:hover{background:var(--primary);color:white;border-color:var(--primary)}
+    @media(max-width:768px){.nav-links{display:none}.tools-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<nav class="navbar">
+  <a href="index.html" class="nav-logo">🤖 AI工具导航</a>
+  <ul class="nav-links">
+    <li><a href="index.html">首页</a></li>
+    <li><a href="ranking.html">排行榜</a></li>
+    <li><a href="news.html">AI资讯</a></li>
+    <li><a href="submit.html" class="nav-btn">提交工具</a></li>
+  </ul>
+</nav>
+
+<nav class="breadcrumb" aria-label="面包屑">
+  <a href="index.html">首页</a><span>›</span><span>AI音乐工具</span>
+</nav>
+
+<header class="page-hero">
+  <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.3);color:#a5b4fc;padding:4px 14px;border-radius:20px;font-size:.8rem;margin-bottom:16px;">🎵 28个AI音乐工具</div>
+  <h1>AI音乐工具推荐</h1>
+  <p>精选最好用的AI音乐创作工具，AI作曲、人声合成、背景音乐生成，让每个人都能创作音乐</p>
+  <div style="margin-top:20px;">
+    <input type="text" id="pageSearchInput" placeholder="搜索AI音乐工具..." style="padding:10px 16px;border-radius:8px;border:1px solid rgba(99,102,241,.3);background:rgba(255,255,255,.05);color:#fff;width:100%;max-width:400px;font-size:.95rem;" onkeypress="if(event.key==='Enter'){const q=this.value.trim();if(q)location.href='/?s='+encodeURIComponent(q);}" aria-label="搜索AI音乐工具">
+  </div>
+</header>
+
+<main class="main">
+  <div class="filter-bar" role="group" aria-label="筛选条件">
+    <button class="filter-btn active" onclick="filter(this,'all')">全部</button>
+    <button class="filter-btn" onclick="filter(this,'song')">歌曲生成</button>
+    <button class="filter-btn" onclick="filter(this,'bgm')">背景音乐</button>
+    <button class="filter-btn" onclick="filter(this,'voice')">人声合成</button>
+    <button class="filter-btn" onclick="filter(this,'free')">免费可用</button>
+  </div>
+
+  <div class="tools-grid" id="toolsGrid" role="list">
+
+    <article class="tool-card" data-tags="song free" role="listitem" onclick="location.href='tool.html?id=suno'" itemscope itemtype="https://schema.org/SoftwareApplication">
+      <span class="hot-tag">HOT</span>
+      <div class="tool-header">
+        <div class="tool-logo" style="background:#7c3aed20;color:#7c3aed;">🎵</div>
+        <div><div class="tool-name" itemprop="name">Suno</div><div class="tool-rating">★★★★½ 4.5 · 500万+用户</div></div>
+      </div>
+      <p class="tool-desc" itemprop="description">最热门的AI音乐生成工具，输入歌词即可生成带人声的完整歌曲，支持多种音乐风格，效果惊艳。</p>
+      <div class="tool-footer"><div class="tags"><span class="tag">歌曲生成</span><span class="tag">人声</span></div><span class="price price-free">免费/$8月</span></div>
+    </article>
+
+    <article class="tool-card" data-tags="song free" role="listitem" onclick="window.open('https://www.udio.com','_blank')" itemscope itemtype="https://schema.org/SoftwareApplication">
+      <span class="hot-tag">NEW</span>
+      <div class="tool-header">
+        <div class="tool-logo" style="background:#ec489920;color:#ec4899;">🎤</div>
+        <div><div class="tool-name" itemprop="name">Udio</div><div class="tool-rating">★★★★½ 4.6 · 100万+用户</div></div>
+      </div>
+      <p class="tool-desc" itemprop="description">Suno最强竞争者，AI音乐生成质量极高，人声自然流畅，支持多种语言歌词，音乐风格多样。</p>
+      <div class="tool-footer"><div class="tags"><span class="tag">歌曲生成</span><span class="tag">高质量</span></div><span class="price price-free">免费/$10月</span></div>
+    </article>
+
+    <article class="tool-card" data-tags="bgm" role="listitem" onclick="window.open('https://www.aiva.ai','_blank')" itemscope itemtype="https://schema.org/SoftwareApplication">
+      <div class="tool-header">
+        <div class="tool-logo" style="background:#6366f120;color:#6366f1;">🎼</div>
+        <div><div class="tool-name" itemprop="name">AIVA</div><div class="tool-rating">★★★★☆ 4.4 · 50万+用户</div></div>
+      </div>
+      <p class="tool-desc" itemprop="description">专注背景音乐和配乐生成，支持250+风格，可导出MIDI和MP3，适合视频、游戏、播客配乐。</p>
+      <div class="tool-footer"><div class="tags"><span class="tag">背景音乐</span><span class="tag">配乐</span></div><span class="price price-free">免费/$11月</span></div>
+    </article>
+
+    <article class="tool-card" data-tags="voice free" role="listitem" onclick="window.open('https://suno.com/bark','_blank')" itemscope itemtype="https://schema.org/SoftwareApplication">
+      <span class="hot-tag">开源</span>
+      <div class="tool-header">
+        <div class="tool-logo" style="background:#10b98120;color:#10b981;">🗣️</div>
+        <div><div class="tool-name" itemprop="name">Bark</div><div class="tool-rating">★★★★☆ 4.3 · 20万+用户</div></div>
+      </div>
+      <p class="tool-desc" itemprop="description">开源的文本转语音和AI歌唱模型，支持多语言和情感表达，可本地部署，开发者友好。</p>
+      <div class="tool-footer"><div class="tags"><span class="tag">开源</span><span class="tag">TTS</span></div><span class="price price-free">开源免费</span></div>
+    </article>
+
+    <article class="tool-card" data-tags="bgm free" role="listitem" onclick="window.open('https://mubert.com','_blank')" itemscope itemtype="https://schema.org/SoftwareApplication">
+      <div class="tool-header">
+        <div class="tool-logo" style="background:#06b6d420;color:#06b6d4;">🎧</div>
+        <div><div class="tool-name" itemprop="name">Mubert</div><div class="tool-rating">★★★★☆ 4.2 · 30万+用户</div></div>
+      </div>
+      <p class="tool-desc" itemprop="description">AI生成免版税背景音乐，适合直播、视频、应用使用，支持API接入，可定制音乐风格。</p>
+      <div class="tool-footer"><div class="tags"><span class="tag">免版税</span><span class="tag">API</span></div><span class="price price-free">免费/$14月</span></div>
+    </article>
+
+    <article class="tool-card" data-tags="song" role="listitem" onclick="window.open('https://www.voicemod.net/ai-voices/','_blank')" itemscope itemtype="https://schema.org/SoftwareApplication">
+      <div class="tool-header">
+        <div class="tool-logo" style="background:#f59e0b20;color:#f59e0b;">🎙️</div>
+        <div><div class="tool-name" itemprop="name">Voicemod AI</div><div class="tool-rating">★★★★☆ 4.3 · 40万+用户</div></div>
+      </div>
+      <p class="tool-desc" itemprop="description">AI人声合成和变声工具，可创建自定义AI歌声，支持实时变声和歌声转换，适合内容创作者。</p>
+      <div class="tool-footer"><div class="tags"><span class="tag">人声合成</span><span class="tag">变声</span></div><span class="price price-paid">$12/月起</span></div>
+    </article>
+
+    <article class="tool-card" data-tags="bgm free" role="listitem" onclick="window.open('https://soundraw.io','_blank')" itemscope itemtype="https://schema.org/SoftwareApplication">
+      <div class="tool-header">
+        <div class="tool-logo" style="background:#8b5cf620;color:#8b5cf6;">🎸</div>
+        <div><div class="tool-name" itemprop="name">Soundraw</div><div class="tool-rating">★★★★☆ 4.3 · 25万+用户</div></div>
+      </div>
+      <p class="tool-desc" itemprop="description">AI音乐生成平台，可自定义音乐长度、节奏、风格，生成独一无二的免版税音乐，适合视频创作者。</p>
+      <div class="tool-footer"><div class="tags"><span class="tag">可定制</span><span class="tag">免版税</span></div><span class="price price-paid">$16/月起</span></div>
+    </article>
+
+    <article class="tool-card" data-tags="voice free" role="listitem" onclick="window.open('https://elevenlabs.io','_blank')" itemscope itemtype="https://schema.org/SoftwareApplication">
+      <span class="hot-tag">HOT</span>
+      <div class="tool-header">
+        <div class="tool-logo" style="background:#3b82f620;color:#3b82f6;">🎭</div>
+        <div><div class="tool-name" itemprop="name">ElevenLabs</div><div class="tool-rating">★★★★★ 4.7 · 200万+用户</div></div>
+      </div>
+      <p class="tool-desc" itemprop="description">业界领先的AI语音合成平台，声音极其自然，支持29种语言，可克隆自己的声音，适合有声书和配音。</p>
+      <div class="tool-footer"><div class="tags"><span class="tag">TTS</span><span class="tag">声音克隆</span></div><span class="price price-free">免费/$5月</span></div>
+    </article>
+
+    <article class="tool-card" data-tags="bgm free" role="listitem" onclick="window.open('https://www.beatoven.ai','_blank')" itemscope itemtype="https://schema.org/SoftwareApplication">
+      <div class="tool-header">
+        <div class="tool-logo" style="background:#dc262620;color:#dc2626;">🥁</div>
+        <div><div class="tool-name" itemprop="name">Beatoven.ai</div><div class="tool-rating">★★★★☆ 4.2 · 15万+用户</div></div>
+      </div>
+      <p class="tool-desc" itemprop="description">AI生成免版税背景音乐，专为视频创作者设计，可根据视频情绪自动调整音乐风格，简单易用。</p>
+      <div class="tool-footer"><div class="tags"><span class="tag">视频配乐</span><span class="tag">情绪匹配</span></div><span class="price price-free">免费/$20月</span></div>
+    </article>
+
+    <article class="tool-card" data-tags="voice free" role="listitem" onclick="window.open('https://azure.microsoft.com/services/cognitive-services/text-to-speech/','_blank')" itemscope itemtype="https://schema.org/SoftwareApplication">
+      <div class="tool-header">
+        <div class="tool-logo" style="background:#0891b220;color:#0891b2;">☁️</div>
+        <div><div class="tool-name" itemprop="name">Azure TTS</div><div class="tool-rating">★★★★☆ 4.4 · 100万+用户</div></div>
+      </div>
+      <p class="tool-desc" itemprop="description">微软Azure文本转语音服务，声音自然流畅，支持140+语言和400+声音，企业级稳定性和质量。</p>
+      <div class="tool-footer"><div class="tags"><span class="tag">企业级</span><span class="tag">多语言</span></div><span class="price price-free">免费额度</span></div>
+    </article>
+
+  </div>
+</main>
+
+<footer style="background:var(--bg-card);border-top:1px solid var(--border);padding:24px;text-align:center;">
+  <p style="color:var(--text-muted);font-size:.875rem;">
+    <a href="index.html" style="color:var(--primary);text-decoration:none;">AI工具导航</a> ·
+    <a href="writing.html" style="color:var(--text-muted);text-decoration:none;margin:0 12px;">AI写作工具</a>
+    <a href="video.html" style="color:var(--text-muted);text-decoration:none;margin:0 12px;">AI视频工具</a>
+    <a href="sitemap.xml" style="color:var(--text-muted);text-decoration:none;">网站地图</a> ·
+    © 2026 AI工具导航
+  </p>
+</footer>
+
+<script>
+function filter(btn, type) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.tool-card').forEach(card => {
+    if (type === 'all' || card.dataset.tags.includes(type)) {
+      card.style.display = '';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+}
+</script>
+
+<!-- 百度统计 -->
+<script>
+  var _hmt = _hmt || [];
+  (function() {
+    var hm = document.createElement("script");
+    hm.src = "https://hm.baidu.com/hm.js?请替换为你的百度统计ID";
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(hm, s);
+  })();
+</script>
+
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-请替换为你的GA4ID"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-请替换为你的GA4ID');
+</script>
+
+</body>
+</html>

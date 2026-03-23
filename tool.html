@@ -135,6 +135,109 @@
     .btn-favorite.active::before { content: '❤️'; }
     .btn-favorite:not(.active)::before { content: '🤍'; }
 
+    /* 分享按钮 */
+    .btn-share {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn-share:hover { color: var(--text); border-color: var(--primary); }
+
+    /* 分享弹窗 */
+    .share-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    .share-modal.open { display: flex; }
+    .share-content {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      width: 90%;
+      max-width: 400px;
+    }
+    .share-content h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .share-content h3 button {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+    .share-options {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .share-option {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      padding: 12px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .share-option:hover {
+      border-color: var(--primary);
+      background: rgba(99,102,241,0.1);
+    }
+    .share-option span:first-child {
+      font-size: 1.5rem;
+    }
+    .share-option span:last-child {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+    .share-link {
+      display: flex;
+      gap: 8px;
+    }
+    .share-link input {
+      flex: 1;
+      padding: 10px 14px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 0.9rem;
+    }
+    .share-link button {
+      padding: 10px 16px;
+      background: var(--primary);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .share-link button:hover { opacity: 0.9; }
+
     /* 内容区 */
     .content-grid {
       display: grid;
@@ -315,6 +418,9 @@
       <button class="btn-favorite" id="btnFavorite" onclick="toggleFavorite()">
         <span>收藏</span>
       </button>
+      <button class="btn-share" onclick="shareTool()" title="分享">
+        <span>📤 分享</span>
+      </button>
     </div>
   </header>
 
@@ -420,6 +526,38 @@
     </aside>
   </div>
 
+</div>
+
+<!-- 分享弹窗 -->
+<div class="share-modal" id="shareModal" onclick="closeShareModal(event)">
+  <div class="share-content" onclick="event.stopPropagation()">
+    <h3>
+      分享工具
+      <button onclick="document.getElementById('shareModal').classList.remove('open')">✕</button>
+    </h3>
+    <div class="share-options">
+      <div class="share-option" onclick="shareTo('weixin')">
+        <span>💬</span>
+        <span>微信</span>
+      </div>
+      <div class="share-option" onclick="shareTo('weibo')">
+        <span>📢</span>
+        <span>微博</span>
+      </div>
+      <div class="share-option" onclick="shareTo('twitter')">
+        <span>🐦</span>
+        <span>Twitter</span>
+      </div>
+      <div class="share-option" onclick="shareTo('copy')">
+        <span>📋</span>
+        <span>复制链接</span>
+      </div>
+    </div>
+    <div class="share-link">
+      <input type="text" id="shareUrl" readonly>
+      <button onclick="copyShareLink()">复制</button>
+    </div>
+  </div>
 </div>
 
 <footer style="background:var(--bg-card);border-top:1px solid var(--border);padding:24px;text-align:center;">
@@ -1008,6 +1146,72 @@ function submitReview(event) {
 const params = new URLSearchParams(window.location.search);
 const toolId = params.get('id') || 'chatgpt';
 renderTool(toolId);
+
+// 分享功能
+let currentShareTool = null;
+
+function shareTool() {
+  const tool = TOOLS[currentToolId];
+  if (!tool) return;
+  
+  currentShareTool = tool;
+  const shareUrl = window.location.href;
+  document.getElementById('shareUrl').value = shareUrl;
+  document.getElementById('shareModal').classList.add('open');
+}
+
+function closeShareModal(e) {
+  if (e.target === document.getElementById('shareModal')) {
+    document.getElementById('shareModal').classList.remove('open');
+  }
+}
+
+function shareTo(platform) {
+  if (!currentShareTool) return;
+  
+  const url = encodeURIComponent(window.location.href);
+  const title = encodeURIComponent(`${currentShareTool.name} - ${currentShareTool.desc.slice(0, 50)}... | AI工具导航`);
+  
+  let shareLink = '';
+  
+  switch(platform) {
+    case 'weixin':
+      alert('请使用微信扫一扫功能分享本页面');
+      return;
+    case 'weibo':
+      shareLink = `https://service.weibo.com/share/share.php?url=${url}&title=${title}`;
+      break;
+    case 'twitter':
+      shareLink = `https://twitter.com/intent/tweet?url=${url}&text=${title}`;
+      break;
+    case 'copy':
+      copyShareLink();
+      return;
+  }
+  
+  if (shareLink) {
+    window.open(shareLink, '_blank', 'width=600,height=400');
+  }
+  
+  document.getElementById('shareModal').classList.remove('open');
+}
+
+function copyShareLink() {
+  const shareUrlInput = document.getElementById('shareUrl');
+  shareUrlInput.select();
+  shareUrlInput.setSelectionRange(0, 99999);
+  
+  try {
+    navigator.clipboard.writeText(shareUrlInput.value).then(() => {
+      alert('链接已复制到剪贴板！');
+    });
+  } catch (err) {
+    document.execCommand('copy');
+    alert('链接已复制到剪贴板！');
+  }
+  
+  document.getElementById('shareModal').classList.remove('open');
+}
 </script>
 
 <!-- ==================== 统计代码 ==================== -->

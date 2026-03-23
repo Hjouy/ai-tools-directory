@@ -10,16 +10,19 @@
 ## 已有页面（截至 2026-03-23）
 | 页面 | 描述 |
 |------|------|
-| index.html | 首页，6分类+6热门工具+AI对话+快速查询 |
+| index.html | 首页，6分类+6热门工具+AI对话+快速查询+移动端优化 |
 | tool.html | 工具详情页，含8个工具完整数据 |
-| writing.html | AI写作分类页，12个工具 |
-| image.html | AI绘画分类页，12个工具 |
+| writing.html | AI写作分类页，12个工具+搜索框 |
+| image.html | AI绘画分类页，12个工具+搜索框 |
 | ranking.html | 排行榜（月榜/分类榜/飙升榜） |
 | news.html | AI行业资讯（含侧边栏热门话题） |
 | submit.html | 工具提交页（三档套餐） |
-| converter.html | 文件转换工具（PDF/Word/Excel/图片） |
+| converter.html | 文件转换工具（PDF/Word/Excel/图片）- 图片转PDF完全可用 |
 | compare.html | 工具对比页（ChatGPT vs Claude等4组对比） |
 | tutorials.html | AI工具教程专区（10个工具使用教程） |
+| use-cases.html | 使用场景页（6个应用场景） |
+| 404.html | 404错误页面（带导航和搜索） |
+| rss.xml | RSS订阅源（包含所有工具、对比、教程、资讯） |
 
 ## SEO资产（2026-03-23 完成）
 - `sitemap.xml`：23个URL完整站点地图（新增 compare.html、tutorials.html）
@@ -35,6 +38,8 @@ chatgpt, midjourney, cursor, stable-diffusion, runway, suno, claude, notion-ai
 - 纯HTML/CSS/JS（无框架），GitHub Pages静态托管
 - 暗色主题，渐变色彩，响应式设计
 - localStorage保存AI对话历史
+- jsPDF：图片转PDF功能
+- mammoth.js：文档转换支持（演示版本）
 
 ## 后续升级方向
 - 增加更多工具详情页（video/code/audio 分类）
@@ -43,6 +48,7 @@ chatgpt, midjourney, cursor, stable-diffusion, runway, suno, claude, notion-ai
 - 用户生成内容：评论、收藏、评分系统（localStorage + 可选后端）
 - 页面加载速度优化：图片压缩、懒加载、CDN
 - 提交站点地图到 Google Search Console / Bing Webmaster Tools
+- 文件转换后端服务：PDF转Word、Word转PDF、PDF转Excel（当前仅图片转PDF可用）
 
 ## 工作流程
 - 本地开发完成后，直接执行 git push

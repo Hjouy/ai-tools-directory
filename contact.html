@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>联系我们 - AI工具导航 | 工具收录、广告投放、商务合作</title>
+  <meta name="description" content="联系AI工具导航团队：工具收录申请、广告投放咨询、商务合作洽谈、问题反馈与建议。我们期待与您合作！">
+  <meta name="keywords" content="AI工具导航,联系我们,工具收录,广告投放,商务合作">
+  <meta name="author" content="AI工具导航">
+  <meta name="robots" content="index, follow">
+  <!-- Open Graph -->
+  <meta property="og:title" content="联系我们 - AI工具导航">
+  <meta property="og:description" content="联系AI工具导航团队：工具收录、广告投放、商务合作。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://hjouy.github.io/ai-tools-directory/contact.html">
+  <meta property="og:site_name" content="AI工具导航">
+  <meta property="og:locale" content="zh_CN">
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="联系我们 - AI工具导航">
+  <meta name="twitter:description" content="联系AI工具导航团队：工具收录、广告投放、商务合作。">
+  <!-- Canonical -->
+  <link rel="canonical" href="https://hjouy.github.io/ai-tools-directory/contact.html">
+  <!-- Sitemap -->
+  <link rel="sitemap" type="application/xml" href="/ai-tools-directory/sitemap.xml">
+
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --secondary: #a855f7;
+      --accent: #06b6d4;
+      --bg: #0f0f1a;
+      --bg-card: #1a1a2e;
+      --bg-card2: #16213e;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --border: #2d2d4e;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --error: #ef4444;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* 导航栏 */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(15,15,26,0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      font-size: 1.3rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+
+    .nav-links a:hover, .nav-links a.active {
+      color: var(--text);
+      background: var(--border);
+    }
+
+    .nav-btn {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white !important;
+      padding: 6px 16px !important;
+      border-radius: 20px !important;
+      font-weight: 500;
+    }
+
+    /* 面包屑 */
+    .breadcrumb {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 16px 24px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .breadcrumb a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .breadcrumb a:hover { color: var(--primary); }
+    .breadcrumb span { margin: 0 8px; }
+
+    /* 主容器 */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    /* 页面标题 */
+    .page-header {
+      text-align: center;
+      padding: 60px 24px 40px;
+      background: radial-gradient(ellipse at top, rgba(99,102,241,0.1) 0%, transparent 70%);
+    }
+
+    .page-header h1 {
+      font-size: clamp(2rem, 5vw, 2.8rem);
+      font-weight: 800;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .page-header p {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* 卡片通用 */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 24px;
+    }
+
+    .card h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* 联系网格 */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 32px;
+    }
+
+    /* 联系方式卡片 */
+    .contact-methods {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .contact-method {
+      display: flex;
+      gap: 16px;
+      padding: 24px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      transition: all 0.3s;
+    }
+
+    .contact-method:hover {
+      border-color: var(--primary);
+      transform: translateX(4px);
+    }
+
+    .method-icon {
+      width: 52px;
+      height: 52px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      flex-shrink: 0;
+    }
+
+    .method-content h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .method-content p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+    }
+
+    .method-link {
+      color: var(--primary);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .method-link:hover {
+      text-decoration: underline;
+    }
+
+    /* 表单样式 */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+
+    .form-group label span {
+      color: var(--error);
+      margin-left: 4px;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 0.95rem;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
+    }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+      color: var(--text-muted);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    /* 提交按钮 */
+    .btn-submit {
+      width: 100%;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-submit:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* 服务类型 */
+    .service-types {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .service-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .service-card:hover,
+    .service-card.active {
+      border-color: var(--primary);
+      background: rgba(99,102,241,0.05);
+    }
+
+    .service-card.active {
+      box-shadow: 0 0 0 2px var(--primary);
+    }
+
+    .service-icon {
+      font-size: 2.5rem;
+      margin-bottom: 12px;
+    }
+
+    .service-card h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .service-card p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin: 0;
+    }
+
+    /* 成功提示 */
+    .success-message {
+      display: none;
+      background: rgba(16,185,129,0.1);
+      border: 1px solid rgba(16,185,129,0.3);
+      border-radius: 12px;
+      padding: 32px;
+      text-align: center;
+    }
+
+    .success-message.show {
+      display: block;
+    }
+
+    .success-icon {
+      width: 64px;
+      height: 64px;
+      background: var(--success);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      margin: 0 auto 20px;
+    }
+
+    .success-message h3 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .success-message p {
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    /* FAQ */
+    .faq-item {
+      border-bottom: 1px solid var(--border);
+      padding: 20px 0;
+    }
+
+    .faq-item:last-child {
+      border-bottom: none;
+    }
+
+    .faq-question {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .faq-answer {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.7;
+      padding-left: 28px;
+    }
+
+    /* 底部 */
+    footer {
+      background: var(--bg-card);
+      border-top: 1px solid var(--border);
+      padding: 48px 24px 24px;
+    }
+
+    .footer-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 40px;
+      margin-bottom: 32px;
+    }
+
+    .footer-brand p {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      margin: 12px 0;
+    }
+
+    .footer-col h4 {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .footer-col ul {
+      list-style: none;
+    }
+
+    .footer-col ul li {
+      margin-bottom: 8px;
+    }
+
+    .footer-col ul li a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: color 0.2s;
+    }
+
+    .footer-col ul li a:hover { color: var(--primary); }
+
+    .footer-bottom {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* 响应式 */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .contact-grid { grid-template-columns: 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+      .service-types { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+
+  <!-- 结构化数据 -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ContactPage",
+    "name": "联系我们 - AI工具导航",
+    "description": "联系AI工具导航团队：工具收录、广告投放、商务合作。",
+    "url": "https://hjouy.github.io/ai-tools-directory/contact.html",
+    "mainEntity": {
+      "@type": "Organization",
+      "name": "AI工具导航",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer service",
+        "availableLanguage": ["Chinese"]
+      }
+    }
+  }
+  </script>
+</head>
+<body>
+
+<!-- 导航栏 -->
+<nav class="navbar">
+  <a href="index.html" class="nav-logo">🤖 AI工具导航</a>
+  <ul class="nav-links">
+    <li><a href="index.html">首页</a></li>
+    <li><a href="ranking.html">排行榜</a></li>
+    <li><a href="news.html">AI资讯</a></li>
+    <li><a href="about.html">关于我们</a></li>
+    <li><a href="contact.html" class="active">联系我们</a></li>
+    <li><a href="submit.html" class="nav-btn">提交工具</a></li>
+  </ul>
+</nav>
+
+<!-- 面包屑 -->
+<nav class="breadcrumb" aria-label="面包屑导航">
+  <a href="index.html">首页</a>
+  <span>›</span>
+  <span>联系我们</span>
+</nav>
+
+<!-- 页面标题 -->
+<header class="page-header">
+  <h1>联系我们</h1>
+  <p>无论是工具收录、广告投放还是商务合作，我们都期待与您交流</p>
+</header>
+
+<div class="container">
+
+  <!-- 服务类型选择 -->
+  <div class="card">
+    <h2>🎯 您想咨询什么？</h2>
+    <div class="service-types">
+      <div class="service-card" onclick="selectService('submit')">
+        <div class="service-icon">🚀</div>
+        <h3>工具收录</h3>
+        <p>提交您的AI工具，获得免费曝光</p>
+      </div>
+      <div class="service-card" onclick="selectService('ad')">
+        <div class="service-icon">📢</div>
+        <h3>广告投放</h3>
+        <p>精准触达AI工具用户群体</p>
+      </div>
+      <div class="service-card" onclick="selectService('cooperation')">
+        <div class="service-icon">🤝</div>
+        <h3>商务合作</h3>
+        <p>内容合作、资源互换等</p>
+      </div>
+      <div class="service-card" onclick="selectService('feedback')">
+        <div class="service-icon">💬</div>
+        <h3>问题反馈</h3>
+        <p>建议、投诉、技术支持</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="contact-grid">
+    <!-- 联系方式 -->
+    <div class="contact-methods">
+      <div class="contact-method">
+        <div class="method-icon">📧</div>
+        <div class="method-content">
+          <h3>电子邮箱</h3>
+          <p>商务合作与工具收录</p>
+          <a href="mailto:contact@aitools.nav" class="method-link">contact@aitools.nav →</a>
+        </div>
+      </div>
+      <div class="contact-method">
+        <div class="method-icon">💬</div>
+        <div class="method-content">
+          <h3>微信公众号</h3>
+          <p>获取最新AI工具资讯</p>
+          <span class="method-link">AI工具导航</span>
+        </div>
+      </div>
+      <div class="contact-method">
+        <div class="method-icon">🐙</div>
+        <div class="method-content">
+          <h3>GitHub</h3>
+          <p>开源项目与问题反馈</p>
+          <a href="https://github.com/hjouy/ai-tools-directory" target="_blank" rel="noopener" class="method-link">访问仓库 →</a>
+        </div>
+      </div>
+      <div class="contact-method">
+        <div class="method-icon">⏰</div>
+        <div class="method-content">
+          <h3>响应时间</h3>
+          <p>工作日 24 小时内回复</p>
+          <span class="method-link">周一至周五 9:00-18:00</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 联系表单 -->
+    <div class="card" style="margin-bottom: 0;">
+      <h2>📝 发送消息</h2>
+      
+      <div id="contactForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label>您的姓名 <span>*</span></label>
+            <input type="text" id="name" placeholder="请输入您的姓名" required>
+          </div>
+          <div class="form-group">
+            <label>联系邮箱 <span>*</span></label>
+            <input type="email" id="email" placeholder="your@email.com" required>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>咨询类型 <span>*</span></label>
+            <select id="type" required>
+              <option value="">请选择咨询类型</option>
+              <option value="submit">工具收录</option>
+              <option value="ad">广告投放</option>
+              <option value="cooperation">商务合作</option>
+              <option value="feedback">问题反馈</option>
+              <option value="other">其他</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>公司名称</label>
+            <input type="text" id="company" placeholder="选填">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>咨询内容 <span>*</span></label>
+          <textarea id="message" placeholder="请详细描述您的需求，我们会尽快回复您..." required></textarea>
+        </div>
+        
+        <button type="button" class="btn-submit" onclick="submitForm()">
+          <span>✉️</span> 发送消息
+        </button>
+      </div>
+
+      <!-- 成功提示 -->
+      <div id="successMessage" class="success-message">
+        <div class="success-icon">✓</div>
+        <h3>消息已发送！</h3>
+        <p>感谢您的联系，我们会在24小时内回复您。</p>
+        <button class="btn-submit" onclick="resetForm()">发送新消息</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="card">
+    <h2>❓ 常见问题</h2>
+    
+    <div class="faq-item">
+      <div class="faq-question">🚀 如何提交工具收录？</div>
+      <div class="faq-answer">
+        您可以通过本页面表单提交，或直接发送邮件至 contact@aitools.nav，提供工具名称、官网链接、功能介绍等基本信息。我们会在3个工作日内审核并回复。
+      </div>
+    </div>
+    
+    <div class="faq-item">
+      <div class="faq-question">📢 广告投放如何收费？</div>
+      <div class="faq-answer">
+        我们提供多种广告位选择：首页横幅、分类页面、工具详情页等。具体价格根据位置和时长而定，基础套餐从¥299/月起。请联系获取详细报价单。
+      </div>
+    </div>
+    
+    <div class="faq-item">
+      <div class="faq-question">🆓 工具收录是否收费？</div>
+      <div class="faq-answer">
+        基础收录完全免费！所有符合条件的优质AI工具都可以免费申请收录。我们也提供付费推广服务，可以获得更好的展示位置和曝光量。
+      </div>
+    </div>
+    
+    <div class="faq-item">
+      <div class="faq-question">⏱️ 审核需要多长时间？</div>
+      <div class="faq-answer">
+        通常在3-5个工作日内完成审核。如果工具质量高、信息完整，审核速度会更快。审核通过后，工具会在24小时内上线展示。
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- 底部 -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">🤖 AI工具导航</div>
+      <p>发现最好用的AI工具，提升你的工作效率。收录500+人工智能工具，每日更新。</p>
+      <p style="font-size:0.8rem;">© 2026 AI工具导航 · 免费使用</p>
+    </div>
+    <div class="footer-col">
+      <h4>工具分类</h4>
+      <ul>
+        <li><a href="writing.html">AI写作</a></li>
+        <li><a href="image.html">AI绘画</a></li>
+        <li><a href="video.html">AI视频</a></li>
+        <li><a href="code.html">AI编程</a></li>
+        <li><a href="audio.html">AI音乐</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>关于</h4>
+      <ul>
+        <li><a href="about.html">关于我们</a></li>
+        <li><a href="contact.html">联系我们</a></li>
+        <li><a href="submit.html">提交工具</a></li>
+        <li><a href="submit.html">广告投放</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>资源</h4>
+      <ul>
+        <li><a href="sitemap.xml">网站地图</a></li>
+        <li><a href="rss.xml">RSS订阅</a></li>
+        <li><a href="https://github.com/hjouy/ai-tools-directory" target="_blank" rel="noopener">GitHub</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 AI工具导航 · 专注发现最好用的AI工具</span>
+    <span>
+      <a href="sitemap.xml" style="color:var(--text-muted);text-decoration:none;margin-right:16px;">网站地图</a>
+      <a href="rss.xml" style="color:var(--text-muted);text-decoration:none;">RSS订阅</a>
+    </span>
+  </div>
+</footer>
+
+<script>
+  // 选择服务类型
+  function selectService(type) {
+    document.getElementById('type').value = type;
+    // 高亮选中的卡片
+    document.querySelectorAll('.service-card').forEach(card => {
+      card.classList.remove('active');
+    });
+    event.currentTarget.classList.add('active');
+  }
+
+  // 表单验证和提交
+  function submitForm() {
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const type = document.getElementById('type').value;
+    const message = document.getElementById('message').value.trim();
+
+    // 验证
+    if (!name) {
+      alert('请输入您的姓名');
+      document.getElementById('name').focus();
+      return;
+    }
+    if (!email || !email.includes('@')) {
+      alert('请输入有效的邮箱地址');
+      document.getElementById('email').focus();
+      return;
+    }
+    if (!type) {
+      alert('请选择咨询类型');
+      document.getElementById('type').focus();
+      return;
+    }
+    if (!message) {
+      alert('请输入咨询内容');
+      document.getElementById('message').focus();
+      return;
+    }
+
+    // 模拟提交（实际项目中这里应该发送到后端API）
+    const btn = document.querySelector('.btn-submit');
+    btn.disabled = true;
+    btn.innerHTML = '<span>⏳</span> 发送中...';
+
+    // 模拟网络延迟
+    setTimeout(() => {
+      // 保存到localStorage（演示用）
+      const submissions = JSON.parse(localStorage.getItem('contactSubmissions') || '[]');
+      submissions.push({
+        name,
+        email,
+        type,
+        company: document.getElementById('company').value,
+        message,
+        date: new Date().toISOString()
+      });
+      localStorage.setItem('contactSubmissions', JSON.stringify(submissions));
+
+      // 显示成功消息
+      document.getElementById('contactForm').style.display = 'none';
+      document.getElementById('successMessage').classList.add('show');
+    }, 1500);
+  }
+
+  // 重置表单
+  function resetForm() {
+    document.getElementById('name').value = '';
+    document.getElementById('email').value = '';
+    document.getElementById('type').value = '';
+    document.getElementById('company').value = '';
+    document.getElementById('message').value = '';
+    
+    document.querySelectorAll('.service-card').forEach(card => {
+      card.classList.remove('active');
+    });
+
+    const btn = document.querySelector('.btn-submit');
+    btn.disabled = false;
+    btn.innerHTML = '<span>✉️</span> 发送消息';
+
+    document.getElementById('contactForm').style.display = 'block';
+    document.getElementById('successMessage').classList.remove('show');
+  }
+</script>
+
+<!-- 百度统计 -->
+<script>
+  var _hmt = _hmt || [];
+  (function() {
+    var hm = document.createElement("script");
+    hm.src = "https://hm.baidu.com/hm.js?请替换为你的百度统计ID";
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(hm, s);
+  })();
+</script>
+
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-请替换为你的GA4ID"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-请替换为你的GA4ID');
+</script>
+
+</body>
+</html>
