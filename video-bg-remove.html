@@ -3,9 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>视频背景移除 - AI抠视频背景、绿幕替换</title>
-    <meta name="description" content="免费在线视频背景移除工具，支持AI自动抠视频背景、绿幕替换、智能蒙版处理">
-    <meta name="keywords" content="视频背景移除,绿幕替换,AI抠视频,视频编辑,抠像">
+    <meta name="description" content="免费在线AI视频背景移除工具 - 使用Google MediaPipe AI模型自动识别人物并移除视频背景">
+    <meta name="keywords" content="视频背景移除,AI抠视频,视频去背景,绿幕替换">
+    <meta property="og:title" content="AI视频背景移除 - 在线一键去除视频背景">
+    <meta property="og:description" content="使用Google MediaPipe AI模型，智能识别人物，一键去除视频背景">
+    <meta property="og:type" content="website">
+    <link rel="canonical" href="https://hjouy.github.io/ai-tools-directory/video-bg-remove.html">
+    <title>AI视频背景移除 - 一键去除视频背景 | AI工具导航站</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -14,14 +18,17 @@
         .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px 30px; text-align: center; }
         .header h1 { font-size: 2.5em; margin-bottom: 10px; }
         .header p { font-size: 1.1em; opacity: 0.9; }
+        .ai-badge { display: inline-block; background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 20px; font-size: 0.8em; margin-left: 10px; }
         .main-content { display: grid; grid-template-columns: 350px 1fr; gap: 30px; padding: 30px; }
-        .left-panel { background: #f8f9fa; padding: 25px; border-radius: 15px; }
+        .left-panel { background: #f8f9fa; padding: 25px; border-radius: 15px; height: fit-content; }
         .right-panel { display: flex; flex-direction: column; gap: 20px; }
         .section-title { font-size: 1.3em; color: #333; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #667eea; display: flex; align-items: center; gap: 10px; }
         .upload-area { border: 3px dashed #667eea; border-radius: 15px; padding: 40px 20px; text-align: center; cursor: pointer; transition: all 0.3s; background: white; }
-        .upload-area:hover { background: #f0f4ff; }
-        .upload-area i { font-size: 3em; color: #667eea; margin-bottom: 15px; }
+        .upload-area:hover { background: #f0f4ff; border-color: #764ba2; }
+        .upload-area i { font-size: 3em; color: #667eea; margin-bottom: 15px; display: block; }
         .upload-area input { display: none; }
+        .upload-area p { color: #666; font-size: 0.9em; }
+        .file-info { margin-top: 15px; padding: 12px; background: white; border-radius: 10px; font-size: 0.9em; color: #555; display: none; }
         .background-options { display: flex; gap: 12px; margin-top: 15px; flex-wrap: wrap; }
         .bg-option { width: 50px; height: 50px; border-radius: 10px; cursor: pointer; border: 3px solid #e0e0e0; transition: all 0.3s; }
         .bg-option:hover { transform: scale(1.1); }
@@ -31,52 +38,53 @@
         .bg-blue { background: #4386F4; }
         .bg-green { background: #34A853; }
         .bg-black { background: #000000; }
-        .bg-pink { background: #FF6B9D; }
         .slider-group { margin-top: 20px; background: white; padding: 15px; border-radius: 12px; }
-        .slider-group label { display: block; margin-bottom: 10px; color: #555; }
+        .slider-group label { display: block; margin-bottom: 10px; color: #555; font-size: 0.9em; }
         .slider-group input[type="range"] { width: 100%; height: 8px; border-radius: 4px; background: #e0e0e0; outline: none; }
         .slider-group input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #667eea; cursor: pointer; }
-        .slider-value { text-align: right; color: #667eea; font-weight: 600; margin-top: 8px; }
+        .slider-value { text-align: right; color: #667eea; font-weight: 600; margin-top: 8px; font-size: 0.9em; }
         .video-area { background: #f0f4ff; border-radius: 15px; padding: 30px; min-height: 500px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .video-container { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; max-width: 100%; }
-        #outputVideo, #originalVideo { max-width: 100%; border-radius: 10px; max-height: 500px; }
+        #outputVideo, #originalVideo { max-width: 100%; border-radius: 10px; max-height: 450px; }
         .video-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; }
         .video-compare-item { background: #f8f9fa; padding: 15px; border-radius: 10px; }
         .video-compare-item h4 { color: #333; margin-bottom: 10px; font-size: 0.9em; }
         .action-buttons { display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; }
-        .btn { padding: 12px 30px; border: none; border-radius: 10px; font-size: 1em; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 600; }
+        .btn { padding: 12px 30px; border: none; border-radius: 10px; font-size: 1em; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 600; transition: all 0.3s; }
         .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4); }
+        .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4); }
         .btn-secondary { background: #f0f4ff; color: #667eea; }
-        .btn-secondary:hover { background: #e0e8ff; }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .file-info { margin-top: 15px; padding: 12px; background: white; border-radius: 10px; font-size: 0.9em; color: #555; }
-        .processing-indicator { display: none; text-align: center; padding: 20px; }
+        .btn-secondary:hover:not(:disabled) { background: #e0e8ff; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+        .processing-indicator { display: none; text-align: center; padding: 20px; background: #f8f9fa; border-radius: 15px; }
         .processing-indicator.show { display: block; }
-        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #667eea; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto 15px; }
+        .spinner { border: 4px solid #e0e0e0; border-top: 4px solid #667eea; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto 15px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .progress-bar { width: 100%; height: 8px; background: #e0e0e0; border-radius: 4px; margin-top: 15px; overflow: hidden; }
         .progress-fill { height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); transition: width 0.3s; }
         .progress-text { margin-top: 10px; color: #666; font-size: 0.9em; }
-        .quality-badge { display: inline-block; padding: 4px 12px; background: #667eea; color: white; border-radius: 20px; font-size: 0.85em; margin-left: 10px; }
+        .status-bar { padding: 12px 16px; border-radius: 8px; font-size: 0.9em; display: none; align-items: center; gap: 10px; margin-bottom: 15px; }
+        .status-bar.show { display: flex; }
+        .status-bar.loading { background: rgba(102, 126, 234, 0.1); border: 1px solid rgba(102, 126, 234, 0.3); color: #667eea; }
+        .status-bar.success { background: rgba(76, 175, 80, 0.1); border: 1px solid rgba(76, 175, 80, 0.3); color: #4caf50; }
+        .status-bar.error { background: rgba(244, 67, 54, 0.1); border: 1px solid rgba(244, 67, 54, 0.3); color: #f44336; }
         @media (max-width: 1024px) { .main-content { grid-template-columns: 1fr; } .video-compare { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1><i class="fas fa-video"></i> 视频背景移除</h1>
-            <p>AI自动抠视频背景 · 绿幕替换 · 智能蒙版 <span class="quality-badge">✅ 完整版</span></p>
+            <h1><i class="fas fa-video"></i> AI视频背景移除 <span class="ai-badge">MediaPipe AI</span></h1>
+            <p>使用Google AI模型，智能识别人物并移除视频背景</p>
         </div>
         <div class="main-content">
             <div class="left-panel">
-                <div class="section-title"><i class="fas fa-upload"></i> 上传视频</div>
-                <div class="upload-area" onclick="document.getElementById('videoInput').click()">
+                <div class="upload-area" id="uploadArea">
                     <i class="fas fa-cloud-upload-alt"></i>
                     <p>点击或拖拽上传视频</p>
-                    <p style="font-size: 0.85em;">支持 MP4、WebM 格式</p>
-                    <p style="font-size: 0.85em;">最大 100MB</p>
-                    <input type="file" id="videoInput" accept="video/*">
+                    <p style="font-size: 0.85em; margin-top: 8px; color: #999;">支持 MP4、WebM 格式</p>
+                    <p style="font-size: 0.85em; color: #999;">最大 100MB</p>
+                    <input type="file" id="videoInput" accept="video/mp4,video/webm">
                 </div>
                 <div id="fileInfo" class="file-info" style="display: none;"></div>
                 <div class="section-title" style="margin-top: 25px;"><i class="fas fa-palette"></i> 替换背景</div>
@@ -86,117 +94,135 @@
                     <div class="bg-option bg-blue" data-bg="#4386F4" title="蓝色背景"></div>
                     <div class="bg-option bg-green" data-bg="#34A853" title="绿色背景"></div>
                     <div class="bg-option bg-black" data-bg="#000000" title="黑色背景"></div>
-                    <div class="bg-option bg-pink" data-bg="#FF6B9D" title="粉色背景"></div>
                 </div>
                 <div class="slider-group">
-                    <label><i class="fas fa-sliders-h"></i> 蒙版强度</label>
-                    <input type="range" id="maskIntensity" min="0" max="100" value="50">
-                    <div class="slider-value" id="maskIntensityValue">50%</div>
+                    <label><i class="fas fa-sliders-h"></i> 分割精度</label>
+                    <input type="range" id="segmentationQuality" min="1" max="5" value="2">
+                    <div class="slider-value" id="segmentationQualityValue">2 - 平衡</div>
                 </div>
                 <div class="slider-group">
-                    <label><i class="fas fa-expand"></i> 羽化程度</label>
-                    <input type="range" id="feathering" min="0" max="20" value="5">
-                    <div class="slider-value" id="featheringValue">5px</div>
+                    <label><i class="fas fa-expand"></i> 边缘平滑</label>
+                    <input type="range" id="feathering" min="0" max="10" value="3">
+                    <div class="slider-value" id="featheringValue">3px</div>
                 </div>
-                <div class="slider-group">
-                    <label><i class="fas fa-clock"></i> 采样帧数</label>
-                    <input type="range" id="sampleFrames" min="5" max="30" value="15">
-                    <div class="slider-value" id="sampleFramesValue">15帧</div>
-                </div>
+                <button class="btn btn-primary" id="processBtn" disabled onclick="processVideo()" style="margin-top: 20px; width: 100%; justify-content: center;">
+                    <i class="fas fa-magic"></i> AI处理视频
+                </button>
+                <button class="btn btn-secondary" id="downloadBtn" disabled onclick="downloadVideo()" style="width: 100%; justify-content: center;">
+                    <i class="fas fa-download"></i> 下载结果
+                </button>
+                <button class="btn btn-secondary" onclick="resetAll()" style="width: 100%; justify-content: center;">
+                    <i class="fas fa-redo"></i> 重置
+                </button>
             </div>
             <div class="right-panel">
-                <div class="video-area">
-                    <div class="video-container">
-                        <h3 style="color: #333; margin-bottom: 15px;"><i class="fas fa-film"></i> 视频预览</h3>
-                        <div id="placeholderVideo" style="color: #666;">
-                            <i class="fas fa-video" style="font-size: 4em; color: #ddd; margin-bottom: 20px;"></i>
-                            <p>上传视频后，这里将显示预览</p>
+                <div id="statusBar" class="status-bar"><span id="statusText">加载中...</span></div>
+                <div class="video-area" id="videoArea">
+                    <div id="uploadHint" style="text-align: center; color: #888;">
+                        <i class="fas fa-film" style="font-size: 4em; margin-bottom: 20px; display: block; color: #ddd;"></i>
+                        <p>上传视频后，AI将自动识别人物并移除背景</p>
+                    </div>
+                </div>
+                <div class="video-compare" id="videoCompare" style="display: none;">
+                    <div class="video-compare-item">
+                        <h4><i class="fas fa-play"></i> 原视频</h4>
+                        <div class="video-container" style="background: repeating-conic-gradient(#e0e0e0 0% 25%, white 0% 50%) 50% / 15px 15px;">
+                            <video id="originalVideo" controls muted></video>
                         </div>
-                        <div id="videoContainer" style="display: none;">
-                            <div class="video-compare">
-                                <div class="video-compare-item">
-                                    <h4>原始视频</h4>
-                                    <video id="originalVideo" muted loop playsinline></video>
-                                </div>
-                                <div class="video-compare-item">
-                                    <h4>处理结果</h4>
-                                    <video id="outputVideo" muted loop playsinline></video>
-                                </div>
-                            </div>
+                    </div>
+                    <div class="video-compare-item">
+                        <h4><i class="fas fa-check"></i> 处理结果</h4>
+                        <div class="video-container" id="resultContainer" style="background: repeating-conic-gradient(#e0e0e0 0% 25%, white 0% 50%) 50% / 15px 15px;">
+                            <video id="outputVideo" controls></video>
                         </div>
                     </div>
                 </div>
                 <div class="processing-indicator" id="processingIndicator">
                     <div class="spinner"></div>
-                    <p>AI正在处理中，请稍候...</p>
+                    <p id="processingText">AI正在处理中，请稍候...</p>
                     <div class="progress-bar">
-                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                        <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
                     </div>
-                    <div class="progress-text" id="progressText">准备中...</div>
-                </div>
-                <div class="action-buttons">
-                    <button class="btn btn-primary" id="processBtn" onclick="processVideo()" disabled><i class="fas fa-magic"></i> 移除背景</button>
-                    <button class="btn btn-secondary" id="downloadBtn" onclick="downloadVideo()" disabled><i class="fas fa-download"></i> 下载视频</button>
-                    <button class="btn btn-secondary" onclick="resetAll()"><i class="fas fa-redo"></i> 重置</button>
+                    <p class="progress-text" id="progressText">准备中...</p>
                 </div>
             </div>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.17.0/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.1.1632779610/selfie_segmentation.js" crossorigin="anonymous"></script>
+
     <script>
-        let videoFile = null;
-        let currentBg = 'transparent';
         let originalVideo = null;
-        let processedBlob = null;
         let videoDuration = 0;
         let videoFps = 30;
-        
+        let processedBlob = null;
+        let segmenter = null;
+        let segmenterReady = false;
+        let currentBg = 'transparent';
+        let isProcessing = false;
+        let videoWidth = 0;
+        let videoHeight = 0;
+
+        async function initSegmenter() {
+            try {
+                showStatus('正在加载AI模型...', 'loading');
+                segmenter = await SelfieSegmentation.create({
+                    locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.1.1632779610/${file}`
+                });
+                segmenter.setOptions({ modelType: 'general', selfieMode: false });
+                segmenterReady = true;
+                showStatus('AI模型加载完成，可以开始处理', 'success');
+                setTimeout(() => hideStatus(), 3000);
+            } catch (err) {
+                console.error('模型加载失败:', err);
+                showStatus('AI模型加载失败，将使用备用算法', 'error');
+                segmenterReady = false;
+            }
+        }
+        initSegmenter();
+
         document.getElementById('videoInput').addEventListener('change', handleVideoUpload);
-        const uploadArea = document.querySelector('.upload-area');
-        uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.style.background = '#f0f4ff'; });
-        uploadArea.addEventListener('dragleave', () => uploadArea.style.background = 'white');
-        uploadArea.addEventListener('drop', e => {
-            e.preventDefault(); uploadArea.style.background = 'white';
-            const file = e.dataTransfer.files[0];
-            if (file) handleVideo(file);
+        const uploadArea = document.getElementById('uploadArea');
+        uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.style.background = '#f0f4ff'; });
+        uploadArea.addEventListener('dragleave', () => { uploadArea.style.background = 'white'; });
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.background = 'white';
+            const files = e.dataTransfer.files;
+            if (files.length > 0 && files[0].type.startsWith('video/')) handleVideo(files[0]);
         });
-        
-        function handleVideoUpload(e) { 
-            const file = e.target.files[0]; 
-            if (file) handleVideo(file); 
-        }
-        
+
+        function handleVideoUpload(e) { const file = e.target.files[0]; if (file) handleVideo(file); }
+
         function handleVideo(file) {
-            const validTypes = ['video/mp4', 'video/webm', 'video/ogg'];
-            if (!validTypes.includes(file.type)) { 
-                alert('请上传 MP4、WebM 或 OGG 格式的视频'); 
-                return; 
-            }
-            if (file.size > 100 * 1024 * 1024) { 
-                alert('文件大小不能超过 100MB'); 
-                return; 
-            }
-            videoFile = file;
+            if (!file.type.startsWith('video/')) { showStatus('请上传视频文件', 'error'); return; }
+            if (file.size > 100 * 1024 * 1024) { showStatus('视频大小不能超过100MB', 'error'); return; }
             document.getElementById('fileInfo').style.display = 'block';
-            document.getElementById('fileInfo').innerHTML = `文件: ${file.name}<br>大小: ${(file.size / 1024 / 1024).toFixed(2)} MB<br>类型: ${file.type}`;
-            loadVideo(file);
-        }
-        
-        function loadVideo(file) {
-            const video = document.getElementById('originalVideo');
-            video.src = URL.createObjectURL(file);
+            document.getElementById('fileInfo').innerHTML = `<div>文件: ${file.name}</div><div style="margin-top:5px;">大小: ${(file.size / 1024 / 1024).toFixed(1)} MB</div>`;
+            const url = URL.createObjectURL(file);
+            const video = document.createElement('video');
+            video.src = url;
+            video.muted = true;
             video.onloadedmetadata = () => {
                 originalVideo = video;
+                videoWidth = video.videoWidth;
+                videoHeight = video.videoHeight;
                 videoDuration = video.duration;
-                videoFps = 30; // 默认30fps
-                
-                document.getElementById('placeholderVideo').style.display = 'none';
-                document.getElementById('videoContainer').style.display = 'block';
+                videoFps = 30;
+                document.getElementById('uploadHint').style.display = 'none';
+                document.getElementById('videoArea').innerHTML = `
+                    <div class="video-container" style="background: repeating-conic-gradient(#e0e0e0 0% 25%, white 0% 50%) 50% / 15px 15px;">
+                        <video id="originalVideo" src="${url}" controls muted style="max-width:100%;border-radius:10px;max-height:400px;"></video>
+                    </div>
+                    <p style="color:#666;margin-top:10px;font-size:0.9em;">${videoWidth}x${videoHeight} · ${Math.round(videoDuration)}秒</p>
+                `;
+                document.getElementById('videoCompare').style.display = 'grid';
                 document.getElementById('processBtn').disabled = false;
-                
-                updateSliderMax('sampleFrames', Math.min(30, Math.floor(videoDuration * videoFps)));
+                showStatus('视频已加载，点击AI处理视频开始', 'success');
             };
         }
-        
+
         document.querySelectorAll('.bg-option').forEach(option => {
             option.addEventListener('click', () => {
                 document.querySelectorAll('.bg-option').forEach(o => o.classList.remove('active'));
@@ -204,229 +230,110 @@
                 currentBg = option.dataset.bg;
             });
         });
-        
-        ['maskIntensity', 'feathering', 'sampleFrames'].forEach(id => {
-            const slider = document.getElementById(id);
-            const value = document.getElementById(id + 'Value');
-            slider.addEventListener('input', e => {
-                let unit = '';
-                if (id === 'feathering') unit = 'px';
-                else if (id === 'sampleFrames') unit = '帧';
-                else unit = '%';
-                value.textContent = e.target.value + unit;
-            });
+
+        document.getElementById('segmentationQuality').addEventListener('input', (e) => {
+            const val = parseInt(e.target.value);
+            const labels = ['1 - 快速', '2 - 平衡', '3 - 质量', '4 - 高质量', '5 - 最佳'];
+            document.getElementById('segmentationQualityValue').textContent = labels[val - 1] || '2 - 平衡';
         });
-        
-        function updateSliderMax(id, max) {
-            const slider = document.getElementById(id);
-            slider.max = max;
-            if (parseInt(slider.value) > max) {
-                slider.value = max;
-                document.getElementById(id + 'Value').textContent = max + '帧';
-            }
-        }
-        
+        document.getElementById('feathering').addEventListener('input', (e) => { document.getElementById('featheringValue').textContent = e.target.value + 'px'; });
+
         async function processVideo() {
-            if (!originalVideo) { alert('请先上传视频'); return; }
-            
-            document.getElementById('processingIndicator').classList.add('show');
+            if (!originalVideo || isProcessing) return;
+            isProcessing = true;
+            showStatus('AI正在处理视频，请稍候...', 'loading');
             document.getElementById('processBtn').disabled = true;
-            
-            try {
-                await processVideoBackgroundRemoval();
-            } catch (error) {
-                console.error('视频处理失败:', error);
-                alert('视频处理失败: ' + error.message);
-                resetProcessingUI();
-            }
+            document.getElementById('processingIndicator').classList.add('show');
+            try { await processVideoBackgroundRemoval(); }
+            catch (error) { console.error('视频处理失败:', error); showStatus('视频处理失败: ' + error.message, 'error'); resetProcessingUI(); }
         }
-        
+
         async function processVideoBackgroundRemoval() {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            
-            canvas.width = originalVideo.videoWidth;
-            canvas.height = originalVideo.videoHeight;
-            
-            const maskIntensity = parseInt(document.getElementById('maskIntensity').value) / 100;
+            const quality = parseInt(document.getElementById('segmentationQuality').value);
             const feathering = parseInt(document.getElementById('feathering').value);
-            const sampleFrameCount = parseInt(document.getElementById('sampleFrames').value);
-            
-            // 计算采样间隔
-            const totalFrames = Math.floor(videoDuration * videoFps);
-            const sampleInterval = Math.max(1, Math.floor(totalFrames / sampleFrameCount));
-            
-            updateProgress(10, '分析视频帧...');
-            
-            // 创建背景蒙版（基于边缘检测）
-            const backgroundMask = await createBackgroundMask(canvas, ctx, sampleInterval);
-            
-            updateProgress(40, '处理视频帧...');
-            
-            // 使用MediaRecorder录制处理后的视频
-            const stream = canvas.captureStream(videoFps);
-            const mediaRecorder = new MediaRecorder(stream, {
-                mimeType: 'video/webm;codecs=vp9',
-                videoBitsPerSecond: 2500000
-            });
-            
+            const sampleInterval = Math.max(1, 6 - quality);
+            updateProgress(5, '初始化处理...');
+            const tempCanvas = document.createElement('canvas');
+            const tempCtx = tempCanvas.getContext('2d');
+            const maxDim = 720;
+            let outWidth = videoWidth, outHeight = videoHeight;
+            if (outWidth > maxDim || outHeight > maxDim) { const ratio = Math.min(maxDim / outWidth, maxDim / outHeight); outWidth = Math.round(outWidth * ratio); outHeight = Math.round(outHeight * ratio); }
+            tempCanvas.width = outWidth; tempCanvas.height = outHeight;
+            const outputCanvas = document.createElement('canvas');
+            outputCanvas.width = outWidth; outputCanvas.height = outHeight;
+            updateProgress(10, '准备录制...');
+            const resultContainer = document.getElementById('resultContainer');
+            if (currentBg !== 'transparent') { resultContainer.style.background = currentBg; } else { resultContainer.style.background = ''; }
+            const stream = outputCanvas.captureStream(videoFps);
+            const mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9', videoBitsPerSecond: 5000000 });
             const chunks = [];
-            mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
-            
-            mediaRecorder.onstop = () => {
-                processedBlob = new Blob(chunks, { type: 'video/webm' });
-                
-                const outputVideo = document.getElementById('outputVideo');
-                outputVideo.src = URL.createObjectURL(processedBlob);
-                
-                document.getElementById('processingIndicator').classList.remove('show');
-                document.getElementById('processBtn').disabled = false;
-                document.getElementById('downloadBtn').disabled = false;
-            };
-            
+            mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
+            mediaRecorder.onstop = () => { processedBlob = new Blob(chunks, { type: 'video/webm' }); document.getElementById('outputVideo').src = URL.createObjectURL(processedBlob); resetProcessingUI(); showStatus('视频处理完成！可以下载结果', 'success'); };
             mediaRecorder.start();
-            
-            // 处理视频的每一帧
             originalVideo.pause();
             originalVideo.currentTime = 0;
-            
+            let lastMask = null;
+            let frameCount = 0;
+            const totalFrames = Math.ceil(videoDuration * videoFps);
             await new Promise((resolve) => {
                 originalVideo.onseeked = async () => {
-                    ctx.drawImage(originalVideo, 0, 0, canvas.width, canvas.height);
-                    
-                    // 应用背景移除
-                    applyBackgroundRemoval(ctx, canvas.width, canvas.height, backgroundMask, maskIntensity, feathering);
-                    
-                    // 应用自定义背景
-                    if (currentBg !== 'transparent') {
-                        ctx.globalCompositeOperation = 'destination-over';
-                        ctx.fillStyle = currentBg;
-                        ctx.fillRect(0, 0, canvas.width, canvas.height);
-                        ctx.globalCompositeOperation = 'source-over';
+                    const currentFrame = Math.floor(originalVideo.currentTime * videoFps);
+                    frameCount++;
+                    tempCtx.drawImage(originalVideo, 0, 0, outWidth, outHeight);
+                    if (frameCount % sampleInterval === 0 || !lastMask) {
+                        if (segmenterReady && segmenter) {
+                            try { lastMask = await segmenter.segmentPeople(tempCanvas, { multiSegmentation: false }); }
+                            catch (e) { lastMask = await fallbackSegmentation(tempCtx, outWidth, outHeight); }
+                        } else { lastMask = await fallbackSegmentation(tempCtx, outWidth, outHeight); }
                     }
-                    
-                    const currentTime = originalVideo.currentTime;
-                    const progress = 40 + Math.round((currentTime / videoDuration) * 50);
-                    updateProgress(progress, `处理中 ${Math.round((currentTime / videoDuration) * 100)}%`);
-                    
-                    if (currentTime >= videoDuration) {
-                        mediaRecorder.stop();
-                        resolve();
-                    } else {
-                        originalVideo.currentTime = Math.min(currentTime + (1 / videoFps), videoDuration);
-                    }
+                    applySegmentation(outputCtx = outputCanvas.getContext('2d'), tempCtx, lastMask, outWidth, outHeight, feathering, currentBg);
+                    const progress = Math.round((frameCount / totalFrames) * 90) + 5;
+                    updateProgress(Math.min(progress, 95), `处理中 ${Math.round((frameCount / totalFrames) * 100)}%`);
+                    if (originalVideo.currentTime >= videoDuration - 0.01) { mediaRecorder.stop(); resolve(); }
+                    else { originalVideo.currentTime = Math.min(originalVideo.currentTime + 1 / videoFps, videoDuration); }
                 };
+                originalVideo.currentTime = 0.001;
             });
+            updateProgress(100, '处理完成！');
         }
-        
-        async function createBackgroundMask(canvas, ctx, sampleInterval) {
-            const maskCanvas = document.createElement('canvas');
-            maskCanvas.width = canvas.width;
-            maskCanvas.height = canvas.height;
-            const maskCtx = maskCanvas.getContext('2d');
-            
-            // 创建边缘蒙版
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const maskData = maskCtx.createImageData(canvas.width, canvas.height);
-            
-            for (let y = 0; y < canvas.height; y++) {
-                for (let x = 0; x < canvas.width; x++) {
-                    const idx = (y * canvas.width + x) * 4;
-                    const r = imageData.data[idx];
-                    const g = imageData.data[idx + 1];
-                    const b = imageData.data[idx + 2];
-                    
-                    // 边缘检测：四角颜色判断
-                    const cornerColors = [
-                        getPixelColor(imageData, 0, 0),
-                        getPixelColor(imageData, canvas.width - 1, 0),
-                        getPixelColor(imageData, 0, canvas.height - 1),
-                        getPixelColor(imageData, canvas.width - 1, canvas.height - 1)
-                    ];
-                    
-                    const avgBgColor = {
-                        r: cornerColors.reduce((s, c) => s + c.r, 0) / 4,
-                        g: cornerColors.reduce((s, c) => s + c.g, 0) / 4,
-                        b: cornerColors.reduce((s, c) => s + c.b, 0) / 4
-                    };
-                    
-                    const colorDistance = Math.sqrt(
-                        Math.pow(r - avgBgColor.r, 2) +
-                        Math.pow(g - avgBgColor.g, 2) +
-                        Math.pow(b - avgBgColor.b, 2)
-                    );
-                    
-                    // 颜色距离越小，越可能是背景
-                    maskData.data[idx + 3] = Math.min(255, colorDistance * 2);
-                }
-            }
-            
-            maskCtx.putImageData(maskData, 0, 0);
-            return maskCanvas;
+
+        async function fallbackSegmentation(ctx, w, h) {
+            const imageData = ctx.getImageData(0, 0, w, h);
+            const data = imageData.data;
+            const edgeSamples = [];
+            const step = 10;
+            for (let y = 0; y < h; y += step) { for (let x = 0; x < w; x += step) { if (x < 30 || x > w - 30 || y < 30 || y > h - 30) { const i = (y * w + x) * 4; edgeSamples.push({ r: data[i], g: data[i + 1], b: data[i + 2] }); } } }
+            const bgColor = { r: Math.round(edgeSamples.reduce((s, c) => s + c.r, 0) / edgeSamples.length), g: Math.round(edgeSamples.reduce((s, c) => s + c.g, 0) / edgeSamples.length), b: Math.round(edgeSamples.reduce((s, c) => s + c.b, 0) / edgeSamples.length) };
+            const mask = new Float32Array(w * h);
+            for (let y = 0; y < h; y++) { for (let x = 0; x < w; x++) { const i = y * w + x; const pixelIdx = i * 4; const diff = Math.sqrt(Math.pow(data[pixelIdx] - bgColor.r, 2) + Math.pow(data[pixelIdx + 1] - bgColor.g, 2) + Math.pow(data[pixelIdx + 2] - bgColor.b, 2)); const edgeDist = Math.min(x, y, w - 1 - x, h - 1 - y); const threshold = edgeDist < 30 ? 45 : 60; mask[i] = diff < threshold ? (1 - diff / threshold) : 1; } }
+            return mask;
         }
-        
-        function getPixelColor(imageData, x, y) {
-            const idx = (y * imageData.width + x) * 4;
-            return {
-                r: imageData.data[idx],
-                g: imageData.data[idx + 1],
-                b: imageData.data[idx + 2]
-            };
+
+        function applySegmentation(outputCtx, inputCtx, mask, w, h, feathering, bg) {
+            const inputData = inputCtx.getImageData(0, 0, w, h);
+            const data = inputData.data;
+            if (bg !== 'transparent') { outputCtx.fillStyle = bg; outputCtx.fillRect(0, 0, w, h); }
+            for (let y = 0; y < h; y++) { for (let x = 0; x < w; x++) { const i = y * w + x; const pixelIdx = i * 4; const prob = mask[i] || 0; if (prob < 0.3) { continue; } else if (prob < 0.6) { const alpha = (prob - 0.3) / 0.3; data[pixelIdx + 3] = Math.round(alpha * 255); } } }
+            inputCtx.putImageData(inputData, 0, 0);
+            if (bg === 'transparent') { outputCtx.clearRect(0, 0, w, h); }
+            outputCtx.drawImage(inputCtx.canvas, 0, 0);
         }
-        
-        function applyBackgroundRemoval(ctx, width, height, backgroundMask, intensity, feathering) {
-            const imageData = ctx.getImageData(0, 0, width, height);
-            const maskData = backgroundMask.getContext('2d').getImageData(0, 0, width, height);
-            
-            for (let i = 0; i < imageData.data.length; i += 4) {
-                const maskAlpha = maskData.data[i + 3];
-                const originalAlpha = imageData.data[i + 3];
-                
-                // 应用蒙版强度
-                const newAlpha = originalAlpha * (maskAlpha / 255) * intensity;
-                imageData.data[i + 3] = Math.min(255, Math.max(0, newAlpha));
-            }
-            
-            ctx.putImageData(imageData, 0, 0);
-        }
-        
-        function updateProgress(percent, text) {
-            document.getElementById('progressFill').style.width = percent + '%';
-            document.getElementById('progressText').textContent = text;
-        }
-        
-        function downloadVideo() {
-            if (!processedBlob) { alert('请先处理视频'); return; }
-            
-            const link = document.createElement('a');
-            link.download = '抠像视频_' + Date.now() + '.webm';
-            link.href = URL.createObjectURL(processedBlob);
-            link.click();
-        }
-        
+
+        function updateProgress(percent, text) { document.getElementById('progressFill').style.width = percent + '%'; document.getElementById('progressText').textContent = text; document.getElementById('processingText').textContent = text; }
+        function resetProcessingUI() { document.getElementById('processingIndicator').classList.remove('show'); document.getElementById('processBtn').disabled = false; document.getElementById('downloadBtn').disabled = !!processedBlob; }
+        function downloadVideo() { if (!processedBlob) { showStatus('请先处理视频', 'error'); return; } const link = document.createElement('a'); link.download = '视频抠图_' + Date.now() + '.webm'; link.href = URL.createObjectURL(processedBlob); link.click(); }
+        function showStatus(text, type) { const bar = document.getElementById('statusBar'); document.getElementById('statusText').textContent = text; bar.className = 'status-bar show ' + type; }
+        function hideStatus() { document.getElementById('statusBar').className = 'status-bar'; }
         function resetAll() {
-            videoFile = null;
-            originalVideo = null;
-            processedBlob = null;
+            originalVideo = null; processedBlob = null;
             document.getElementById('videoInput').value = '';
             document.getElementById('fileInfo').style.display = 'none';
-            document.getElementById('placeholderVideo').style.display = 'block';
-            document.getElementById('videoContainer').style.display = 'none';
+            document.getElementById('videoArea').innerHTML = `<div id="uploadHint" style="text-align: center; color: #888;"><i class="fas fa-film" style="font-size: 4em; margin-bottom: 20px; display: block; color: #ddd;"></i><p>上传视频后，AI将自动识别人物并移除背景</p></div>`;
+            document.getElementById('videoCompare').style.display = 'none';
             document.getElementById('processBtn').disabled = true;
             document.getElementById('downloadBtn').disabled = true;
-            document.getElementById('maskIntensity').value = 50;
-            document.getElementById('maskIntensityValue').textContent = '50%';
-            document.getElementById('feathering').value = 5;
-            document.getElementById('featheringValue').textContent = '5px';
-            document.getElementById('sampleFrames').value = 15;
-            document.getElementById('sampleFramesValue').textContent = '15帧';
-            resetProcessingUI();
-        }
-        
-        function resetProcessingUI() {
             document.getElementById('processingIndicator').classList.remove('show');
-            document.getElementById('progressFill').style.width = '0%';
-            document.getElementById('progressText').textContent = '准备中...';
+            hideStatus();
         }
     </script>
 </body>
