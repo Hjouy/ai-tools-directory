@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="免费在线抠图工具 - 智能识别图片背景并一键去除，支持手动调整画笔和橡皮擦，完全免费">
+    <meta name="keywords" content="在线抠图,去背景,图片抠图,背景移除,免费抠图">
+    <meta name="author" content="AI工具导航站">
+    <title>在线抠图工具 | AI工具导航站</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            background: linear-gradient(90deg, #00d4ff, #9b59b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #aaa;
+            font-size: 1.1em;
+        }
+
+        .workspace {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .panel-header h3 {
+            color: #00d4ff;
+            font-size: 18px;
+        }
+
+        .panel-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-icon {
+            color: #aaa;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .action-icon:hover {
+            color: #00d4ff;
+        }
+
+        .canvas-container {
+            background: repeating-conic-gradient(
+                #2d2d4e 0% 25%,
+                #1a1a2e 0% 50%
+            );
+            background-size: 20px 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 400px;
+        }
+
+        canvas {
+            max-width: 100%;
+            max-height: 500px;
+            border-radius: 8px;
+        }
+
+        .toolbar {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .tool-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .tool-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .tool-label {
+            color: #ccc;
+            font-size: 14px;
+            min-width: 80px;
+            padding-top: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #00d4ff;
+        }
+
+        .btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #00d4ff;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            border: none;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(17, 153, 142, 0.4);
+        }
+
+        .upload-area {
+            border: 2px dashed rgba(0, 212, 255, 0.5);
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .upload-area:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #00d4ff;
+        }
+
+        .upload-area i {
+            font-size: 48px;
+            color: #00d4ff;
+            margin-bottom: 15px;
+        }
+
+        .upload-area h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .upload-area p {
+            color: #aaa;
+            font-size: 14px;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .color-picker-group {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        input[type="color"] {
+            width: 50px;
+            height: 40px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: none;
+        }
+
+        .slider-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex: 1;
+        }
+
+        .slider-group label {
+            min-width: 80px;
+            color: #ccc;
+            font-size: 14px;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            background: linear-gradient(135deg, #00d4ff, #9b59b6);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .brush-sizes {
+            display: flex;
+            gap: 10px;
+        }
+
+        .brush-size-btn {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+
+        .brush-size-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #00d4ff;
+        }
+
+        .preview-options {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .preview-option {
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .preview-option:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .preview-option.active {
+            border-color: #00d4ff;
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .preview-option i {
+            font-size: 24px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .preview-option span {
+            font-size: 12px;
+            color: #aaa;
+        }
+
+        @media (max-width: 768px) {
+            .workspace {
+                grid-template-columns: 1fr;
+            }
+
+            .tool-group {
+                flex-direction: column;
+            }
+
+            .preview-options {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✂️ 在线抠图工具</h1>
+            <p>智能识别背景并一键去除，支持手动调整，完全免费</p>
+        </div>
+
+        <div class="upload-area" id="uploadArea" onclick="document.getElementById('imageInput').click()">
+            <input type="file" id="imageInput" accept="image/*" onchange="handleImageUpload(event)">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <h3>点击或拖拽图片到此处</h3>
+            <p>支持 JPG、PNG、WebP 格式，建议使用背景简单的图片</p>
+        </div>
+
+        <div class="workspace" id="workspace" style="display: none;">
+            <div class="panel">
+                <div class="panel-header">
+                    <h3>原始图片</h3>
+                    <div class="panel-actions">
+                        <i class="fas fa-undo action-icon" onclick="undo()"></i>
+                        <i class="fas fa-redo action-icon" onclick="redo()"></i>
+                    </div>
+                </div>
+                <div class="canvas-container">
+                    <canvas id="originalCanvas"></canvas>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <h3>抠图结果</h3>
+                    <div class="panel-actions">
+                        <i class="fas fa-download action-icon" onclick="downloadResult()"></i>
+                    </div>
+                </div>
+                <div class="canvas-container">
+                    <canvas id="resultCanvas"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="toolbar" id="toolbar" style="display: none;">
+            <h3 style="color: #00d4ff; margin-bottom: 15px;">工具栏</h3>
+
+            <div class="tool-group">
+                <div class="tool-label">自动抠图</div>
+                <button class="btn active" onclick="setTool('auto')" id="btn-auto">
+                    <i class="fas fa-magic"></i> 自动识别
+                </button>
+                <button class="btn" onclick="removeBackground()" id="btn-remove">
+                    <i class="fas fa-eraser"></i> 一键去背景
+                </button>
+            </div>
+
+            <div class="tool-group">
+                <div class="tool-label">手动调整</div>
+                <button class="btn" onclick="setTool('keep')" id="btn-keep">
+                    <i class="fas fa-paint-brush"></i> 保留画笔
+                </button>
+                <button class="btn" onclick="setTool('remove')" id="btn-remove-manual">
+                    <i class="fas fa-eraser"></i> 删除画笔
+                </button>
+            </div>
+
+            <div class="tool-group">
+                <div class="tool-label">画笔大小</div>
+                <div class="brush-sizes">
+                    <button class="brush-size-btn" onclick="setBrushSize(5)">5px</button>
+                    <button class="brush-size-btn active" onclick="setBrushSize(10)">10px</button>
+                    <button class="brush-size-btn" onclick="setBrushSize(20)">20px</button>
+                    <button class="brush-size-btn" onclick="setBrushSize(40)">40px</button>
+                </div>
+            </div>
+
+            <div class="tool-group">
+                <div class="tool-label">容差调整</div>
+                <div class="slider-group">
+                    <label>相似度</label>
+                    <input type="range" id="tolerance" min="1" max="100" value="30" oninput="updateTolerance(this.value)">
+                    <span id="toleranceValue" style="color: #00d4ff; min-width: 50px;">30</span>
+                </div>
+            </div>
+
+            <div class="tool-group">
+                <div class="tool-label">背景替换</div>
+                <div class="color-picker-group">
+                    <button class="btn" onclick="setBackgroundColor('transparent')" id="btn-transparent">
+                        <i class="fas fa-times"></i> 透明
+                    </button>
+                    <button class="btn" onclick="setBackgroundColor('white')" id="btn-white">
+                        <i class="fas fa-square" style="color: #fff;"></i> 白色
+                    </button>
+                    <button class="btn" onclick="setBackgroundColor('black')" id="btn-black">
+                        <i class="fas fa-square" style="color: #000;"></i> 黑色
+                    </button>
+                    <input type="color" id="customColor" value="#00d4ff" onchange="setBackgroundColor(this.value)">
+                </div>
+            </div>
+
+            <div class="tool-group">
+                <div class="tool-label">预览背景</div>
+                <div class="preview-options">
+                    <div class="preview-option active" onclick="setPreviewBackground('checkerboard')">
+                        <i class="fas fa-th"></i>
+                        <span>棋盘格</span>
+                    </div>
+                    <div class="preview-option" onclick="setPreviewBackground('white')">
+                        <i class="fas fa-square" style="color: #fff;"></i>
+                        <span>白色</span>
+                    </div>
+                    <div class="preview-option" onclick="setPreviewBackground('black')">
+                        <i class="fas fa-square" style="color: #000;"></i>
+                        <span>黑色</span>
+                    </div>
+                    <div class="preview-option" onclick="setPreviewBackground('gray')">
+                        <i class="fas fa-square" style="color: #666;"></i>
+                        <span>灰色</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tool-group" style="justify-content: flex-end;">
+                <button class="btn" onclick="resetAll()">
+                    <i class="fas fa-undo"></i> 重置
+                </button>
+                <button class="btn btn-success" onclick="downloadResult()">
+                    <i class="fas fa-download"></i> 下载结果
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let originalImage = null;
+        let originalCanvas, originalCtx;
+        let resultCanvas, resultCtx;
+        let currentTool = 'auto';
+        let brushSize = 10;
+        let tolerance = 30;
+        let backgroundColor = 'transparent';
+        let previewBackground = 'checkerboard';
+        let isDrawing = false;
+        let lastX = 0, lastY = 0;
+        let maskCanvas, maskCtx;
+        let history = [];
+        let historyIndex = -1;
+        const maxHistory = 20;
+
+        // 初始化
+        window.onload = function() {
+            originalCanvas = document.getElementById('originalCanvas');
+            originalCtx = originalCanvas.getContext('2d');
+            resultCanvas = document.getElementById('resultCanvas');
+            resultCtx = resultCanvas.getContext('2d');
+
+            // 拖拽上传
+            const uploadArea = document.getElementById('uploadArea');
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.style.borderColor = '#00d4ff';
+            });
+
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.style.borderColor = 'rgba(0, 212, 255, 0.5)';
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.style.borderColor = 'rgba(0, 212, 255, 0.5)';
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleImageUpload({ target: { files: files } });
+                }
+            });
+
+            // 初始化mask画布
+            maskCanvas = document.createElement('canvas');
+            maskCtx = maskCanvas.getContext('2d');
+
+            // 鼠标事件
+            resultCanvas.addEventListener('mousedown', startDrawing);
+            resultCanvas.addEventListener('mousemove', draw);
+            resultCanvas.addEventListener('mouseup', stopDrawing);
+            resultCanvas.addEventListener('mouseout', stopDrawing);
+
+            // 触摸事件
+            resultCanvas.addEventListener('touchstart', handleTouchStart);
+            resultCanvas.addEventListener('touchmove', handleTouchMove);
+            resultCanvas.addEventListener('touchend', stopDrawing);
+        };
+
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    originalImage = img;
+
+                    // 设置画布大小
+                    const maxWidth = 800;
+                    const maxHeight = 600;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > maxWidth || height > maxHeight) {
+                        const ratio = Math.min(maxWidth / width, maxHeight / height);
+                        width *= ratio;
+                        height *= ratio;
+                    }
+
+                    originalCanvas.width = width;
+                    originalCanvas.height = height;
+                    resultCanvas.width = width;
+                    resultCanvas.height = height;
+                    maskCanvas.width = width;
+                    maskCanvas.height = height;
+
+                    // 绘制原始图片
+                    originalCtx.drawImage(img, 0, 0, width, height);
+                    resultCtx.drawImage(img, 0, 0, width, height);
+
+                    // 初始化mask
+                    maskCtx.clearRect(0, 0, width, height);
+
+                    // 显示工作区
+                    document.getElementById('workspace').style.display = 'grid';
+                    document.getElementById('toolbar').style.display = 'block';
+
+                    // 保存初始状态
+                    saveState();
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function setTool(tool) {
+            currentTool = tool;
+
+            // 更新按钮状态
+            document.querySelectorAll('.btn').forEach(btn => btn.classList.remove('active'));
+            if (tool === 'auto') document.getElementById('btn-auto').classList.add('active');
+            else if (tool === 'keep') document.getElementById('btn-keep').classList.add('active');
+            else if (tool === 'remove') document.getElementById('btn-remove-manual').classList.add('active');
+
+            // 设置光标
+            if (tool === 'auto' || tool === 'keep' || tool === 'remove') {
+                resultCanvas.style.cursor = 'crosshair';
+            } else {
+                resultCanvas.style.cursor = 'default';
+            }
+        }
+
+        function setBrushSize(size) {
+            brushSize = size;
+            document.querySelectorAll('.brush-size-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        function updateTolerance(value) {
+            tolerance = parseInt(value);
+            document.getElementById('toleranceValue').textContent = value;
+        }
+
+        function setBackgroundColor(color) {
+            backgroundColor = color;
+            document.querySelectorAll('.color-picker-group .btn').forEach(btn => btn.classList.remove('active'));
+            if (color === 'transparent') document.getElementById('btn-transparent').classList.add('active');
+            else if (color === 'white') document.getElementById('btn-white').classList.add('active');
+            else if (color === 'black') document.getElementById('btn-black').classList.add('active');
+
+            applyBackgroundColor();
+        }
+
+        function setPreviewBackground(type) {
+            previewBackground = type;
+            document.querySelectorAll('.preview-option').forEach(opt => opt.classList.remove('active'));
+            event.target.closest('.preview-option').classList.add('active');
+
+            // 更新预览背景
+            const container = resultCanvas.parentElement;
+            if (type === 'checkerboard') {
+                container.style.background = 'repeating-conic-gradient(#2d2d4e 0% 25%, #1a1a2e 0% 50%)';
+                container.style.backgroundSize = '20px 20px';
+            } else if (type === 'white') {
+                container.style.background = '#fff';
+            } else if (type === 'black') {
+                container.style.background = '#000';
+            } else if (type === 'gray') {
+                container.style.background = '#666';
+            }
+        }
+
+        function removeBackground() {
+            if (!originalImage) return;
+
+            const width = resultCanvas.width;
+            const height = resultCanvas.height;
+            const imageData = resultCtx.getImageData(0, 0, width, height);
+            const data = imageData.data;
+
+            // 获取四个角的颜色作为背景参考
+            const corners = [
+                { x: 0, y: 0 },
+                { x: width - 1, y: 0 },
+                { x: 0, y: height - 1 },
+                { x: width - 1, y: height - 1 }
+            ];
+
+            let bgR = data[0], bgG = data[1], bgB = data[2];
+            let bgCount = 1;
+
+            corners.forEach(corner => {
+                const idx = (corner.y * width + corner.x) * 4;
+                if (Math.abs(data[idx] - bgR) < 10 && Math.abs(data[idx + 1] - bgG) < 10 && Math.abs(data[idx + 2] - bgB) < 10) {
+                    bgR += data[idx];
+                    bgG += data[idx + 1];
+                    bgB += data[idx + 2];
+                    bgCount++;
+                }
+            });
+
+            bgR = Math.round(bgR / bgCount);
+            bgG = Math.round(bgG / bgCount);
+            bgB = Math.round(bgB / bgCount);
+
+            // 遍历像素，移除背景
+            const toleranceSquared = tolerance * tolerance * 3;
+            for (let i = 0; i < data.length; i += 4) {
+                const r = data[i];
+                const g = data[i + 1];
+                const b = data[i + 2];
+
+                const diff = (r - bgR) ** 2 + (g - bgG) ** 2 + (b - bgB) ** 2;
+
+                if (diff < toleranceSquared) {
+                    data[i + 3] = 0; // 设置为透明
+                }
+            }
+
+            resultCtx.putImageData(imageData, 0, 0);
+
+            // 更新mask
+            updateMaskFromResult();
+
+            saveState();
+        }
+
+        function startDrawing(e) {
+            if (currentTool !== 'keep' && currentTool !== 'remove') return;
+            if (!originalImage) return;
+
+            isDrawing = true;
+            const rect = resultCanvas.getBoundingClientRect();
+            const scaleX = resultCanvas.width / rect.width;
+            const scaleY = resultCanvas.height / rect.height;
+            lastX = (e.clientX - rect.left) * scaleX;
+            lastY = (e.clientY - rect.top) * scaleY;
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            if (!originalImage) return;
+
+            const rect = resultCanvas.getBoundingClientRect();
+            const scaleX = resultCanvas.width / rect.width;
+            const scaleY = resultCanvas.height / rect.height;
+            const x = (e.clientX - rect.left) * scaleX;
+            const y = (e.clientY - rect.top) * scaleY;
+
+            maskCtx.beginPath();
+            maskCtx.arc(x, y, brushSize, 0, Math.PI * 2);
+            maskCtx.fillStyle = currentTool === 'keep' ? '#fff' : '#000';
+            maskCtx.fill();
+
+            // 应用mask
+            applyMask();
+
+            lastX = x;
+            lastY = y;
+        }
+
+        function stopDrawing() {
+            if (isDrawing) {
+                isDrawing = false;
+                saveState();
+            }
+        }
+
+        function handleTouchStart(e) {
+            e.preventDefault();
+            if (e.touches.length > 0) {
+                const touch = e.touches[0];
+                startDrawing({ clientX: touch.clientX, clientY: touch.clientY });
+            }
+        }
+
+        function handleTouchMove(e) {
+            e.preventDefault();
+            if (e.touches.length > 0) {
+                const touch = e.touches[0];
+                draw({ clientX: touch.clientX, clientY: touch.clientY });
+            }
+        }
+
+        function applyMask() {
+            const width = resultCanvas.width;
+            const height = resultCanvas.height;
+            const maskData = maskCtx.getImageData(0, 0, width, height);
+            const resultData = resultCtx.getImageData(0, 0, width, height);
+
+            for (let i = 0; i < maskData.data.length; i += 4) {
+                const maskValue = maskData.data[i] / 255;
+                if (maskValue < 0.5) {
+                    resultData.data[i + 3] = 0; // 设置为透明
+                }
+            }
+
+            resultCtx.putImageData(resultData, 0, 0);
+        }
+
+        function updateMaskFromResult() {
+            const width = resultCanvas.width;
+            const height = resultCanvas.height;
+            const resultData = resultCtx.getImageData(0, 0, width, height);
+            const maskData = maskCtx.createImageData(width, height);
+
+            for (let i = 0; i < resultData.data.length; i += 4) {
+                const alpha = resultData.data[i + 3];
+                maskData.data[i] = alpha;
+                maskData.data[i + 1] = alpha;
+                maskData.data[i + 2] = alpha;
+                maskData.data[i + 3] = 255;
+            }
+
+            maskCtx.putImageData(maskData, 0, 0);
+        }
+
+        function applyBackgroundColor() {
+            if (backgroundColor === 'transparent') {
+                // 已经是透明背景，不需要处理
+                return;
+            }
+
+            const width = resultCanvas.width;
+            const height = resultCanvas.height;
+            const imageData = resultCtx.getImageData(0, 0, width, height);
+            const data = imageData.data;
+
+            let bgColor;
+            if (backgroundColor === 'white') {
+                bgColor = { r: 255, g: 255, b: 255 };
+            } else if (backgroundColor === 'black') {
+                bgColor = { r: 0, g: 0, b: 0 };
+            } else if (backgroundColor.startsWith('#')) {
+                const hex = backgroundColor.replace('#', '');
+                bgColor = {
+                    r: parseInt(hex.substr(0, 2), 16),
+                    g: parseInt(hex.substr(2, 2), 16),
+                    b: parseInt(hex.substr(4, 2), 16)
+                };
+            }
+
+            if (bgColor) {
+                for (let i = 0; i < data.length; i += 4) {
+                    if (data[i + 3] === 0) {
+                        data[i] = bgColor.r;
+                        data[i + 1] = bgColor.g;
+                        data[i + 2] = bgColor.b;
+                        data[i + 3] = 255;
+                    }
+                }
+            }
+
+            resultCtx.putImageData(imageData, 0, 0);
+        }
+
+        function saveState() {
+            // 删除当前位置之后的历史
+            history = history.slice(0, historyIndex + 1);
+
+            // 保存当前状态
+            const state = {
+                result: resultCtx.getImageData(0, 0, resultCanvas.width, resultCanvas.height),
+                mask: maskCtx.getImageData(0, 0, maskCanvas.width, maskCanvas.height)
+            };
+            history.push(state);
+
+            // 限制历史记录数量
+            if (history.length > maxHistory) {
+                history.shift();
+            }
+
+            historyIndex = history.length - 1;
+        }
+
+        function undo() {
+            if (historyIndex > 0) {
+                historyIndex--;
+                restoreState(history[historyIndex]);
+            }
+        }
+
+        function redo() {
+            if (historyIndex < history.length - 1) {
+                historyIndex++;
+                restoreState(history[historyIndex]);
+            }
+        }
+
+        function restoreState(state) {
+            resultCtx.putImageData(state.result, 0, 0);
+            maskCtx.putImageData(state.mask, 0, 0);
+        }
+
+        function resetAll() {
+            if (!originalImage) return;
+
+            // 重置到原始图片
+            resultCtx.drawImage(originalImage, 0, 0, resultCanvas.width, resultCanvas.height);
+            maskCtx.clearRect(0, 0, maskCanvas.width, maskCanvas.height);
+
+            // 清空历史
+            history = [];
+            historyIndex = -1;
+
+            saveState();
+        }
+
+        function downloadResult() {
+            if (!originalImage) {
+                alert('请先上传图片');
+                return;
+            }
+
+            // 创建临时画布应用背景色
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = resultCanvas.width;
+            tempCanvas.height = resultCanvas.height;
+            const tempCtx = tempCanvas.getContext('2d');
+
+            // 如果需要背景色
+            if (backgroundColor !== 'transparent') {
+                if (backgroundColor === 'white') {
+                    tempCtx.fillStyle = '#fff';
+                } else if (backgroundColor === 'black') {
+                    tempCtx.fillStyle = '#000';
+                } else if (backgroundColor.startsWith('#')) {
+                    tempCtx.fillStyle = backgroundColor;
+                }
+                tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+            }
+
+            // 绘制结果
+            tempCtx.drawImage(resultCanvas, 0, 0);
+
+            // 下载
+            const link = document.createElement('a');
+            link.download = 'removed-background.png';
+            link.href = tempCanvas.toDataURL('image/png');
+            link.click();
+        }
+    </script>
+</body>
+</html>
