@@ -398,5 +398,39 @@
     <priority>0.7</priority>
   </url>
 
+  <!-- 教程文章页 -->
+  <url>
+    <loc>https://hjouy.github.io/ai-tools-directory/tutorial-id-photo.html</loc>
+    <lastmod>2026-03-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://hjouy.github.io/ai-tools-directory/tutorial-photo-edit.html</loc>
+    <lastmod>2026-03-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://hjouy.github.io/ai-tools-directory/tutorial-cutout.html</loc>
+    <lastmod>2026-03-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://hjouy.github.io/ai-tools-directory/tutorial-file-convert.html</loc>
+    <lastmod>2026-03-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://hjouy.github.io/ai-tools-directory/tutorial-chatgpt.html</loc>
+    <lastmod>2026-03-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
 </urlset>
+
+
 

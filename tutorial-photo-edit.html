@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>老照片修复完整教程 - AI一键上色、去噪、增强清晰度 | AI工具导航</title>
+  <meta name="description" content="免费教你用AI修复老照片！详细步骤：黑白照片上色、去除噪点和划痕、提升清晰度、修复破损照片，让珍贵记忆重现光彩。">
+  <meta name="keywords" content="老照片修复,黑白照片上色,照片修复,AI修复老照片,老照片变彩色,照片去噪,划痕修复,模糊照片变清晰">
+  <meta name="robots" content="index, follow">
+  <meta property="og:title" content="老照片修复完整教程 - AI一键上色去噪">
+  <meta property="og:description" content="免费教你用AI修复老照片！黑白上色、去噪、变清晰">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://hjouy.github.io/ai-tools-directory/tutorial-photo-edit.html">
+  <link rel="canonical" href="https://hjouy.github.io/ai-tools-directory/tutorial-photo-edit.html">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root { --primary: #6366f1; --bg: #0f0f1a; --bg-card: #1a1a2e; --text: #e2e8f0; --text-muted: #94a3b8; --border: #2d2d4e; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif; background: var(--bg); color: var(--text); line-height: 1.8; }
+    .navbar { position: sticky; top: 0; z-index: 100; background: rgba(15,15,26,0.95); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 0 24px; height: 60px; display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { font-size: 1.3rem; font-weight: 700; background: linear-gradient(135deg, var(--primary), #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-decoration: none; }
+    .nav-links a { color: var(--text-muted); text-decoration: none; padding: 8px 16px; border-radius: 8px; font-size: 0.9rem; }
+    .nav-links a:hover { background: var(--border); color: var(--text); }
+    .nav-links a.primary { background: var(--primary); color: white; }
+    .container { max-width: 800px; margin: 0 auto; padding: 40px 24px; }
+    .article-header { text-align: center; margin-bottom: 48px; }
+    .article-meta { display: flex; gap: 20px; justify-content: center; margin-top: 16px; color: var(--text-muted); font-size: 0.9rem; }
+    .article-meta span { display: flex; align-items: center; gap: 6px; }
+    h1 { font-size: 2.2rem; font-weight: 800; line-height: 1.3; margin-bottom: 16px; }
+    h1 span { background: linear-gradient(135deg, var(--primary), #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    p { margin-bottom: 16px; color: #cbd5e1; }
+    .lead { font-size: 1.1rem; color: var(--text); margin-bottom: 32px; }
+    h2 { font-size: 1.5rem; font-weight: 700; margin: 40px 0 20px; color: #a5b4fc; }
+    h3 { font-size: 1.2rem; font-weight: 600; margin: 24px 0 12px; color: var(--text); }
+    .toc { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 40px; }
+    .toc h3 { margin-top: 0; color: var(--primary); }
+    .toc ol { padding-left: 20px; }
+    .toc li { margin-bottom: 8px; }
+    .toc a { color: #a5b4fc; text-decoration: none; }
+    .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+    .tip { background: rgba(16,185,129,0.1); border-left: 4px solid #10b981; padding: 16px 20px; border-radius: 0 8px 8px 0; margin: 24px 0; }
+    .tip-title { color: #34d399; font-weight: 600; margin-bottom: 8px; }
+    .warning { background: rgba(245,158,11,0.1); border-left: 4px solid #f59e0b; padding: 16px 20px; border-radius: 0 8px 8px 0; margin: 24px 0; }
+    .warning-title { color: #fbbf24; font-weight: 600; margin-bottom: 8px; }
+    .step { display: flex; gap: 16px; margin: 24px 0; padding: 20px; background: var(--bg-card); border-radius: 12px; }
+    .step-num { width: 40px; height: 40px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; }
+    .step-content { flex: 1; }
+    .step-content h4 { margin-bottom: 8px; color: var(--text); }
+    .step-content p { margin-bottom: 0; font-size: 0.95rem; }
+    .cta-box { background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(168,85,247,0.2)); border: 1px solid rgba(99,102,241,0.3); border-radius: 16px; padding: 32px; text-align: center; margin: 40px 0; }
+    .cta-box h3 { color: var(--text); margin-bottom: 12px; }
+    .cta-box p { color: var(--text-muted); margin-bottom: 20px; }
+    .cta-btn { display: inline-block; background: var(--primary); color: white; padding: 14px 32px; border-radius: 30px; text-decoration: none; font-weight: 600; font-size: 1.1rem; transition: all 0.3s; }
+    .cta-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(99,102,241,0.4); }
+    footer { background: var(--bg-card); border-top: 1px solid var(--border); padding: 24px; text-align: center; color: var(--text-muted); font-size: 0.85rem; }
+    @media (max-width: 768px) { h1 { font-size: 1.6rem; } .container { padding: 24px 16px; } .nav-links { display: none; } }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="index.html" class="nav-logo">🛠️ 免费在线工具</a>
+    <div class="nav-links">
+      <a href="tools.html">在线工具</a>
+      <a href="tutorials.html">教程</a>
+      <a href="ranking.html">排行榜</a>
+      <a href="old-photo-restore.html" class="primary">立即使用</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <article>
+      <header class="article-header">
+        <h1><span>老照片修复完整教程</span></h1>
+        <p class="lead">AI让黑白老照片重现色彩 | 去噪点、修复划痕、让模糊变清晰</p>
+        <div class="article-meta">
+          <span><i class="far fa-calendar"></i> 2026-03-23</span>
+          <span><i class="far fa-clock"></i> 阅读约 6 分钟</span>
+          <span><i class="far fa-folder"></i> 实用教程</span>
+        </div>
+      </header>
+
+      <nav class="toc">
+        <h3>📑 文章目录</h3>
+        <ol>
+          <li><a href="#intro">为什么老照片需要修复？</a></li>
+          <li><a href="#types">老照片修复的4种类型</a></li>
+          <li><a href="#steps">详细修复步骤</a></li>
+          <li><a href="#tips">修复效果提升技巧</a></li>
+          <li><a href="#protect">老照片保护建议</a></li>
+        </ol>
+      </nav>
+
+      <section id="intro">
+        <h2>📌 为什么老照片需要修复？</h2>
+        <p>每一张老照片都承载着珍贵的记忆。但随着时间流逝，照片会褪色、变模糊、甚至破损。修复老照片不仅是恢复图像，更是保存家族记忆。</p>
+        <div class="tip">
+          <div class="tip-title">💡 修复最佳时机</div>
+          <p>老照片越早修复越好！继续放置只会越来越难修复。建议先扫描/拍照保存原件，再进行修复。</p>
+        </div>
+      </section>
+
+      <section id="types">
+        <h2>🔧 老照片修复的4种类型</h2>
+
+        <div class="card">
+          <h3>1️⃣ 黑白照片上色</h3>
+          <p>将黑白或棕褐色的老照片转换为彩色。AI能智能识别照片内容，自动填充合理的颜色。</p>
+          <p><strong>适用场景：</strong> 爷爷奶奶年轻时的照片、80年代的家庭合影、历史人物照片</p>
+        </div>
+
+        <div class="card">
+          <h3>2️⃣ 去噪点</h3>
+          <p>老照片由于年代久远或保存不当，会出现颗粒感和噪点。AI去噪技术可以平滑这些瑕疵。</p>
+          <p><strong>适用场景：</strong> 胶片老照片、扫描质量不好的照片、低分辨率照片</p>
+        </div>
+
+        <div class="card">
+          <h3>3️⃣ 修复划痕和破损</h3>
+          <p>照片折痕、撕裂、霉斑、污渍等都可以修复。AI会自动填补缺失部分。</p>
+          <p><strong>适用场景：</strong> 有折痕的照片、边角破损的照片、有水渍霉斑的照片</p>
+        </div>
+
+        <div class="card">
+          <h3>4️⃣ 提升清晰度</h3>
+          <p>让模糊的照片变清晰，放大后依然保持细节。这是修复中最常用的功能。</p>
+          <p><strong>适用场景：</strong> 对焦不准的照片、老旧低分辨率照片、翻拍的照片</p>
+        </div>
+      </section>
+
+      <section id="steps">
+        <h2>📝 详细修复步骤</h2>
+        <p>使用我们的免费AI老照片修复工具，只需简单几步：</p>
+
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <h4>准备老照片</h4>
+            <p>如果有实物照片，先用手机或相机扫描成电子版。建议光线均匀，正面拍摄，尽量平整。</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <h4>上传到工具</h4>
+            <p>访问 → <a href="old-photo-restore.html" style="color: #a5b4fc;">老照片修复工具</a>，点击上传按钮。</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <h4>选择修复模式</h4>
+            <p>根据需要选择：<br>
+            • 增强模式：去噪+锐化，适合提升清晰度<br>
+            • 上色模式：黑白照片转彩色<br>
+            • 全面修复：综合所有修复功能</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <h4>预览和下载</h4>
+            <p>修复完成后，预览效果。如果满意，下载高清版本。建议同时保存原图和修复后的版本。</p>
+          </div>
+        </div>
+
+        <div class="warning">
+          <div class="warning-title">⚠️ 注意事项</div>
+          <p>• 原始照片一定要保留备份<br>
+          • 严重破损的照片可能需要多次修复<br>
+          • 上色结果为AI自动判断，可能不完全准确</p>
+        </div>
+      </section>
+
+      <section id="tips">
+        <h2>🎯 修复效果提升技巧</h2>
+
+        <h3>拍照/扫描技巧</h3>
+        <ul style="padding-left: 20px; color: #cbd5e1; margin-bottom: 20px;">
+          <li>使用高像素模式拍摄（至少1200万像素）</li>
+          <li>保持照片平整，避免反光</li>
+          <li>光线均匀，不要有阴影</li>
+          <li>尽量正对拍摄，不要倾斜</li>
+        </ul>
+
+        <h3>AI修复技巧</h3>
+        <ul style="padding-left: 20px; color: #cbd5e1; margin-bottom: 20px;">
+          <li>多次轻度修复 > 一次重度修复</li>
+          <li>如果一次效果不好，可以重新上传</li>
+          <li>不同照片适合不同的修复模式</li>
+          <li>结合多个工具使用效果更佳</li>
+        </ul>
+
+        <div class="tip">
+          <div class="tip-title">💡 专业建议</div>
+          <p>如果需要非常精细的修复，可以先用<strong>抠图工具</strong>提取主体，再用修复功能，这样效果更精准。</p>
+        </div>
+      </section>
+
+      <section id="protect">
+        <h2>🛡️ 老照片保护建议</h2>
+        <p>修复完成后，别忘了好好保护原件：</p>
+        <ul style="padding-left: 20px; color: #cbd5e1; margin-bottom: 20px;">
+          <li>用扫描仪或高像素相机完整数字化</li>
+          <li>保存到云端和本地多个位置</li>
+          <li>原件用无酸相簿存放</li>
+          <li>避免阳光直射和潮湿环境</li>
+          <li>不要直接用手触摸照片表面</li>
+        </ul>
+      </section>
+
+      <div class="cta-box">
+        <h3>📸 免费老照片修复</h3>
+        <p>AI智能去噪 · 黑白上色 · 模糊变清晰 · 完全免费</p>
+        <a href="old-photo-restore.html" class="cta-btn">立即修复 →</a>
+      </div>
+
+      <section>
+        <h2>📝 总结</h2>
+        <p>老照片修复不再是专业设计师的专利。有了AI工具，每个人都可以让珍贵的记忆重现光彩。</p>
+        <p>记住：<strong>早修复、早备份、早保存</strong>。趁老照片还能修复，赶紧动手吧！</p>
+      </section>
+    </article>
+  </div>
+
+  <footer>
+    <p>© 2026 AI工具导航 · <a href="index.html" style="color: #a5b4fc;">返回首页</a></p>
+  </footer>
+</body>
+</html>
