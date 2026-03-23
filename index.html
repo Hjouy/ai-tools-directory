@@ -1053,7 +1053,16 @@
 <!-- 公告栏 -->
 <div class="announcement" role="banner">
   <span class="announcement-tag">NEW</span>
-  🎉 Cursor v0.45 发布，AI编程体验再升级！<a href="news.html" style="color: #a5b4fc; margin-left:8px;">查看详情 →</a>
+  🎉 新增12个AI工具详情页，收录工具达20+！<a href="tool.html?id=gemini" style="color: #a5b4fc; margin-left:8px;">查看详情 →</a>
+</div>
+
+<!-- 快捷键提示 -->
+<div style="text-align:center;padding:0 24px 24px;max-width:1200px;margin:0 auto;">
+  <div style="display:inline-flex;gap:16px;flex-wrap:wrap;justify-content:center;font-size:0.8rem;color:var(--text-muted);">
+    <span>💡 <kbd style="background:var(--bg-card);border:1px solid var(--border);padding:2px 8px;border-radius:4px;">Ctrl+K</kbd> 快速查询工具</span>
+    <span>💡 <kbd style="background:var(--bg-card);border:1px solid var(--border);padding:2px 8px;border-radius:4px;">Alt+A</kbd> 打开AI助手</span>
+    <span>💡 <kbd style="background:var(--bg-card);border:1px solid var(--border);padding:2px 8px;border-radius:4px;">Esc</kbd> 关闭弹窗</span>
+  </div>
 </div>
 
 <main class="main-content">
@@ -1469,17 +1478,20 @@
   <div class="ai-panel" id="aiPanel">
     <div class="ai-panel-head">
       <span>🤖 AI助手</span>
-      <button onclick="toggleAI()" aria-label="关闭AI助手">✕</button>
+      <div style="display:flex;gap:8px;">
+        <button onclick="clearAIHistory()" aria-label="清空历史" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:0.85rem;padding:4px 8px;border-radius:4px;" title="清空历史">🗑️</button>
+        <button onclick="toggleAI()" aria-label="关闭AI助手">✕</button>
+      </div>
     </div>
     <div class="ai-messages" id="aiMessages">
-      <div class="ai-msg bot">👋 你好！我是AI助手，可以帮你推荐合适的AI工具。告诉我你的需求吧～</div>
+      <div class="ai-msg bot">👋 你好！我是AI助手，可以帮你推荐合适的AI工具。告诉我你的需求吧～<br><br>💡 试试问：<br>• 我想找写作工具<br>• 免费的AI绘画软件<br>• 编程用什么AI好<br><br>💡 快捷键：Ctrl+K 快速查询工具</div>
     </div>
     <div class="ai-panel-input">
       <input type="text" id="aiInput" placeholder="输入你的需求..." onkeydown="if(event.key==='Enter')sendAI()">
       <button onclick="sendAI()" aria-label="发送">➤</button>
     </div>
   </div>
-  <button class="ai-fab-btn" onclick="toggleAI()" aria-label="打开AI助手">🤖</button>
+  <button class="ai-fab-btn" onclick="toggleAI()" aria-label="打开AI助手" title="AI助手 (快捷键: Alt+A)">🤖</button>
 </div>
 
 <!-- 快速查询弹窗 -->
@@ -1644,112 +1656,6 @@
     mobileMenu.classList.toggle('open');
   }
 
-  // 扩展工具数据（新增工具）
-  const extendedToolsData = [
-    ...toolsData,
-    { id: 'elevenlabs', name: 'ElevenLabs', icon: '🎙️', color: '#dc2626', desc: 'AI语音合成工具', price: '$5/月起', rating: 4.6, users: '200万+', tag: 'AI音频', url: 'https://elevenlabs.io' },
-    { id: 'udio', name: 'Udio', icon: '🎶', color: '#f59e0b', desc: 'AI音乐生成平台', price: '免费/$12月', rating: 4.6, users: '300万+', tag: 'AI音乐', url: 'https://udio.com' },
-    { id: 'codeium', name: 'Codeium', icon: '🔮', color: '#8b5cf6', desc: '免费AI编程助手', price: '免费', rating: 4.6, users: '50万+', tag: 'AI编程', url: 'https://codeium.com' },
-    { id: 'gamma', name: 'Gamma', icon: '📊', color: '#0ea5e9', desc: 'AI演示文稿生成', price: '$10/月', rating: 4.5, users: '100万+', tag: 'AI效率', url: 'https://gamma.app' },
-    { id: 'pika', name: 'Pika', icon: '🎥', color: '#7c3aed', desc: 'AI视频生成工具', price: '$8/月', rating: 4.5, users: '200万+', tag: 'AI视频', url: 'https://pika.art' },
-    { id: 'capcut', name: '剪映', icon: '✂️', color: '#ef4444', desc: 'AI视频编辑器', price: '免费', rating: 4.7, users: '5亿+', tag: 'AI视频', url: 'https://www.capcut.cn' },
-    { id: 'heygen', name: 'HeyGen', icon: '🎭', color: '#0891b2', desc: 'AI数字人视频生成', price: '$29/月', rating: 4.4, users: '100万+', tag: 'AI视频', url: 'https://heygen.com' },
-    { id: 'aiva', name: 'AIVA', icon: '🎼', color: '#7c3aed', desc: 'AI音乐作曲工具', price: '$11/月', rating: 4.4, users: '100万+', tag: 'AI音乐', url: 'https://aiva.ai' },
-    { id: 'tome', name: 'Tome', icon: '📚', color: '#8b5cf6', desc: 'AI故事PPT生成', price: '$10/月', rating: 4.4, users: '50万+', tag: 'AI效率', url: 'https://tome.app' },
-    { id: 'd-id', name: 'D-ID', icon: '🎭', color: '#0f766e', desc: 'AI头像视频生成', price: '$18/月', rating: 4.3, users: '50万+', tag: 'AI视频', url: 'https://d-id.com' },
-  ];
-
-  // 更新跳转逻辑，包含所有新工具
-  function goToTool(id, url) {
-    const hasDetail = [
-      'chatgpt','midjourney','cursor','stable-diffusion','runway','suno',
-      'claude','notion-ai','github-copilot','perplexity','elevenlabs',
-      'udio','codeium','gamma','pika','capcut','heygen','aiva','tome','d-id'
-    ];
-    if (hasDetail.includes(id)) {
-      window.location.href = 'tool.html?id=' + id;
-    } else {
-      window.open(url, '_blank', 'noopener');
-    }
-  }
-
-  // 高级筛选功能
-  function filterTools() {
-    const price = document.getElementById('filterPrice').value;
-    const users = document.getElementById('filterUsers').value;
-    const rating = document.getElementById('filterRating').value;
-    const category = document.getElementById('filterCategory').value;
-
-    let filtered = extendedToolsData.filter(tool => {
-      // 价格筛选
-      if (price !== 'all') {
-        if (price === 'free' && !tool.price.includes('免费') && !tool.price.includes('本地')) return false;
-        if (price === 'paid' && !tool.price.includes('$')) return false;
-        if (price === 'freemium' && !tool.price.includes('/') && !tool.price.includes('免费')) return false;
-      }
-
-      // 用户数筛选
-      if (users !== 'all') {
-        if (users === 'high' && !tool.users.includes('100万') && !tool.users.includes('1亿') && !tool.users.includes('5亿')) return false;
-        if (users === 'medium' && (!tool.users.includes('10万') || tool.users.includes('100万'))) return false;
-        if (users === 'low' && (tool.users.includes('万') || tool.users.includes('亿'))) return false;
-      }
-
-      // 评分筛选
-      if (rating !== 'all') {
-        if (tool.rating < parseFloat(rating)) return false;
-      }
-
-      // 分类筛选
-      if (category !== 'all' && tool.tag !== category) return false;
-
-      return true;
-    });
-
-    renderFilteredTools(filtered);
-  }
-
-  // 渲染筛选结果
-  function renderFilteredTools(tools) {
-    const grid = document.getElementById('toolsGrid');
-    const countEl = document.getElementById('filteredCount');
-
-    grid.innerHTML = tools.map(tool => `
-      <article class="tool-card" onclick="goToTool('${tool.id}', '${tool.url}')" itemscope itemtype="https://schema.org/SoftwareApplication">
-        ${tool.tag === 'AI写作' || tool.tag === 'AI编程' ? '<span class="hot-tag">HOT</span>' : ''}
-        <div class="tool-card-header">
-          <div class="tool-logo" style="background: linear-gradient(135deg,${tool.color},${tool.color}dd);">${tool.icon}</div>
-          <div class="tool-info">
-            <h3 itemprop="name">${tool.name}</h3>
-            <p class="tool-desc" itemprop="description">${tool.desc}</p>
-          </div>
-        </div>
-        <div class="tool-meta">
-          <span class="tool-tag">${tool.tag}</span>
-          <span class="tool-rating">⭐ ${tool.rating}</span>
-        </div>
-        <div class="tool-footer">
-          <span class="tool-price">${tool.price}</span>
-          <span class="tool-users">${tool.users}</span>
-        </div>
-      </article>
-    `).join('');
-
-    countEl.textContent = tools.length;
-  }
-
-  // 重置筛选
-  function resetFilters() {
-    document.getElementById('filterPrice').value = 'all';
-    document.getElementById('filterUsers').value = 'all';
-    document.getElementById('filterRating').value = 'all';
-    document.getElementById('filterCategory').value = 'all';
-    filterTools();
-  }
-
-  // 初始渲染所有工具
-  renderFilteredTools(extendedToolsData);
-
   // 快速查询弹窗
   function openModal() {
     const overlay = document.getElementById('modalOverlay');
@@ -1765,23 +1671,27 @@
   }
 
   document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') document.getElementById('modalOverlay').classList.remove('open');
+    if (e.key === 'Escape') {
+      document.getElementById('modalOverlay').classList.remove('open');
+    }
     if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); openModal(); }
+    if (e.altKey && e.key === 'a') { e.preventDefault(); toggleAI(); }
   });
 
   function filterTools() {
     const q = document.getElementById('modalInput').value.toLowerCase();
-    const list = extendedToolsData.filter(t =>
+    const list = toolsData.filter(t =>
       t.name.toLowerCase().includes(q) ||
       t.desc.toLowerCase().includes(q) ||
       t.tag.toLowerCase().includes(q)
     );
     const container = document.getElementById('modalResults');
     if (list.length === 0) {
-      container.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text-muted);">没有找到相关工具</div>';
+      container.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text-muted);">没有找到相关工具，试试其他关键词？</div>';
       return;
     }
-    container.innerHTML = list.map(t => `
+    container.innerHTML = `<div style="padding:8px 16px;font-size:0.75rem;color:var(--text-muted);border-bottom:1px solid var(--border);">找到 ${list.length} 个相关工具</div>` +
+      list.map(t => `
       <div class="modal-tool-item" onclick="goToTool('${t.id}','${t.url}');document.getElementById('modalOverlay').classList.remove('open');">
         <div class="modal-tool-icon" style="background:${t.color}20;color:${t.color};">${t.icon}</div>
         <div style="flex:1;min-width:0;">
@@ -1794,7 +1704,7 @@
   }
 
   // AI对话助手 - 接入Gemini API
-  const GEMINI_API_KEY = 'AIzaSyCkTzyzxD3xuC8kyfC0LJ9y0fC9X8k8fC9'; // 需要用户替换为真实API Key
+  const GEMINI_API_KEY = 'YOUR_GEMINI_API_KEY'; // 请替换为真实API Key
   const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
   
   // 工具知识库
@@ -1854,12 +1764,19 @@
     const history = JSON.parse(localStorage.getItem('aiHistory') || '[]');
     const container = document.getElementById('aiMessages');
     if (history.length === 0) {
-      container.innerHTML = '<div class="ai-msg bot">👋 你好！我是AI助手，可以帮你推荐合适的AI工具。告诉我你的需求吧～<br><br>💡 试试问：<br>• 我想找写作工具<br>• 免费的AI绘画软件<br>• 编程用什么AI好</div>';
+      container.innerHTML = '<div class="ai-msg bot">👋 你好！我是AI助手，可以帮你推荐合适的AI工具。告诉我你的需求吧～<br><br>💡 试试问：<br>• 我想找写作工具<br>• 免费的AI绘画软件<br>• 编程用什么AI好<br><br>💡 快捷键：Ctrl+K 快速查询工具</div>';
     } else {
       container.innerHTML = history.map(m =>
         `<div class="ai-msg ${m.role}">${m.text}</div>`
       ).join('');
       container.scrollTop = container.scrollHeight;
+    }
+  }
+
+  function clearAIHistory() {
+    if (confirm('确定要清空所有对话历史吗？')) {
+      localStorage.removeItem('aiHistory');
+      loadAIHistory();
     }
   }
 
@@ -1953,25 +1870,37 @@
     if (lowerMsg.includes('写作') || lowerMsg.includes('写文章') || lowerMsg.includes('文案')) {
       return '推荐你试试 <b>ChatGPT</b>（全能写作，免费版可用）或 <b>Claude</b>（长文章首选）。两者都支持中文，Claude在长篇内容方面表现更好！';
     }
-    if (lowerMsg.includes('绘画') || lowerMsg.includes('画图') || lowerMsg.includes('图片')) {
-      return '推荐 <b>Midjourney</b>（效果最好，$30/月）或 <b>Stable Diffusion</b>（免费开源，可本地部署）。新手建议先用Midjourney！';
+    if (lowerMsg.includes('绘画') || lowerMsg.includes('画图') || lowerMsg.includes('图片') || lowerMsg.includes('设计')) {
+      return '推荐 <b>Midjourney</b>（效果最好，$30/月）或 <b>Stable Diffusion</b>（免费开源，可本地部署）。<br>入门推荐：<b>DALL-E 3</b>（ChatGPT Plus附赠）和<b>Canva AI</b>（免费可用）！';
     }
-    if (lowerMsg.includes('视频') || lowerMsg.includes('剪辑')) {
-      return '推荐 <b>Runway</b>（专业级AI视频，$35/月）或 <b>Pika</b>（操作简单）。支持文字生成视频，适合创作者！';
+    if (lowerMsg.includes('视频') || lowerMsg.includes('剪辑') || lowerMsg.includes('剪辑')) {
+      return '推荐 <b>Runway</b>（专业级AI视频，$35/月）或 <b>Pika</b>（操作简单，免费可用）。数字人视频推荐 <b>HeyGen</b>！';
     }
     if (lowerMsg.includes('编程') || lowerMsg.includes('代码') || lowerMsg.includes('开发')) {
-      return '<b>Cursor</b> 是目前最强AI编程编辑器（免费版可用），内置GPT-4。另外 <b>GitHub Copilot</b>（$10/月）也很受欢迎！';
+      return '<b>Cursor</b> 是目前最强AI编程编辑器（免费版可用），内置GPT-4。<br>另外 <b>GitHub Copilot</b>（$10/月）也很受欢迎！';
     }
-    if (lowerMsg.includes('音乐') || lowerMsg.includes('歌曲') || lowerMsg.includes('作曲')) {
-      return '<b>Suno</b> 是最热门的AI音乐生成工具！输入歌词就能生成带人声的完整歌曲，有免费额度，非常好玩！';
+    if (lowerMsg.includes('音乐') || lowerMsg.includes('歌曲') || lowerMsg.includes('作曲') || lowerMsg.includes('配音')) {
+      return '<b>Suno</b> 是最热门的AI音乐生成工具！输入歌词就能生成带人声的完整歌曲，有免费额度。<br>语音合成推荐 <b>ElevenLabs</b>！';
+    }
+    if (lowerMsg.includes('搜索') || lowerMsg.includes('查找') || lowerMsg.includes('问答')) {
+      return '<b>Perplexity</b> 是AI搜索引擎，给出答案的同时展示来源。<br><b>Google Gemini</b> 也不错，支持超长上下文！';
+    }
+    if (lowerMsg.includes('语音') || lowerMsg.includes('配音') || lowerMsg.includes('TTS')) {
+      return '<b>ElevenLabs</b> 是业界领先的语音合成，支持语音克隆！中文效果也很不错。<br>免费额度够日常使用～';
     }
     if (lowerMsg.includes('免费')) {
-      return '免费好用的AI工具推荐：<br>• ChatGPT免费版 - 日常对话写作<br>• Claude免费版 - 长文本处理<br>• Stable Diffusion - 本地免费绘画<br>• Suno免费版 - AI音乐生成';
+      return '免费好用的AI工具推荐：<br>• ChatGPT - 日常对话写作<br>• Claude - 长文本处理<br>• Stable Diffusion - 本地免费绘画<br>• Suno - AI音乐生成<br>• Gemini - Google官方AI';
     }
-    if (lowerMsg.includes('排行') || lowerMsg.includes('热门')) {
-      return '本月最热门：1️⃣ChatGPT 2️⃣Midjourney 3️⃣Cursor<br>点击上方「排行榜」查看完整排名！';
+    if (lowerMsg.includes('排行') || lowerMsg.includes('热门') || lowerMsg.includes('最好')) {
+      return '本月最热门：<br>1️⃣ ChatGPT<br>2️⃣ Midjourney<br>3️⃣ Cursor<br>4️⃣ Gemini<br>5️⃣ Suno<br>点击上方「排行榜」查看完整排名！';
     }
-    return '关于「' + msg + '」，你可以：<br>1. 在搜索框输入关键词查找工具<br>2. 点击上方分类浏览<br>3. 告诉我具体需求，我帮你推荐！😊';
+    if (lowerMsg.includes('对比') || lowerMsg.includes('比较')) {
+      return '常见对比：<br>• ChatGPT vs Claude - 写作选哪个？Claude长文本更强<br>• Midjourney vs SD - 效果选MJ，免费选SD<br>• Cursor vs Copilot - 编程选哪个？Cursor功能更丰富';
+    }
+    if (lowerMsg.includes('入门') || lowerMsg.includes('新手') || lowerMsg.includes('开始')) {
+      return '新手入门推荐：<br>1️⃣ ChatGPT - 最易上手<br>2️⃣ Canva AI - 设计神器<br>3️⃣ Suno - 音乐创作<br>4️⃣ Gemini - Google官方<br>都有免费额度，可以先体验！';
+    }
+    return '关于「' + msg + '」，你可以：<br>1. 在搜索框输入关键词查找工具<br>2. 点击上方分类浏览<br>3. 告诉我具体需求，我帮你推荐！😊<br><br>💡 提示：Ctrl+K 可以快速搜索工具！';
   }
 
   document.getElementById('aiInput').addEventListener('keydown', function(e) {
