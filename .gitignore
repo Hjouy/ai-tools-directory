@@ -1,0 +1,25 @@
+# 忽略测试文件
+test-*.yml
+test-*.json
+test-*.md
+
+# 忽略工作日志
+TODAY_WORK_SUMMARY.md
+*.log
+
+# 忽略临时文件
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# 忽略 IDE 配置
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 忽略构建产物
+dist/
+build/
+node_modules/
