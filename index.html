@@ -1417,7 +1417,45 @@
     `).join('');
   }
 
-  // AI对话助手
+  // AI对话助手 - 接入Gemini API
+  const GEMINI_API_KEY = 'AIzaSyCkTzyzxD3xuC8kyfC0LJ9y0fC9X8k8fC9'; // 需要用户替换为真实API Key
+  const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
+  
+  // 工具知识库
+  const toolsKnowledge = `
+你是AI工具导航网站的智能助手，专门帮助用户发现和选择合适的AI工具。以下是网站收录的工具信息：
+
+【AI写作工具】
+- ChatGPT: OpenAI出品，1亿+用户，免费/$20月，全能型AI对话助手
+- Claude: Anthropic出品，500万+用户，免费/$20月，擅长长文本处理
+- Notion AI: 2000万+用户，$10/月，笔记+AI结合
+
+【AI绘画工具】
+- Midjourney: 1500万+用户，$30/月起，效果最好的AI绘画工具
+- Stable Diffusion: 800万+用户，本地免费，开源可部署
+
+【AI视频工具】
+- Runway: 300万+用户，$35/月，专业AI视频创作平台
+- Pika: 新兴AI视频工具，文字生成视频
+
+【AI编程工具】
+- Cursor: 100万+用户，免费/$20月，最强AI代码编辑器
+- GitHub Copilot: 100万+用户，$10/月，GitHub官方AI编程助手
+
+【AI音乐工具】
+- Suno: 500万+用户，免费/$8月，最热门AI音乐生成工具
+
+【AI效率工具】
+- Perplexity: 1000万+用户，免费/$20月，AI搜索引擎
+
+回复要求：
+1. 根据用户需求推荐合适的工具
+2. 说明工具的核心优势和定价
+3. 如果用户询问具体工具，提供详细信息
+4. 保持友好、专业的语气
+5. 回复控制在100字以内
+`;
+
   function toggleAI() {
     const panel = document.getElementById('aiPanel');
     panel.classList.toggle('open');
@@ -1430,7 +1468,9 @@
   function loadAIHistory() {
     const history = JSON.parse(localStorage.getItem('aiHistory') || '[]');
     const container = document.getElementById('aiMessages');
-    if (history.length > 0) {
+    if (history.length === 0) {
+      container.innerHTML = '<div class="ai-msg bot">👋 你好！我是AI助手，可以帮你推荐合适的AI工具。告诉我你的需求吧～<br><br>💡 试试问：<br>• 我想找写作工具<br>• 免费的AI绘画软件<br>• 编程用什么AI好</div>';
+    } else {
       container.innerHTML = history.map(m =>
         `<div class="ai-msg ${m.role}">${m.text}</div>`
       ).join('');
@@ -1445,40 +1485,108 @@
     localStorage.setItem('aiHistory', JSON.stringify(history));
   }
 
-  const aiReplies = {
-    '写作': '推荐你试试 <b>ChatGPT</b>（全能写作）和 <b>Claude</b>（长文章首选），都有免费版本可用！',
-    '绘画': '推荐 <b>Midjourney</b>（效果最好）或 <b>Stable Diffusion</b>（免费开源可本地部署）。',
-    '视频': '推荐 <b>Runway</b>（专业级）或 <b>Pika</b>（操作简单），两者都支持文字生成视频。',
-    '编程': '<b>Cursor</b> 是目前最强AI编程编辑器，另外 <b>GitHub Copilot</b> 也很好用！',
-    '音乐': '<b>Suno</b> 是最热门的AI音乐生成工具，输入歌词就能生成完整歌曲，非常好玩！',
-    '效率': '推荐 <b>Notion AI</b>（笔记+AI）和 <b>Perplexity</b>（AI搜索引擎），能大幅提升工作效率。',
-    '免费': '免费好用的AI工具：ChatGPT免费版、Claude免费版、Stable Diffusion（本地免费）、Suno免费版。',
-    '排行': '点击上方「排行榜」查看月度最热门AI工具排名！',
-  };
-
-  function sendAI() {
+  async function sendAI() {
     const input = document.getElementById('aiInput');
     const msg = input.value.trim();
     if (!msg) return;
     input.value = '';
 
     const container = document.getElementById('aiMessages');
+    
+    // 添加用户消息
     const userDiv = document.createElement('div');
     userDiv.className = 'ai-msg user';
     userDiv.textContent = msg;
     container.appendChild(userDiv);
     saveMsg('user', msg);
-
-    const botDiv = document.createElement('div');
-    botDiv.className = 'ai-msg bot';
-    let reply = '关于「' + msg + '」，可以在搜索框里查找相关工具，或者点击上方分类浏览！😊';
-    for (const [key, val] of Object.entries(aiReplies)) {
-      if (msg.includes(key)) { reply = val; break; }
-    }
-    botDiv.innerHTML = reply;
-    container.appendChild(botDiv);
-    saveMsg('bot', reply);
     container.scrollTop = container.scrollHeight;
+
+    // 显示加载中
+    const loadingDiv = document.createElement('div');
+    loadingDiv.className = 'ai-msg bot loading';
+    loadingDiv.innerHTML = '<span class="typing">思考中</span>';
+    container.appendChild(loadingDiv);
+    container.scrollTop = container.scrollHeight;
+
+    try {
+      // 调用Gemini API
+      const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contents: [{
+            parts: [{
+              text: toolsKnowledge + '\n\n用户问题：' + msg
+            }]
+          }],
+          generationConfig: {
+            temperature: 0.7,
+            maxOutputTokens: 200,
+          }
+        })
+      });
+
+      loadingDiv.remove();
+
+      if (response.ok) {
+        const data = await response.json();
+        const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || '抱歉，我没有理解你的问题，请换个方式描述你的需求。';
+        
+        const botDiv = document.createElement('div');
+        botDiv.className = 'ai-msg bot';
+        botDiv.innerHTML = reply.replace(/\n/g, '<br>');
+        container.appendChild(botDiv);
+        saveMsg('bot', reply);
+      } else {
+        // API失败时回退到本地回复
+        const fallbackReply = getFallbackReply(msg);
+        const botDiv = document.createElement('div');
+        botDiv.className = 'ai-msg bot';
+        botDiv.innerHTML = fallbackReply;
+        container.appendChild(botDiv);
+        saveMsg('bot', fallbackReply);
+      }
+    } catch (error) {
+      loadingDiv.remove();
+      // 网络错误时回退到本地回复
+      const fallbackReply = getFallbackReply(msg);
+      const botDiv = document.createElement('div');
+      botDiv.className = 'ai-msg bot';
+      botDiv.innerHTML = fallbackReply;
+      container.appendChild(botDiv);
+      saveMsg('bot', fallbackReply);
+    }
+    
+    container.scrollTop = container.scrollHeight;
+  }
+
+  // 本地回退回复
+  function getFallbackReply(msg) {
+    const lowerMsg = msg.toLowerCase();
+    if (lowerMsg.includes('写作') || lowerMsg.includes('写文章') || lowerMsg.includes('文案')) {
+      return '推荐你试试 <b>ChatGPT</b>（全能写作，免费版可用）或 <b>Claude</b>（长文章首选）。两者都支持中文，Claude在长篇内容方面表现更好！';
+    }
+    if (lowerMsg.includes('绘画') || lowerMsg.includes('画图') || lowerMsg.includes('图片')) {
+      return '推荐 <b>Midjourney</b>（效果最好，$30/月）或 <b>Stable Diffusion</b>（免费开源，可本地部署）。新手建议先用Midjourney！';
+    }
+    if (lowerMsg.includes('视频') || lowerMsg.includes('剪辑')) {
+      return '推荐 <b>Runway</b>（专业级AI视频，$35/月）或 <b>Pika</b>（操作简单）。支持文字生成视频，适合创作者！';
+    }
+    if (lowerMsg.includes('编程') || lowerMsg.includes('代码') || lowerMsg.includes('开发')) {
+      return '<b>Cursor</b> 是目前最强AI编程编辑器（免费版可用），内置GPT-4。另外 <b>GitHub Copilot</b>（$10/月）也很受欢迎！';
+    }
+    if (lowerMsg.includes('音乐') || lowerMsg.includes('歌曲') || lowerMsg.includes('作曲')) {
+      return '<b>Suno</b> 是最热门的AI音乐生成工具！输入歌词就能生成带人声的完整歌曲，有免费额度，非常好玩！';
+    }
+    if (lowerMsg.includes('免费')) {
+      return '免费好用的AI工具推荐：<br>• ChatGPT免费版 - 日常对话写作<br>• Claude免费版 - 长文本处理<br>• Stable Diffusion - 本地免费绘画<br>• Suno免费版 - AI音乐生成';
+    }
+    if (lowerMsg.includes('排行') || lowerMsg.includes('热门')) {
+      return '本月最热门：1️⃣ChatGPT 2️⃣Midjourney 3️⃣Cursor<br>点击上方「排行榜」查看完整排名！';
+    }
+    return '关于「' + msg + '」，你可以：<br>1. 在搜索框输入关键词查找工具<br>2. 点击上方分类浏览<br>3. 告诉我具体需求，我帮你推荐！😊';
   }
 
   document.getElementById('aiInput').addEventListener('keydown', function(e) {
