@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>在线工具大全 - 20+免费工具 | AI工具导航</title>
+  <meta name="description" content="20+免费在线工具集合，包含计算器、文本处理、文件转换、密码生成等实用工具。">
+  <meta name="keywords" content="在线工具,免费工具,实用工具,计算器,文本工具,文件转换">
+  <style>
+    :root{--primary:#6366f1;--secondary:#a855f7;--bg:#0f0f1a;--bg-card:#1a1a2e;--text:#e2e8f0;--text-muted:#94a3b8;--border:#2d2d4e}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+    .navbar{position:sticky;top:0;z-index:100;background:rgba(15,15,26,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between}
+    .nav-logo{font-size:1.3rem;font-weight:700;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none}
+    .nav-links{display:flex;gap:8px;list-style:none}
+    .nav-links a{color:var(--text-muted);text-decoration:none;padding:6px 12px;border-radius:6px;font-size:.9rem;transition:all .2s}
+    .nav-links a:hover,.nav-links a.active{color:var(--text);background:var(--border)}
+    .main{max-width:1200px;margin:0 auto;padding:20px 24px 80px}
+    .page-hero{text-align:center;padding:40px 24px 32px;background:radial-gradient(ellipse at top,rgba(6,182,212,.12) 0%,transparent 70%)}
+    .page-hero h1{font-size:2.2rem;font-weight:800;margin-bottom:12px}
+    .page-hero span{background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .page-hero p{color:var(--text-muted);max-width:600px;margin:0 auto;font-size:1.1rem}
+    .tools-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:32px}
+    .tool-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:24px;transition:all .25s;cursor:pointer;text-decoration:none;color:inherit;display:block}
+    .tool-card:hover{border-color:var(--primary);transform:translateY(-4px);box-shadow:0 8px 24px rgba(99,102,241,.15)}
+    .tool-icon{font-size:2.5rem;margin-bottom:12px}
+    .tool-name{font-size:1.1rem;font-weight:700;margin-bottom:6px}
+    .tool-desc{font-size:.85rem;color:var(--text-muted);line-height:1.5}
+    .category-section{margin-top:48px}
+    .category-title{font-size:1.5rem;font-weight:700;margin-bottom:24px;display:flex;align-items:center;gap:10px}
+    .category-title::before{content:'';width:4px;height:24px;background:linear-gradient(135deg,var(--primary),var(--secondary));border-radius:2px}
+    .badge{display:inline-block;padding:4px 10px;border-radius:20px;font-size:.75rem;font-weight:600;margin-left:8px}
+    .badge-hot{background:rgba(239,68,68,.15);color:#ef4444;border:1px solid rgba(239,68,68,.3)}
+    .badge-new{background:rgba(16,185,129,.15);color:#10b981;border:1px solid rgba(16,185,129,.3)}
+    @media(max-width:1024px){.tools-grid{grid-template-columns:repeat(3,1fr)}}
+    @media(max-width:768px){.tools-grid{grid-template-columns:repeat(2,1fr)}.nav-links{display:none}}
+    @media(max-width:480px){.tools-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<nav class="navbar">
+  <a href="index.html" class="nav-logo">🤖 AI工具导航</a>
+  <ul class="nav-links">
+    <li><a href="index.html">首页</a></li>
+    <li><a href="tools.html" class="active">在线工具</a></li>
+    <li><a href="submit.html" class="nav-btn">提交工具</a></li>
+  </ul>
+</nav>
+
+<header class="page-hero">
+  <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.3);color:#34d399;padding:4px 14px;border-radius:20px;font-size:.8rem;margin-bottom:16px;">
+    ✅ 20+ 免费在线工具 · 全部可用
+  </div>
+  <h1>在线<span>工具大全</span></h1>
+  <p>免费实用的在线工具集合，无需注册，即用即走</p>
+</header>
+
+<main class="main">
+  <div class="category-section">
+    <h2 class="category-title">🔢 基础工具 <span class="badge badge-hot">热门</span></h2>
+    <div class="tools-grid">
+      <a href="calculator.html" class="tool-card">
+        <div class="tool-icon">🔢</div>
+        <div class="tool-name">在线计算器</div>
+        <div class="tool-desc">基础运算、科学计算、单位换算</div>
+      </a>
+      <a href="password-generator.html" class="tool-card">
+        <div class="tool-icon">🔐</div>
+        <div class="tool-name">密码生成器</div>
+        <div class="tool-desc">生成安全强密码，自定义长度和字符</div>
+      </a>
+    </div>
+  </div>
+
+  <div class="category-section">
+    <h2 class="category-title">📝 文本处理</h2>
+    <div class="tools-grid">
+      <a href="text-tools.html" class="tool-card">
+        <div class="tool-icon">📝</div>
+        <div class="tool-name">文本工具</div>
+        <div class="tool-desc">文本统计、大小写转换、去重排序</div>
+      </a>
+    </div>
+  </div>
+
+  <div class="category-section">
+    <h2 class="category-title">📄 文件转换 <span class="badge badge-hot">热门</span></h2>
+    <div class="tools-grid">
+      <a href="converter.html" class="tool-card">
+        <div class="tool-icon">🔄</div>
+        <div class="tool-name">文件转换</div>
+        <div class="tool-desc">PDF/Word/Excel/图片格式互转</div>
+      </a>
+    </div>
+  </div>
+
+  <div class="category-section">
+    <h2 class="category-title">🤖 AI工具</h2>
+    <div class="tools-grid">
+      <a href="writing.html" class="tool-card">
+        <div class="tool-icon">✍️</div>
+        <div class="tool-name">AI写作</div>
+        <div class="tool-desc">ChatGPT、Claude、Notion AI等</div>
+      </a>
+      <a href="image.html" class="tool-card">
+        <div class="tool-icon">🎨</div>
+        <div class="tool-name">AI绘画</div>
+        <div class="tool-desc">Midjourney、Stable Diffusion等</div>
+      </a>
+      <a href="video.html" class="tool-card">
+        <div class="tool-icon">🎬</div>
+        <div class="tool-name">AI视频</div>
+        <div class="tool-desc">Runway、剪映、Pika等</div>
+      </a>
+      <a href="audio.html" class="tool-card">
+        <div class="tool-icon">🎵</div>
+        <div class="tool-name">AI音频</div>
+        <div class="tool-desc">Suno、Udio、ElevenLabs等</div>
+      </a>
+      <a href="code.html" class="tool-card">
+        <div class="tool-icon">💻</div>
+        <div class="tool-name">AI编程</div>
+        <div class="tool-desc">Cursor、GitHub Copilot等</div>
+      </a>
+    </div>
+  </div>
+
+  <div class="category-section">
+    <h2 class="category-title">📊 效率工具</h2>
+    <div class="tools-grid">
+      <a href="productivity.html" class="tool-card">
+        <div class="tool-icon">⚡</div>
+        <div class="tool-name">生产力</div>
+        <div class="tool-desc">Gamma、Perplexity等效率工具</div>
+      </a>
+      <a href="compare.html" class="tool-card">
+        <div class="tool-icon">⚖️</div>
+        <div class="tool-name">工具对比</div>
+        <div class="tool-desc">AI工具横向对比分析</div>
+      </a>
+      <a href="ranking.html" class="tool-card">
+        <div class="tool-icon">🏆</div>
+        <div class="tool-name">排行榜</div>
+        <div class="tool-desc">月榜、分类榜、飙升榜</div>
+      </a>
+    </div>
+  </div>
+
+  <div class="category-section">
+    <h2 class="category-title">📚 学习资源</h2>
+    <div class="tools-grid">
+      <a href="tutorials.html" class="tool-card">
+        <div class="tool-icon">📖</div>
+        <div class="tool-name">教程专区</div>
+        <div class="tool-desc">10+个AI工具使用教程</div>
+      </a>
+      <a href="use-cases.html" class="tool-card">
+        <div class="tool-icon">💡</div>
+        <div class="tool-name">使用场景</div>
+        <div class="tool-desc">6个AI工具应用场景</div>
+      </a>
+      <a href="news.html" class="tool-card">
+        <div class="tool-icon">📰</div>
+        <div class="tool-name">AI资讯</div>
+        <div class="tool-desc">AI行业最新动态</div>
+      </a>
+    </div>
+  </div>
+
+  <div class="category-section">
+    <h2 class="category-title">🔗 其他功能</h2>
+    <div class="tools-grid">
+      <a href="tool.html" class="tool-card">
+        <div class="tool-icon">🔍</div>
+        <div class="tool-name">工具详情</div>
+        <div class="tool-desc">20+个AI工具详细介绍</div>
+      </a>
+      <a href="submit.html" class="tool-card">
+        <div class="tool-icon">➕</div>
+        <div class="tool-name">提交工具</div>
+        <div class="tool-desc">收录您的AI工具</div>
+      </a>
+      <a href="about.html" class="tool-card">
+        <div class="tool-icon">ℹ️</div>
+        <div class="tool-name">关于我们</div>
+        <div class="tool-desc">了解AI工具导航</div>
+      </a>
+      <a href="contact.html" class="tool-card">
+        <div class="tool-icon">📧</div>
+        <div class="tool-name">联系我们</div>
+        <div class="tool-desc">商务合作、问题反馈</div>
+      </a>
+    </div>
+  </div>
+</main>
+
+<footer style="background:var(--bg-card);border-top:1px solid var(--border);padding:24px;text-align:center;">
+  <p style="color:var(--text-muted);font-size:.875rem;">
+    <a href="index.html" style="color:var(--primary);text-decoration:none;">AI工具导航</a> ·
+    <a href="sitemap.xml" style="color:var(--text-muted);text-decoration:none;margin-left:12px;">网站地图</a> ·
+    © 2026 AI工具导航
+  </p>
+</footer>
+</body>
+</html>

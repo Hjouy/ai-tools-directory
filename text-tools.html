@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文本处理工具 - 在线文本编辑 | AI工具导航</title>
+  <meta name="description" content="免费在线文本处理工具，支持文本统计、大小写转换、去重、排序等功能。">
+  <style>
+    :root{--primary:#6366f1;--secondary:#a855f7;--bg:#0f0f1a;--bg-card:#1a1a2e;--text:#e2e8f0;--text-muted:#94a3b8;--border:#2d2d4e}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+    .navbar{position:sticky;top:0;z-index:100;background:rgba(15,15,26,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between}
+    .nav-logo{font-size:1.3rem;font-weight:700;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none}
+    .nav-links{display:flex;gap:8px;list-style:none}
+    .nav-links a{color:var(--text-muted);text-decoration:none;padding:6px 12px;border-radius:6px;font-size:.9rem;transition:all .2s}
+    .nav-links a:hover,.nav-links a.active{color:var(--text);background:var(--border)}
+    .nav-btn{background:linear-gradient(135deg,#6366f1,#a855f7)!important;color:white!important;border-radius:20px!important;font-weight:500}
+    .main{max-width:900px;margin:0 auto;padding:20px 24px 80px}
+    .page-hero{text-align:center;padding:40px 24px 32px}
+    .page-hero h1{font-size:2rem;font-weight:800;margin-bottom:12px}
+    .page-hero span{background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .page-hero p{color:var(--text-muted);max-width:500px;margin:0 auto}
+    .tools-container{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:24px}
+    .tool-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:24px}
+    .tool-title{font-size:1.1rem;font-weight:700;margin-bottom:16px;color:var(--text)}
+    textarea{width:100%;min-height:120px;padding:12px;border:2px solid var(--border);border-radius:10px;background:var(--bg);color:var(--text);font-size:.9rem;font-family:'Courier New',monospace;resize:vertical}
+    textarea:focus{outline:none;border-color:var(--primary)}
+    .tool-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+    .btn{padding:8px 16px;border:none;border-radius:8px;cursor:pointer;font-size:.85rem;font-weight:600;transition:all .2s}
+    .btn-primary{background:var(--primary);color:white}
+    .btn-primary:hover{opacity:.9}
+    .btn-secondary{background:rgba(99,102,241,.1);border:1px solid var(--primary);color:var(--primary)}
+    .btn-secondary:hover{background:rgba(99,102,241,.2)}
+    .btn-danger{background:rgba(239,68,68,.1);border:1px solid #ef4444;color:#ef4444}
+    .btn-danger:hover{background:rgba(239,68,68,.2)}
+    .stats{display:flex;gap:16px;margin-top:12px;padding:12px;background:var(--bg);border-radius:8px}
+    .stat-item{flex:1}
+    .stat-value{font-size:1.2rem;font-weight:700;color:var(--text)}
+    .stat-label{font-size:.75rem;color:var(--text-muted)}
+    @media(max-width:768px){.nav-links{display:none}.tools-container{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<nav class="navbar">
+  <a href="index.html" class="nav-logo">🤖 AI工具导航</a>
+  <ul class="nav-links">
+    <li><a href="index.html">首页</a></li>
+    <li><a href="calculator.html">计算器</a></li>
+    <li><a href="text-tools.html" class="active">文本工具</a></li>
+    <li><a href="submit.html" class="nav-btn">提交工具</a></li>
+  </ul>
+</nav>
+
+<header class="page-hero">
+  <h1>文本<span>处理</span>工具</h1>
+  <p>免费在线文本处理，支持统计、转换、去重、排序</p>
+</header>
+
+<main class="main">
+  <div class="tools-container">
+    <div class="tool-card">
+      <div class="tool-title">📊 文本统计</div>
+      <textarea id="textStats" placeholder="在此输入文本..."></textarea>
+      <div class="stats">
+        <div class="stat-item">
+          <div class="stat-value" id="charCount">0</div>
+          <div class="stat-label">字符数</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="wordCount">0</div>
+          <div class="stat-label">词数</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="lineCount">0</div>
+          <div class="stat-label">行数</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tool-card">
+      <div class="tool-title">🔄 大小写转换</div>
+      <textarea id="caseConvert" placeholder="在此输入文本..."></textarea>
+      <div class="tool-actions">
+        <button class="btn btn-primary" onclick="convertCase('upper')">全部大写</button>
+        <button class="btn btn-primary" onclick="convertCase('lower')">全部小写</button>
+        <button class="btn btn-secondary" onclick="convertCase('title')">首字母大写</button>
+        <button class="btn btn-secondary" onclick="convertCase('sentence')">句子首字母大写</button>
+      </div>
+    </div>
+
+    <div class="tool-card">
+      <div class="tool-title">🚫 去除空白</div>
+      <textarea id="removeWhitespace" placeholder="在此输入文本..."></textarea>
+      <div class="tool-actions">
+        <button class="btn btn-primary" onclick="removeWS('spaces')">去除所有空格</button>
+        <button class="btn btn-primary" onclick="removeWS('lines')">去除空行</button>
+        <button class="btn btn-secondary" onclick="removeWS('trim')">首尾去空格</button>
+        <button class="btn btn-danger" onclick="document.getElementById('removeWhitespace').value=''">清空</button>
+      </div>
+    </div>
+
+    <div class="tool-card">
+      <div class="tool-title">📋 文本去重</div>
+      <textarea id="deduplicate" placeholder="每行一个文本，自动去重..."></textarea>
+      <div class="tool-actions">
+        <button class="btn btn-primary" onclick="deduplicateText()">去重</button>
+        <button class="btn btn-secondary" onclick="sortText('asc')">升序排序</button>
+        <button class="btn btn-secondary" onclick="sortText('desc')">降序排序</button>
+        <button class="btn btn-danger" onclick="document.getElementById('deduplicate').value=''">清空</button>
+      </div>
+    </div>
+
+    <div class="tool-card">
+      <div class="tool-title">🔍 查找替换</div>
+      <textarea id="findReplace" placeholder="在此输入文本..."></textarea>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:12px">
+        <input type="text" id="findText" placeholder="查找内容" style="padding:10px;border:2px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text)">
+        <input type="text" id="replaceText" placeholder="替换内容" style="padding:10px;border:2px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text)">
+      </div>
+      <div class="tool-actions" style="margin-top:8px">
+        <button class="btn btn-primary" onclick="findAndReplace()">替换全部</button>
+        <button class="btn btn-danger" onclick="document.getElementById('findReplace').value=''">清空</button>
+      </div>
+    </div>
+
+    <div class="tool-card">
+      <div class="tool-title">📝 编码解码</div>
+      <textarea id="encodeDecode" placeholder="在此输入文本..."></textarea>
+      <div class="tool-actions">
+        <button class="btn btn-primary" onclick="encodeOrDecode('encode')">URL编码</button>
+        <button class="btn btn-primary" onclick="encodeOrDecode('decode')">URL解码</button>
+        <button class="btn btn-secondary" onclick="encodeOrDecode('htmlEncode')">HTML编码</button>
+        <button class="btn btn-secondary" onclick="encodeOrDecode('htmlDecode')">HTML解码</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer style="background:var(--bg-card);border-top:1px solid var(--border);padding:24px;text-align:center;">
+  <p style="color:var(--text-muted);font-size:.875rem;">© 2026 AI工具导航</p>
+</footer>
+
+<script>
+// 文本统计
+document.getElementById('textStats').addEventListener('input', function() {
+  const text = this.value;
+  document.getElementById('charCount').textContent = text.length;
+  document.getElementById('wordCount').textContent = text.trim().split(/\s+/).filter(w => w).length;
+  document.getElementById('lineCount').textContent = text.split('\n').length;
+});
+
+// 大小写转换
+function convertCase(type) {
+  const textarea = document.getElementById('caseConvert');
+  let text = textarea.value;
+
+  switch(type) {
+    case 'upper': text = text.toUpperCase(); break;
+    case 'lower': text = text.toLowerCase(); break;
+    case 'title': text = text.replace(/\w\S*/g, txt => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()); break;
+    case 'sentence': text = text.toLowerCase().replace(/(^\s*\w|[.!?]\s*\w)/g, c => c.toUpperCase()); break;
+  }
+  textarea.value = text;
+}
+
+// 去除空白
+function removeWS(type) {
+  const textarea = document.getElementById('removeWhitespace');
+  let text = textarea.value;
+
+  switch(type) {
+    case 'spaces': text = text.replace(/\s/g, ''); break;
+    case 'lines': text = text.replace(/^\s*[\r\n]/gm, ''); break;
+    case 'trim': text = text.trim(); break;
+  }
+  textarea.value = text;
+}
+
+// 去重
+function deduplicateText() {
+  const textarea = document.getElementById('deduplicate');
+  const lines = textarea.value.split('\n');
+  const unique = [...new Set(lines)];
+  textarea.value = unique.join('\n');
+}
+
+// 排序
+function sortText(order) {
+  const textarea = document.getElementById('deduplicate');
+  const lines = textarea.value.split('\n');
+  lines.sort((a, b) => order === 'asc' ? a.localeCompare(b, 'zh-CN') : b.localeCompare(a, 'zh-CN'));
+  textarea.value = lines.join('\n');
+}
+
+// 查找替换
+function findAndReplace() {
+  const textarea = document.getElementById('findReplace');
+  const findText = document.getElementById('findText').value;
+  const replaceText = document.getElementById('replaceText').value;
+  textarea.value = textarea.value.split(findText).join(replaceText);
+}
+
+// 编码解码
+function encodeOrDecode(type) {
+  const textarea = document.getElementById('encodeDecode');
+  let text = textarea.value;
+
+  switch(type) {
+    case 'encode': text = encodeURIComponent(text); break;
+    case 'decode': text = decodeURIComponent(text); break;
+    case 'htmlEncode': text = text.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#039;'}[m])); break;
+    case 'htmlDecode': text = text.replace(/&amp;|&lt;|&gt;|&quot;|&#039;/g, m => ({'&amp;':'&','&lt;':'<','&gt;':'>','&quot;':'"','&#039;':"'"})[m]); break;
+  }
+  textarea.value = text;
+}
+</script>
+</body>
+</html>
