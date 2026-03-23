@@ -23,3 +23,9 @@ Thumbs.db
 dist/
 build/
 node_modules/
+
+# 忽略 Playwright 测试临时文件
+.playwright-cli*
+.playwright/
+test-results/
+playwright-report/
