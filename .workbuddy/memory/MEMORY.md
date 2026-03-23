@@ -6,6 +6,14 @@
 - **仓库**：https://github.com/hjouy/ai-tools-directory
 - **本地工作区**：`c:\Users\36970\WorkBuddy\20260323080729\`
 - **盈利模式**：免费收录 + 付费推广（¥299/月专业版，¥999/月顶级版）
+- **核心定位**：免费在线工具平台（用户不需要注册即可使用各种工具）
+
+## 首页布局重构 (2026-03-23 晚)
+- **核心策略**：在线工具是第一吸引力，AI工具推荐弱化
+- Hero区域：改为"免费在线工具"主题，突出"无需注册·浏览器直接用"
+- 在线工具专区：12个工具卡片展示（证件照/抠图/老照片/风格转换/超分/视频抠图/人脸融合/文件转换/GIF/图片压缩/计算器/密码生成）
+- AI工具推荐：移到下方，简化显示
+- 导航栏：在线工具设为首选入口
 
 ## 已有页面（截至 2026-03-23）
 | 页面 | 描述 |
@@ -41,12 +49,32 @@ chatgpt, midjourney, cursor, stable-diffusion, runway, suno, claude, notion-ai
 - tool.html 改为使用 data.js 中的 TOOLS_DATA
 - 包含 Python 批量更新脚本 (update_index.py, update_tool.py)
 
+## 在线工具页面 (2026-03-23 全面升级)
+| 页面 | 功能 | AI模型/算法 |
+|------|------|-------------|
+| id-photo.html | 证件照换底色 | ⭐ MediaPipe SelfieSegmentation |
+| background-remover.html | AI智能抠图 | ⭐ MediaPipe SelfieSegmentation |
+| video-bg-remove.html | AI视频抠图 | ⭐ MediaPipe SelfieSegmentation |
+| old-photo-restore.html | 老照片修复 | 增强去噪/上色/锐化算法 |
+| style-transfer.html | 风格转换 | 6种艺术风格增强算法 |
+| super-resolution.html | 图片超分 | 双三次插值+细节增强+智能锐化 |
+| converter.html | 文件格式转换 | 可用 |
+| gif-maker.html | GIF制作 | 可用 |
+| image-compress.html | 图片压缩 | 可用 |
+
+## MediaPipe SelfieSegmentation 模型
+- CDN: `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.1.1632779610/`
+- TensorFlow.js: `https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.17.0/dist/tf.min.js`
+- 模型类型：general（通用模式，边缘处理更好）
+- 备用算法：基于颜色边缘检测的分割（fallbackSegmentation）
+
 ## 技术栈
 - 纯HTML/CSS/JS（无框架），GitHub Pages静态托管
 - 暗色主题，渐变色彩，响应式设计
 - localStorage保存AI对话历史
 - jsPDF：图片转PDF功能
 - mammoth.js：文档转换支持（演示版本）
+- MediaPipe SelfieSegmentation：人像分割（证件照换底色）
 
 ## 后续升级方向
 - 增加更多工具详情页（video/code/audio 分类）
@@ -70,7 +98,7 @@ chatgpt, midjourney, cursor, stable-diffusion, runway, suno, claude, notion-ai
 | tool.html | ✅ 已完成 | 使用 TOOLS_DATA |
 | writing.html | ✅ 已完成 | 同步到 data.js |
 | image.html | ✅ 已完成 | 同步到 data.js |
-| ranking.html | 🔄 进行中 | 待同步到 data.js |
+| ranking.html | ✅ 已完成 | 月榜/分类榜/飙升榜动态渲染 |
 
 ### data.js 写作类工具 (2026-03-23 新增)
 - chatgpt, claude, jasper, copy-ai, writesonic, rytr
@@ -82,7 +110,24 @@ chatgpt, midjourney, cursor, stable-diffusion, runway, suno, claude, notion-ai
 3. 使用 `TOOLS_DATA` 获取对应分类工具
 4. 保留页面的样式和交互逻辑不变
 
+### ranking.html 同步详情 (2026-03-23 21:16)
+- 月榜：10个工具按排名顺序渲染，含涨跌幅趋势
+- 分类榜：AI写作/AI绘画/AI编程各TOP3
+- 飙升榜：4个增长最快的工具，含增长率
+- 跳转逻辑：有详情页的工具 → tool.html，无详情页 → 官网
+
 ### 重要提醒
 - **不要删除旧数据**，只是让页面从 data.js 读取
 - Git 历史已保存所有旧代码，无需额外备份
 - 同步顺序建议：writing.html → image.html → ranking.html
+
+## SEO优化完成 (2026-03-23 晚)
+- 创建 SEO_GUIDE.md 提交指南
+- 工具页面已有独立SEO标签
+- sitemap.xml 包含 60+ URL
+- 新增5篇高质量教程文章：
+  - tutorial-id-photo.html - 证件照制作指南
+  - tutorial-photo-edit.html - 老照片修复教程
+  - tutorial-cutout.html - 在线抠图教程
+  - tutorial-file-convert.html - PDF转换指南
+  - tutorial-chatgpt.html - ChatGPT完全指南

@@ -12,7 +12,9 @@
     <meta property="og:url" content="https://hjouy.github.io/ai-tools-directory/background-remover.html">
     <link rel="canonical" href="https://hjouy.github.io/ai-tools-directory/background-remover.html">
     <title>AI智能抠图 - 一键去除背景 | AI工具导航站</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Font Awesome 异步加载，不阻塞页面渲染 -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #fff; min-height: 100vh; padding: 20px; }
@@ -293,10 +295,11 @@
 
         function downloadResult() {
             if (!processedCanvas) return;
-            const link = document.createElement('a');
+            
+            // 创建画布
+            let canvasToDownload;
             if (currentBgColor === 'transparent') {
-                link.download = '抠图_' + Date.now() + '.png';
-                link.href = processedCanvas.toDataURL('image/png');
+                canvasToDownload = processedCanvas;
             } else {
                 const finalCanvas = document.createElement('canvas');
                 finalCanvas.width = processedCanvas.width;
@@ -305,9 +308,27 @@
                 ctx.fillStyle = currentBgColor;
                 ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
                 ctx.drawImage(processedCanvas, 0, 0);
-                link.download = '抠图_' + Date.now() + '.png';
-                link.href = finalCanvas.toDataURL('image/png');
+                canvasToDownload = finalCanvas;
             }
+            
+            // 添加水印
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = canvasToDownload.width;
+            tempCanvas.height = canvasToDownload.height;
+            const ctx = tempCanvas.getContext('2d');
+            ctx.drawImage(canvasToDownload, 0, 0);
+            ctx.font = '16px Arial';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+            ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
+            ctx.lineWidth = 1;
+            ctx.textAlign = 'right';
+            ctx.textBaseline = 'bottom';
+            ctx.strokeText('AI工具导航', tempCanvas.width - 10, tempCanvas.height - 10);
+            ctx.fillText('AI工具导航', tempCanvas.width - 10, tempCanvas.height - 10);
+            
+            const link = document.createElement('a');
+            link.download = '抠图_' + Date.now() + '.png';
+            link.href = tempCanvas.toDataURL('image/png');
             link.click();
         }
 

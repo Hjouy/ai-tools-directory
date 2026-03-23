@@ -11,7 +11,11 @@
     <meta property="og:description" content="免费在线证件照换底色工具，AI智能识别主体、一键换底色">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://hjouy.github.io/ai-tools-directory/id-photo.html">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Font Awesome 异步加载，不阻塞页面渲染 -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><!-- Font Awesome 异步加载，不阻塞页面渲染 -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript></noscript>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -859,9 +863,27 @@
 
         function downloadImage() {
             if (!processedCanvas) return;
+            
+            // 创建带水印的画布
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = processedCanvas.width;
+            tempCanvas.height = processedCanvas.height;
+            const ctx = tempCanvas.getContext('2d');
+            ctx.drawImage(processedCanvas, 0, 0);
+            
+            // 添加水印
+            ctx.font = '16px Arial';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+            ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
+            ctx.lineWidth = 1;
+            ctx.textAlign = 'right';
+            ctx.textBaseline = 'bottom';
+            ctx.strokeText('AI工具导航', tempCanvas.width - 10, tempCanvas.height - 10);
+            ctx.fillText('AI工具导航', tempCanvas.width - 10, tempCanvas.height - 10);
+            
             const link = document.createElement('a');
             link.download = '证件照_' + currentSize.width + 'x' + currentSize.height + '.png';
-            link.href = processedCanvas.toDataURL('image/png');
+            link.href = tempCanvas.toDataURL('image/png');
             link.click();
         }
 
