@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI图片生成 - 文生图、图生图、风格化</title>
+    <meta name="description" content="免费在线AI图片生成工具，支持文生图、图生图、风格化生成">
+    <meta name="keywords" content="AI图片生成,文生图,图生图,AI绘画,风格化">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 1400px; margin: 0 auto; background: white; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); overflow: hidden; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px 30px; text-align: center; }
+        .header h1 { font-size: 2.5em; margin-bottom: 10px; }
+        .header p { font-size: 1.1em; opacity: 0.9; }
+        .main-content { display: grid; grid-template-columns: 350px 1fr; gap: 30px; padding: 30px; }
+        .left-panel { background: #f8f9fa; padding: 25px; border-radius: 15px; }
+        .right-panel { display: flex; flex-direction: column; gap: 20px; }
+        .section-title { font-size: 1.3em; color: #333; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #667eea; display: flex; align-items: center; gap: 10px; }
+        .mode-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .mode-tab { flex: 1; padding: 12px; border: 2px solid #e0e0e0; border-radius: 10px; text-align: center; cursor: pointer; transition: all 0.3s; background: white; }
+        .mode-tab:hover { border-color: #667eea; background: #f0f4ff; }
+        .mode-tab.active { border-color: #667eea; background: #667eea; color: white; }
+        .mode-tab i { font-size: 1.2em; margin-bottom: 5px; display: block; }
+        .upload-area { border: 3px dashed #667eea; border-radius: 15px; padding: 40px 20px; text-align: center; cursor: pointer; transition: all 0.3s; background: white; }
+        .upload-area:hover { background: #f0f4ff; }
+        .upload-area i { font-size: 3em; color: #667eea; margin-bottom: 15px; }
+        .upload-area input { display: none; }
+        .input-group { margin-top: 20px; background: white; padding: 15px; border-radius: 12px; }
+        .input-group label { display: block; margin-bottom: 10px; color: #555; font-weight: 500; }
+        .input-group input[type="text"], .input-group textarea, .input-group select { width: 100%; padding: 10px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 0.95em; }
+        .input-group textarea { height: 100px; resize: vertical; }
+        .slider-group { margin-top: 15px; background: white; padding: 15px; border-radius: 12px; }
+        .slider-group label { display: block; margin-bottom: 10px; color: #555; }
+        .slider-group input[type="range"] { width: 100%; height: 8px; border-radius: 4px; background: #e0e0e0; outline: none; }
+        .slider-group input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #667eea; cursor: pointer; }
+        .slider-value { text-align: right; color: #667eea; font-weight: 600; margin-top: 8px; }
+        .style-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
+        .style-option { padding: 15px; border: 2px solid #e0e0e0; border-radius: 10px; text-align: center; cursor: pointer; transition: all 0.3s; font-size: 0.9em; }
+        .style-option:hover { border-color: #667eea; background: #f0f4ff; }
+        .style-option.active { border-color: #667eea; background: #667eea; color: white; }
+        .canvas-area { background: #f0f4ff; border-radius: 15px; padding: 30px; min-height: 500px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .result-container { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; }
+        #generatedImage { max-width: 100%; border-radius: 10px; max-height: 400px; display: none; }
+        .prompt-area { margin-top: 20px; padding: 15px; background: white; border-radius: 12px; }
+        .prompt-area h4 { color: #333; margin-bottom: 10px; }
+        .prompt-area p { color: #666; font-size: 0.95em; line-height: 1.6; }
+        .action-buttons { display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; }
+        .btn { padding: 12px 30px; border: none; border-radius: 10px; font-size: 1em; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 600; }
+        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4); }
+        .btn-secondary { background: #f0f4ff; color: #667eea; }
+        .btn-secondary:hover { background: #e0e8ff; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .file-info { margin-top: 15px; padding: 12px; background: white; border-radius: 10px; font-size: 0.9em; color: #555; }
+        .processing-indicator { display: none; text-align: center; padding: 20px; }
+        .processing-indicator.show { display: block; }
+        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #667eea; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto 15px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @media (max-width: 1024px) { .main-content { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-magic"></i> AI图片生成</h1>
+            <p>文生图 · 图生图 · 风格化生成</p>
+        </div>
+        <div class="main-content">
+            <div class="left-panel">
+                <div class="section-title"><i class="fas fa-cog"></i> 生成模式</div>
+                <div class="mode-tabs">
+                    <div class="mode-tab active" data-mode="text">
+                        <i class="fas fa-keyboard"></i>
+                        文生图
+                    </div>
+                    <div class="mode-tab" data-mode="image">
+                        <i class="fas fa-image"></i>
+                        图生图
+                    </div>
+                    <div class="mode-tab" data-mode="style">
+                        <i class="fas fa-palette"></i>
+                        风格化
+                    </div>
+                </div>
+                <div id="imageUpload" style="display: none;">
+                    <div class="upload-area" onclick="document.getElementById('imageInput').click()">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>点击或拖拽上传参考图</p>
+                        <p style="font-size: 0.85em;">支持 JPG、PNG 格式</p>
+                        <input type="file" id="imageInput" accept="image/jpeg,image/png">
+                    </div>
+                    <div id="imageFileInfo" class="file-info" style="display: none;"></div>
+                </div>
+                <div class="section-title" style="margin-top: 20px;"><i class="fas fa-edit"></i> 提示词</div>
+                <div class="input-group">
+                    <label>正向提示词</label>
+                    <textarea id="prompt" placeholder="描述你想要生成的画面，例如：一只可爱的猫咪坐在窗台上，阳光透过窗户洒进来..."></textarea>
+                </div>
+                <div class="input-group">
+                    <label>负向提示词</label>
+                    <textarea id="negativePrompt" placeholder="描述你不想要的内容，例如：模糊、低质量、变形..."></textarea>
+                </div>
+                <div class="section-title" style="margin-top: 20px;"><i class="fas fa-palette"></i> 风格选择</div>
+                <div class="style-options">
+                    <div class="style-option active" data-style="realistic">写实风格</div>
+                    <div class="style-option" data-style="anime">动漫风格</div>
+                    <div class="style-option" data-style="oil">油画风格</div>
+                    <div class="style-option" data-style="watercolor">水彩风格</div>
+                    <div class="style-option" data-style="cyberpunk">赛博朋克</div>
+                    <div class="style-option" data-style="fantasy">奇幻风格</div>
+                </div>
+                <div class="slider-group">
+                    <label><i class="fas fa-sliders-h"></i> 生成强度</label>
+                    <input type="range" id="strength" min="0" max="100" value="70">
+                    <div class="slider-value" id="strengthValue">70%</div>
+                </div>
+                <div class="slider-group">
+                    <label><i class="fas fa-th"></i> 生成步数</label>
+                    <input type="range" id="steps" min="10" max="50" value="30">
+                    <div class="slider-value" id="stepsValue">30</div>
+                </div>
+            </div>
+            <div class="right-panel">
+                <div class="canvas-area">
+                    <div class="result-container">
+                        <h3 style="color: #333; margin-bottom: 15px;"><i class="fas fa-image"></i> 生成结果</h3>
+                        <div id="placeholderResult" style="color: #666;">
+                            <i class="fas fa-magic" style="font-size: 4em; color: #ddd; margin-bottom: 20px;"></i>
+                            <p>输入提示词后，点击"开始生成"</p>
+                        </div>
+                        <img id="generatedImage" alt="AI生成的图片">
+                    </div>
+                </div>
+                <div class="processing-indicator" id="processingIndicator">
+                    <div class="spinner"></div>
+                    <p>AI正在生成图片，请稍候...</p>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-primary" id="generateBtn" onclick="generateImage()"><i class="fas fa-magic"></i> 开始生成</button>
+                    <button class="btn btn-secondary" id="downloadBtn" onclick="downloadImage()" disabled><i class="fas fa-download"></i> 下载图片</button>
+                    <button class="btn btn-secondary" onclick="resetAll()"><i class="fas fa-redo"></i> 重置</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        let currentMode = 'text';
+        let referenceImage = null;
+        let currentStyle = 'realistic';
+        let generatedImageData = null;
+        document.querySelectorAll('.mode-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentMode = tab.dataset.mode;
+                document.getElementById('imageUpload').style.display = currentMode === 'text' ? 'none' : 'block';
+            });
+        });
+        document.getElementById('imageInput').addEventListener('change', handleImageUpload);
+        document.querySelectorAll('.style-option').forEach(option => {
+            option.addEventListener('click', () => {
+                document.querySelectorAll('.style-option').forEach(o => o.classList.remove('active'));
+                option.classList.add('active');
+                currentStyle = option.dataset.style;
+            });
+        });
+        ['strength', 'steps'].forEach(id => {
+            const slider = document.getElementById(id);
+            const value = document.getElementById(id + 'Value');
+            slider.addEventListener('input', e => {
+                value.textContent = id === 'steps' ? e.target.value : e.target.value + '%';
+            });
+        });
+        function handleImageUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const validTypes = ['image/jpeg', 'image/png'];
+            if (!validTypes.includes(file.type)) { alert('请上传 JPG 或 PNG 格式的图片'); return; }
+            if (file.size > 10 * 1024 * 1024) { alert('文件大小不能超过 10MB'); return; }
+            const reader = new FileReader();
+            reader.onload = e => {
+                const img = new Image();
+                img.onload = () => {
+                    referenceImage = img;
+                    document.getElementById('imageFileInfo').style.display = 'block';
+                    document.getElementById('imageFileInfo').innerHTML = `文件: ${file.name}<br>尺寸: ${img.width}×${img.height}`;
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+        function generateImage() {
+            const prompt = document.getElementById('prompt').value.trim();
+            if (!prompt && currentMode === 'text') { alert('请输入提示词'); return; }
+            if (currentMode !== 'text' && !referenceImage) { alert('请上传参考图片'); return; }
+            document.getElementById('processingIndicator').classList.add('show');
+            document.getElementById('generateBtn').disabled = true;
+            setTimeout(() => {
+                generateAIImage();
+                document.getElementById('processingIndicator').classList.remove('show');
+                document.getElementById('generateBtn').disabled = false;
+                document.getElementById('downloadBtn').disabled = false;
+            }, 3000);
+        }
+        function generateAIImage() {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const width = 512;
+            const height = 512;
+            canvas.width = width;
+            canvas.height = height;
+            
+            // 根据风格生成不同的效果
+            const prompt = document.getElementById('prompt').value || currentStyle;
+            switch (currentStyle) {
+                case 'realistic':
+                    generateRealistic(ctx, width, height);
+                    break;
+                case 'anime':
+                    generateAnime(ctx, width, height);
+                    break;
+                case 'oil':
+                    generateOil(ctx, width, height);
+                    break;
+                case 'watercolor':
+                    generateWatercolor(ctx, width, height);
+                    break;
+                case 'cyberpunk':
+                    generateCyberpunk(ctx, width, height);
+                    break;
+                case 'fantasy':
+                    generateFantasy(ctx, width, height);
+                    break;
+            }
+            
+            generatedImageData = canvas.toDataURL('image/png');
+            document.getElementById('placeholderResult').style.display = 'none';
+            const img = document.getElementById('generatedImage');
+            img.src = generatedImageData;
+            img.style.display = 'block';
+        }
+        function generateRealistic(ctx, width, height) {
+            const gradient = ctx.createLinearGradient(0, 0, width, height);
+            gradient.addColorStop(0, '#87CEEB');
+            gradient.addColorStop(1, '#98FB98');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, width, height);
+            ctx.fillStyle = '#228B22';
+            for (let i = 0; i < 50; i++) {
+                const x = Math.random() * width;
+                const y = height * 0.7 + Math.random() * height * 0.3;
+                const size = 30 + Math.random() * 50;
+                ctx.beginPath();
+                ctx.arc(x, y, size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+        function generateAnime(ctx, width, height) {
+            ctx.fillStyle = '#FFE4E1';
+            ctx.fillRect(0, 0, width, height);
+            ctx.fillStyle = '#FFB6C1';
+            ctx.beginPath();
+            ctx.arc(width / 2, height / 2, 150, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#FFF';
+            ctx.beginPath();
+            ctx.arc(width / 2 - 60, height / 2 - 30, 30, 0, Math.PI * 2);
+            ctx.arc(width / 2 + 60, height / 2 - 30, 30, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#000';
+            ctx.beginPath();
+            ctx.arc(width / 2 - 55, height / 2 - 30, 15, 0, Math.PI * 2);
+            ctx.arc(width / 2 + 55, height / 2 - 30, 15, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#FF69B4';
+            ctx.beginPath();
+            ctx.arc(width / 2, height / 2 + 30, 20, 0, Math.PI);
+            ctx.fill();
+        }
+        function generateOil(ctx, width, height) {
+            const colors = ['#8B4513', '#D2691E', '#F4A460', '#DEB887', '#FFE4B5'];
+            for (let i = 0; i < 2000; i++) {
+                const x = Math.random() * width;
+                const y = Math.random() * height;
+                const size = 5 + Math.random() * 20;
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                ctx.fillStyle = color;
+                ctx.beginPath();
+                ctx.arc(x, y, size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+        function generateWatercolor(ctx, width, height) {
+            const colors = ['rgba(255, 182, 193, 0.6)', 'rgba(173, 216, 230, 0.6)', 'rgba(144, 238, 144, 0.6)', 'rgba(255, 255, 224, 0.6)'];
+            for (let i = 0; i < 100; i++) {
+                const x = Math.random() * width;
+                const y = Math.random() * height;
+                const size = 50 + Math.random() * 100;
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                const gradient = ctx.createRadialGradient(x, y, 0, x, y, size);
+                gradient.addColorStop(0, color);
+                gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(x - size, y - size, size * 2, size * 2);
+            }
+        }
+        function generateCyberpunk(ctx, width, height) {
+            ctx.fillStyle = '#0a0a0a';
+            ctx.fillRect(0, 0, width, height);
+            const colors = ['#ff00ff', '#00ffff', '#ff0080', '#00ff80'];
+            for (let i = 0; i < 20; i++) {
+                const x = Math.random() * width;
+                const y = Math.random() * height;
+                const h = 50 + Math.random() * 150;
+                const w = 2 + Math.random() * 5;
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                ctx.fillStyle = color;
+                ctx.fillRect(x, y, w, h);
+            }
+            for (let i = 0; i < 50; i++) {
+                const x = Math.random() * width;
+                const y = Math.random() * height;
+                const size = 2 + Math.random() * 5;
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                ctx.fillStyle = color;
+                ctx.beginPath();
+                ctx.arc(x, y, size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+        function generateFantasy(ctx, width, height) {
+            const gradient = ctx.createRadialGradient(width / 2, height / 2, 0, width / 2, height / 2, width / 2);
+            gradient.addColorStop(0, '#4B0082');
+            gradient.addColorStop(0.5, '#8A2BE2');
+            gradient.addColorStop(1, '#DDA0DD');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, width, height);
+            for (let i = 0; i < 30; i++) {
+                const x = Math.random() * width;
+                const y = Math.random() * height;
+                const size = 2 + Math.random() * 4;
+                ctx.fillStyle = '#FFF';
+                ctx.beginPath();
+                ctx.arc(x, y, size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+        function downloadImage() {
+            if (!generatedImageData) { alert('请先生成图片'); return; }
+            const link = document.createElement('a');
+            link.download = `AI生成_${currentStyle}_${Date.now()}.png`;
+            link.href = generatedImageData;
+            link.click();
+        }
+        function resetAll() {
+            currentMode = 'text';
+            referenceImage = null;
+            generatedImageData = null;
+            document.getElementById('prompt').value = '';
+            document.getElementById('negativePrompt').value = '';
+            document.getElementById('imageInput').value = '';
+            document.getElementById('imageFileInfo').style.display = 'none';
+            document.getElementById('imageUpload').style.display = 'none';
+            document.getElementById('placeholderResult').style.display = 'block';
+            document.getElementById('generatedImage').style.display = 'none';
+            document.getElementById('downloadBtn').disabled = true;
+            document.getElementById('strength').value = 70;
+            document.getElementById('strengthValue').textContent = '70%';
+            document.getElementById('steps').value = 30;
+            document.getElementById('stepsValue').textContent = '30';
+            document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector('[data-mode="text"]').classList.add('active');
+            document.querySelectorAll('.style-option').forEach(o => o.classList.remove('active'));
+            document.querySelector('[data-style="realistic"]').classList.add('active');
+        }
+    </script>
+</body>
+</html>

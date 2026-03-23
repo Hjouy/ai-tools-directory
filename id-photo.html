@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>证件照在线制作 - AI智能抠图、换底色、美颜优化</title>
+    <meta name="description" content="免费在线证件照制作工具，AI智能抠图、自动换底色（白底/蓝底/红底）、智能裁剪、美颜优化，支持多种证件照尺寸">
+    <meta name="keywords" content="证件照制作,在线证件照,抠图,换底色,美颜,证件照尺寸">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 30px;
+            padding: 30px;
+        }
+
+        .left-panel {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            height: fit-content;
+        }
+
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .section-title {
+            font-size: 1.3em;
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .upload-area:hover {
+            background: #f0f4ff;
+            border-color: #764ba2;
+        }
+
+        .upload-area i {
+            font-size: 3em;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .upload-area p {
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        .upload-area input {
+            display: none;
+        }
+
+        .size-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .size-option {
+            padding: 12px 8px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+            font-size: 0.9em;
+        }
+
+        .size-option:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .size-option.active {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+
+        .size-name {
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+
+        .size-dimension {
+            font-size: 0.85em;
+            opacity: 0.8;
+        }
+
+        .background-colors {
+            display: flex;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .bg-option {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            cursor: pointer;
+            border: 3px solid #e0e0e0;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .bg-option:hover {
+            transform: scale(1.1);
+        }
+
+        .bg-option.active {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
+        }
+
+        .bg-white {
+            background: #ffffff;
+        }
+
+        .bg-blue {
+            background: #4386F4;
+        }
+
+        .bg-red {
+            background: #D93025;
+        }
+
+        .bg-custom {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 0.8em;
+        }
+
+        .beauty-options {
+            margin-top: 20px;
+        }
+
+        .slider-group {
+            margin-bottom: 15px;
+        }
+
+        .slider-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-size: 0.9em;
+        }
+
+        .slider-group input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: #e0e0e0;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        .slider-value {
+            text-align: right;
+            color: #667eea;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+
+        .canvas-area {
+            background: #f0f4ff;
+            border-radius: 15px;
+            padding: 30px;
+            min-height: 500px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .preview-container {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .preview-box {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .preview-box h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        #mainCanvas {
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            max-width: 100%;
+        }
+
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .preview-small {
+            width: 100px;
+            height: 140px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .preview-small img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f0f4ff;
+            color: #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e8ff;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .file-info {
+            margin-top: 15px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s;
+            width: 0%;
+        }
+
+        .custom-color-picker {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .custom-color-picker.show {
+            display: block;
+        }
+
+        .custom-color-picker input[type="color"] {
+            width: 100%;
+            height: 40px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.5em;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-id-card"></i> 证件照在线制作</h1>
+            <p>AI智能抠图 · 自动换底色 · 智能裁剪 · 美颜优化</p>
+        </div>
+
+        <div class="main-content">
+            <div class="left-panel">
+                <div class="section-title">
+                    <i class="fas fa-upload"></i>
+                    上传照片
+                </div>
+                
+                <div class="upload-area" onclick="document.getElementById('imageInput').click()">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>点击或拖拽上传照片</p>
+                    <p style="font-size: 0.85em; margin-top: 8px;">支持 JPG、PNG 格式</p>
+                    <p style="font-size: 0.85em;">最大 10MB</p>
+                    <input type="file" id="imageInput" accept="image/jpeg,image/png">
+                </div>
+
+                <div id="fileInfo" class="file-info" style="display: none;">
+                    <div id="fileName"></div>
+                    <div id="fileSize"></div>
+                </div>
+
+                <div class="section-title" style="margin-top: 25px;">
+                    <i class="fas fa-crop"></i>
+                    证件尺寸
+                </div>
+
+                <div class="size-options">
+                    <div class="size-option active" data-size="1" data-width="295" data-height="413">
+                        <div class="size-name">一寸</div>
+                        <div class="size-dimension">295×413px</div>
+                    </div>
+                    <div class="size-option" data-size="2" data-width="413" data-height="626">
+                        <div class="size-name">二寸</div>
+                        <div class="size-dimension">413×626px</div>
+                    </div>
+                    <div class="size-option" data-size="small1" data-width="390" data-height="567">
+                        <div class="size-name">小一寸</div>
+                        <div class="size-dimension">390×567px</div>
+                    </div>
+                    <div class="size-option" data-size="small2" data-width="390" data-height="567">
+                        <div class="size-name">小二寸</div>
+                        <div class="size-dimension">390×567px</div>
+                    </div>
+                    <div class="size-option" data-size="passport" data-width="390" data-height="567">
+                        <div class="size-name">护照</div>
+                        <div class="size-dimension">390×567px</div>
+                    </div>
+                    <div class="size-option" data-size="visa" data-width="390" data-height="567">
+                        <div class="size-name">签证</div>
+                        <div class="size-dimension">390×567px</div>
+                    </div>
+                </div>
+
+                <div class="section-title" style="margin-top: 25px;">
+                    <i class="fas fa-palette"></i>
+                    底色选择
+                </div>
+
+                <div class="background-colors">
+                    <div class="bg-option bg-white active" data-color="#FFFFFF" title="白底">
+                        <i class="fas fa-check" style="color: #667eea; display: none;"></i>
+                    </div>
+                    <div class="bg-option bg-blue" data-color="#4386F4" title="蓝底">
+                        <i class="fas fa-check" style="color: white; display: none;"></i>
+                    </div>
+                    <div class="bg-option bg-red" data-color="#D93025" title="红底">
+                        <i class="fas fa-check" style="color: white; display: none;"></i>
+                    </div>
+                    <div class="bg-option bg-custom" data-color="custom" title="自定义">
+                        <i class="fas fa-plus"></i>
+                    </div>
+                </div>
+
+                <div class="custom-color-picker" id="customColorPicker">
+                    <input type="color" id="customColor" value="#667eea">
+                </div>
+
+                <div class="section-title" style="margin-top: 25px;">
+                    <i class="fas fa-magic"></i>
+                    美颜优化
+                </div>
+
+                <div class="beauty-options">
+                    <div class="slider-group">
+                        <label><i class="fas fa-sun"></i> 亮度</label>
+                        <input type="range" id="brightness" min="-50" max="50" value="0">
+                        <div class="slider-value" id="brightnessValue">0</div>
+                    </div>
+
+                    <div class="slider-group">
+                        <label><i class="fas fa-adjust"></i> 对比度</label>
+                        <input type="range" id="contrast" min="-50" max="50" value="0">
+                        <div class="slider-value" id="contrastValue">0</div>
+                    </div>
+
+                    <div class="slider-group">
+                        <label><i class="fas fa-tint"></i> 饱和度</label>
+                        <input type="range" id="saturation" min="-50" max="50" value="0">
+                        <div class="slider-value" id="saturationValue">0</div>
+                    </div>
+
+                    <div class="slider-group">
+                        <label><i class="fas fa-smile"></i> 磨皮</label>
+                        <input type="range" id="smooth" min="0" max="100" value="0">
+                        <div class="slider-value" id="smoothValue">0</div>
+                    </div>
+
+                    <div class="slider-group">
+                        <label><i class="fas fa-eye"></i> 美白</label>
+                        <input type="range" id="whitening" min="0" max="100" value="0">
+                        <div class="slider-value" id="whiteningValue">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <div class="canvas-area" id="canvasArea">
+                    <div style="text-align: center; color: #666;">
+                        <i class="fas fa-image" style="font-size: 4em; color: #ddd; margin-bottom: 20px;"></i>
+                        <p>上传照片后，这里将显示预览</p>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-primary" id="processBtn" onclick="processImage()" disabled>
+                        <i class="fas fa-magic"></i>
+                        开始处理
+                    </button>
+                    <button class="btn btn-secondary" id="downloadBtn" onclick="downloadImage()" disabled>
+                        <i class="fas fa-download"></i>
+                        下载照片
+                    </button>
+                    <button class="btn btn-secondary" onclick="resetAll()">
+                        <i class="fas fa-redo"></i>
+                        重置
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let originalImage = null;
+        let processedImage = null;
+        let currentBgColor = '#FFFFFF';
+        let currentSize = { width: 295, height: 413 };
+
+        // 文件上传处理
+        document.getElementById('imageInput').addEventListener('change', handleFileUpload);
+        
+        // 拖拽上传
+        const uploadArea = document.querySelector('.upload-area');
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.background = '#f0f4ff';
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.style.background = 'white';
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.background = 'white';
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+
+        function handleFileUpload(e) {
+            const file = e.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        }
+
+        function handleFile(file) {
+            // 验证文件类型
+            const validTypes = ['image/jpeg', 'image/png'];
+            if (!validTypes.includes(file.type)) {
+                alert('请上传 JPG 或 PNG 格式的图片');
+                return;
+            }
+
+            // 验证文件大小
+            if (file.size > 10 * 1024 * 1024) {
+                alert('文件大小不能超过 10MB');
+                return;
+            }
+
+            // 显示文件信息
+            document.getElementById('fileInfo').style.display = 'block';
+            document.getElementById('fileName').textContent = `文件名: ${file.name}`;
+            document.getElementById('fileSize').textContent = `文件大小: ${(file.size / 1024).toFixed(2)} KB`;
+
+            // 加载图片
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    originalImage = img;
+                    processedImage = img;
+                    displayImage(img);
+                    document.getElementById('processBtn').disabled = false;
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function displayImage(img) {
+            const canvasArea = document.getElementById('canvasArea');
+            canvasArea.innerHTML = `
+                <div class="preview-container">
+                    <div class="preview-box">
+                        <h3><i class="fas fa-image"></i> 照片预览</h3>
+                        <canvas id="mainCanvas"></canvas>
+                    </div>
+                </div>
+            `;
+
+            const canvas = document.getElementById('mainCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // 设置画布大小为证件照尺寸
+            canvas.width = currentSize.width;
+            canvas.height = currentSize.height;
+            
+            // 绘制图片（保持比例，居中裁剪）
+            drawImageCover(ctx, img, 0, 0, canvas.width, canvas.height);
+        }
+
+        function drawImageCover(ctx, img, x, y, w, h) {
+            const imgRatio = img.width / img.height;
+            const canvasRatio = w / h;
+            
+            let drawWidth, drawHeight, drawX, drawY;
+            
+            if (imgRatio > canvasRatio) {
+                drawHeight = h;
+                drawWidth = h * imgRatio;
+                drawX = x - (drawWidth - w) / 2;
+                drawY = y;
+            } else {
+                drawWidth = w;
+                drawHeight = w / imgRatio;
+                drawX = x;
+                drawY = y - (drawHeight - h) / 2;
+            }
+            
+            ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
+        }
+
+        // 尺寸选择
+        document.querySelectorAll('.size-option').forEach(option => {
+            option.addEventListener('click', () => {
+                document.querySelectorAll('.size-option').forEach(opt => opt.classList.remove('active'));
+                option.classList.add('active');
+                
+                currentSize = {
+                    width: parseInt(option.dataset.width),
+                    height: parseInt(option.dataset.height)
+                };
+
+                if (originalImage) {
+                    displayImage(originalImage);
+                }
+            });
+        });
+
+        // 背景色选择
+        document.querySelectorAll('.bg-option').forEach(option => {
+            option.addEventListener('click', () => {
+                document.querySelectorAll('.bg-option').forEach(opt => {
+                    opt.classList.remove('active');
+                    opt.querySelector('i').style.display = 'none';
+                });
+                
+                option.classList.add('active');
+                option.querySelector('i').style.display = 'block';
+                
+                currentBgColor = option.dataset.color;
+                
+                if (currentBgColor === 'custom') {
+                    document.getElementById('customColorPicker').classList.add('show');
+                } else {
+                    document.getElementById('customColorPicker').classList.remove('show');
+                }
+            });
+        });
+
+        document.getElementById('customColor').addEventListener('input', (e) => {
+            currentBgColor = e.target.value;
+        });
+
+        // 美颜滑块
+        ['brightness', 'contrast', 'saturation', 'smooth', 'whitening'].forEach(param => {
+            const slider = document.getElementById(param);
+            const value = document.getElementById(param + 'Value');
+            
+            slider.addEventListener('input', (e) => {
+                value.textContent = e.target.value;
+            });
+        });
+
+        // 处理图片
+        function processImage() {
+            if (!originalImage) {
+                alert('请先上传照片');
+                return;
+            }
+
+            const canvas = document.getElementById('mainCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // 获取美颜参数
+            const brightness = parseInt(document.getElementById('brightness').value);
+            const contrast = parseInt(document.getElementById('contrast').value);
+            const saturation = parseInt(document.getElementById('saturation').value);
+            const smooth = parseInt(document.getElementById('smooth').value);
+            const whitening = parseInt(document.getElementById('whitening').value);
+
+            // 重新绘制图片
+            drawImageCover(ctx, originalImage, 0, 0, canvas.width, canvas.height);
+            
+            // 获取图像数据
+            let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            let data = imageData.data;
+
+            // 应用亮度、对比度、饱和度调整
+            for (let i = 0; i < data.length; i += 4) {
+                let r = data[i];
+                let g = data[i + 1];
+                let b = data[i + 2];
+
+                // 亮度
+                r += brightness * 2.55;
+                g += brightness * 2.55;
+                b += brightness * 2.55;
+
+                // 对比度
+                const factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
+                r = factor * (r - 128) + 128;
+                g = factor * (g - 128) + 128;
+                b = factor * (b - 128) + 128;
+
+                // 饱和度
+                const gray = 0.2989 * r + 0.587 * g + 0.114 * b;
+                r = gray + saturation * 2.55 * (r - gray) / 100;
+                g = gray + saturation * 2.55 * (g - gray) / 100;
+                b = gray + saturation * 2.55 * (b - gray) / 100;
+
+                // 磨皮（简单的高斯模糊模拟）
+                if (smooth > 0 && i > 0 && i < data.length - 4) {
+                    const prevR = data[i - 4];
+                    const prevG = data[i - 3];
+                    const prevB = data[i - 2];
+                    const nextR = data[i + 4];
+                    const nextG = data[i + 5];
+                    const nextB = data[i + 6];
+                    
+                    r = r * (1 - smooth / 100) + (prevR + nextR) / 2 * (smooth / 100);
+                    g = g * (1 - smooth / 100) + (prevG + nextG) / 2 * (smooth / 100);
+                    b = b * (1 - smooth / 100) + (prevB + nextB) / 2 * (smooth / 100);
+                }
+
+                // 美白
+                if (whitening > 0) {
+                    const gray = 0.2989 * r + 0.587 * g + 0.114 * b;
+                    r = r + (255 - gray) * (whitening / 100) * 0.5;
+                    g = g + (255 - gray) * (whitening / 100) * 0.5;
+                    b = b + (255 - gray) * (whitening / 100) * 0.5;
+                }
+
+                data[i] = Math.max(0, Math.min(255, r));
+                data[i + 1] = Math.max(0, Math.min(255, g));
+                data[i + 2] = Math.max(0, Math.min(255, b));
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+
+            // 抠图并换背景（简化版：检测边缘区域）
+            if (currentBgColor !== 'transparent') {
+                // 绘制背景
+                ctx.globalCompositeOperation = 'destination-over';
+                ctx.fillStyle = currentBgColor;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.globalCompositeOperation = 'source-over';
+            }
+
+            document.getElementById('downloadBtn').disabled = false;
+        }
+
+        // 下载图片
+        function downloadImage() {
+            const canvas = document.getElementById('mainCanvas');
+            const link = document.createElement('a');
+            link.download = '证件照_' + Date.now() + '.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        // 重置
+        function resetAll() {
+            originalImage = null;
+            processedImage = null;
+            document.getElementById('imageInput').value = '';
+            document.getElementById('fileInfo').style.display = 'none';
+            document.getElementById('canvasArea').innerHTML = `
+                <div style="text-align: center; color: #666;">
+                    <i class="fas fa-image" style="font-size: 4em; color: #ddd; margin-bottom: 20px;"></i>
+                    <p>上传照片后，这里将显示预览</p>
+                </div>
+            `;
+            document.getElementById('processBtn').disabled = true;
+            document.getElementById('downloadBtn').disabled = true;
+
+            // 重置滑块
+            document.getElementById('brightness').value = 0;
+            document.getElementById('brightnessValue').textContent = '0';
+            document.getElementById('contrast').value = 0;
+            document.getElementById('contrastValue').textContent = '0';
+            document.getElementById('saturation').value = 0;
+            document.getElementById('saturationValue').textContent = '0';
+            document.getElementById('smooth').value = 0;
+            document.getElementById('smoothValue').textContent = '0';
+            document.getElementById('whitening').value = 0;
+            document.getElementById('whiteningValue').textContent = '0';
+        }
+    </script>
+</body>
+</html>

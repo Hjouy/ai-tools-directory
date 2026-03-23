@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能人脸融合 - 人脸融合、换脸、年龄变换</title>
+    <meta name="description" content="免费在线人脸融合工具，支持多张人脸智能融合、换脸效果、年龄变换、性别转换等功能">
+    <meta name="keywords" content="人脸融合,换脸,年龄变换,性别转换,AI人脸">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 30px;
+            padding: 30px;
+        }
+
+        .left-panel {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            height: fit-content;
+        }
+
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .section-title {
+            font-size: 1.3em;
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .upload-area:hover {
+            background: #f0f4ff;
+            border-color: #764ba2;
+        }
+
+        .upload-area i {
+            font-size: 3em;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .upload-area p {
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        .upload-area input {
+            display: none;
+        }
+
+        .function-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .function-card {
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: white;
+        }
+
+        .function-card:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .function-card.active {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #f0f4ff 0%, #e8eeff 100%);
+        }
+
+        .function-card i {
+            font-size: 1.5em;
+            color: #667eea;
+            width: 30px;
+            text-align: center;
+        }
+
+        .function-card-info h4 {
+            color: #333;
+            margin-bottom: 3px;
+        }
+
+        .function-card-info p {
+            color: #666;
+            font-size: 0.85em;
+        }
+
+        .slider-group {
+            margin-top: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+        }
+
+        .slider-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: #555;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        .slider-group input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: #e0e0e0;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        .slider-value {
+            text-align: right;
+            color: #667eea;
+            font-weight: 600;
+            margin-top: 8px;
+            font-size: 0.9em;
+        }
+
+        .image-list {
+            margin-top: 15px;
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+        }
+
+        .image-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .image-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .image-item img {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .image-item-info {
+            flex: 1;
+        }
+
+        .image-item-info h5 {
+            color: #333;
+            font-size: 0.9em;
+            margin-bottom: 3px;
+        }
+
+        .image-item-info p {
+            color: #666;
+            font-size: 0.8em;
+        }
+
+        .image-item button {
+            padding: 6px 12px;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85em;
+        }
+
+        .canvas-area {
+            background: #f0f4ff;
+            border-radius: 15px;
+            padding: 30px;
+            min-height: 500px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .preview-container {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .preview-box {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            flex: 1;
+            min-width: 300px;
+            text-align: center;
+        }
+
+        .preview-box h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        #resultCanvas {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f0f4ff;
+            color: #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e8ff;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .processing-indicator {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .processing-indicator.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .info-tip {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 12px;
+            margin-top: 15px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            color: #856404;
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.5em;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-user-circle"></i> 智能人脸融合</h1>
+            <p>人脸融合 · 换脸效果 · 年龄变换 · 性别转换</p>
+        </div>
+
+        <div class="main-content">
+            <div class="left-panel">
+                <div class="section-title">
+                    <i class="fas fa-upload"></i>
+                    上传照片
+                </div>
+                
+                <div class="upload-area" onclick="document.getElementById('imageInput').click()">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>点击或拖拽上传照片</p>
+                    <p style="font-size: 0.85em; margin-top: 8px;">支持 JPG、PNG 格式</p>
+                    <p style="font-size: 0.85em;">最多上传 5 张</p>
+                    <input type="file" id="imageInput" accept="image/jpeg,image/png" multiple>
+                </div>
+
+                <div class="image-list" id="imageList" style="display: none;">
+                    <h4 style="margin-bottom: 12px; color: #333;">已上传照片</h4>
+                    <div id="imageItems"></div>
+                </div>
+
+                <div class="section-title" style="margin-top: 25px;">
+                    <i class="fas fa-magic"></i>
+                    融合功能
+                </div>
+
+                <div class="function-options">
+                    <div class="function-card active" data-function="fusion">
+                        <i class="fas fa-layer-group"></i>
+                        <div class="function-card-info">
+                            <h4>人脸融合</h4>
+                            <p>多张人脸智能融合</p>
+                        </div>
+                    </div>
+                    <div class="function-card" data-function="swap">
+                        <i class="fas fa-exchange-alt"></i>
+                        <div class="function-card-info">
+                            <h4>换脸效果</h4>
+                            <p>人脸替换到目标图片</p>
+                        </div>
+                    </div>
+                    <div class="function-card" data-function="age">
+                        <i class="fas fa-hourglass-half"></i>
+                        <div class="function-card-info">
+                            <h4>年龄变换</h4>
+                            <p>变老或变年轻</p>
+                        </div>
+                    </div>
+                    <div class="function-card" data-function="gender">
+                        <i class="fas fa-venus-mars"></i>
+                        <div class="function-card-info">
+                            <h4>性别转换</h4>
+                            <p>男性/女性互相转换</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slider-group" id="blendControl">
+                    <label><i class="fas fa-sliders-h"></i> 融合比例</label>
+                    <input type="range" id="blendRatio" min="0" max="100" value="50">
+                    <div class="slider-value" id="blendRatioValue">50%</div>
+                </div>
+
+                <div class="info-tip">
+                    <i class="fas fa-info-circle"></i>
+                    提示：上传清晰正面人脸照片效果最佳。所有处理在本地完成，保护隐私。
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <div class="canvas-area" id="canvasArea">
+                    <div style="text-align: center; color: #666;">
+                        <i class="fas fa-user-circle" style="font-size: 4em; color: #ddd; margin-bottom: 20px;"></i>
+                        <p>上传照片并选择功能后，这里将显示效果</p>
+                    </div>
+                </div>
+
+                <div class="processing-indicator" id="processingIndicator">
+                    <div class="spinner"></div>
+                    <p>AI正在处理中，请稍候...</p>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-primary" id="processBtn" onclick="processImage()" disabled>
+                        <i class="fas fa-magic"></i>
+                        开始处理
+                    </button>
+                    <button class="btn btn-secondary" id="downloadBtn" onclick="downloadImage()" disabled>
+                        <i class="fas fa-download"></i>
+                        下载结果
+                    </button>
+                    <button class="btn btn-secondary" onclick="resetAll()">
+                        <i class="fas fa-redo"></i>
+                        重置
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let uploadedImages = [];
+        let currentFunction = 'fusion';
+
+        // 文件上传处理
+        document.getElementById('imageInput').addEventListener('change', handleFileUpload);
+        
+        // 拖拽上传
+        const uploadArea = document.querySelector('.upload-area');
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.background = '#f0f4ff';
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.style.background = 'white';
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.background = 'white';
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFiles(files);
+            }
+        });
+
+        function handleFileUpload(e) {
+            const files = e.target.files;
+            if (files.length > 0) {
+                handleFiles(files);
+            }
+        }
+
+        function handleFiles(files) {
+            const maxFiles = 5;
+            const remainingSlots = maxFiles - uploadedImages.length;
+            
+            if (remainingSlots === 0) {
+                alert('最多只能上传 5 张照片');
+                return;
+            }
+
+            const filesToProcess = Array.from(files).slice(0, remainingSlots);
+            let processedCount = 0;
+
+            filesToProcess.forEach(file => {
+                // 验证文件类型
+                const validTypes = ['image/jpeg', 'image/png'];
+                if (!validTypes.includes(file.type)) {
+                    alert(`文件 ${file.name} 格式不支持，请上传 JPG 或 PNG`);
+                    return;
+                }
+
+                // 验证文件大小
+                if (file.size > 10 * 1024 * 1024) {
+                    alert(`文件 ${file.name} 大小超过 10MB`);
+                    return;
+                }
+
+                // 加载图片
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        uploadedImages.push({
+                            name: file.name,
+                            size: file.size,
+                            image: img,
+                            dataUrl: e.target.result
+                        });
+                        
+                        processedCount++;
+                        if (processedCount === filesToProcess.length) {
+                            updateImageList();
+                            document.getElementById('processBtn').disabled = uploadedImages.length === 0;
+                        }
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function updateImageList() {
+            const imageList = document.getElementById('imageList');
+            const imageItems = document.getElementById('imageItems');
+
+            if (uploadedImages.length === 0) {
+                imageList.style.display = 'none';
+                return;
+            }
+
+            imageList.style.display = 'block';
+            imageItems.innerHTML = uploadedImages.map((img, index) => `
+                <div class="image-item">
+                    <img src="${img.dataUrl}" alt="图片 ${index + 1}">
+                    <div class="image-item-info">
+                        <h5>${img.name}</h5>
+                        <p>${(img.size / 1024).toFixed(2)} KB · ${img.image.width}×${img.image.height}</p>
+                    </div>
+                    <button onclick="removeImage(${index})">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function removeImage(index) {
+            uploadedImages.splice(index, 1);
+            updateImageList();
+            document.getElementById('processBtn').disabled = uploadedImages.length === 0;
+        }
+
+        // 功能选择
+        document.querySelectorAll('.function-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.querySelectorAll('.function-card').forEach(c => c.classList.remove('active'));
+                card.classList.add('active');
+                currentFunction = card.dataset.function;
+            });
+        });
+
+        // 融合比例滑块
+        const blendSlider = document.getElementById('blendRatio');
+        const blendValue = document.getElementById('blendRatioValue');
+        
+        blendSlider.addEventListener('input', (e) => {
+            blendValue.textContent = e.target.value + '%';
+        });
+
+        // 处理图片
+        function processImage() {
+            if (uploadedImages.length === 0) {
+                alert('请先上传照片');
+                return;
+            }
+
+            const blendRatio = parseInt(blendSlider.value) / 100;
+            
+            // 显示处理指示器
+            document.getElementById('processingIndicator').classList.add('show');
+            document.getElementById('processBtn').disabled = true;
+
+            // 模拟AI处理延迟
+            setTimeout(() => {
+                const canvasArea = document.getElementById('canvasArea');
+                canvasArea.innerHTML = `
+                    <div class="preview-container">
+                        <div class="preview-box">
+                            <h3><i class="fas fa-magic"></i> 融合结果</h3>
+                            <canvas id="resultCanvas"></canvas>
+                        </div>
+                    </div>
+                `;
+
+                const canvas = document.getElementById('resultCanvas');
+                const ctx = canvas.getContext('2d');
+
+                // 根据选择的功能应用不同的处理
+                switch (currentFunction) {
+                    case 'fusion':
+                        applyFaceFusion(ctx, canvas, blendRatio);
+                        break;
+                    case 'swap':
+                        applyFaceSwap(ctx, canvas);
+                        break;
+                    case 'age':
+                        applyAgeTransform(ctx, canvas);
+                        break;
+                    case 'gender':
+                        applyGenderTransform(ctx, canvas);
+                        break;
+                }
+
+                // 隐藏处理指示器
+                document.getElementById('processingIndicator').classList.remove('show');
+                document.getElementById('processBtn').disabled = false;
+                document.getElementById('downloadBtn').disabled = false;
+            }, 2000);
+        }
+
+        // 人脸融合
+        function applyFaceFusion(ctx, canvas, blendRatio) {
+            if (uploadedImages.length < 2) {
+                alert('人脸融合需要至少 2 张照片');
+                return;
+            }
+
+            const img1 = uploadedImages[0].image;
+            const img2 = uploadedImages[1].image;
+
+            // 计算画布尺寸（使用第一张图片的尺寸）
+            canvas.width = img1.width;
+            canvas.height = img1.height;
+
+            // 缩放第二张图片以匹配第一张
+            const tempCanvas = document.createElement('canvas');
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCanvas.width = canvas.width;
+            tempCanvas.height = canvas.height;
+            tempCtx.drawImage(img2, 0, 0, canvas.width, canvas.height);
+
+            // 获取两张图片的像素数据
+            const imgData1 = ctx.getImageDataFromImage(img1, canvas.width, canvas.height);
+            const imgData2 = tempCtx.getImageData(0, 0, canvas.width, canvas.height);
+
+            // 融合图片
+            const blendedData = ctx.createImageData(canvas.width, canvas.height);
+            for (let i = 0; i < blendedData.data.length; i += 4) {
+                blendedData.data[i] = imgData1.data[i] * (1 - blendRatio) + imgData2.data[i] * blendRatio;
+                blendedData.data[i + 1] = imgData1.data[i + 1] * (1 - blendRatio) + imgData2.data[i + 1] * blendRatio;
+                blendedData.data[i + 2] = imgData1.data[i + 2] * (1 - blendRatio) + imgData2.data[i + 2] * blendRatio;
+                blendedData.data[i + 3] = 255;
+            }
+
+            ctx.putImageData(blendedData, 0, 0);
+        }
+
+        CanvasRenderingContext2D.prototype.getImageDataFromImage = function(img, width, height) {
+            const tempCanvas = document.createElement('canvas');
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCanvas.width = width;
+            tempCanvas.height = height;
+            tempCtx.drawImage(img, 0, 0, width, height);
+            return tempCtx.getImageData(0, 0, width, height);
+        };
+
+        // 换脸效果（简化版：面部区域叠加）
+        function applyFaceSwap(ctx, canvas) {
+            if (uploadedImages.length < 2) {
+                alert('换脸需要至少 2 张照片');
+                return;
+            }
+
+            const img1 = uploadedImages[0].image;
+            const img2 = uploadedImages[1].image;
+
+            canvas.width = img1.width;
+            canvas.height = img1.height;
+
+            // 绘制第一张图片
+            ctx.drawImage(img1, 0, 0);
+
+            // 计算面部区域（简化版：中心区域）
+            const faceWidth = canvas.width * 0.4;
+            const faceHeight = canvas.height * 0.4;
+            const faceX = (canvas.width - faceWidth) / 2;
+            const faceY = canvas.height * 0.1;
+
+            // 从第二张图片提取面部区域
+            const tempCanvas = document.createElement('canvas');
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCanvas.width = faceWidth;
+            tempCanvas.height = faceHeight;
+            
+            const srcFaceWidth = img2.width * 0.4;
+            const srcFaceHeight = img2.height * 0.4;
+            const srcFaceX = (img2.width - srcFaceWidth) / 2;
+            const srcFaceY = img2.height * 0.1;
+            
+            tempCtx.drawImage(img2, srcFaceX, srcFaceY, srcFaceWidth, srcFaceHeight, 0, 0, faceWidth, faceHeight);
+
+            // 应用面部平滑混合
+            const faceData = tempCtx.getImageData(0, 0, faceWidth, faceHeight);
+            const targetData = ctx.getImageData(faceX, faceY, faceWidth, faceHeight);
+
+            for (let i = 0; i < faceData.data.length; i += 4) {
+                // 边缘羽化效果
+                const x = (i / 4) % faceWidth;
+                const y = Math.floor((i / 4) / faceWidth);
+                const edgeFactor = Math.min(x, faceWidth - x, y, faceHeight - y) / (Math.min(faceWidth, faceHeight) * 0.2);
+                const alpha = Math.min(1, edgeFactor);
+
+                targetData.data[i] = targetData.data[i] * (1 - alpha) + faceData.data[i] * alpha;
+                targetData.data[i + 1] = targetData.data[i + 1] * (1 - alpha) + faceData.data[i + 1] * alpha;
+                targetData.data[i + 2] = targetData.data[i + 2] * (1 - alpha) + faceData.data[i + 2] * alpha;
+            }
+
+            ctx.putImageData(targetData, faceX, faceY);
+        }
+
+        // 年龄变换（变老）
+        function applyAgeTransform(ctx, canvas) {
+            if (uploadedImages.length === 0) return;
+
+            const img = uploadedImages[0].image;
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+
+            let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            let data = imageData.data;
+
+            // 模拟变老效果：增加纹理、降低对比度、增加暖色调
+            for (let i = 0; i < data.length; i += 4) {
+                const gray = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+                
+                // 增加纹理（噪点）
+                const noise = (Math.random() - 0.5) * 20;
+                data[i] += noise;
+                data[i + 1] += noise;
+                data[i + 2] += noise;
+
+                // 降低对比度
+                data[i] = gray + (data[i] - gray) * 0.8;
+                data[i + 1] = gray + (data[i + 1] - gray) * 0.8;
+                data[i + 2] = gray + (data[i + 2] - gray) * 0.8;
+
+                // 增加暖色调
+                data[i] += 15;
+                data[i + 1] += 5;
+                data[i + 2] -= 5;
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+        }
+
+        // 性别转换
+        function applyGenderTransform(ctx, canvas) {
+            if (uploadedImages.length === 0) return;
+
+            const img = uploadedImages[0].image;
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+
+            let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            let data = imageData.data;
+
+            // 模拟性别转换效果：调整肤色和面部特征
+            for (let i = 0; i < data.length; i += 4) {
+                const gray = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+                
+                // 调整肤色（简化版）
+                if (gray > 100 && gray < 200) {
+                    // 中等亮度区域（面部）
+                    data[i] = gray + (255 - gray) * 0.1; // 增加红色
+                    data[i + 1] = gray; // 保持绿色
+                    data[i + 2] = gray + (200 - gray) * 0.05; // 增加蓝色
+                }
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+        }
+
+        // 下载图片
+        function downloadImage() {
+            const canvas = document.getElementById('resultCanvas');
+            if (!canvas) {
+                alert('请先处理照片');
+                return;
+            }
+
+            const link = document.createElement('a');
+            link.download = '人脸融合_' + Date.now() + '.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        // 重置
+        function resetAll() {
+            uploadedImages = [];
+            document.getElementById('imageInput').value = '';
+            document.getElementById('imageList').style.display = 'none';
+            document.getElementById('canvasArea').innerHTML = `
+                <div style="text-align: center; color: #666;">
+                    <i class="fas fa-user-circle" style="font-size: 4em; color: #ddd; margin-bottom: 20px;"></i>
+                    <p>上传照片并选择功能后，这里将显示效果</p>
+                </div>
+            `;
+            document.getElementById('processBtn').disabled = true;
+            document.getElementById('downloadBtn').disabled = true;
+            document.getElementById('blendRatio').value = 50;
+            document.getElementById('blendRatioValue').textContent = '50%';
+        }
+    </script>
+</body>
+</html>

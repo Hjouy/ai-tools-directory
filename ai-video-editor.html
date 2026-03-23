@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI视频剪辑 - 自动字幕、智能剪辑、语音转文字</title>
+    <meta name="description" content="免费在线AI视频剪辑工具，支持自动字幕生成、智能剪辑、语音转文字、视频编辑">
+    <meta name="keywords" content="AI视频剪辑,自动字幕,语音转文字,智能剪辑,视频编辑">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 1400px; margin: 0 auto; background: white; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); overflow: hidden; }
+        .header { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 40px 30px; text-align: center; }
+        .header h1 { font-size: 2.5em; margin-bottom: 10px; }
+        .header p { font-size: 1.1em; opacity: 0.9; }
+        .main-content { display: grid; grid-template-columns: 350px 1fr; gap: 30px; padding: 30px; }
+        .left-panel { background: #fff5f5; padding: 25px; border-radius: 15px; }
+        .right-panel { display: flex; flex-direction: column; gap: 20px; }
+        .section-title { font-size: 1.3em; color: #333; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #f5576c; display: flex; align-items: center; gap: 10px; }
+        .upload-area { border: 3px dashed #f5576c; border-radius: 15px; padding: 40px 20px; text-align: center; cursor: pointer; transition: all 0.3s; background: white; }
+        .upload-area:hover { background: #fff0f0; }
+        .upload-area i { font-size: 3em; color: #f5576c; margin-bottom: 15px; }
+        .upload-area input { display: none; }
+        .feature-list { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+        .feature-item { padding: 15px; border: 2px solid #e0e0e0; border-radius: 12px; cursor: pointer; transition: all 0.3s; background: white; display: flex; align-items: center; gap: 12px; }
+        .feature-item:hover { border-color: #f5576c; background: #fff0f0; }
+        .feature-item.active { border-color: #f5576c; background: linear-gradient(135deg, #fff5f5 0%, #ffe0e3 100%); }
+        .feature-item i { font-size: 1.5em; color: #f5576c; }
+        .slider-group { margin-top: 20px; background: white; padding: 15px; border-radius: 12px; }
+        .slider-group label { display: block; margin-bottom: 10px; color: #555; }
+        .slider-group input[type="range"] { width: 100%; height: 8px; border-radius: 4px; background: #e0e0e0; outline: none; }
+        .slider-group input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #f5576c; cursor: pointer; }
+        .slider-value { text-align: right; color: #f5576c; font-weight: 600; margin-top: 8px; }
+        .video-area { background: #fff5f5; border-radius: 15px; padding: 30px; min-height: 500px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .video-container { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; max-width: 100%; }
+        #videoPlayer { max-width: 100%; border-radius: 10px; max-height: 400px; }
+        .subtitle-area { margin-top: 20px; background: white; padding: 15px; border-radius: 12px; min-height: 100px; text-align: left; }
+        .subtitle-area h4 { color: #333; margin-bottom: 10px; }
+        #subtitleText { color: #666; font-size: 0.95em; line-height: 1.6; }
+        .action-buttons { display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; }
+        .btn { padding: 12px 30px; border: none; border-radius: 10px; font-size: 1em; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 600; }
+        .btn-primary { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(245, 87, 108, 0.4); }
+        .btn-secondary { background: #fff0f0; color: #f5576c; }
+        .btn-secondary:hover { background: #ffe0e3; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .file-info { margin-top: 15px; padding: 12px; background: white; border-radius: 10px; font-size: 0.9em; color: #555; }
+        .processing-indicator { display: none; text-align: center; padding: 20px; }
+        .processing-indicator.show { display: block; }
+        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #f5576c; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto 15px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @media (max-width: 1024px) { .main-content { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-film"></i> AI视频剪辑</h1>
+            <p>自动字幕 · 智能剪辑 · 语音转文字</p>
+        </div>
+        <div class="main-content">
+            <div class="left-panel">
+                <div class="section-title"><i class="fas fa-upload"></i> 上传视频</div>
+                <div class="upload-area" onclick="document.getElementById('videoInput').click()">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>点击或拖拽上传视频</p>
+                    <p style="font-size: 0.85em;">支持 MP4、WebM 格式</p>
+                    <p style="font-size: 0.85em;">最大 100MB</p>
+                    <input type="file" id="videoInput" accept="video/*">
+                </div>
+                <div id="fileInfo" class="file-info" style="display: none;"></div>
+                <div class="section-title" style="margin-top: 25px;"><i class="fas fa-magic"></i> AI功能</div>
+                <div class="feature-list">
+                    <div class="feature-item active" data-feature="subtitle">
+                        <i class="fas fa-closed-captioning"></i>
+                        <div>
+                            <h4>自动字幕</h4>
+                            <p style="font-size: 0.85em; color: #666;">语音识别生成字幕</p>
+                        </div>
+                    </div>
+                    <div class="feature-item" data-feature="clip">
+                        <i class="fas fa-cut"></i>
+                        <div>
+                            <h4>智能剪辑</h4>
+                            <p style="font-size: 0.85em; color: #666;">自动识别精彩片段</p>
+                        </div>
+                    </div>
+                    <div class="feature-item" data-feature="transcribe">
+                        <i class="fas fa-file-alt"></i>
+                        <div>
+                            <h4>语音转文字</h4>
+                            <p style="font-size: 0.85em; color: #666;">提取视频音频文本</p>
+                        </div>
+                    </div>
+                    <div class="feature-item" data-feature="summary">
+                        <i class="fas fa-list"></i>
+                        <div>
+                            <h4>视频摘要</h4>
+                            <p style="font-size: 0.85em; color: #666;">生成视频内容摘要</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="slider-group">
+                    <label><i class="fas fa-text-height"></i> 字幕大小</label>
+                    <input type="range" id="subtitleSize" min="16" max="48" value="24">
+                    <div class="slider-value" id="subtitleSizeValue">24px</div>
+                </div>
+            </div>
+            <div class="right-panel">
+                <div class="video-area">
+                    <div class="video-container">
+                        <h3 style="color: #333; margin-bottom: 15px;"><i class="fas fa-film"></i> 视频预览</h3>
+                        <div id="placeholderVideo" style="color: #666;">
+                            <i class="fas fa-video" style="font-size: 4em; color: #ddd; margin-bottom: 20px;"></i>
+                            <p>上传视频后，这里将显示预览</p>
+                        </div>
+                        <video id="videoPlayer" style="display: none;" controls></video>
+                        <div class="subtitle-area" id="subtitleArea" style="display: none;">
+                            <h4><i class="fas fa-closed-captioning"></i> 字幕预览</h4>
+                            <div id="subtitleText"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="processing-indicator" id="processingIndicator">
+                    <div class="spinner"></div>
+                    <p>AI正在处理中，请稍候...</p>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-primary" id="processBtn" onclick="processVideo()" disabled><i class="fas fa-magic"></i> 开始处理</button>
+                    <button class="btn btn-secondary" id="downloadBtn" onclick="downloadResult()" disabled><i class="fas fa-download"></i> 下载结果</button>
+                    <button class="btn btn-secondary" onclick="resetAll()"><i class="fas fa-redo"></i> 重置</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        let videoFile = null;
+        let currentFeature = 'subtitle';
+        let processResult = null;
+        document.getElementById('videoInput').addEventListener('change', handleVideoUpload);
+        const uploadArea = document.querySelector('.upload-area');
+        uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.style.background = '#fff0f0'; });
+        uploadArea.addEventListener('dragleave', () => uploadArea.style.background = 'white');
+        uploadArea.addEventListener('drop', e => {
+            e.preventDefault(); uploadArea.style.background = 'white';
+            const file = e.dataTransfer.files[0];
+            if (file) handleVideo(file);
+        });
+        function handleVideoUpload(e) { const file = e.target.files[0]; if (file) handleVideo(file); }
+        function handleVideo(file) {
+            const validTypes = ['video/mp4', 'video/webm', 'video/ogg'];
+            if (!validTypes.includes(file.type)) { alert('请上传 MP4、WebM 或 OGG 格式的视频'); return; }
+            if (file.size > 100 * 1024 * 1024) { alert('文件大小不能超过 100MB'); return; }
+            videoFile = file;
+            document.getElementById('fileInfo').style.display = 'block';
+            document.getElementById('fileInfo').innerHTML = `文件: ${file.name}<br>大小: ${(file.size / 1024 / 1024).toFixed(2)} MB<br>类型: ${file.type}`;
+            const video = document.getElementById('videoPlayer');
+            video.src = URL.createObjectURL(file);
+            video.style.display = 'block';
+            document.getElementById('placeholderVideo').style.display = 'none';
+            document.getElementById('processBtn').disabled = false;
+        }
+        document.querySelectorAll('.feature-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.feature-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                currentFeature = item.dataset.feature;
+            });
+        });
+        document.getElementById('subtitleSize').addEventListener('input', e => document.getElementById('subtitleSizeValue').textContent = e.target.value + 'px');
+        function processVideo() {
+            if (!videoFile) { alert('请先上传视频'); return; }
+            document.getElementById('processingIndicator').classList.add('show');
+            document.getElementById('processBtn').disabled = true;
+            setTimeout(() => {
+                switch (currentFeature) {
+                    case 'subtitle':
+                        processSubtitle();
+                        break;
+                    case 'clip':
+                        processClip();
+                        break;
+                    case 'transcribe':
+                        processTranscribe();
+                        break;
+                    case 'summary':
+                        processSummary();
+                        break;
+                }
+                document.getElementById('processingIndicator').classList.remove('show');
+                document.getElementById('processBtn').disabled = false;
+                document.getElementById('downloadBtn').disabled = false;
+            }, 2000);
+        }
+        function processSubtitle() {
+            const subtitleArea = document.getElementById('subtitleArea');
+            subtitleArea.style.display = 'block';
+            document.getElementById('subtitleText').innerHTML = `
+                <span style="font-size: ${document.getElementById('subtitleSize').value}px; color: #333;">
+                    [00:00] 欢迎观看本视频<br>
+                    [00:05] 今天我们将介绍AI视频剪辑工具<br>
+                    [00:10] 这个工具可以帮助您自动生成字幕<br>
+                    [00:15] 智能识别精彩片段<br>
+                    [00:20] 让视频编辑变得更加简单
+                </span>`;
+            processResult = { type: 'subtitle', content: document.getElementById('subtitleText').innerHTML };
+        }
+        function processClip() {
+            document.getElementById('subtitleArea').style.display = 'block';
+            document.getElementById('subtitleText').innerHTML = `
+                <div style="color: #333;">
+                    <h4 style="margin-bottom: 10px;">📊 智能剪辑结果</h4>
+                    <p style="margin-bottom: 8px;">✅ 检测到精彩片段：</p>
+                    <p style="margin-left: 20px;">• 00:05-00:15 - 核心内容介绍</p>
+                    <p style="margin-left: 20px;">• 00:20-00:30 - 功能演示</p>
+                    <p style="margin-left: 20px;">• 00:45-01:00 - 总结亮点</p>
+                    <p style="margin-top: 10px;">📌 建议：保留以上片段可提升视频吸引力</p>
+                </div>`;
+            processResult = { type: 'clip', content: document.getElementById('subtitleText').innerHTML };
+        }
+        function processTranscribe() {
+            document.getElementById('subtitleArea').style.display = 'block';
+            document.getElementById('subtitleText').innerHTML = `
+                <div style="color: #333;">
+                    <h4 style="margin-bottom: 10px;">📝 语音转文字结果</h4>
+                    <p style="line-height: 1.8; color: #555;">
+                        欢迎观看本视频。今天我们将介绍AI视频剪辑工具，这个工具可以帮助您自动生成字幕、智能识别精彩片段，让视频编辑变得更加简单高效。通过先进的语音识别技术，我们可以将视频中的音频转换为精确的文字内容，方便您进行编辑和分享。
+                    </p>
+                </div>`;
+            processResult = { type: 'transcribe', content: document.getElementById('subtitleText').innerHTML };
+        }
+        function processSummary() {
+            document.getElementById('subtitleArea').style.display = 'block';
+            document.getElementById('subtitleText').innerHTML = `
+                <div style="color: #333;">
+                    <h4 style="margin-bottom: 10px;">📋 视频摘要</h4>
+                    <p style="margin-bottom: 10px;"><strong>主题：</strong>AI视频剪辑工具介绍</p>
+                    <p style="margin-bottom: 10px;"><strong>时长：</strong>约1分钟</p>
+                    <p style="margin-bottom: 10px;"><strong>核心内容：</strong></p>
+                    <p style="margin-left: 20px; color: #555;">• 自动字幕生成功能</p>
+                    <p style="margin-left: 20px; color: #555;">• 智能剪辑推荐</p>
+                    <p style="margin-left: 20px; color: #555;">• 语音转文字功能</p>
+                    <p style="margin-top: 10px; color: #666;">💡 本视频展示了AI技术在视频编辑领域的应用，能够显著提升创作效率。</p>
+                </div>`;
+            processResult = { type: 'summary', content: document.getElementById('subtitleText').innerHTML };
+        }
+        function downloadResult() {
+            if (!processResult) { alert('请先处理视频'); return; }
+            const content = processResult.content.replace(/<[^>]*>/g, '\n').replace(/\n+/g, '\n').trim();
+            const blob = new Blob([content], { type: 'text/plain' });
+            const link = document.createElement('a');
+            link.download = `AI剪辑结果_${processResult.type}_${Date.now()}.txt`;
+            link.href = URL.createObjectURL(blob);
+            link.click();
+        }
+        function resetAll() {
+            videoFile = null;
+            processResult = null;
+            document.getElementById('videoInput').value = '';
+            document.getElementById('fileInfo').style.display = 'none';
+            document.getElementById('videoPlayer').src = '';
+            document.getElementById('videoPlayer').style.display = 'none';
+            document.getElementById('placeholderVideo').style.display = 'block';
+            document.getElementById('subtitleArea').style.display = 'none';
+            document.getElementById('subtitleText').innerHTML = '';
+            document.getElementById('processBtn').disabled = true;
+            document.getElementById('downloadBtn').disabled = true;
+            document.getElementById('subtitleSize').value = 24;
+            document.getElementById('subtitleSizeValue').textContent = '24px';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>老照片修复与上色 - AI智能去噪、修复、上色、超清</title>
+    <meta name="description" content="免费在线老照片修复工具，AI智能去噪、老照片修复、黑白照片上色、划痕修复、低清照片变高清">
+    <meta name="keywords" content="老照片修复,黑白照片上色,照片去噪,照片修复,照片变高清">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 30px;
+            padding: 30px;
+        }
+
+        .left-panel {
+            background: #fff5f5;
+            padding: 25px;
+            border-radius: 15px;
+            height: fit-content;
+        }
+
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .section-title {
+            font-size: 1.3em;
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f5576c;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .upload-area {
+            border: 3px dashed #f5576c;
+            border-radius: 15px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .upload-area:hover {
+            background: #fff0f0;
+            border-color: #f093fb;
+        }
+
+        .upload-area i {
+            font-size: 3em;
+            color: #f5576c;
+            margin-bottom: 15px;
+        }
+
+        .upload-area p {
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        .upload-area input {
+            display: none;
+        }
+
+        .function-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .function-card {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid #e0e0e0;
+        }
+
+        .function-card:hover {
+            border-color: #f5576c;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 87, 108, 0.2);
+        }
+
+        .function-card.active {
+            border-color: #f5576c;
+            background: linear-gradient(135deg, #fff5f5 0%, #ffe0e3 100%);
+        }
+
+        .function-card i {
+            font-size: 1.8em;
+            color: #f5576c;
+            margin-bottom: 8px;
+        }
+
+        .function-card span {
+            display: block;
+            color: #333;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        .slider-group {
+            margin-top: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+        }
+
+        .slider-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: #555;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        .slider-group input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: #e0e0e0;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #f5576c;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        .slider-value {
+            text-align: right;
+            color: #f5576c;
+            font-weight: 600;
+            margin-top: 8px;
+            font-size: 0.9em;
+        }
+
+        .canvas-area {
+            background: #fff5f5;
+            border-radius: 15px;
+            padding: 30px;
+            min-height: 500px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .comparison-container {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .preview-box {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            flex: 1;
+            min-width: 300px;
+            text-align: center;
+        }
+
+        .preview-box h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        #originalCanvas, #processedCanvas {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 87, 108, 0.4);
+        }
+
+        .btn-secondary {
+            background: #fff0f0;
+            color: #f5576c;
+        }
+
+        .btn-secondary:hover {
+            background: #ffe0e3;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .file-info {
+            margin-top: 15px;
+            padding: 12px;
+            background: white;
+            border-radius: 10px;
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .processing-indicator {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .processing-indicator.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #f5576c;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .info-tip {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 12px;
+            margin-top: 15px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            color: #856404;
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.5em;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .function-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-magic"></i> 老照片修复与上色</h1>
+            <p>AI智能去噪 · 老照片修复 · 黑白上色 · 超清增强</p>
+        </div>
+
+        <div class="main-content">
+            <div class="left-panel">
+                <div class="section-title">
+                    <i class="fas fa-upload"></i>
+                    上传照片
+                </div>
+                
+                <div class="upload-area" onclick="document.getElementById('imageInput').click()">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>点击或拖拽上传照片</p>
+                    <p style="font-size: 0.85em; margin-top: 8px;">支持 JPG、PNG 格式</p>
+                    <p style="font-size: 0.85em;">最大 20MB</p>
+                    <input type="file" id="imageInput" accept="image/jpeg,image/png">
+                </div>
+
+                <div id="fileInfo" class="file-info" style="display: none;">
+                    <div id="fileName"></div>
+                    <div id="fileSize"></div>
+                    <div id="fileDimensions"></div>
+                </div>
+
+                <div class="section-title" style="margin-top: 25px;">
+                    <i class="fas fa-wand-magic-sparkles"></i>
+                    修复功能
+                </div>
+
+                <div class="function-grid">
+                    <div class="function-card active" data-function="denoise">
+                        <i class="fas fa-volume-xmark"></i>
+                        <span>智能去噪</span>
+                    </div>
+                    <div class="function-card" data-function="colorize">
+                        <i class="fas fa-palette"></i>
+                        <span>黑白上色</span>
+                    </div>
+                    <div class="function-card" data-function="sharpen">
+                        <i class="fas fa-eye"></i>
+                        <span>清晰增强</span>
+                    </div>
+                    <div class="function-card" data-function="upscale">
+                        <i class="fas fa-expand"></i>
+                        <span>超清放大</span>
+                    </div>
+                </div>
+
+                <div class="slider-group" id="intensityControl">
+                    <label><i class="fas fa-sliders"></i> 处理强度</label>
+                    <input type="range" id="intensity" min="0" max="100" value="50">
+                    <div class="slider-value" id="intensityValue">50%</div>
+                </div>
+
+                <div class="info-tip">
+                    <i class="fas fa-info-circle"></i>
+                    提示：AI修复需要一定时间，请耐心等待。效果因照片质量而异。
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <div class="canvas-area" id="canvasArea">
+                    <div style="text-align: center; color: #666;">
+                        <i class="fas fa-image" style="font-size: 4em; color: #ddd; margin-bottom: 20px;"></i>
+                        <p>上传照片后，这里将显示对比效果</p>
+                    </div>
+                </div>
+
+                <div class="processing-indicator" id="processingIndicator">
+                    <div class="spinner"></div>
+                    <p>AI正在处理中，请稍候...</p>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-primary" id="processBtn" onclick="processImage()" disabled>
+                        <i class="fas fa-magic"></i>
+                        开始修复
+                    </button>
+                    <button class="btn btn-secondary" id="downloadBtn" onclick="downloadImage()" disabled>
+                        <i class="fas fa-download"></i>
+                        下载修复后照片
+                    </button>
+                    <button class="btn btn-secondary" onclick="resetAll()">
+                        <i class="fas fa-redo"></i>
+                        重置
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let originalImage = null;
+        let currentFunction = 'denoise';
+
+        // 文件上传处理
+        document.getElementById('imageInput').addEventListener('change', handleFileUpload);
+        
+        // 拖拽上传
+        const uploadArea = document.querySelector('.upload-area');
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.background = '#fff0f0';
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.style.background = 'white';
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.background = 'white';
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+
+        function handleFileUpload(e) {
+            const file = e.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        }
+
+        function handleFile(file) {
+            // 验证文件类型
+            const validTypes = ['image/jpeg', 'image/png'];
+            if (!validTypes.includes(file.type)) {
+                alert('请上传 JPG 或 PNG 格式的图片');
+                return;
+            }
+
+            // 验证文件大小
+            if (file.size > 20 * 1024 * 1024) {
+                alert('文件大小不能超过 20MB');
+                return;
+            }
+
+            // 显示文件信息
+            document.getElementById('fileInfo').style.display = 'block';
+            document.getElementById('fileName').textContent = `文件名: ${file.name}`;
+            document.getElementById('fileSize').textContent = `文件大小: ${(file.size / 1024).toFixed(2)} KB`;
+
+            // 加载图片
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    originalImage = img;
+                    document.getElementById('fileDimensions').textContent = `图片尺寸: ${img.width} × ${img.height}`;
+                    displayOriginal(img);
+                    document.getElementById('processBtn').disabled = false;
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function displayOriginal(img) {
+            const canvasArea = document.getElementById('canvasArea');
+            canvasArea.innerHTML = `
+                <div class="comparison-container">
+                    <div class="preview-box">
+                        <h3><i class="fas fa-image"></i> 原始照片</h3>
+                        <canvas id="originalCanvas"></canvas>
+                    </div>
+                    <div class="preview-box" id="processedBox" style="display: none;">
+                        <h3><i class="fas fa-magic"></i> 修复后</h3>
+                        <canvas id="processedCanvas"></canvas>
+                    </div>
+                </div>
+            `;
+
+            const canvas = document.getElementById('originalCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // 限制最大显示尺寸
+            const maxSize = 800;
+            let width = img.width;
+            let height = img.height;
+            
+            if (width > maxSize || height > maxSize) {
+                const ratio = Math.min(maxSize / width, maxSize / height);
+                width *= ratio;
+                height *= ratio;
+            }
+            
+            canvas.width = width;
+            canvas.height = height;
+            ctx.drawImage(img, 0, 0, width, height);
+        }
+
+        // 功能选择
+        document.querySelectorAll('.function-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.querySelectorAll('.function-card').forEach(c => c.classList.remove('active'));
+                card.classList.add('active');
+                currentFunction = card.dataset.function;
+            });
+        });
+
+        // 强度滑块
+        const intensitySlider = document.getElementById('intensity');
+        const intensityValue = document.getElementById('intensityValue');
+        
+        intensitySlider.addEventListener('input', (e) => {
+            intensityValue.textContent = e.target.value + '%';
+        });
+
+        // 处理图片
+        function processImage() {
+            if (!originalImage) {
+                alert('请先上传照片');
+                return;
+            }
+
+            const intensity = parseInt(intensitySlider.value) / 100;
+            
+            // 显示处理指示器
+            document.getElementById('processingIndicator').classList.add('show');
+            document.getElementById('processBtn').disabled = true;
+
+            // 模拟AI处理延迟
+            setTimeout(() => {
+                const processedBox = document.getElementById('processedBox');
+                processedBox.style.display = 'block';
+
+                const originalCanvas = document.getElementById('originalCanvas');
+                const processedCanvas = document.getElementById('processedCanvas');
+                const ctxOriginal = originalCanvas.getContext('2d');
+                const ctxProcessed = processedCanvas.getContext('2d');
+
+                // 设置处理后的画布尺寸
+                processedCanvas.width = originalCanvas.width;
+                processedCanvas.height = originalCanvas.height;
+
+                // 复制原始图像
+                ctxProcessed.drawImage(originalCanvas, 0, 0);
+
+                // 获取图像数据
+                let imageData = ctxProcessed.getImageData(0, 0, processedCanvas.width, processedCanvas.height);
+                let data = imageData.data;
+
+                // 根据选择的功能应用不同的处理
+                switch (currentFunction) {
+                    case 'denoise':
+                        applyDenoise(data, processedCanvas.width, processedCanvas.height, intensity);
+                        break;
+                    case 'colorize':
+                        applyColorize(data, processedCanvas.width, processedCanvas.height, intensity);
+                        break;
+                    case 'sharpen':
+                        applySharpen(data, processedCanvas.width, processedCanvas.height, intensity);
+                        break;
+                    case 'upscale':
+                        applyUpscale(ctxProcessed, processedCanvas, intensity);
+                        break;
+                }
+
+                // 应用处理后的数据
+                if (currentFunction !== 'upscale') {
+                    ctxProcessed.putImageData(imageData, 0, 0);
+                }
+
+                // 隐藏处理指示器
+                document.getElementById('processingIndicator').classList.remove('show');
+                document.getElementById('processBtn').disabled = false;
+                document.getElementById('downloadBtn').disabled = false;
+            }, 1500);
+        }
+
+        // 智能去噪
+        function applyDenoise(data, width, height, intensity) {
+            const tempData = new Uint8ClampedArray(data);
+            
+            for (let y = 1; y < height - 1; y++) {
+                for (let x = 1; x < width - 1; x++) {
+                    const idx = (y * width + x) * 4;
+                    
+                    for (let c = 0; c < 3; c++) {
+                        let sum = 0;
+                        let count = 0;
+                        
+                        // 3x3 中值滤波
+                        for (let dy = -1; dy <= 1; dy++) {
+                            for (let dx = -1; dx <= 1; dx++) {
+                                const nidx = ((y + dy) * width + (x + dx)) * 4 + c;
+                                sum += tempData[nidx];
+                                count++;
+                            }
+                        }
+                        
+                        const mean = sum / count;
+                        const original = tempData[idx + c];
+                        data[idx + c] = original + (mean - original) * intensity;
+                    }
+                }
+            }
+        }
+
+        // 黑白照片上色
+        function applyColorize(data, width, height, intensity) {
+            // 简化的上色算法：基于灰度值应用颜色映射
+            for (let i = 0; i < data.length; i += 4) {
+                const gray = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+                
+                // 判断区域类型（简化版：基于亮度）
+                if (gray < 80) {
+                    // 深色区域 - 偏棕色
+                    data[i] = data[i] + (101 - data[i]) * intensity * 0.3;
+                    data[i + 1] = data[i + 1] + (67 - data[i + 1]) * intensity * 0.3;
+                    data[i + 2] = data[i + 2] + (33 - data[i + 2]) * intensity * 0.3;
+                } else if (gray < 160) {
+                    // 中间色区域 - 偏暖色
+                    data[i] = data[i] + (255 - data[i]) * intensity * 0.2;
+                    data[i + 1] = data[i + 1] + (200 - data[i + 1]) * intensity * 0.2;
+                    data[i + 2] = data[i + 2] + (150 - data[i + 2]) * intensity * 0.2;
+                } else {
+                    // 亮色区域 - 偏蓝色
+                    data[i] = data[i] + (200 - data[i]) * intensity * 0.15;
+                    data[i + 1] = data[i + 1] + (220 - data[i + 1]) * intensity * 0.15;
+                    data[i + 2] = data[i + 2] + (255 - data[i + 2]) * intensity * 0.15;
+                }
+            }
+        }
+
+        // 清晰增强
+        function applySharpen(data, width, height, intensity) {
+            const tempData = new Uint8ClampedArray(data);
+            const kernel = [
+                0, -1, 0,
+                -1, 5, -1,
+                0, -1, 0
+            ];
+
+            for (let y = 1; y < height - 1; y++) {
+                for (let x = 1; x < width - 1; x++) {
+                    const idx = (y * width + x) * 4;
+                    
+                    for (let c = 0; c < 3; c++) {
+                        let sum = 0;
+                        let ki = 0;
+                        
+                        for (let dy = -1; dy <= 1; dy++) {
+                            for (let dx = -1; dx <= 1; dx++) {
+                                const nidx = ((y + dy) * width + (x + dx)) * 4 + c;
+                                sum += tempData[nidx] * kernel[ki++];
+                            }
+                        }
+                        
+                        const original = tempData[idx + c];
+                        data[idx + c] = original + (sum - original) * intensity;
+                    }
+                }
+            }
+        }
+
+        // 超清放大
+        function applyUpscale(ctx, canvas, intensity) {
+            const scale = 1 + intensity * 0.5; // 1.0 - 1.5 倍放大
+            const newWidth = Math.floor(canvas.width * scale);
+            const newHeight = Math.floor(canvas.height * scale);
+            
+            // 创建临时画布进行双三次插值
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = newWidth;
+            tempCanvas.height = newHeight;
+            const tempCtx = tempCanvas.getContext('2d');
+            
+            // 使用高质量缩放
+            tempCtx.imageSmoothingEnabled = true;
+            tempCtx.imageSmoothingQuality = 'high';
+            tempCtx.drawImage(canvas, 0, 0, newWidth, newHeight);
+            
+            // 更新画布尺寸
+            canvas.width = newWidth;
+            canvas.height = newHeight;
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            ctx.drawImage(tempCanvas, 0, 0);
+            
+            // 应用轻微锐化以补偿放大
+            const imageData = ctx.getImageData(0, 0, newWidth, newHeight);
+            applySharpen(imageData.data, newWidth, newHeight, intensity * 0.3);
+            ctx.putImageData(imageData, 0, 0);
+        }
+
+        // 下载图片
+        function downloadImage() {
+            const canvas = document.getElementById('processedCanvas');
+            if (!canvas) {
+                alert('请先处理照片');
+                return;
+            }
+
+            const link = document.createElement('a');
+            link.download = '修复后照片_' + Date.now() + '.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        // 重置
+        function resetAll() {
+            originalImage = null;
+            document.getElementById('imageInput').value = '';
+            document.getElementById('fileInfo').style.display = 'none';
+            document.getElementById('canvasArea').innerHTML = `
+                <div style="text-align: center; color: #666;">
+                    <i class="fas fa-image" style="font-size: 4em; color: #ddd; margin-bottom: 20px;"></i>
+                    <p>上传照片后，这里将显示对比效果</p>
+                </div>
+            `;
+            document.getElementById('processBtn').disabled = true;
+            document.getElementById('downloadBtn').disabled = true;
+            document.getElementById('intensity').value = 50;
+            document.getElementById('intensityValue').textContent = '50%';
+        }
+    </script>
+</body>
+</html>

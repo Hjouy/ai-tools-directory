@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能图片压缩优化 - WebP/AVIF转换、智能压缩</title>
+    <meta name="description" content="免费在线智能图片压缩优化工具，支持WebP/AVIF转换、智能压缩、批量处理">
+    <meta name="keywords" content="图片压缩,WebP转换,AVIF转换,图片优化,批量压缩">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 1400px; margin: 0 auto; background: white; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); overflow: hidden; }
+        .header { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; padding: 40px 30px; text-align: center; }
+        .header h1 { font-size: 2.5em; margin-bottom: 10px; }
+        .header p { font-size: 1.1em; opacity: 0.9; }
+        .main-content { display: grid; grid-template-columns: 350px 1fr; gap: 30px; padding: 30px; }
+        .left-panel { background: #f0fdf4; padding: 25px; border-radius: 15px; }
+        .right-panel { display: flex; flex-direction: column; gap: 20px; }
+        .section-title { font-size: 1.3em; color: #333; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #38ef7d; display: flex; align-items: center; gap: 10px; }
+        .upload-area { border: 3px dashed #38ef7d; border-radius: 15px; padding: 40px 20px; text-align: center; cursor: pointer; transition: all 0.3s; background: white; }
+        .upload-area:hover { background: #f0fdf4; }
+        .upload-area i { font-size: 3em; color: #38ef7d; margin-bottom: 15px; }
+        .upload-area input { display: none; }
+        .format-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
+        .format-option { padding: 15px; border: 2px solid #e0e0e0; border-radius: 10px; text-align: center; cursor: pointer; transition: all 0.3s; }
+        .format-option:hover { border-color: #38ef7d; background: #f0fdf4; }
+        .format-option.active { border-color: #38ef7d; background: #38ef7d; color: white; }
+        .format-option i { font-size: 1.5em; margin-bottom: 5px; display: block; }
+        .slider-group { margin-top: 20px; background: white; padding: 15px; border-radius: 12px; }
+        .slider-group label { display: block; margin-bottom: 10px; color: #555; }
+        .slider-group input[type="range"] { width: 100%; height: 8px; border-radius: 4px; background: #e0e0e0; outline: none; }
+        .slider-group input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #38ef7d; cursor: pointer; }
+        .slider-value { text-align: right; color: #38ef7d; font-weight: 600; margin-top: 8px; }
+        .image-list { margin-top: 15px; background: white; padding: 15px; border-radius: 12px; max-height: 300px; overflow-y: auto; }
+        .image-item { display: flex; align-items: center; gap: 12px; padding: 10px; background: #f0fdf4; border-radius: 8px; margin-bottom: 10px; }
+        .image-item img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; }
+        .image-item-info { flex: 1; }
+        .image-item-info h5 { color: #333; font-size: 0.9em; margin-bottom: 3px; }
+        .image-item-info p { color: #666; font-size: 0.8em; }
+        .image-item button { padding: 6px 12px; background: #ff6b6b; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85em; }
+        .result-area { background: #f0fdf4; border-radius: 15px; padding: 30px; min-height: 400px; }
+        .comparison-container { display: flex; gap: 30px; flex-wrap: wrap; justify-content: center; }
+        .preview-box { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; flex: 1; min-width: 300px; }
+        .preview-box h3 { color: #333; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .preview-box img { max-width: 100%; border-radius: 10px; max-height: 300px; }
+        .size-info { margin-top: 15px; padding: 10px; background: #f0fdf4; border-radius: 8px; font-size: 0.9em; color: #555; }
+        .savings { color: #38ef7d; font-weight: 600; }
+        .action-buttons { display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; }
+        .btn { padding: 12px 30px; border: none; border-radius: 10px; font-size: 1em; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 600; }
+        .btn-primary { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(56, 239, 125, 0.4); }
+        .btn-secondary { background: #f0fdf4; color: #38ef7d; }
+        .btn-secondary:hover { background: #dcfce7; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .file-info { margin-top: 15px; padding: 12px; background: white; border-radius: 10px; font-size: 0.9em; color: #555; }
+        .processing-indicator { display: none; text-align: center; padding: 20px; }
+        .processing-indicator.show { display: block; }
+        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #38ef7d; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto 15px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @media (max-width: 1024px) { .main-content { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-compress"></i> 智能图片压缩优化</h1>
+            <p>WebP/AVIF转换 · 智能压缩 · 批量处理</p>
+        </div>
+        <div class="main-content">
+            <div class="left-panel">
+                <div class="section-title"><i class="fas fa-upload"></i> 上传图片</div>
+                <div class="upload-area" onclick="document.getElementById('imageInput').click()">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>点击或拖拽上传图片</p>
+                    <p style="font-size: 0.85em;">支持 JPG、PNG、WebM 格式</p>
+                    <p style="font-size: 0.85em;">可批量上传，最大 50MB</p>
+                    <input type="file" id="imageInput" accept="image/jpeg,image/png,image/webp" multiple>
+                </div>
+                <div class="image-list" id="imageList" style="display: none;"></div>
+                <div class="section-title" style="margin-top: 25px;"><i class="fas fa-file-image"></i> 输出格式</div>
+                <div class="format-options">
+                    <div class="format-option" data-format="jpeg">
+                        <i class="fas fa-image"></i>
+                        <span>JPEG</span>
+                    </div>
+                    <div class="format-option" data-format="webp">
+                        <i class="fas fa-image"></i>
+                        <span>WebP</span>
+                    </div>
+                    <div class="format-option" data-format="png">
+                        <i class="fas fa-image"></i>
+                        <span>PNG</span>
+                    </div>
+                </div>
+                <div class="slider-group">
+                    <label><i class="fas fa-sliders-h"></i> 压缩质量</label>
+                    <input type="range" id="quality" min="10" max="100" value="75">
+                    <div class="slider-value" id="qualityValue">75%</div>
+                </div>
+                <div class="slider-group">
+                    <label><i class="fas fa-expand"></i> 最大宽度</label>
+                    <input type="range" id="maxWidth" min="0" max="4000" value="0" step="100">
+                    <div class="slider-value" id="maxWidthValue">不限制</div>
+                </div>
+            </div>
+            <div class="right-panel">
+                <div class="result-area" id="resultArea">
+                    <div style="text-align: center; color: #666;">
+                        <i class="fas fa-images" style="font-size: 4em; color: #ddd; margin-bottom: 20px;"></i>
+                        <p>上传图片后，这里将显示对比效果</p>
+                    </div>
+                </div>
+                <div class="processing-indicator" id="processingIndicator">
+                    <div class="spinner"></div>
+                    <p>正在压缩处理中，请稍候...</p>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-primary" id="compressBtn" onclick="compressImages()" disabled><i class="fas fa-compress"></i> 开始压缩</button>
+                    <button class="btn btn-secondary" id="downloadBtn" onclick="downloadAll()" disabled><i class="fas fa-download"></i> 下载全部</button>
+                    <button class="btn btn-secondary" onclick="resetAll()"><i class="fas fa-redo"></i> 重置</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        let uploadedImages = [];
+        let compressedImages = [];
+        let outputFormat = 'webp';
+        document.getElementById('imageInput').addEventListener('change', handleImageUpload);
+        const uploadArea = document.querySelector('.upload-area');
+        uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.style.background = '#f0fdf4'; });
+        uploadArea.addEventListener('dragleave', () => uploadArea.style.background = 'white');
+        uploadArea.addEventListener('drop', e => {
+            e.preventDefault(); uploadArea.style.background = 'white';
+            const files = e.dataTransfer.files;
+            if (files.length > 0) handleFiles(files);
+        });
+        function handleImageUpload(e) { const files = e.target.files; if (files.length > 0) handleFiles(files); }
+        function handleFiles(files) {
+            Array.from(files).forEach(file => {
+                const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
+                if (!validTypes.includes(file.type)) { alert(`文件 ${file.name} 格式不支持`); return; }
+                if (file.size > 50 * 1024 * 1024) { alert(`文件 ${file.name} 超过50MB`); return; }
+                const reader = new FileReader();
+                reader.onload = e => {
+                    const img = new Image();
+                    img.onload = () => {
+                        uploadedImages.push({
+                            name: file.name,
+                            type: file.type,
+                            size: file.size,
+                            image: img,
+                            dataUrl: e.target.result
+                        });
+                        updateImageList();
+                        document.getElementById('compressBtn').disabled = false;
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+        function updateImageList() {
+            const imageList = document.getElementById('imageList');
+            if (uploadedImages.length === 0) {
+                imageList.style.display = 'none';
+                return;
+            }
+            imageList.style.display = 'block';
+            imageList.innerHTML = uploadedImages.map((img, index) => `
+                <div class="image-item">
+                    <img src="${img.dataUrl}" alt="${img.name}">
+                    <div class="image-item-info">
+                        <h5>${img.name}</h5>
+                        <p>${(img.size / 1024).toFixed(2)} KB · ${img.image.width}×${img.image.height}</p>
+                    </div>
+                    <button onclick="removeImage(${index})"><i class="fas fa-trash"></i></button>
+                </div>
+            `).join('');
+        }
+        function removeImage(index) {
+            uploadedImages.splice(index, 1);
+            updateImageList();
+            document.getElementById('compressBtn').disabled = uploadedImages.length === 0;
+        }
+        document.querySelectorAll('.format-option').forEach(option => {
+            option.addEventListener('click', () => {
+                document.querySelectorAll('.format-option').forEach(o => o.classList.remove('active'));
+                option.classList.add('active');
+                outputFormat = option.dataset.format;
+            });
+        });
+        document.getElementById('quality').addEventListener('input', e => document.getElementById('qualityValue').textContent = e.target.value + '%');
+        document.getElementById('maxWidth').addEventListener('input', e => {
+            const value = parseInt(e.target.value);
+            document.getElementById('maxWidthValue').textContent = value === 0 ? '不限制' : value + 'px';
+        });
+        function compressImages() {
+            if (uploadedImages.length === 0) { alert('请先上传图片'); return; }
+            const quality = parseInt(document.getElementById('quality').value) / 100;
+            const maxWidth = parseInt(document.getElementById('maxWidth').value);
+            document.getElementById('processingIndicator').classList.add('show');
+            document.getElementById('compressBtn').disabled = true;
+            compressedImages = [];
+            setTimeout(() => {
+                uploadedImages.forEach(img => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    let width = img.image.width;
+                    let height = img.image.height;
+                    if (maxWidth > 0 && width > maxWidth) {
+                        const ratio = maxWidth / width;
+                        width = maxWidth;
+                        height *= ratio;
+                    }
+                    canvas.width = width;
+                    canvas.height = height;
+                    ctx.drawImage(img.image, 0, 0, width, height);
+                    const mimeType = outputFormat === 'jpeg' ? 'image/jpeg' : outputFormat === 'webp' ? 'image/webp' : 'image/png';
+                    const compressedDataUrl = canvas.toDataURL(mimeType, quality);
+                    const compressedSize = Math.round((compressedDataUrl.length - 'data:image/jpeg;base64,'.length) * 0.75);
+                    compressedImages.push({
+                        original: img,
+                        compressed: {
+                            dataUrl: compressedDataUrl,
+                            size: compressedSize,
+                            width: width,
+                            height: height,
+                            type: mimeType
+                        }
+                    });
+                });
+                displayResults();
+                document.getElementById('processingIndicator').classList.remove('show');
+                document.getElementById('compressBtn').disabled = false;
+                document.getElementById('downloadBtn').disabled = false;
+            }, 1000);
+        }
+        function displayResults() {
+            const resultArea = document.getElementById('resultArea');
+            if (compressedImages.length === 0) return;
+            const first = compressedImages[0];
+            const savings = ((1 - first.compressed.size / first.original.size) * 100).toFixed(1);
+            resultArea.innerHTML = `
+                <div class="comparison-container">
+                    <div class="preview-box">
+                        <h3><i class="fas fa-image"></i> 原始图片</h3>
+                        <img src="${first.original.dataUrl}" alt="原始图片">
+                        <div class="size-info">
+                            <strong>文件名：</strong>${first.original.name}<br>
+                            <strong>尺寸：</strong>${first.original.image.width}×${first.original.image.height}<br>
+                            <strong>大小：</strong>${(first.original.size / 1024).toFixed(2)} KB
+                        </div>
+                    </div>
+                    <div class="preview-box">
+                        <h3><i class="fas fa-compress"></i> 压缩后</h3>
+                        <img src="${first.compressed.dataUrl}" alt="压缩后图片">
+                        <div class="size-info">
+                            <strong>格式：</strong>${outputFormat.toUpperCase()}<br>
+                            <strong>尺寸：</strong>${first.compressed.width}×${first.compressed.height}<br>
+                            <strong>大小：</strong>${(first.compressed.size / 1024).toFixed(2)} KB<br>
+                            <strong class="savings">节省空间：${savings}%</strong>
+                        </div>
+                    </div>
+                </div>
+                ${compressedImages.length > 1 ? `<p style="text-align: center; color: #666; margin-top: 20px;">共 ${compressedImages.length} 张图片已压缩，点击"下载全部"获取所有文件</p>` : ''}`;
+        }
+        function downloadAll() {
+            if (compressedImages.length === 0) { alert('请先压缩图片'); return; }
+            compressedImages.forEach((img, index) => {
+                setTimeout(() => {
+                    const link = document.createElement('a');
+                    const ext = img.compressed.type.split('/')[1];
+                    link.download = `compressed_${index + 1}.${ext}`;
+                    link.href = img.compressed.dataUrl;
+                    link.click();
+                }, index * 200);
+            });
+        }
+        function resetAll() {
+            uploadedImages = [];
+            compressedImages = [];
+            document.getElementById('imageInput').value = '';
+            document.getElementById('imageList').style.display = 'none';
+            document.getElementById('resultArea').innerHTML = '<div style="text-align: center; color: #666;"><i class="fas fa-images" style="font-size: 4em; color: #ddd; margin-bottom: 20px;"></i><p>上传图片后，这里将显示对比效果</p></div>';
+            document.getElementById('compressBtn').disabled = true;
+            document.getElementById('downloadBtn').disabled = true;
+            document.getElementById('quality').value = 75;
+            document.getElementById('qualityValue').textContent = '75%';
+            document.getElementById('maxWidth').value = 0;
+            document.getElementById('maxWidthValue').textContent = '不限制';
+        }
+    </script>
+</body>
+</html>
