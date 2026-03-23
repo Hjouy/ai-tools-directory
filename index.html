@@ -899,6 +899,9 @@
       .tools-grid { grid-template-columns: 1fr; }
     }
   </style>
+
+  <!-- 统计代码 -->
+  <!-- 注意：请在 analytics.html 中替换统计 ID 后删除下面的 TODO 提示 -->
 </head>
 <body>
 
@@ -1408,6 +1411,28 @@
     if (e.key === 'Enter') sendAI();
   });
 </script>
+
+<!-- ==================== 统计代码 ==================== -->
+<!-- 百度统计：请到 https://tongji.baidu.com/ 注册并替换下面的 ID -->
+<script>
+  var _hmt = _hmt || [];
+  (function() {
+    var hm = document.createElement("script");
+    hm.src = "https://hm.baidu.com/hm.js?请替换为你的百度统计ID";
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(hm, s);
+  })();
+</script>
+
+<!-- Google Analytics (GA4)：请到 https://analytics.google.com/ 注册并替换下面的 ID -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-请替换为你的GA4ID"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-请替换为你的GA4ID');
+</script>
+<!-- ==================== 统计代码结束 ==================== -->
 
 </body>
 </html>
