@@ -17,6 +17,10 @@
 
   <!-- 性能优化：DNS 预加载 -->
   <link rel="dns-prefetch" href="//github.com">
+
+  <!-- 引用统一工具数据库 -->
+  <script src="data.js"></script>
+
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -100,120 +104,7 @@
   </div>
 
   <div class="tools-grid" id="toolsGrid" role="list">
-
-    <article class="tool-card" data-tags="art realistic" role="listitem" onclick="location.href='tool.html?id=midjourney'" itemscope itemtype="https://schema.org/SoftwareApplication">
-      <span class="hot-tag">HOT</span>
-      <div class="tool-header">
-        <div class="tool-logo" style="background:#6366f120;color:#6366f1;">🎨</div>
-        <div><div class="tool-name" itemprop="name">Midjourney</div><div class="tool-rating">★★★★★ 4.8 · 1500万+用户</div></div>
-      </div>
-      <p class="tool-desc" itemprop="description">全球最流行的AI绘画工具，独特艺术风格，高质量输出，广泛用于设计、插画、游戏原画。</p>
-      <div class="tool-footer"><div class="tags"><span class="tag">艺术风格</span><span class="tag">高质量</span></div><span class="price price-paid">$10/月起</span></div>
-    </article>
-
-    <article class="tool-card" data-tags="open free realistic art" role="listitem" onclick="location.href='tool.html?id=stable-diffusion'" itemscope itemtype="https://schema.org/SoftwareApplication">
-      <span class="open-tag">开源</span>
-      <div class="tool-header">
-        <div class="tool-logo" style="background:#dc262620;color:#dc2626;">🖼️</div>
-        <div><div class="tool-name" itemprop="name">Stable Diffusion</div><div class="tool-rating">★★★★★ 4.7 · 800万+用户</div></div>
-      </div>
-      <p class="tool-desc" itemprop="description">完全开源，本地部署免费使用，支持LoRA/ControlNet扩展，无限自定义，技术用户首选。</p>
-      <div class="tool-footer"><div class="tags"><span class="tag">开源</span><span class="tag">本地免费</span></div><span class="price price-free">完全免费</span></div>
-    </article>
-
-    <article class="tool-card" data-tags="free realistic" role="listitem" onclick="window.open('https://openai.com/dall-e-3','_blank')" itemscope itemtype="https://schema.org/SoftwareApplication">
-      <div class="tool-header">
-        <div class="tool-logo" style="background:#10b98120;color:#10b981;">🌈</div>
-        <div><div class="tool-name" itemprop="name">DALL-E 3</div><div class="tool-rating">★★★★☆ 4.6 · 500万+用户</div></div>
-      </div>
-      <p class="tool-desc" itemprop="description">OpenAI出品，ChatGPT Plus集成，文字理解最精准，能精确还原复杂描述，适合写实风格。</p>
-      <div class="tool-footer"><div class="tags"><span class="tag">写实</span><span class="tag">精准描述</span></div><span class="price price-free">ChatGPT Plus内含</span></div>
-    </article>
-
-    <article class="tool-card" data-tags="free art" role="listitem" onclick="window.open('https://firefly.adobe.com','_blank')" itemscope itemtype="https://schema.org/SoftwareApplication">
-      <div class="tool-header">
-        <div class="tool-logo" style="background:#ef444420;color:#ef4444;">🔥</div>
-        <div><div class="tool-name" itemprop="name">Adobe Firefly</div><div class="tool-rating">★★★★☆ 4.5 · 300万+用户</div></div>
-      </div>
-      <p class="tool-desc" itemprop="description">Adobe出品，商用许可保障，深度集成Photoshop/Illustrator，设计师的AI绘画首选。</p>
-      <div class="tool-footer"><div class="tags"><span class="tag">商用安全</span><span class="tag">设计师</span></div><span class="price price-free">免费/$5月</span></div>
-    </article>
-
-    <article class="tool-card" data-tags="free art realistic" role="listitem" onclick="window.open('https://www.bing.com/create','_blank')" itemscope itemtype="https://schema.org/SoftwareApplication">
-      <span class="open-tag" style="background:linear-gradient(135deg,var(--primary),var(--secondary));">免费</span>
-      <div class="tool-header">
-        <div class="tool-logo" style="background:#0078d420;color:#0078d4;">🖌️</div>
-        <div><div class="tool-name" itemprop="name">Bing Image Creator</div><div class="tool-rating">★★★★☆ 4.3 · 1000万+用户</div></div>
-      </div>
-      <p class="tool-desc" itemprop="description">微软必应免费AI绘画，基于DALL-E技术，无需订阅直接使用，是最易上手的免费AI绘画工具。</p>
-      <div class="tool-footer"><div class="tags"><span class="tag">完全免费</span><span class="tag">易用</span></div><span class="price price-free">完全免费</span></div>
-    </article>
-
-    <article class="tool-card" data-tags="free art" role="listitem" onclick="window.open('https://dreamstudio.ai','_blank')" itemscope itemtype="https://schema.org/SoftwareApplication">
-      <div class="tool-header">
-        <div class="tool-logo" style="background:#7c3aed20;color:#7c3aed;">💫</div>
-        <div><div class="tool-name" itemprop="name">DreamStudio</div><div class="tool-rating">★★★★☆ 4.3 · 100万+用户</div></div>
-      </div>
-      <p class="tool-desc" itemprop="description">Stability AI官方Web平台，使用最新Stable Diffusion模型，界面友好，适合不想本地部署的用户。</p>
-      <div class="tool-footer"><div class="tags"><span class="tag">云端SD</span><span class="tag">易用</span></div><span class="price price-free">赠送积分</span></div>
-    </article>
-
-    <article class="tool-card" data-tags="art realistic" role="listitem" onclick="window.open('https://leonardo.ai','_blank')" itemscope itemtype="https://schema.org/SoftwareApplication">
-      <div class="tool-header">
-        <div class="tool-logo" style="background:#f59e0b20;color:#f59e0b;">🎭</div>
-        <div><div class="tool-name" itemprop="name">Leonardo AI</div><div class="tool-rating">★★★★☆ 4.4 · 400万+用户</div></div>
-      </div>
-      <p class="tool-desc" itemprop="description">专为游戏和创意产业设计，提供大量预训练模型，角色设计和场景创作效果出众，有免费版。</p>
-      <div class="tool-footer"><div class="tags"><span class="tag">游戏设计</span><span class="tag">角色</span></div><span class="price price-free">免费/$12月</span></div>
-    </article>
-
-    <article class="tool-card" data-tags="free art" role="listitem" onclick="window.open('https://www.canva.com/ai-image-generator','_blank')" itemscope itemtype="https://schema.org/SoftwareApplication">
-      <div class="tool-header">
-        <div class="tool-logo" style="background:#06b6d420;color:#06b6d4;">🎪</div>
-        <div><div class="tool-name" itemprop="name">Canva AI</div><div class="tool-rating">★★★★☆ 4.4 · 1亿+用户</div></div>
-      </div>
-      <p class="tool-desc" itemprop="description">Canva内置AI生成图片，直接用于设计排版，无缝衔接设计工作流，设计小白的最佳选择。</p>
-      <div class="tool-footer"><div class="tags"><span class="tag">设计集成</span><span class="tag">易用</span></div><span class="price price-free">免费/$13月</span></div>
-    </article>
-
-    <article class="tool-card" data-tags="art" role="listitem" onclick="window.open('https://www.ideogram.ai','_blank')" itemscope itemtype="https://schema.org/SoftwareApplication">
-      <div class="tool-header">
-        <div class="tool-logo" style="background:#8b5cf620;color:#8b5cf6;">🔤</div>
-        <div><div class="tool-name" itemprop="name">Ideogram</div><div class="tool-rating">★★★★☆ 4.4 · 100万+用户</div></div>
-      </div>
-      <p class="tool-desc" itemprop="description">专注于图片中文字生成，解决了AI绘画文字乱码难题，Logo设计和带文字图片首选。</p>
-      <div class="tool-footer"><div class="tags"><span class="tag">文字生成</span><span class="tag">Logo</span></div><span class="price price-free">免费/$7月</span></div>
-    </article>
-
-    <article class="tool-card" data-tags="free art" role="listitem" onclick="window.open('https://www.krea.ai','_blank')" itemscope itemtype="https://schema.org/SoftwareApplication">
-      <div class="tool-header">
-        <div class="tool-logo" style="background:#ec489920;color:#ec4899;">✨</div>
-        <div><div class="tool-name" itemprop="name">Krea AI</div><div class="tool-rating">★★★★☆ 4.3 · 50万+用户</div></div>
-      </div>
-      <p class="tool-desc" itemprop="description">实时AI绘画工具，画笔落下即时生成，交互式创作体验独一无二，适合创意头脑风暴。</p>
-      <div class="tool-footer"><div class="tags"><span class="tag">实时生成</span><span class="tag">交互</span></div><span class="price price-free">免费/$24月</span></div>
-    </article>
-
-    <article class="tool-card" data-tags="open free art" role="listitem" onclick="window.open('https://huggingface.co/spaces/stabilityai/stable-diffusion','_blank')" itemscope itemtype="https://schema.org/SoftwareApplication">
-      <span class="open-tag">开源</span>
-      <div class="tool-header">
-        <div class="tool-logo" style="background:#f59e0b20;color:#f59e0b;">🤗</div>
-        <div><div class="tool-name" itemprop="name">HuggingFace SD</div><div class="tool-rating">★★★★☆ 4.2 · 500万+用户</div></div>
-      </div>
-      <p class="tool-desc" itemprop="description">Hugging Face平台上的免费Stable Diffusion体验版，无需安装，浏览器直接使用。</p>
-      <div class="tool-footer"><div class="tags"><span class="tag">开源免费</span><span class="tag">在线</span></div><span class="price price-free">完全免费</span></div>
-    </article>
-
-    <article class="tool-card" data-tags="art realistic" role="listitem" onclick="window.open('https://www.seaart.ai','_blank')" itemscope itemtype="https://schema.org/SoftwareApplication">
-      <span class="hot-tag" style="background:linear-gradient(135deg,#10b981,#059669);">国产</span>
-      <div class="tool-header">
-        <div class="tool-logo" style="background:#10b98120;color:#10b981;">🌊</div>
-        <div><div class="tool-name" itemprop="name">SeaArt</div><div class="tool-rating">★★★★☆ 4.3 · 500万+用户</div></div>
-      </div>
-      <p class="tool-desc" itemprop="description">国产AI绘画平台，大量汉化模型，中文提示词友好，二次元风格出众，国内访问速度快。</p>
-      <div class="tool-footer"><div class="tags"><span class="tag">国产</span><span class="tag">中文支持</span></div><span class="price price-free">免费/会员</span></div>
-    </article>
-
+    <!-- 工具将通过 JavaScript 动态加载 -->
   </div>
 </main>
 
@@ -227,6 +118,67 @@
 </footer>
 
 <script>
+// 动态渲染绘画类工具
+function renderImageTools() {
+  const grid = document.getElementById('toolsGrid');
+  if (!grid) return;
+
+  // 从 data.js 获取绘画类工具
+  const imageTools = Object.values(TOOLS_DATA).filter(tool => 
+    tool.categoryId === 'image' || tool.category === 'AI绘画'
+  );
+
+  // 生成工具卡片
+  grid.innerHTML = imageTools.map(tool => {
+    // 判断价格类型
+    const priceClass = tool.priceType === 'free' || tool.price.includes('免费') || tool.price.includes('完全免费') ? 'price-free' : 
+                       tool.price.includes('$') && !tool.price.includes('免费') ? 'price-paid' : '';
+
+    // 判断是否有详情页
+    const hasDetailPage = TOOLS_DATA[tool.id] !== undefined;
+    const onclick = hasDetailPage ? `location.href='tool.html?id=${tool.id}'` : `window.open('${tool.url}','_blank')`;
+
+    // HOT 标签
+    const hotTag = tool.isHot ? '<span class="hot-tag">HOT</span>' : '';
+    // 开源标签
+    const openTag = tool.priceType === 'free' && tool.id === 'stable-diffusion' ? '<span class="open-tag">开源</span>' : '';
+    // 国产标签
+    const cnTag = tool.id === 'canva-ai' ? '' : '';
+
+    // 评分星级
+    const stars = '★'.repeat(Math.floor(tool.rating)) + (tool.rating % 1 >= 0.5 ? '½' : '');
+
+    return `
+      <article class="tool-card" data-tags="art" role="listitem" onclick="${onclick}" itemscope itemtype="https://schema.org/SoftwareApplication">
+        ${hotTag}${openTag}
+        <div class="tool-header">
+          <div class="tool-logo" style="background:${tool.color}20;color:${tool.color};">${tool.icon}</div>
+          <div>
+            <div class="tool-name" itemprop="name">${tool.name}</div>
+            <div class="tool-rating">${stars} ${tool.rating} · ${tool.users}</div>
+          </div>
+        </div>
+        <p class="tool-desc" itemprop="description">${tool.desc}</p>
+        <div class="tool-footer">
+          <div class="tags">
+            <span class="tag">${tool.category}</span>
+          </div>
+          <span class="price ${priceClass}">${tool.price}</span>
+        </div>
+      </article>
+    `;
+  }).join('');
+
+  // 更新筛选按钮
+  document.querySelector('.filter-bar').innerHTML = `
+    <button class="filter-btn active" onclick="filter(this,'all')">全部 (${imageTools.length})</button>
+    <button class="filter-btn" onclick="filter(this,'free')">免费可用</button>
+    <button class="filter-btn" onclick="filter(this,'open')">开源免费</button>
+    <button class="filter-btn" onclick="filter(this,'realistic')">写实风格</button>
+    <button class="filter-btn" onclick="filter(this,'art')">艺术创作</button>
+  `;
+}
+
 function filter(btn, type) {
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
@@ -234,6 +186,9 @@ function filter(btn, type) {
     card.style.display = (type === 'all' || card.dataset.tags.includes(type)) ? '' : 'none';
   });
 }
+
+// 页面加载完成后渲染工具
+document.addEventListener('DOMContentLoaded', renderImageTools);
 </script>
 
 <!-- ==================== 统计代码 ==================== -->

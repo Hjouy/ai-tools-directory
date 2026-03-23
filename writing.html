@@ -17,6 +17,10 @@
 
   <!-- 性能优化：DNS 预加载 -->
   <link rel="dns-prefetch" href="//github.com">
+
+  <!-- 引用统一工具数据库 -->
+  <script src="data.js"></script>
+
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -81,7 +85,7 @@
 </nav>
 
 <header class="page-hero">
-  <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.3);color:#a5b4fc;padding:4px 14px;border-radius:20px;font-size:.8rem;margin-bottom:16px;">✍️ 48个AI写作工具</div>
+  <div class="badge-count" style="display:inline-flex;align-items:center;gap:6px;background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.3);color:#a5b4fc;padding:4px 14px;border-radius:20px;font-size:.8rem;margin-bottom:16px;">✍️ AI写作工具</div>
   <h1>AI写作工具推荐</h1>
   <p>精选最好用的AI写作助手，从文章生成到文案创作，告别写作焦虑</p>
   <div style="margin-top:20px;">
@@ -99,119 +103,7 @@
   </div>
 
   <div class="tools-grid" id="toolsGrid" role="list">
-
-    <article class="tool-card" data-tags="free chat article" role="listitem" onclick="location.href='tool.html?id=chatgpt'" itemscope itemtype="https://schema.org/SoftwareApplication">
-      <span class="hot-tag">HOT</span>
-      <div class="tool-header">
-        <div class="tool-logo" style="background:#10b98120;color:#10b981;">💬</div>
-        <div><div class="tool-name" itemprop="name">ChatGPT</div><div class="tool-rating">★★★★★ 4.8 · 1亿+用户</div></div>
-      </div>
-      <p class="tool-desc" itemprop="description">OpenAI出品的超强AI对话助手，支持文章写作、邮件起草、代码生成、语言翻译等全能任务。</p>
-      <div class="tool-footer"><div class="tags"><span class="tag">全能写作</span><span class="tag">对话</span></div><span class="price price-free">免费/$20月</span></div>
-    </article>
-
-    <article class="tool-card" data-tags="free chat article" role="listitem" onclick="location.href='tool.html?id=claude'" itemscope itemtype="https://schema.org/SoftwareApplication">
-      <div class="tool-header">
-        <div class="tool-logo" style="background:#d9780620;color:#d97706;">🧠</div>
-        <div><div class="tool-name" itemprop="name">Claude</div><div class="tool-rating">★★★★★ 4.7 · 500万+用户</div></div>
-      </div>
-      <p class="tool-desc" itemprop="description">Anthropic出品，200K超长上下文，擅长长篇写作、学术论文分析和复杂推理，准确性业界领先。</p>
-      <div class="tool-footer"><div class="tags"><span class="tag">长文写作</span><span class="tag">学术</span></div><span class="price price-free">免费/$20月</span></div>
-    </article>
-
-    <article class="tool-card" data-tags="copywrite article" role="listitem" onclick="window.open('https://jasper.ai','_blank')" itemscope itemtype="https://schema.org/SoftwareApplication">
-      <div class="tool-header">
-        <div class="tool-logo" style="background:#7c3aed20;color:#7c3aed;">🖊️</div>
-        <div><div class="tool-name" itemprop="name">Jasper</div><div class="tool-rating">★★★★½ 4.5 · 100万+用户</div></div>
-      </div>
-      <p class="tool-desc" itemprop="description">专为营销人设计的AI写作平台，支持博客文章、广告文案、社媒内容、产品描述等50+内容模板。</p>
-      <div class="tool-footer"><div class="tags"><span class="tag">营销文案</span><span class="tag">模板</span></div><span class="price price-paid">$49/月起</span></div>
-    </article>
-
-    <article class="tool-card" data-tags="copywrite free" role="listitem" onclick="window.open('https://copy.ai','_blank')" itemscope itemtype="https://schema.org/SoftwareApplication">
-      <div class="tool-header">
-        <div class="tool-logo" style="background:#0891b220;color:#0891b2;">📝</div>
-        <div><div class="tool-name" itemprop="name">Copy.ai</div><div class="tool-rating">★★★★☆ 4.4 · 100万+用户</div></div>
-      </div>
-      <p class="tool-desc" itemprop="description">一键生成营销文案、广告语、产品介绍、社媒帖子，有免费版可用，支持中文内容生成。</p>
-      <div class="tool-footer"><div class="tags"><span class="tag">营销</span><span class="tag">广告文案</span></div><span class="price price-free">免费/$49月</span></div>
-    </article>
-
-    <article class="tool-card" data-tags="free article" role="listitem" onclick="location.href='tool.html?id=notion-ai'" itemscope itemtype="https://schema.org/SoftwareApplication">
-      <div class="tool-header">
-        <div class="tool-logo" style="background:#37415120;color:#94a3b8;">📔</div>
-        <div><div class="tool-name" itemprop="name">Notion AI</div><div class="tool-rating">★★★★☆ 4.6 · 2000万+用户</div></div>
-      </div>
-      <p class="tool-desc" itemprop="description">Notion内置AI，在笔记工作流中无缝使用，一键续写/总结/翻译，团队协作场景最佳选择。</p>
-      <div class="tool-footer"><div class="tags"><span class="tag">效率</span><span class="tag">团队</span></div><span class="price price-paid">$10/月</span></div>
-    </article>
-
-    <article class="tool-card" data-tags="article copywrite" role="listitem" onclick="window.open('https://writesonic.com','_blank')" itemscope itemtype="https://schema.org/SoftwareApplication">
-      <div class="tool-header">
-        <div class="tool-logo" style="background:#06b6d420;color:#06b6d4;">⚡</div>
-        <div><div class="tool-name" itemprop="name">Writesonic</div><div class="tool-rating">★★★★☆ 4.3 · 300万+用户</div></div>
-      </div>
-      <p class="tool-desc" itemprop="description">SEO优化的AI写作工具，可生成符合搜索引擎排名的博客文章、落地页内容，集成Surfer SEO。</p>
-      <div class="tool-footer"><div class="tags"><span class="tag">SEO写作</span><span class="tag">博客</span></div><span class="price price-free">免费/$16月</span></div>
-    </article>
-
-    <article class="tool-card" data-tags="free article" role="listitem" onclick="window.open('https://gemini.google.com','_blank')" itemscope itemtype="https://schema.org/SoftwareApplication">
-      <div class="tool-header">
-        <div class="tool-logo" style="background:#4285f420;color:#4285f4;">✨</div>
-        <div><div class="tool-name" itemprop="name">Gemini</div><div class="tool-rating">★★★★☆ 4.4 · 5000万+用户</div></div>
-      </div>
-      <p class="tool-desc" itemprop="description">Google出品的多模态AI，可处理文字、图片、代码，深度集成Google搜索，信息实时更新。</p>
-      <div class="tool-footer"><div class="tags"><span class="tag">多模态</span><span class="tag">搜索集成</span></div><span class="price price-free">免费/$20月</span></div>
-    </article>
-
-    <article class="tool-card" data-tags="free article chat" role="listitem" onclick="window.open('https://kimi.moonshot.cn','_blank')" itemscope itemtype="https://schema.org/SoftwareApplication">
-      <span class="hot-tag" style="background:linear-gradient(135deg,#10b981,#059669);">国产</span>
-      <div class="tool-header">
-        <div class="tool-logo" style="background:#06b6d420;color:#06b6d4;">🌙</div>
-        <div><div class="tool-name" itemprop="name">Kimi</div><div class="tool-rating">★★★★☆ 4.5 · 1000万+用户</div></div>
-      </div>
-      <p class="tool-desc" itemprop="description">月之暗面出品的国产AI助手，200万字超长上下文，中文理解能力优秀，可上传PDF直接提问。</p>
-      <div class="tool-footer"><div class="tags"><span class="tag">中文</span><span class="tag">长文档</span></div><span class="price price-free">国内免费</span></div>
-    </article>
-
-    <article class="tool-card" data-tags="free copywrite chat" role="listitem" onclick="window.open('https://tongyi.aliyun.com','_blank')" itemscope itemtype="https://schema.org/SoftwareApplication">
-      <span class="hot-tag" style="background:linear-gradient(135deg,#10b981,#059669);">国产</span>
-      <div class="tool-header">
-        <div class="tool-logo" style="background:#f5a62320;color:#f5a623;">🌟</div>
-        <div><div class="tool-name" itemprop="name">通义千问</div><div class="tool-rating">★★★★☆ 4.4 · 2000万+用户</div></div>
-      </div>
-      <p class="tool-desc" itemprop="description">阿里云出品，中文写作体验优秀，支持文档分析、代码生成、图像理解，国内访问速度极快。</p>
-      <div class="tool-footer"><div class="tags"><span class="tag">中文</span><span class="tag">全能</span></div><span class="price price-free">国内免费</span></div>
-    </article>
-
-    <article class="tool-card" data-tags="free article chat" role="listitem" onclick="window.open('https://yiyan.baidu.com','_blank')" itemscope itemtype="https://schema.org/SoftwareApplication">
-      <span class="hot-tag" style="background:linear-gradient(135deg,#10b981,#059669);">国产</span>
-      <div class="tool-header">
-        <div class="tool-logo" style="background:#3b82f620;color:#3b82f6;">🔵</div>
-        <div><div class="tool-name" itemprop="name">文心一言</div><div class="tool-rating">★★★★☆ 4.3 · 1亿+用户</div></div>
-      </div>
-      <p class="tool-desc" itemprop="description">百度出品的AI助手，中文语境理解深刻，集成百度搜索引擎，可获取实时信息，适合日常写作。</p>
-      <div class="tool-footer"><div class="tags"><span class="tag">百度</span><span class="tag">实时信息</span></div><span class="price price-free">国内免费</span></div>
-    </article>
-
-    <article class="tool-card" data-tags="copywrite article" role="listitem" onclick="window.open('https://rytr.me','_blank')" itemscope itemtype="https://schema.org/SoftwareApplication">
-      <div class="tool-header">
-        <div class="tool-logo" style="background:#8b5cf620;color:#8b5cf6;">🖋️</div>
-        <div><div class="tool-name" itemprop="name">Rytr</div><div class="tool-rating">★★★★☆ 4.2 · 70万+用户</div></div>
-      </div>
-      <p class="tool-desc" itemprop="description">性价比极高的AI写作工具，支持40+语言和20+写作风格，适合个人博主和小团队使用。</p>
-      <div class="tool-footer"><div class="tags"><span class="tag">性价比</span><span class="tag">多语言</span></div><span class="price price-free">免费/$9月</span></div>
-    </article>
-
-    <article class="tool-card" data-tags="article" role="listitem" onclick="window.open('https://www.grammarly.com','_blank')" itemscope itemtype="https://schema.org/SoftwareApplication">
-      <div class="tool-header">
-        <div class="tool-logo" style="background:#15803d20;color:#15803d;">✅</div>
-        <div><div class="tool-name" itemprop="name">Grammarly</div><div class="tool-rating">★★★★☆ 4.5 · 3000万+用户</div></div>
-      </div>
-      <p class="tool-desc" itemprop="description">AI英文写作助手，实时检查语法、拼写、风格，还能提供写作建议和改进方案，英文写作必备。</p>
-      <div class="tool-footer"><div class="tags"><span class="tag">英文写作</span><span class="tag">语法检查</span></div><span class="price price-free">免费/$12月</span></div>
-    </article>
-
+    <!-- 工具将通过 JavaScript 动态加载 -->
   </div>
 </main>
 
@@ -225,6 +117,73 @@
 </footer>
 
 <script>
+// 动态渲染写作类工具
+function renderWritingTools() {
+  const grid = document.getElementById('toolsGrid');
+  if (!grid) return;
+
+  // 从 data.js 获取写作类工具
+  const writingTools = Object.values(TOOLS_DATA).filter(tool => 
+    tool.categoryId === 'writing' || tool.category === 'AI写作'
+  );
+
+  // 更新工具总数
+  const countBadge = document.querySelector('.page-hero .badge-count');
+  if (countBadge) {
+    countBadge.textContent = writingTools.length + '个AI写作工具';
+  }
+
+  // 生成工具卡片
+  grid.innerHTML = writingTools.map(tool => {
+    // 判断价格类型
+    const priceClass = tool.priceType === 'free' || tool.price.includes('免费') ? 'price-free' : 
+                       tool.price.includes('$') && !tool.price.includes('免费') ? 'price-paid' : '';
+
+    // 判断是否有详情页
+    const hasDetailPage = TOOLS_DATA[tool.id] !== undefined;
+    const onclick = hasDetailPage ? `location.href='tool.html?id=${tool.id}'` : `window.open('${tool.url}','_blank')`;
+
+    // HOT 标签
+    const hotTag = tool.isHot ? '<span class="hot-tag">HOT</span>' : '';
+    // 国产标签
+    const cnTag = ['kimi', 'tongyi-qianwen', 'wenxin-yiyan'].includes(tool.id) 
+      ? '<span class="hot-tag" style="background:linear-gradient(135deg,#10b981,#059669);">国产</span>' : '';
+
+    // 评分星级
+    const stars = '★'.repeat(Math.floor(tool.rating)) + (tool.rating % 1 >= 0.5 ? '½' : '');
+
+    return `
+      <article class="tool-card" data-tags="${tool.scenes ? tool.scenes.slice(0,3).join(' ') : 'article'}" 
+               role="listitem" onclick="${onclick}" itemscope itemtype="https://schema.org/SoftwareApplication">
+        ${hotTag}${cnTag}
+        <div class="tool-header">
+          <div class="tool-logo" style="background:${tool.color}20;color:${tool.color};">${tool.icon}</div>
+          <div>
+            <div class="tool-name" itemprop="name">${tool.name}</div>
+            <div class="tool-rating">${stars} ${tool.rating} · ${tool.users}</div>
+          </div>
+        </div>
+        <p class="tool-desc" itemprop="description">${tool.desc}</p>
+        <div class="tool-footer">
+          <div class="tags">
+            <span class="tag">${tool.category}</span>
+          </div>
+          <span class="price ${priceClass}">${tool.price}</span>
+        </div>
+      </article>
+    `;
+  }).join('');
+
+  // 更新筛选按钮的提示数量
+  document.querySelector('.filter-bar').innerHTML = `
+    <button class="filter-btn active" onclick="filter(this,'all')">全部 (${writingTools.length})</button>
+    <button class="filter-btn" onclick="filter(this,'free')">免费可用 (${writingTools.filter(t => t.price.includes('免费')).length})</button>
+    <button class="filter-btn" onclick="filter(this,'article')">文章写作 (${writingTools.filter(t => t.scenes && t.scenes.some(s => s.includes('写作') || s.includes('创作'))).length})</button>
+    <button class="filter-btn" onclick="filter(this,'copywrite')">营销文案 (${writingTools.filter(t => t.scenes && t.scenes.some(s => s.includes('营销') || s.includes('文案'))).length})</button>
+    <button class="filter-btn" onclick="filter(this,'chat')">对话助手 (${writingTools.filter(t => t.scenes && t.scenes.some(s => s.includes('对话') || s.includes('问答'))).length})</button>
+  `;
+}
+
 function filter(btn, type) {
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
@@ -236,6 +195,9 @@ function filter(btn, type) {
     }
   });
 }
+
+// 页面加载完成后渲染工具
+document.addEventListener('DOMContentLoaded', renderWritingTools);
 </script>
 
 <!-- ==================== 统计代码 ==================== -->
