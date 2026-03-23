@@ -366,7 +366,42 @@
       .tool-header-actions { grid-column: 1 / -1; flex-direction: row; }
       .content-grid { grid-template-columns: 1fr; }
       .features-grid { grid-template-columns: 1fr; }
+    }
+
+    /* 汉堡菜单 */
+    .menu-toggle { display: none; background: none; border: none; font-size: 1.5rem; color: var(--text); cursor: pointer; padding: 4px; }
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 60px;
+      left: 0;
+      right: 0;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 99;
+    }
+    .mobile-menu a {
+      color: var(--text);
+      text-decoration: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: all 0.2s;
+      display: block;
+    }
+    .mobile-menu a:hover { background: var(--border); }
+    .mobile-menu .nav-btn {
+      text-align: center;
+      margin-top: 8px;
+    }
+
+    @media (max-width: 768px) {
+      .menu-toggle { display: block; }
       .nav-links { display: none; }
+      .mobile-menu.open { display: flex; }
     }
   </style>
 </head>
@@ -374,6 +409,7 @@
 
 <nav class="navbar">
   <a href="index.html" class="nav-logo">🤖 AI工具导航</a>
+  <button class="menu-toggle" onclick="toggleMenu()" aria-label="菜单">☰</button>
   <ul class="nav-links">
     <li><a href="index.html">首页</a></li>
     <li><a href="ranking.html">排行榜</a></li>
@@ -381,6 +417,14 @@
     <li><a href="submit.html" class="nav-btn">提交工具</a></li>
   </ul>
 </nav>
+
+<!-- 移动端菜单 -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html" onclick="toggleMenu()">首页</a>
+  <a href="ranking.html" onclick="toggleMenu()">排行榜</a>
+  <a href="news.html" onclick="toggleMenu()">AI资讯</a>
+  <a href="submit.html" class="nav-btn" onclick="toggleMenu()">提交工具</a>
+</div>
 
 <!-- 面包屑 -->
 <nav class="breadcrumb" aria-label="面包屑导航">
@@ -832,6 +876,400 @@ const TOOLS = {
     ],
     reviewCount: 34620, score5: 62, score4: 24, score3: 9, score2: 3, score1: 2,
   },
+
+  'github-copilot': {
+    name: 'GitHub Copilot', icon: '🐙', color: '#1f2937',
+    category: 'AI编程', users: '100万+用户', rating: 4.7, price: '$10/月',
+    url: 'https://github.com/features/copilot',
+    desc: 'GitHub与OpenAI联合开发的AI编程助手，实时在编辑器中提供智能代码补全建议，支持多种编程语言，是程序员最喜爱的AI工具之一。',
+    features: [
+      { icon: '⚡', title: '实时补全', desc: '边写边补全，自动理解上下文，精准预测代码' },
+      { icon: '🎯', title: '函数级建议', desc: '直接生成完整函数、类、模块级代码' },
+      { icon: '🔧', title: '多语言支持', desc: '支持Python、JavaScript、Java等20+主流语言' },
+      { icon: '💬', title: '对话式编程', desc: 'Copilot Chat可用自然语言解释和生成代码' },
+      { icon: '📝', title: '注释生成', desc: '选中代码，AI自动生成详细注释和文档' },
+      { icon: '🌐', title: '跨IDE支持', desc: 'VS Code、JetBrains、Neovim等主流编辑器' },
+    ],
+    scenes: ['日常开发', '代码重构', '学习编程', 'API调用', '单元测试', '快速原型', '代码审查', '文档编写'],
+    pricing: [
+      { name: 'Free', price: '免费', features: '学生、开源维护者免费使用' },
+      { name: 'Pro', price: '$10/月', features: '个人开发者，完整功能' },
+      { name: 'Business', price: '$19/月/人', features: '企业版，额外安全功能' },
+      { name: 'Enterprise', price: '$39/月/人', features: '高级合规，企业级支持' },
+    ],
+    reviews: [
+      { name: '后端工程师', role: '阿里P7', rating: 5, text: '用了快两年了，现在真的离不开Copilot。它不仅能快速生成常见模式代码，有时候还能给我一些意想不到的优化思路。效率提升至少50%。' },
+      { name: 'Python Dev', role: '数据科学家', rating: 4, text: "Copilot is great for boilerplate code and standard libraries. Sometimes it suggests inefficient code though, so you still need to review carefully. Overall very helpful!" },
+      { name: '前端小王', role: 'React开发者', rating: 5, text: '写组件的时候特别有用，它非常熟悉React的写法，很多复杂的逻辑几秒钟就写好了。配合Copilot Chat简直无敌！' },
+    ],
+    info: { developer: 'GitHub & OpenAI', released: '2021年6月', platform: 'VS Code/JetBrains/Neovim等', language: '20+编程语言', update: '持续更新', category: 'AI编程助手' },
+    related: [
+      { id: 'cursor', name: 'Cursor', icon: '⚡', color: '#818cf8', tag: 'AI编程' },
+      { id: 'codeium', name: 'Codeium', icon: '🔮', color: '#8b5cf6', tag: 'AI编程' },
+    ],
+    reviewCount: 42300, score5: 64, score4: 22, score3: 9, score2: 3, score1: 2,
+  },
+
+  perplexity: {
+    name: 'Perplexity', icon: '🔎', color: '#0f766e',
+    category: 'AI搜索', users: '1000万+用户', rating: 4.7, price: '免费/$20月',
+    url: 'https://www.perplexity.ai',
+    desc: '融合AI和搜索引擎的新一代搜索工具，实时检索网络信息并提供精准答案，支持文献检索、数据分析，是学术研究和知识工作者的首选。',
+    features: [
+      { icon: '🔍', title: '实时检索', desc: '实时搜索最新信息，不依赖训练数据' },
+      { icon: '📚', title: '学术搜索', desc: '可检索学术论文、技术文档，自动引用来源' },
+      { icon: '📊', title: '数据分析', desc: '上传文件，AI自动分析并生成报告' },
+      { icon: '🌐', title: '多模态输入', desc: '支持文字、图片、文件等多种查询方式' },
+      { icon: '🔗', title: '来源引用', desc: '每个答案都标注信息来源，可验证可追溯' },
+      { icon: '🤖', title: '对话式搜索', desc: '多轮对话深入探索主题，逐步细化需求' },
+    ],
+    scenes: ['学术研究', '文献调研', '市场分析', '技术学习', '新闻追踪', '数据查询', '竞品分析', '知识整理'],
+    pricing: [
+      { name: 'Free', price: '免费', features: '基础搜索，Pro AI模型有限使用' },
+      { name: 'Pro', price: '$20/月', features: 'GPT-4/Claude，无限Pro查询，文件上传' },
+      { name: 'Team', price: '$40/月/人', features: '团队协作，高级功能，API访问' },
+      { name: 'Enterprise', price: '联系销售', features: '企业级安全，定制化部署' },
+    ],
+    reviews: [
+      { name: '博士生小李', role: '医学研究员', rating: 5, text: '论文检索神器！能直接回答复杂的医学问题，还附上文献来源。比传统搜索引擎效率高太多了，每天至少节省3小时查资料时间。' },
+      { name: 'Market Analyst', role: '投资经理', rating: 5, text: "Perplexity has revolutionized how I research companies and markets. The ability to ask follow-up questions and get cited answers is invaluable for due diligence." },
+      { name: '技术博客作者', role: '自媒体创作者', rating: 4, text: '写技术文章时用来查资料特别好，它能整合多个来源的信息给出综合答案。唯一缺点是有时候搜索结果质量参差不齐，需要筛选。' },
+    ],
+    info: { developer: 'Perplexity AI', released: '2022年12月', platform: 'Web/iOS/Android', language: '多语言', update: '持续更新', category: 'AI搜索引擎' },
+    related: [
+      { id: 'chatgpt', name: 'ChatGPT', icon: '💬', color: '#10b981', tag: 'AI写作' },
+      { id: 'claude', name: 'Claude', icon: '🧠', color: '#d97706', tag: 'AI写作' },
+    ],
+    reviewCount: 28750, score5: 66, score4: 20, score3: 9, score2: 3, score1: 2,
+  },
+
+  pika: {
+    name: 'Pika', icon: '🎥', color: '#7c3aed',
+    category: 'AI视频', users: '200万+用户', rating: 4.5, price: '$8/月',
+    url: 'https://pika.art',
+    desc: '专注于文字/图片生成视频的AI工具，支持3-4秒短片生成、视频风格转换、lip-sync对口型等功能，是短视频创作者的得力助手。',
+    features: [
+      { icon: '✨', title: 'Text to Video', desc: '输入文字描述，几秒生成短视频' },
+      { icon: '🖼️', title: 'Image to Video', desc: '上传静态图片，让照片动起来' },
+      { icon: '🎭', title: 'Lip Sync', desc: '让AI视频中的人物对口型，真实感强' },
+      { icon: '🎨', title: '风格转换', desc: '将视频转换为动画、3D、素描等风格' },
+      { icon: '📱', title: '社区模板', desc: '海量优质模板，一键套用快速产出' },
+      { icon: '🔄', title: '延长视频', desc: '对生成的片段进行续写，构建长视频' },
+    ],
+    scenes: ['短视频', '广告创意', '产品展示', '社交媒体', '个人Vlog', '电商视频', '教育内容', '概念演示'],
+    pricing: [
+      { name: 'Free', price: '免费', features: '每月150积分，带水印' },
+      { name: 'Basic', price: '$8/月', features: '每月250积分，无水印' },
+      { name: 'Pro', price: '$28/月', features: '每月700积分，延长视频' },
+      { name: 'Studio', price: '$58/月', features: '每月3000积分，最高优先级' },
+    ],
+    reviews: [
+      { name: '短视频达人', role: '抖音创作者', rating: 5, text: 'Pika的Lip Sync功能太神了！让AI人物对口型做口播，效果比真人录音还自然。现在做口播视频效率提升了10倍，强烈推荐！' },
+      { name: 'Social Media Manager', role: '品牌运营', rating: 4, text: "Pika is great for quick social media content. The templates are very helpful, though the video length limit can be restrictive for longer content." },
+      { name: '产品经理', role: '电商平台', rating: 5, text: '用来做产品展示视频特别省事，上传产品图就能生成动态展示，省了拍视频的钱。质量也不错，完全够用！' },
+    ],
+    info: { developer: 'Pika Labs', released: '2023年4月', platform: 'Web/Discord', language: '多语言', update: '持续更新', category: 'AI视频生成' },
+    related: [
+      { id: 'runway', name: 'Runway', icon: '🎬', color: '#0891b2', tag: 'AI视频' },
+      { id: 'midjourney', name: 'Midjourney', icon: '🎨', color: '#6366f1', tag: 'AI绘画' },
+    ],
+    reviewCount: 8920, score5: 58, score4: 24, score3: 12, score2: 4, score1: 2,
+  },
+
+  heygen: {
+    name: 'HeyGen', icon: '🎭', color: '#0891b2',
+    category: 'AI视频', users: '100万+用户', rating: 4.4, price: '$29/月',
+    url: 'https://www.heygen.com',
+    desc: '领先的AI数字人视频生成平台，支持文字生成虚拟主播视频、口型同步、多语言配音，广泛用于企业培训、营销视频、客户服务等领域。',
+    features: [
+      { icon: '👤', title: '100+数字人', desc: '丰富的虚拟主播形象，可选真人风格或卡通风格' },
+      { icon: '🎤', title: '文字转视频', desc: '输入脚本文字，AI生成数字人演讲视频' },
+      { icon: '🗣️', title: '多语言配音', desc: '支持40+语言口型同步和AI配音' },
+      { icon: '📹', title: 'PPT转视频', desc: '上传PPT自动生成讲解视频' },
+      { icon: '🎨', title: '自定义形象', desc: '可上传照片生成专属数字人' },
+      { icon: '⚡', title: '快速生成', desc: '几分钟内生成专业视频，无需拍摄' },
+    ],
+    scenes: ['企业培训', '产品介绍', '营销视频', '客户服务', '在线课程', '新闻播报', '会议开场', '品牌宣传'],
+    pricing: [
+      { name: 'Free', price: '免费', features: '每月1分钟，带水印' },
+      { name: 'Creator', price: '$29/月', features: '每月15分钟，无水印' },
+      { name: 'Business', price: '$89/月', features: '每月30分钟，4K导出' },
+      { name: 'Enterprise', price: '联系销售', features: '无限分钟，定制化服务' },
+    ],
+    reviews: [
+      { name: '培训经理', role: '企业HR', rating: 5, text: '做员工培训视频神器！不用找真人拍摄，直接用数字人录制，节省了70%的预算。口型同步非常自然，完全看不出是AI。' },
+      { name: 'Marketing Director', role: '科技公司', rating: 4, text: "HeyGen has been great for product demo videos. The AI avatars are professional and the lip-sync technology is impressive. Price could be lower for longer videos." },
+      { name: '在线讲师', role: '知识付费', rating: 5, text: '录课神器！不用自己出镜，用数字人讲就行了。多语言功能特别好，一套内容可以生成多个语言版本，覆盖更多市场！' },
+    ],
+    info: { developer: 'HeyGen Inc.', released: '2020年', platform: 'Web', language: '40+语言', update: '持续更新', category: 'AI数字人视频' },
+    related: [
+      { id: 'runway', name: 'Runway', icon: '🎬', color: '#0891b2', tag: 'AI视频' },
+      { id: 'suno', name: 'Suno', icon: '🎵', color: '#7c3aed', tag: 'AI音乐' },
+    ],
+    reviewCount: 12400, score5: 55, score4: 25, score3: 13, score2: 5, score1: 2,
+  },
+
+  elevenlabs: {
+    name: 'ElevenLabs', icon: '🎙️', color: '#dc2626',
+    category: 'AI音频', users: '200万+用户', rating: 4.6, price: '$5/月',
+    url: 'https://elevenlabs.io',
+    desc: '业界领先的AI语音合成工具，支持文字转语音、语音克隆、多语言配音，声音自然逼真，被YouTuber、播客、游戏开发者和广告行业广泛使用。',
+    features: [
+      { icon: '🎵', title: '自然语音', desc: '语音质量接近真人，情感表达丰富' },
+      { icon: '🎤', title: '语音克隆', desc: '上传30秒音频，克隆任意声音' },
+      { icon: '🌐', title: '29种语言', desc: '支持中英日韩等29种语言的自然合成' },
+      { icon: '🎭', title: '情感控制', desc: '调整语速、语调、情感，表达更丰富' },
+      { icon: '🎙️', title: '500+音色', desc: '丰富的预设音色库，男声女声童声俱全' },
+      { icon: '📱', title: 'API集成', desc: '开发者API，轻松集成到应用中' },
+    ],
+    scenes: ['视频配音', '有声书', '播客制作', '游戏配音', '广告配音', '语音助手', '新闻播报', '学习材料'],
+    pricing: [
+      { name: 'Free', price: '免费', features: '每月1万字，3个音色' },
+      { name: 'Starter', price: '$5/月', features: '每月3万字，10个音色' },
+      { name: 'Creator', price: '$22/月', features: '每月10万字，自定义音色' },
+      { name: 'Pro', price: '$99/月', features: '每月50万字，优先队列，API' },
+    ],
+    reviews: [
+      { name: 'YouTuber', role: '视频创作者', rating: 5, text: 'ElevenLabs的语音质量太惊人了！比TTS软件自然太多，听众都以为是真人配音。克隆自己的声音后做视频超省时间！' },
+      { name: 'Audiobook Creator', role: '有声书作者', rating: 5, text: "The voice quality is indistinguishable from human narration. I've created 20+ audiobooks using ElevenLabs, and my listeners can't tell the difference!" },
+      { name: '游戏开发者', role: '独立制作人', rating: 4, text: '用来给游戏角色配音非常好，特别是多语言版本，一套内容就能支持多种语言。唯一的不足是价格对于小团队有点高。' },
+    ],
+    info: { developer: 'ElevenLabs Inc.', released: '2022年1月', platform: 'Web/API', language: '29种语言', update: '持续更新', category: 'AI语音合成' },
+    related: [
+      { id: 'suno', name: 'Suno', icon: '🎵', color: '#7c3aed', tag: 'AI音乐' },
+      { id: 'runway', name: 'Runway', icon: '🎬', color: '#0891b2', tag: 'AI视频' },
+    ],
+    reviewCount: 18730, score5: 60, score4: 24, score3: 10, score2: 4, score1: 2,
+  },
+
+  udio: {
+    name: 'Udio', icon: '🎶', color: '#f59e0b',
+    category: 'AI音乐', users: '300万+用户', rating: 4.6, price: '免费/$12月',
+    url: 'https://www.udio.com',
+    desc: 'Suno的强劲竞争对手，专注于高质量AI音乐生成，支持完整的歌曲创作、歌词生成、人声演唱，在音乐质量和风格多样性上表现突出。',
+    features: [
+      { icon: '🎼', title: '完整歌曲', desc: '生成带人声和伴奏的完整歌曲' },
+      { icon: '🎸', title: '多种风格', desc: '流行、摇滚、电子、爵士、古典等30+风格' },
+      { icon: '✏️', title: '歌词生成', desc: 'AI自动创作歌词，也可自定义' },
+      { icon: '🎚️', title: '高清音质', desc: '输出高保真音频，专业级音质' },
+      { icon: '🔄', title: '无限迭代', desc: '对生成的片段不断优化，达到理想效果' },
+      { icon: '💾', title: '项目管理', desc: '保存多个版本，轻松管理创作项目' },
+    ],
+    scenes: ['个人创作', '短视频配乐', '游戏BGM', '广告配乐', '音乐学习', '背景音乐', '个人专辑', '娱乐创作'],
+    pricing: [
+      { name: 'Free', price: '免费', features: '每天10首歌，标准音质' },
+      { name: 'Basic', price: '$12/月', features: '每月1000首歌，高清音质' },
+      { name: 'Pro', price: '$30/月', features: '每月3000首歌，商用授权' },
+      { name: 'Enterprise', price: '联系销售', features: '无限生成，API访问' },
+    ],
+    reviews: [
+      { name: '音乐制作人', role: '专业编曲', rating: 5, text: 'Udio的音乐质量真的很专业，编曲、人声、混音都很到位。用来做灵感参考特别棒，很多想法能快速实现！' },
+      { name: 'Content Creator', role: 'YouTuber', rating: 5, text: "I switched from Suno to Udio because the music quality is just better. The vocals sound more natural and the production quality is higher. Highly recommended!" },
+      { name: '短视频博主', role: '抖音创作者', rating: 4, text: '用来给视频配乐很好用，风格描述很准。免费版每天10首对个人创作者够了，希望能出更多免商用授权的套餐。' },
+    ],
+    info: { developer: 'Udio Inc.', released: '2024年4月', platform: 'Web', language: '多语言', update: '持续更新', category: 'AI音乐生成' },
+    related: [
+      { id: 'suno', name: 'Suno', icon: '🎵', color: '#7c3aed', tag: 'AI音乐' },
+      { id: 'runway', name: 'Runway', icon: '🎬', color: '#0891b2', tag: 'AI视频' },
+    ],
+    reviewCount: 12650, score5: 61, score4: 23, score3: 10, score2: 4, score1: 2,
+  },
+
+  codeium: {
+    name: 'Codeium', icon: '🔮', color: '#8b5cf6',
+    category: 'AI编程', users: '50万+用户', rating: 4.6, price: '免费',
+    url: 'https://codeium.com',
+    desc: '完全免费的AI编程助手，支持40+编程语言，实时代码补全、智能重构、代码解释，性价比极高，适合个人开发者和小团队。',
+    features: [
+      { icon: '⚡', title: '实时补全', desc: '基于上下文的智能代码补全' },
+      { icon: '💬', title: 'Codeium Chat', desc: '用自然语言提问，AI解答代码问题' },
+      { icon: '🔧', title: '代码重构', desc: '选中代码，AI自动优化改进' },
+      { icon: '📝', title: '注释生成', desc: '自动生成代码注释和文档' },
+      { icon: '🔒', title: '隐私安全', desc: '代码不用于训练，企业级安全' },
+      { icon: '🌐', title: '40+语言', desc: '支持Python、JavaScript、Go等主流语言' },
+    ],
+    scenes: ['日常开发', '代码学习', '快速原型', '代码重构', '单元测试', '代码审查', '文档编写', 'Bug修复'],
+    pricing: [
+      { name: 'Free', price: '免费', features: '个人用户，完整功能' },
+      { name: 'Teams', price: '$12/月/人', features: '团队功能，代码历史' },
+      { name: 'Enterprise', price: '联系销售', features: '自部署，SSO，高级权限' },
+    ],
+    reviews: [
+      { name: '独立开发者', role: '全栈工程师', rating: 5, text: '完全免费还要什么自行车！功能比付费的Copilot不差多少，对于个人开发者来说是神级工具。Codeium Chat也很好用！' },
+      { name: 'Startup CTO', role: '小团队负责人', rating: 5, text: "Our team migrated from Copilot to Codeium and saved $15k/month. The code suggestions are excellent and we haven't noticed any drop in productivity." },
+      { name: '编程初学者', role: '学生', rating: 4, text: '用来学习编程特别有用，它不仅给代码还会解释原因。有时候补全不够精准，但对于学习足够了。' },
+    ],
+    info: { developer: 'Codeium Inc.', released: '2022年', platform: 'VS Code/JetBrains/Vim', language: '40+编程语言', update: '持续更新', category: 'AI编程助手' },
+    related: [
+      { id: 'cursor', name: 'Cursor', icon: '⚡', color: '#818cf8', tag: 'AI编程' },
+      { id: 'github-copilot', name: 'GitHub Copilot', icon: '🐙', color: '#1f2937', tag: 'AI编程' },
+    ],
+    reviewCount: 15680, score5: 63, score4: 22, score3: 10, score2: 3, score1: 2,
+  },
+
+  gamma: {
+    name: 'Gamma', icon: '📊', color: '#0ea5e9',
+    category: 'AI效率', users: '100万+用户', rating: 4.5, price: '$10/月',
+    url: 'https://gamma.app',
+    desc: 'AI驱动的演示文稿生成工具，输入主题自动生成专业PPT，支持设计优化、图表生成、协作编辑，是办公效率提升的利器。',
+    features: [
+      { icon: '🎨', title: '自动设计', desc: 'AI自动设计专业的PPT布局和样式' },
+      { icon: '📊', title: '图表生成', desc: '根据数据自动生成可视化图表' },
+      { icon: '✍️', title: '内容生成', desc: '输入主题，AI自动撰写内容' },
+      { icon: '🔄', title: '一键优化', desc: '自动优化排版、配色、字体' },
+      { icon: '👥', title: '团队协作', desc: '多人实时编辑、评论、版本管理' },
+      { icon: '📱', title: '多端同步', desc: 'Web、桌面端、移动端无缝切换' },
+    ],
+    scenes: ['商务汇报', '项目提案', '教育培训', '产品发布', '年度总结', '营销演讲', '学术答辩', '工作汇报'],
+    pricing: [
+      { name: 'Free', price: '免费', features: '每月400积分，400页' },
+      { name: 'Pro', price: '$10/月', features: '每月400积分，AI生成无限制' },
+      { name: 'Plus', price: '$20/月', features: '品牌定制，私有AI模型' },
+      { name: 'Enterprise', price: '联系销售', features: '企业级功能，API' },
+    ],
+    reviews: [
+      { name: '项目经理', role: '互联网公司', rating: 5, text: '做PPT神器！以前做周报PPT要1小时，现在5分钟搞定。AI自动设计的效果比我自己做得还专业，同事们都很惊讶！' },
+      { name: 'Sales Manager', role: '销售总监', rating: 5, text: "Gamma has revolutionized our sales presentations. The AI generates beautiful slides that capture our brand perfectly. Our pitch deck conversion rate improved by 40%." },
+      { name: '高校教师', role: '大学讲师', rating: 4, text: '用来做课件非常方便，内容生成质量不错。有时候图表需要手动调整，但整体效率提升很明显，强烈推荐给同行！' },
+    ],
+    info: { developer: 'Gamma Technologies', released: '2023年1月', platform: 'Web', language: '多语言', update: '持续更新', category: 'AI演示工具' },
+    related: [
+      { id: 'notion-ai', name: 'Notion AI', icon: '📝', color: '#374151', tag: 'AI效率' },
+      { id: 'chatgpt', name: 'ChatGPT', icon: '💬', color: '#10b981', tag: 'AI写作' },
+    ],
+    reviewCount: 23400, score5: 59, score4: 24, score3: 12, score2: 3, score1: 2,
+  },
+
+  tome: {
+    name: 'Tome', icon: '📚', color: '#8b5cf6',
+    category: 'AI效率', users: '50万+用户', rating: 4.4, price: '$10/月',
+    url: 'https://tome.app',
+    desc: 'AI故事叙述和演示工具，输入主题自动生成故事型PPT，注重叙事和视觉传达，适合创意工作者和内容创作者。',
+    features: [
+      { icon: '📖', title: '故事生成', desc: 'AI构建引人入胜的故事结构和内容' },
+      { icon: '🎨', title: '视觉设计', desc: '自动选择合适的图片、配色、布局' },
+      { icon: '✨', title: '动态效果', desc: '添加动画和转场，提升演示效果' },
+      { icon: '🎬', title: '视频嵌入', desc: '轻松嵌入视频、GIF等动态内容' },
+      { icon: '💡', title: '创意建议', desc: 'AI提供创意方向和内容建议' },
+      { icon: '🔗', title: '互动链接', desc: '添加链接和跳转，增强互动性' },
+    ],
+    scenes: ['创意提案', '品牌故事', '产品介绍', '创业路演', '营销故事', '案例展示', '灵感搜集', '创意工作坊'],
+    pricing: [
+      { name: 'Free', price: '免费', features: '500积分，基本功能' },
+      { name: 'Basic', price: '$10/月', features: '无限生成，高级模板' },
+      { name: 'Pro', price: '$20/月', features: '品牌定制，团队协作' },
+      { name: 'Enterprise', price: '联系销售', features: '企业级功能，API' },
+    ],
+    reviews: [
+      { name: '创意总监', role: '广告公司', rating: 5, text: '做创意PPT太省心了！Tome的叙事逻辑很强，不是简单的罗列信息，而是讲故事。客户反馈我们的提案更有感染力了！' },
+      { name: 'Startup Founder', role: '创业者', rating: 5, text: "Tome helped me create a compelling investor pitch deck in just a few hours. The AI understood my business model and told our story beautifully." },
+      { name: '内容创作者', role: '品牌策划', rating: 4, text: '用来做品牌故事PPT特别好，视觉效果惊艳。有时候需要自己调整结构，但整体思路和创意都很赞！' },
+    ],
+    info: { developer: 'Tome Inc.', released: '2022年', platform: 'Web', language: '多语言', update: '持续更新', category: 'AI故事工具' },
+    related: [
+      { id: 'gamma', name: 'Gamma', icon: '📊', color: '#0ea5e9', tag: 'AI效率' },
+      { id: 'notion-ai', name: 'Notion AI', icon: '📝', color: '#374151', tag: 'AI效率' },
+    ],
+    reviewCount: 11200, score5: 57, score4: 25, score3: 13, score2: 3, score1: 2,
+  },
+
+  capcut: {
+    name: '剪映', icon: '✂️', color: '#ef4444',
+    category: 'AI视频', users: '5亿+用户', rating: 4.7, price: '免费',
+    url: 'https://www.capcut.cn',
+    desc: '字节跳动推出的AI视频编辑工具，内置大量AI功能如智能剪辑、字幕生成、语音转文字、AI配音等，是全球最受欢迎的短视频编辑器之一。',
+    features: [
+      { icon: '✂️', title: '智能剪辑', desc: 'AI自动识别精彩片段，一键生成短视频' },
+      { icon: '📝', title: '自动字幕', desc: '语音自动识别生成字幕，支持多语言' },
+      { icon: '🎙️', title: 'AI配音', desc: '文字转语音，多种音色可选' },
+      { icon: '🎨', title: '智能配乐', desc: '根据视频内容自动匹配背景音乐' },
+      { icon: '✨', title: '特效滤镜', desc: '海量AI特效和滤镜，一键美化' },
+      { icon: '📱', title: '全端同步', desc: '手机、电脑、网页端数据同步' },
+    ],
+    scenes: ['短视频创作', 'Vlog制作', '营销视频', '教学视频', '社交媒体', '产品展示', '个人剪辑', '内容创作'],
+    pricing: [
+      { name: '免费版', price: '免费', features: '基础功能，部分特效' },
+      { name: '专业版', price: '¥168/年', features: '解锁全部特效，云空间' },
+      { name: '商业版', price: '¥398/年', features: '商用授权，高级功能' },
+    ],
+    reviews: [
+      { name: '短视频博主', role: '抖音创作者', rating: 5, text: '剪映真的太好用了！特别是智能剪辑和自动字幕，大大提高了剪辑效率。现在做一条视频的时间缩短了60%，强烈推荐！' },
+      { name: 'Content Creator', role: 'YouTuber', rating: 5, text: "CapCut has become my go-to video editor. The AI features like auto-captions and smart cut save me hours every week. The interface is intuitive and powerful!" },
+      { name: '自媒体运营', role: '小红书博主', rating: 5, text: '用剪映做教程视频特别方便，AI字幕识别准确率很高。手机剪辑也很流畅，随时随地都能产出内容，效率提升太多！' },
+    ],
+    info: { developer: '字节跳动', released: '2019年', platform: 'Web/iOS/Android/Mac/Windows', language: '多语言', update: '持续更新', category: 'AI视频编辑' },
+    related: [
+      { id: 'runway', name: 'Runway', icon: '🎬', color: '#0891b2', tag: 'AI视频' },
+      { id: 'pika', name: 'Pika', icon: '🎥', color: '#7c3aed', tag: 'AI视频' },
+    ],
+    reviewCount: 156000, score5: 68, score4: 20, score3: 8, score2: 3, score1: 1,
+  },
+
+  'd-id': {
+    name: 'D-ID', icon: '🎭', color: '#0f766e',
+    category: 'AI视频', users: '50万+用户', rating: 4.3, price: '$18/月',
+    url: 'https://www.d-id.com',
+    desc: '专业的AI头像视频生成工具，将静态照片转化为说话的数字人视频，支持多语言口型同步，广泛用于营销视频、客户服务、教育内容。',
+    features: [
+      { icon: '📸', title: '照片转视频', desc: '上传照片，生成说话的数字人视频' },
+      { icon: '🗣️', title: '多语言配音', desc: '支持120+语言的口型同步和AI配音' },
+      { icon: '🎨', title: 'AI头像生成', desc: '用AI生成专业的虚拟主播头像' },
+      { icon: '📝', title: '文字转视频', desc: '输入脚本，自动生成口播视频' },
+      { icon: '🎬', title: '直播克隆', desc: '克隆真人的声音和形象进行直播' },
+      { icon: '⚡', title: '快速生成', desc: '几分钟内生成高质量视频' },
+    ],
+    scenes: ['营销视频', '客户服务', '教育内容', '新闻播报', '产品介绍', '在线课程', '企业培训', '品牌宣传'],
+    pricing: [
+      { name: 'Trial', price: '免费', features: '每月5分钟，带水印' },
+      { name: 'Lite', price: '$18/月', features: '每月15分钟，无水印' },
+      { name: 'Pro', price: '$108/月', features: '每月100分钟，高级功能' },
+      { name: 'Enterprise', price: '联系销售', features: '无限分钟，API访问' },
+    ],
+    reviews: [
+      { name: '营销经理', role: '品牌公司', rating: 5, text: 'D-ID做的产品介绍视频效果很好，用品牌代言人头像生成的视频非常专业。客户反馈视频很新颖，转化率提升了20%！' },
+      { name: 'Customer Success', role: 'SaaS公司', rating: 4, text: "We use D-ID for customer onboarding videos. The quality is impressive but the lip-sync could be improved. Still a great tool for scaling personalized videos." },
+      { name: '在线讲师', role: '知识付费', rating: 4, text: '用来做课程开场白特别好，比真人录制省事多了。多语言功能也很实用，一套内容可以覆盖多个市场。' },
+    ],
+    info: { developer: 'D-ID Inc.', released: '2017年', platform: 'Web/API', language: '120+语言', update: '持续更新', category: 'AI头像视频' },
+    related: [
+      { id: 'heygen', name: 'HeyGen', icon: '🎭', color: '#0891b2', tag: 'AI视频' },
+      { id: 'elevenlabs', name: 'ElevenLabs', icon: '🎙️', color: '#dc2626', tag: 'AI音频' },
+    ],
+    reviewCount: 8900, score5: 54, score4: 26, score3: 14, score2: 4, score1: 2,
+  },
+
+  aiva: {
+    name: 'AIVA', icon: '🎼', color: '#7c3aed',
+    category: 'AI音乐', users: '100万+用户', rating: 4.4, price: '$11/月',
+    url: 'https://www.aiva.ai',
+    desc: '专业的AI音乐作曲工具，为游戏、影视、广告等场景生成原创音乐，支持30+风格，输出MIDI和音频文件，适合专业音乐人和创作者。',
+    features: [
+      { icon: '🎹', title: 'AI作曲', desc: '生成原创音乐，完全无版权问题' },
+      { icon: '🎸', title: '30+风格', desc: '古典、爵士、电子、流行等丰富风格' },
+      { icon: '🎚️', title: '专业输出', desc: '输出高质量MIDI和音频文件' },
+      { icon: '🔧', title: '参数调节', desc: '精细控制音乐的速度、音色、和声' },
+      { icon: '🎬', title: '影视适配', desc: '专为电影、游戏等场景设计' },
+      { icon: '💾', title: '音乐库', desc: '保存和复用自己喜欢的作品' },
+    ],
+    scenes: ['游戏配乐', '影视配乐', '广告配乐', '背景音乐', '个人创作', '学习作曲', '内容创作', '商业项目'],
+    pricing: [
+      { name: 'Free', price: '免费', features: '每月3首，非商用' },
+      { name: 'Standard', price: '$11/月', features: '每月15首，商用' },
+      { name: 'Pro', price: '$33/月', features: '每月300首，更高质量' },
+      { name: 'Enterprise', price: '联系销售', features: '无限生成，定制服务' },
+    ],
+    reviews: [
+      { name: '游戏音乐人', role: '独立开发者', rating: 5, text: 'AIVA生成的配乐质量很高，特别是游戏BGM，氛围感很好。比找音乐人省钱太多了，而且版权清晰！' },
+      { name: 'Film Composer', role: '电影配乐', rating: 4, text: "AIVA is excellent for generating background music. The orchestral quality is impressive, though complex emotional pieces still need human touch." },
+      { name: '广告公司', role: '创意总监', rating: 5, text: '用来做广告配乐特别合适，生成速度快，质量稳定。客户反馈音乐和画面很搭，效率提升明显！' },
+    ],
+    info: { developer: 'AIVA Technologies', released: '2016年', platform: 'Web', language: '多语言', update: '持续更新', category: 'AI音乐作曲' },
+    related: [
+      { id: 'suno', name: 'Suno', icon: '🎵', color: '#7c3aed', tag: 'AI音乐' },
+      { id: 'udio', name: 'Udio', icon: '🎶', color: '#f59e0b', tag: 'AI音乐' },
+    ],
+    reviewCount: 14500, score5: 56, score4: 25, score3: 13, score2: 4, score1: 2,
+  },
 };
 
 // 渲染工具详情
@@ -1211,6 +1649,12 @@ function copyShareLink() {
   }
   
   document.getElementById('shareModal').classList.remove('open');
+}
+
+// 移动端菜单切换
+function toggleMenu() {
+  const mobileMenu = document.getElementById('mobileMenu');
+  mobileMenu.classList.toggle('open');
 }
 </script>
 

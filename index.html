@@ -115,6 +115,42 @@
       background: var(--border) !important;
     }
 
+    /* 汉堡菜单 */
+    .menu-toggle { display: none; background: none; border: none; font-size: 1.5rem; color: var(--text); cursor: pointer; padding: 4px; }
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 60px;
+      left: 0;
+      right: 0;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 99;
+    }
+    .mobile-menu a {
+      color: var(--text);
+      text-decoration: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: all 0.2s;
+      display: block;
+    }
+    .mobile-menu a:hover { background: var(--border); }
+    .mobile-menu .nav-btn {
+      text-align: center;
+      margin-top: 8px;
+    }
+
+    @media (max-width: 768px) {
+      .menu-toggle { display: block; }
+      .nav-links { display: none; }
+      .mobile-menu.open { display: flex; }
+    }
+
     /* 快速查询按钮 */
     .quick-search-btn {
       background: transparent;
@@ -943,8 +979,8 @@
 
 <!-- 导航栏 -->
 <nav class="navbar" aria-label="主导航">
-  <a href="/" class="nav-logo">🤖 AI工具导航</a>
-  <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="菜单">☰</button>
+  <a href="index.html" class="nav-logo">🤖 AI工具导航</a>
+  <button class="menu-toggle" onclick="toggleMenu()" aria-label="菜单">☰</button>
   <ul class="nav-links" id="navLinks">
     <li><a href="index.html" class="active">首页</a></li>
     <li><a href="ranking.html">排行榜</a></li>
@@ -957,6 +993,18 @@
     <li><a href="submit.html" class="nav-btn">提交工具</a></li>
   </ul>
 </nav>
+
+<!-- 移动端菜单 -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html" onclick="toggleMenu()">首页</a>
+  <a href="ranking.html" onclick="toggleMenu()">排行榜</a>
+  <a href="use-cases.html" onclick="toggleMenu()">使用场景</a>
+  <a href="news.html" onclick="toggleMenu()">AI资讯</a>
+  <a href="converter.html" onclick="toggleMenu()">文件转换</a>
+  <a href="about.html" onclick="toggleMenu()">关于我们</a>
+  <a href="contact.html" onclick="toggleMenu()">联系我们</a>
+  <a href="submit.html" class="nav-btn" onclick="toggleMenu()">提交工具</a>
+</div>
 
 <!-- 面包屑导航 -->
 <nav class="breadcrumb" aria-label="面包屑导航" style="display:none;">
@@ -1071,7 +1119,72 @@
 
   <!-- 热门工具 -->
   <h2 class="section-title">🔥 热门工具</h2>
-  <div class="tools-grid" role="list">
+
+  <!-- 高级筛选 -->
+  <div class="filter-section" id="filterSection" style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 16px;">
+      <!-- 价格筛选 -->
+      <div>
+        <label style="display: block; font-size: 0.875rem; color: var(--text-muted); margin-bottom: 8px;">💰 价格</label>
+        <select id="filterPrice" onchange="filterTools()" style="width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px; color: var(--text); font-size: 0.9rem;">
+          <option value="all">全部价格</option>
+          <option value="free">免费</option>
+          <option value="paid">付费</option>
+          <option value="freemium">免费+付费</option>
+        </select>
+      </div>
+
+      <!-- 用户数筛选 -->
+      <div>
+        <label style="display: block; font-size: 0.875rem; color: var(--text-muted); margin-bottom: 8px;">👥 用户量</label>
+        <select id="filterUsers" onchange="filterTools()" style="width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px; color: var(--text); font-size: 0.9rem;">
+          <option value="all">全部</option>
+          <option value="high">100万+用户</option>
+          <option value="medium">10-100万用户</option>
+          <option value="low">10万以下</option>
+        </select>
+      </div>
+
+      <!-- 评分筛选 -->
+      <div>
+        <label style="display: block; font-size: 0.875rem; color: var(--text-muted); margin-bottom: 8px;">⭐ 评分</label>
+        <select id="filterRating" onchange="filterTools()" style="width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px; color: var(--text); font-size: 0.9rem;">
+          <option value="all">全部评分</option>
+          <option value="4.5">4.5分以上</option>
+          <option value="4.0">4.0分以上</option>
+          <option value="3.5">3.5分以上</option>
+        </select>
+      </div>
+
+      <!-- 分类筛选 -->
+      <div>
+        <label style="display: block; font-size: 0.875rem; color: var(--text-muted); margin-bottom: 8px;">📂 分类</label>
+        <select id="filterCategory" onchange="filterTools()" style="width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px; color: var(--text); font-size: 0.9rem;">
+          <option value="all">全部分类</option>
+          <option value="AI写作">AI写作</option>
+          <option value="AI绘画">AI绘画</option>
+          <option value="AI视频">AI视频</option>
+          <option value="AI编程">AI编程</option>
+          <option value="AI音乐">AI音乐</option>
+          <option value="AI音频">AI音频</option>
+          <option value="AI效率">AI效率</option>
+          <option value="AI搜索">AI搜索</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- 筛选结果和重置 -->
+    <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 1px solid var(--border);">
+      <div id="filterResult" style="font-size: 0.875rem; color: var(--text-muted);">
+        显示 <span id="filteredCount">20</span> 个工具
+      </div>
+      <button onclick="resetFilters()" style="background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 6px 16px; border-radius: 6px; font-size: 0.875rem; cursor: pointer; transition: all 0.2s;">
+        重置筛选
+      </button>
+    </div>
+  </div>
+
+  <div class="tools-grid" role="list" id="toolsGrid">
 
     <article class="tool-card" role="listitem" onclick="goToTool('chatgpt', 'https://chat.openai.com')" itemscope itemtype="https://schema.org/SoftwareApplication">
       <span class="hot-tag">HOT</span>
@@ -1300,7 +1413,7 @@
           "@id": "https://hjouy.github.io/ai-tools-directory/#website",
           "url": "https://hjouy.github.io/ai-tools-directory/",
           "name": "AI工具导航",
-          "description": "全球最全AI工具目录，收录500+人工智能工具",
+          "description": "全球最全AI工具目录，收录500+人工智能工具，涵盖AI写作、AI绘画、AI视频、AI编程、AI音乐等热门分类",
           "inLanguage": "zh-CN",
           "potentialAction": {
             "@type": "SearchAction",
@@ -1309,10 +1422,66 @@
           }
         },
         {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "首页",
+              "item": "https://hjouy.github.io/ai-tools-directory/"
+            }
+          ]
+        },
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "AI工具导航是什么？",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "AI工具导航是一个专注于发现和收录优质人工智能工具的平台，目前收录500+款AI工具，涵盖AI写作、AI绘画、AI视频、AI编程、AI音乐等12个分类，帮助用户快速找到最适合的AI工具。"
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "如何选择合适的AI工具？",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "可以根据具体需求选择：写作选ChatGPT或Claude，绘画选Midjourney或Stable Diffusion，编程选Cursor或GitHub Copilot，视频选Runway，音乐选Suno。每个工具详情页都有详细的对比和用户评价。"
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "这些AI工具是免费的吗？",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "大部分AI工具都提供免费版或免费试用，如ChatGPT、Cursor、Stable Diffusion等。免费版通常有使用次数限制，升级到付费版可以获得更多功能和更高配额。具体定价请查看每个工具的详情页。"
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "如何提交AI工具到这个网站？",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "你可以访问'提交工具'页面，填写工具的基本信息、功能特点和定价。我们提供免费、专业版（¥299/月）、顶级版（¥999/月）三种收录套餐，详情请查看提交页面。"
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "网站的更新频率如何？",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "我们每日更新工具库，确保收录最新、最优质的AI工具。同时我们会定期更新工具对比、使用教程和AI资讯，帮助用户了解行业动态。"
+              }
+            }
+          ]
+        },
+        {
           "@type": "Organization",
           "name": "AI工具导航",
           "url": "https://hjouy.github.io/ai-tools-directory/",
-          "description": "全球最全AI工具目录"
+          "description": "全球最全AI工具目录，收录500+人工智能工具"
         }
       ]
     });
@@ -1369,10 +1538,116 @@
   });
 
   // 移动端菜单切换
-  function toggleMobileMenu() {
-    const navLinks = document.getElementById('navLinks');
-    navLinks.classList.toggle('active');
+  function toggleMenu() {
+    const mobileMenu = document.getElementById('mobileMenu');
+    mobileMenu.classList.toggle('open');
   }
+
+  // 扩展工具数据（新增工具）
+  const extendedToolsData = [
+    ...toolsData,
+    { id: 'elevenlabs', name: 'ElevenLabs', icon: '🎙️', color: '#dc2626', desc: 'AI语音合成工具', price: '$5/月起', rating: 4.6, users: '200万+', tag: 'AI音频', url: 'https://elevenlabs.io' },
+    { id: 'udio', name: 'Udio', icon: '🎶', color: '#f59e0b', desc: 'AI音乐生成平台', price: '免费/$12月', rating: 4.6, users: '300万+', tag: 'AI音乐', url: 'https://udio.com' },
+    { id: 'codeium', name: 'Codeium', icon: '🔮', color: '#8b5cf6', desc: '免费AI编程助手', price: '免费', rating: 4.6, users: '50万+', tag: 'AI编程', url: 'https://codeium.com' },
+    { id: 'gamma', name: 'Gamma', icon: '📊', color: '#0ea5e9', desc: 'AI演示文稿生成', price: '$10/月', rating: 4.5, users: '100万+', tag: 'AI效率', url: 'https://gamma.app' },
+    { id: 'pika', name: 'Pika', icon: '🎥', color: '#7c3aed', desc: 'AI视频生成工具', price: '$8/月', rating: 4.5, users: '200万+', tag: 'AI视频', url: 'https://pika.art' },
+    { id: 'capcut', name: '剪映', icon: '✂️', color: '#ef4444', desc: 'AI视频编辑器', price: '免费', rating: 4.7, users: '5亿+', tag: 'AI视频', url: 'https://www.capcut.cn' },
+    { id: 'heygen', name: 'HeyGen', icon: '🎭', color: '#0891b2', desc: 'AI数字人视频生成', price: '$29/月', rating: 4.4, users: '100万+', tag: 'AI视频', url: 'https://heygen.com' },
+    { id: 'aiva', name: 'AIVA', icon: '🎼', color: '#7c3aed', desc: 'AI音乐作曲工具', price: '$11/月', rating: 4.4, users: '100万+', tag: 'AI音乐', url: 'https://aiva.ai' },
+    { id: 'tome', name: 'Tome', icon: '📚', color: '#8b5cf6', desc: 'AI故事PPT生成', price: '$10/月', rating: 4.4, users: '50万+', tag: 'AI效率', url: 'https://tome.app' },
+    { id: 'd-id', name: 'D-ID', icon: '🎭', color: '#0f766e', desc: 'AI头像视频生成', price: '$18/月', rating: 4.3, users: '50万+', tag: 'AI视频', url: 'https://d-id.com' },
+  ];
+
+  // 更新跳转逻辑，包含所有新工具
+  function goToTool(id, url) {
+    const hasDetail = [
+      'chatgpt','midjourney','cursor','stable-diffusion','runway','suno',
+      'claude','notion-ai','github-copilot','perplexity','elevenlabs',
+      'udio','codeium','gamma','pika','capcut','heygen','aiva','tome','d-id'
+    ];
+    if (hasDetail.includes(id)) {
+      window.location.href = 'tool.html?id=' + id;
+    } else {
+      window.open(url, '_blank', 'noopener');
+    }
+  }
+
+  // 高级筛选功能
+  function filterTools() {
+    const price = document.getElementById('filterPrice').value;
+    const users = document.getElementById('filterUsers').value;
+    const rating = document.getElementById('filterRating').value;
+    const category = document.getElementById('filterCategory').value;
+
+    let filtered = extendedToolsData.filter(tool => {
+      // 价格筛选
+      if (price !== 'all') {
+        if (price === 'free' && !tool.price.includes('免费') && !tool.price.includes('本地')) return false;
+        if (price === 'paid' && !tool.price.includes('$')) return false;
+        if (price === 'freemium' && !tool.price.includes('/') && !tool.price.includes('免费')) return false;
+      }
+
+      // 用户数筛选
+      if (users !== 'all') {
+        if (users === 'high' && !tool.users.includes('100万') && !tool.users.includes('1亿') && !tool.users.includes('5亿')) return false;
+        if (users === 'medium' && (!tool.users.includes('10万') || tool.users.includes('100万'))) return false;
+        if (users === 'low' && (tool.users.includes('万') || tool.users.includes('亿'))) return false;
+      }
+
+      // 评分筛选
+      if (rating !== 'all') {
+        if (tool.rating < parseFloat(rating)) return false;
+      }
+
+      // 分类筛选
+      if (category !== 'all' && tool.tag !== category) return false;
+
+      return true;
+    });
+
+    renderFilteredTools(filtered);
+  }
+
+  // 渲染筛选结果
+  function renderFilteredTools(tools) {
+    const grid = document.getElementById('toolsGrid');
+    const countEl = document.getElementById('filteredCount');
+
+    grid.innerHTML = tools.map(tool => `
+      <article class="tool-card" onclick="goToTool('${tool.id}', '${tool.url}')" itemscope itemtype="https://schema.org/SoftwareApplication">
+        ${tool.tag === 'AI写作' || tool.tag === 'AI编程' ? '<span class="hot-tag">HOT</span>' : ''}
+        <div class="tool-card-header">
+          <div class="tool-logo" style="background: linear-gradient(135deg,${tool.color},${tool.color}dd);">${tool.icon}</div>
+          <div class="tool-info">
+            <h3 itemprop="name">${tool.name}</h3>
+            <p class="tool-desc" itemprop="description">${tool.desc}</p>
+          </div>
+        </div>
+        <div class="tool-meta">
+          <span class="tool-tag">${tool.tag}</span>
+          <span class="tool-rating">⭐ ${tool.rating}</span>
+        </div>
+        <div class="tool-footer">
+          <span class="tool-price">${tool.price}</span>
+          <span class="tool-users">${tool.users}</span>
+        </div>
+      </article>
+    `).join('');
+
+    countEl.textContent = tools.length;
+  }
+
+  // 重置筛选
+  function resetFilters() {
+    document.getElementById('filterPrice').value = 'all';
+    document.getElementById('filterUsers').value = 'all';
+    document.getElementById('filterRating').value = 'all';
+    document.getElementById('filterCategory').value = 'all';
+    filterTools();
+  }
+
+  // 初始渲染所有工具
+  renderFilteredTools(extendedToolsData);
 
   // 快速查询弹窗
   function openModal() {
@@ -1395,7 +1670,7 @@
 
   function filterTools() {
     const q = document.getElementById('modalInput').value.toLowerCase();
-    const list = toolsData.filter(t =>
+    const list = extendedToolsData.filter(t =>
       t.name.toLowerCase().includes(q) ||
       t.desc.toLowerCase().includes(q) ||
       t.tag.toLowerCase().includes(q)
