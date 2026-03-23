@@ -564,6 +564,272 @@
     .breadcrumb a:hover { color: var(--primary); }
     .breadcrumb span { margin: 0 8px; }
 
+    /* 在线工具专区 */
+    .online-tools-section {
+      padding: 0 24px 48px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .section-icon {
+      font-size: 1.5rem;
+      margin-right: 8px;
+    }
+
+    .more-link {
+      color: var(--primary);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: opacity 0.2s;
+    }
+
+    .more-link:hover {
+      opacity: 0.8;
+    }
+
+    .online-tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+    }
+
+    .online-tool-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      display: flex;
+      gap: 16px;
+      text-decoration: none;
+      color: var(--text);
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .online-tool-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .online-tool-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(99, 102, 241, 0.2);
+    }
+
+    .online-tool-card:hover::before {
+      opacity: 1;
+    }
+
+    .online-tool-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      flex-shrink: 0;
+    }
+
+    .online-tool-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .online-tool-info h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: var(--text);
+    }
+
+    .online-tool-info p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+
+    .online-tool-tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .tool-tag {
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 500;
+    }
+
+    .tool-tag.ai {
+      background: rgba(99, 102, 241, 0.15);
+      color: #a5b4fc;
+    }
+
+    .tool-tag.free {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+    }
+
+    .tool-tag.new {
+      background: rgba(245, 158, 11, 0.15);
+      color: #fbbf24;
+    }
+
+    .tool-tag.hot {
+      background: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+    }
+
+    .tool-tag.fun {
+      background: rgba(168, 85, 247, 0.15);
+      color: #c084fc;
+    }
+
+    .tool-tag.useful {
+      background: rgba(6, 182, 212, 0.15);
+      color: #22d3ee;
+    }
+
+    /* AI工具推荐区域 - 简化版 */
+    .ai-tools-section {
+      padding-bottom: 48px;
+      border-top: 1px solid var(--border);
+      margin-top: 48px;
+    }
+
+    /* 简化版分类导航 */
+    .categories-mini {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .category-mini-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 10px 20px;
+      text-decoration: none;
+      color: var(--text);
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .category-mini-card:hover {
+      border-color: var(--primary);
+      background: rgba(99, 102, 241, 0.1);
+      color: #a5b4fc;
+    }
+
+    /* 简化版工具网格 */
+    .ai-tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    /* 底部导航卡片 */
+    .bottom-nav-section {
+      border-top: 1px solid var(--border);
+      padding-top: 48px;
+    }
+
+    .bottom-nav-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+
+    .bottom-nav-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      gap: 16px;
+      text-decoration: none;
+      color: var(--text);
+      transition: all 0.2s;
+    }
+
+    .bottom-nav-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    .bottom-nav-icon {
+      font-size: 2rem;
+      flex-shrink: 0;
+    }
+
+    .bottom-nav-card h4 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: var(--text);
+    }
+
+    .bottom-nav-card p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* 响应式 */
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.95);
+        flex-direction: column;
+        padding: 1rem;
+        border-top: 1px solid rgba(99, 102, 241, 0.3);
+      }
+      .nav-links.active { display: flex; }
+      .mobile-menu-btn { display: block !important; }
+      .hero-stats { gap: 20px; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      .daily-pick { grid-template-columns: 1fr; }
+      .daily-pick-img { display: none; }
+      .categories-grid { grid-template-columns: repeat(3, 1fr); }
+      .tools-grid { grid-template-columns: 1fr; }
+      .online-tools-grid { grid-template-columns: 1fr; }
+      .online-tool-card { padding: 16px; }
+      .online-tool-icon { width: 48px; height: 48px; font-size: 1.5rem; }
+      .section-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+      .categories-mini { justify-content: flex-start; overflow-x: auto; padding-bottom: 8px; }
+      .category-mini-card { white-space: nowrap; }
+      .ai-tools-grid { grid-template-columns: 1fr; }
+      .bottom-nav-grid { grid-template-columns: 1fr; }
+    }
+
     /* 今日精选横幅 */
     .daily-pick {
       background: linear-gradient(135deg, var(--bg-card), var(--bg-card2));
@@ -948,6 +1214,10 @@
       .daily-pick-img { display: none; }
       .categories-grid { grid-template-columns: repeat(3, 1fr); }
       .tools-grid { grid-template-columns: 1fr; }
+      .online-tools-grid { grid-template-columns: 1fr; }
+      .online-tool-card { padding: 16px; }
+      .online-tool-icon { width: 48px; height: 48px; font-size: 1.5rem; }
+      .section-header { flex-direction: column; align-items: flex-start; gap: 8px; }
     }
 
     /* 移动端菜单按钮 */
@@ -982,16 +1252,14 @@
 
 <!-- 导航栏 -->
 <nav class="navbar" aria-label="主导航">
-  <a href="index.html" class="nav-logo">🤖 AI工具导航</a>
+  <a href="index.html" class="nav-logo">🛠️ 免费在线工具</a>
   <button class="menu-toggle" onclick="toggleMenu()" aria-label="菜单">☰</button>
   <ul class="nav-links" id="navLinks">
-    <li><a href="index.html" class="active">首页</a></li>
-    <li><a href="tools.html">在线工具</a></li>
+    <li><a href="tools.html" class="active">🛠️ 在线工具</a></li>
+    <li><a href="index.html">首页</a></li>
     <li><a href="ranking.html">排行榜</a></li>
-    <li><a href="use-cases.html">使用场景</a></li>
     <li><a href="news.html">AI资讯</a></li>
     <li><a href="about.html">关于我们</a></li>
-    <li><a href="contact.html">联系我们</a></li>
     <li><button class="quick-search-btn" onclick="openModal()">🔍 快速查询</button></li>
     <li><a href="submit.html" class="nav-btn">提交工具</a></li>
   </ul>
@@ -999,14 +1267,14 @@
 
 <!-- 移动端菜单 -->
 <div class="mobile-menu" id="mobileMenu">
-  <a href="index.html" onclick="toggleMenu()">首页</a>
-  <a href="ranking.html" onclick="toggleMenu()">排行榜</a>
-  <a href="use-cases.html" onclick="toggleMenu()">使用场景</a>
-  <a href="news.html" onclick="toggleMenu()">AI资讯</a>
-  <a href="converter.html" onclick="toggleMenu()">文件转换</a>
-  <a href="about.html" onclick="toggleMenu()">关于我们</a>
-  <a href="contact.html" onclick="toggleMenu()">联系我们</a>
-  <a href="submit.html" class="nav-btn" onclick="toggleMenu()">提交工具</a>
+  <a href="index.html" onclick="toggleMenu()">🏠 首页</a>
+  <a href="tools.html" onclick="toggleMenu()" style="color: var(--primary); font-weight: 600;">🛠️ 在线工具</a>
+  <a href="id-photo.html" onclick="toggleMenu()">📷 证件照换底色</a>
+  <a href="background-remover.html" onclick="toggleMenu()">✂️ AI抠图</a>
+  <a href="converter.html" onclick="toggleMenu()">📄 文件转换</a>
+  <a href="ranking.html" onclick="toggleMenu()">📊 排行榜</a>
+  <a href="news.html" onclick="toggleMenu()">📰 AI资讯</a>
+  <a href="submit.html" class="nav-btn" onclick="toggleMenu()">✉️ 提交工具</a>
 </div>
 
 <!-- 面包屑导航 -->
@@ -1014,150 +1282,273 @@
   <span>首页</span>
 </nav>
 
-<!-- Hero -->
+  <!-- Hero -->
 <section class="hero" aria-labelledby="hero-title">
-  <div class="hero-badge">🔥 每日更新 · 免费收录</div>
-  <h1 id="hero-title">发现最好用的<br><span>AI工具</span></h1>
-  <p class="hero-desc">收录全球500+优质AI工具，帮你找到最适合的人工智能助手，提升工作效率10倍</p>
+  <div class="hero-badge">🎁 完全免费 · 即开即用</div>
+  <h1 id="hero-title">免费在线工具<br><span>无需注册 · 浏览器直接用</span></h1>
+  <p class="hero-desc">AI证件照、AI抠图、AI老照片修复、文件转换...打开就能用，告别繁琐的注册登录</p>
 
-  <div class="hero-stats" aria-label="网站统计">
+  <div class="hero-stats" aria-label="工具统计">
     <div class="hero-stat">
-      <div class="hero-stat-num" id="totalTools">20+</div>
-      <div class="hero-stat-label">收录工具</div>
+      <div class="hero-stat-num" id="onlineToolsCount">15+</div>
+      <div class="hero-stat-label">在线工具</div>
     </div>
     <div class="hero-stat">
-      <div class="hero-stat-num" id="totalCategories">9</div>
-      <div class="hero-stat-label">工具分类</div>
+      <div class="hero-stat-num">100%</div>
+      <div class="hero-stat-label">免费使用</div>
     </div>
     <div class="hero-stat">
-      <div class="hero-stat-num">每日</div>
-      <div class="hero-stat-label">更新频率</div>
+      <div class="hero-stat-num">0</div>
+      <div class="hero-stat-label">注册要求</div>
     </div>
     <div class="hero-stat">
-      <div class="hero-stat-num">免费</div>
-      <div class="hero-stat-label">使用</div>
+      <div class="hero-stat-num">AI</div>
+      <div class="hero-stat-label">智能算法</div>
     </div>
   </div>
 
-  <div class="search-box" role="search">
-    <input type="text" id="searchInput" placeholder="搜索AI工具，如：ChatGPT、Midjourney、Cursor..." aria-label="搜索AI工具">
-    <button class="search-btn" onclick="handleSearch()">搜索</button>
-  </div>
-
-  <div class="hero-actions">
-    <a href="ranking.html" class="btn-primary">📊 查看排行榜</a>
-    <a href="use-cases.html" class="btn-outline">💡 使用场景</a>
-    <a href="converter.html" class="btn-outline">📄 文件转换工具</a>
-    <a href="news.html" class="btn-outline">📰 AI最新资讯</a>
-    <a href="submit.html" class="btn-outline">✉️ 提交工具</a>
+  <div class="hero-actions" id="heroTools">
+    <a href="id-photo.html" class="btn-primary">📷 证件照换底色</a>
+    <a href="background-remover.html" class="btn-outline">✂️ 智能抠图</a>
+    <a href="old-photo-restore.html" class="btn-outline">📸 老照片修复</a>
+    <a href="converter.html" class="btn-outline">📄 文件转换</a>
   </div>
 </section>
 
 <!-- 公告栏 -->
 <div class="announcement" role="banner">
-  <span class="announcement-tag">NEW</span>
-  🎉 新增12个AI工具详情页，收录工具达20+！<a href="tool.html?id=gemini" style="color: #a5b4fc; margin-left:8px;">查看详情 →</a>
+  <span class="announcement-tag">HOT</span>
+  🚀 全部在线工具已升级AI算法！效果更精准，点击即可使用！<a href="id-photo.html" style="color: #a5b4fc; margin-left:8px;">立即体验 →</a>
 </div>
 
-<!-- 快捷键提示 -->
-<div style="text-align:center;padding:0 24px 24px;max-width:1200px;margin:0 auto;">
-  <div style="display:inline-flex;gap:16px;flex-wrap:wrap;justify-content:center;font-size:0.8rem;color:var(--text-muted);">
-    <span>💡 <kbd style="background:var(--bg-card);border:1px solid var(--border);padding:2px 8px;border-radius:4px;">Ctrl+K</kbd> 快速查询工具</span>
-    <span>💡 <kbd style="background:var(--bg-card);border:1px solid var(--border);padding:2px 8px;border-radius:4px;">Alt+A</kbd> 打开AI助手</span>
-    <span>💡 <kbd style="background:var(--bg-card);border:1px solid var(--border);padding:2px 8px;border-radius:4px;">Esc</kbd> 关闭弹窗</span>
+<!-- 在线工具大全 - 核心区域 -->
+<section class="online-tools-section" aria-labelledby="online-tools-title">
+  <div class="section-header">
+    <h2 class="section-title" id="online-tools-title">
+      <span class="section-icon">🛠️</span>
+      免费在线工具
+    </h2>
+    <a href="tools.html" class="more-link">查看全部 →</a>
   </div>
-</div>
+  
+  <div class="online-tools-grid" id="onlineToolsGrid">
+    <!-- 证件照工具 -->
+    <a href="id-photo.html" class="online-tool-card">
+      <div class="online-tool-icon" style="background: linear-gradient(135deg, #6366f1, #8b5cf6);">📷</div>
+      <div class="online-tool-info">
+        <h3>证件照换底色</h3>
+        <p>AI智能识别，一键换白/蓝/红底</p>
+        <div class="online-tool-tags">
+          <span class="tool-tag ai">AI</span>
+          <span class="tool-tag free">免费</span>
+        </div>
+      </div>
+    </a>
+
+    <!-- 智能抠图 -->
+    <a href="background-remover.html" class="online-tool-card">
+      <div class="online-tool-icon" style="background: linear-gradient(135deg, #10b981, #059669);">✂️</div>
+      <div class="online-tool-info">
+        <h3>AI智能抠图</h3>
+        <p>自动识别人像/物品，精准去除背景</p>
+        <div class="online-tool-tags">
+          <span class="tool-tag ai">AI</span>
+          <span class="tool-tag free">免费</span>
+        </div>
+      </div>
+    </a>
+
+    <!-- 老照片修复 -->
+    <a href="old-photo-restore.html" class="online-tool-card">
+      <div class="online-tool-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">📸</div>
+      <div class="online-tool-info">
+        <h3>老照片修复</h3>
+        <p>去噪、上色、增强，一键修复老照片</p>
+        <div class="online-tool-tags">
+          <span class="tool-tag ai">AI</span>
+          <span class="tool-tag free">免费</span>
+        </div>
+      </div>
+    </a>
+
+    <!-- 风格转换 -->
+    <a href="style-transfer.html" class="online-tool-card">
+      <div class="online-tool-icon" style="background: linear-gradient(135deg, #ec4899, #db2777);">🎨</div>
+      <div class="online-tool-info">
+        <h3>AI风格转换</h3>
+        <p>油画/素描/水彩/动漫，6种艺术风格</p>
+        <div class="online-tool-tags">
+          <span class="tool-tag ai">AI</span>
+          <span class="tool-tag free">免费</span>
+        </div>
+      </div>
+    </a>
+
+    <!-- 图片超分 -->
+    <a href="super-resolution.html" class="online-tool-card">
+      <div class="online-tool-icon" style="background: linear-gradient(135deg, #06b6d4, #0891b2);">🔍</div>
+      <div class="online-tool-info">
+        <h3>图片超分辨率</h3>
+        <p>2x/3x/4x无损放大，增强清晰度</p>
+        <div class="online-tool-tags">
+          <span class="tool-tag ai">AI</span>
+          <span class="tool-tag free">免费</span>
+        </div>
+      </div>
+    </a>
+
+    <!-- 视频抠图 -->
+    <a href="video-bg-remove.html" class="online-tool-card">
+      <div class="online-tool-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">🎬</div>
+      <div class="online-tool-info">
+        <h3>AI视频抠图</h3>
+        <p>自动识别视频人物，一键去除背景</p>
+        <div class="online-tool-tags">
+          <span class="tool-tag ai">AI</span>
+          <span class="tool-tag new">新版</span>
+        </div>
+      </div>
+    </a>
+
+    <!-- 人脸融合 -->
+    <a href="face-fusion.html" class="online-tool-card">
+      <div class="online-tool-icon" style="background: linear-gradient(135deg, #f97316, #ea580c);">👤</div>
+      <div class="online-tool-info">
+        <h3>人脸融合</h3>
+        <p>AI人脸融合技术，趣味换脸效果</p>
+        <div class="online-tool-tags">
+          <span class="tool-tag ai">AI</span>
+          <span class="tool-tag fun">趣味</span>
+        </div>
+      </div>
+    </a>
+
+    <!-- 文件转换 -->
+    <a href="converter.html" class="online-tool-card">
+      <div class="online-tool-icon" style="background: linear-gradient(135deg, #64748b, #475569);">📄</div>
+      <div class="online-tool-info">
+        <h3>文件格式转换</h3>
+        <p>PDF转Word/Excel/图片，多种格式互转</p>
+        <div class="online-tool-tags">
+          <span class="tool-tag hot">热门</span>
+          <span class="tool-tag free">免费</span>
+        </div>
+      </div>
+    </a>
+
+    <!-- GIF制作 -->
+    <a href="gif-maker.html" class="online-tool-card">
+      <div class="online-tool-icon" style="background: linear-gradient(135deg, #84cc16, #65a30d);">🎞️</div>
+      <div class="online-tool-info">
+        <h3>GIF动图制作</h3>
+        <p>视频/图片转GIF，支持裁剪和压缩</p>
+        <div class="online-tool-tags">
+          <span class="tool-tag hot">热门</span>
+          <span class="tool-tag free">免费</span>
+        </div>
+      </div>
+    </a>
+
+    <!-- 图片压缩 -->
+    <a href="image-compress.html" class="online-tool-card">
+      <div class="online-tool-icon" style="background: linear-gradient(135deg, #a1a1aa, #71717a);">📦</div>
+      <div class="online-tool-info">
+        <h3>图片压缩</h3>
+        <p>批量压缩图片，保持高质量输出</p>
+        <div class="online-tool-tags">
+          <span class="tool-tag useful">实用</span>
+          <span class="tool-tag free">免费</span>
+        </div>
+      </div>
+    </a>
+
+    <!-- 计算器 -->
+    <a href="calculator.html" class="online-tool-card">
+      <div class="online-tool-icon" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">🔢</div>
+      <div class="online-tool-info">
+        <h3>计算器</h3>
+        <p>科学计算器，支持函数和进制转换</p>
+        <div class="online-tool-tags">
+          <span class="tool-tag useful">实用</span>
+          <span class="tool-tag free">免费</span>
+        </div>
+      </div>
+    </a>
+
+    <!-- 密码生成 -->
+    <a href="password-generator.html" class="online-tool-card">
+      <div class="online-tool-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);">🔐</div>
+      <div class="online-tool-info">
+        <h3>密码生成器</h3>
+        <p>生成强密码，保障账户安全</p>
+        <div class="online-tool-tags">
+          <span class="tool-tag useful">实用</span>
+          <span class="tool-tag free">免费</span>
+        </div>
+      </div>
+    </a>
+  </div>
+</section>
 
 <main class="main-content">
 
-  <!-- 广告位 -->
-  <div class="ad-banner" aria-label="广告位">
-    📢 <strong>广告位招商</strong> | 在这里展示你的AI产品，直达精准用户 | <a href="submit.html">联系我们</a>
-  </div>
-
-  <!-- 工具分类 -->
-  <h2 class="section-title">🗂️ 工具分类</h2>
-  <nav aria-label="工具分类导航">
-    <div class="categories-grid" id="categoriesGrid"></div>
-  </nav>
-
-  <!-- 今日精选 -->
-  <h2 class="section-title">⭐ 今日精选</h2>
-  <article class="daily-pick" id="dailyPick" aria-labelledby="daily-pick-title"></article>
-
-  <!-- 热门工具 -->
-  <h2 class="section-title">🔥 热门工具</h2>
-
-  <!-- 高级筛选 -->
-  <div class="filter-section" id="filterSection" style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 24px;">
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 16px;">
-      <!-- 价格筛选 -->
-      <div>
-        <label style="display: block; font-size: 0.875rem; color: var(--text-muted); margin-bottom: 8px;">💰 价格</label>
-        <select id="filterPrice" onchange="filterTools()" style="width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px; color: var(--text); font-size: 0.9rem;">
-          <option value="all">全部价格</option>
-          <option value="free">免费</option>
-          <option value="paid">付费</option>
-          <option value="freemium">免费+付费</option>
-        </select>
-      </div>
-
-      <!-- 用户数筛选 -->
-      <div>
-        <label style="display: block; font-size: 0.875rem; color: var(--text-muted); margin-bottom: 8px;">👥 用户量</label>
-        <select id="filterUsers" onchange="filterTools()" style="width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px; color: var(--text); font-size: 0.9rem;">
-          <option value="all">全部</option>
-          <option value="high">100万+用户</option>
-          <option value="medium">10-100万用户</option>
-          <option value="low">10万以下</option>
-        </select>
-      </div>
-
-      <!-- 评分筛选 -->
-      <div>
-        <label style="display: block; font-size: 0.875rem; color: var(--text-muted); margin-bottom: 8px;">⭐ 评分</label>
-        <select id="filterRating" onchange="filterTools()" style="width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px; color: var(--text); font-size: 0.9rem;">
-          <option value="all">全部评分</option>
-          <option value="4.5">4.5分以上</option>
-          <option value="4.0">4.0分以上</option>
-          <option value="3.5">3.5分以上</option>
-        </select>
-      </div>
-
-      <!-- 分类筛选 -->
-      <div>
-        <label style="display: block; font-size: 0.875rem; color: var(--text-muted); margin-bottom: 8px;">📂 分类</label>
-        <select id="filterCategory" onchange="filterTools()" style="width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px; color: var(--text); font-size: 0.9rem;">
-          <option value="all">全部分类</option>
-          <option value="AI写作">AI写作</option>
-          <option value="AI绘画">AI绘画</option>
-          <option value="AI视频">AI视频</option>
-          <option value="AI编程">AI编程</option>
-          <option value="AI音乐">AI音乐</option>
-          <option value="AI音频">AI音频</option>
-          <option value="AI效率">AI效率</option>
-          <option value="AI搜索">AI搜索</option>
-        </select>
-      </div>
+  <!-- AI工具推荐 - 弱化显示 -->
+  <section class="ai-tools-section" aria-labelledby="ai-tools-title">
+    <div class="section-header">
+      <h2 class="section-title" id="ai-tools-title">
+        <span class="section-icon">🤖</span>
+        AI工具推荐
+      </h2>
+      <a href="tools.html" class="more-link">更多工具 →</a>
+    </div>
+    
+    <!-- 工具分类 - 简化版 -->
+    <div class="categories-mini" style="margin-bottom: 32px;">
+      <a href="writing.html" class="category-mini-card">✍️ AI写作</a>
+      <a href="image.html" class="category-mini-card">🎨 AI绘画</a>
+      <a href="video.html" class="category-mini-card">🎬 AI视频</a>
+      <a href="code.html" class="category-mini-card">💻 AI编程</a>
+      <a href="audio.html" class="category-mini-card">🎵 AI音乐</a>
+      <a href="productivity.html" class="category-mini-card">⚡ AI效率</a>
     </div>
 
-    <!-- 筛选结果和重置 -->
-    <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 1px solid var(--border);">
-      <div id="filterResult" style="font-size: 0.875rem; color: var(--text-muted);">
-        显示 <span id="filteredCount">20</span> 个工具
-      </div>
-      <button onclick="resetFilters()" style="background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 6px 16px; border-radius: 6px; font-size: 0.875rem; cursor: pointer; transition: all 0.2s;">
-        重置筛选
-      </button>
+    <!-- 热门AI工具 - 简化版 -->
+    <div class="ai-tools-grid" id="toolsGrid" role="list"></div>
+  </section>
+
+  <!-- 底部工具导航 -->
+  <section class="bottom-nav-section">
+    <div class="bottom-nav-grid">
+      <a href="ranking.html" class="bottom-nav-card">
+        <span class="bottom-nav-icon">📊</span>
+        <div>
+          <h4>工具排行榜</h4>
+          <p>查看最受欢迎的AI工具</p>
+        </div>
+      </a>
+      <a href="compare.html" class="bottom-nav-card">
+        <span class="bottom-nav-icon">⚖️</span>
+        <div>
+          <h4>工具对比</h4>
+          <p>ChatGPT vs Claude vs Gemini</p>
+        </div>
+      </a>
+      <a href="tutorials.html" class="bottom-nav-card">
+        <span class="bottom-nav-icon">📚</span>
+        <div>
+          <h4>使用教程</h4>
+          <p>图文教程快速上手</p>
+        </div>
+      </a>
+      <a href="news.html" class="bottom-nav-card">
+        <span class="bottom-nav-icon">📰</span>
+        <div>
+          <h4>AI资讯</h4>
+          <p>了解AI最新动态</p>
+        </div>
+      </a>
     </div>
-  </div>
-
-  <div class="tools-grid" role="list" id="toolsGrid"></div>
-
-  <!-- 广告位 2 -->
-  <div class="ad-banner">
-    🚀 <strong>推广你的AI产品</strong> | 精准触达AI工具用户群体 | 月曝光10万+ | <a href="submit.html">了解推广方案</a>
-  </div>
+  </section>
 
 </main>
 
