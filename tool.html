@@ -10,6 +10,9 @@
   <meta property="og:site_name" content="AI工具导航">
   <meta property="og:locale" content="zh_CN">
   <link rel="canonical" href="https://hjouy.github.io/ai-tools-directory/tool.html">
+
+  <!-- 性能优化：DNS 预加载 -->
+  <link rel="dns-prefetch" href="//github.com">
   <style>
     :root {
       --primary: #6366f1;
@@ -112,6 +115,25 @@
 
     .tool-price-badge .price-label { color: var(--text-muted); font-size: 0.75rem; margin-bottom: 2px; }
     .tool-price-badge .price-val { font-weight: 700; color: var(--success); }
+
+    /* 收藏按钮 */
+    .btn-favorite {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn-favorite:hover { color: var(--text); border-color: var(--primary); }
+    .btn-favorite.active {
+      color: #ef4444; border-color: #ef4444; background: rgba(239,68,68,0.1);
+    }
+    .btn-favorite.active::before { content: '❤️'; }
+    .btn-favorite:not(.active)::before { content: '🤍'; }
 
     /* 内容区 */
     .content-grid {
@@ -218,6 +240,20 @@
     .score-track { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
     .score-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--primary), var(--secondary)); transition: width 1s ease; }
 
+    /* 评分按钮 */
+    .star-btn {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      width: 44px; height: 44px;
+      border-radius: 8px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .star-btn:hover { color: var(--warning); border-color: var(--warning); }
+    .star-btn.active { color: var(--warning); border-color: var(--warning); background: rgba(245,158,11,0.1); }
+
     /* 不显示/隐藏 */
     .tool-section { display: none; }
     .tool-section.active { display: block; }
@@ -276,6 +312,9 @@
         <div class="price-label">定价</div>
         <div class="price-val" id="toolPrice">--</div>
       </div>
+      <button class="btn-favorite" id="btnFavorite" onclick="toggleFavorite()">
+        <span>收藏</span>
+      </button>
     </div>
   </header>
 
@@ -327,6 +366,29 @@
         </div>
 
         <div id="toolReviews"></div>
+
+        <!-- 评论表单 -->
+        <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border);">
+          <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 16px;">写下你的评价</h3>
+          <form id="reviewForm" onsubmit="submitReview(event)">
+            <div style="margin-bottom: 16px;">
+              <label style="display: block; font-size: 0.875rem; color: var(--text-muted); margin-bottom: 8px;">评分</label>
+              <div style="display: flex; gap: 8px;">
+                <button type="button" class="star-btn" data-rating="1" onclick="setRating(1)">★</button>
+                <button type="button" class="star-btn" data-rating="2" onclick="setRating(2)">★</button>
+                <button type="button" class="star-btn" data-rating="3" onclick="setRating(3)">★</button>
+                <button type="button" class="star-btn" data-rating="4" onclick="setRating(4)">★</button>
+                <button type="button" class="star-btn" data-rating="5" onclick="setRating(5)">★</button>
+              </div>
+              <input type="hidden" id="ratingInput" value="5">
+            </div>
+            <div style="margin-bottom: 16px;">
+              <label style="display: block; font-size: 0.875rem; color: var(--text-muted); margin-bottom: 8px;">你的评价</label>
+              <textarea id="reviewText" rows="4" style="width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px; color: var(--text); font-size: 0.9rem; resize: vertical;" placeholder="分享你的使用体验..." required></textarea>
+            </div>
+            <button type="submit" class="btn-visit" style="font-size: 0.9rem; padding: 10px 24px;">提交评价</button>
+          </form>
+        </div>
       </div>
 
     </main>
@@ -341,6 +403,13 @@
       <div class="card">
         <h2>🔗 相关工具</h2>
         <div id="relatedTools"></div>
+      </div>
+
+      <div class="card">
+        <h2>❤️ 我的收藏</h2>
+        <div id="myFavorites" style="font-size: 0.85rem; color: var(--text-muted);">
+          暂无收藏
+        </div>
       </div>
 
       <div class="card" style="background:linear-gradient(135deg,rgba(99,102,241,0.05),rgba(168,85,247,0.05));border-color:rgba(99,102,241,0.2);">
@@ -775,6 +844,164 @@ function renderTool(id) {
       </div>
     </a>
   `).join('');
+
+  // 初始化UGC功能
+  initUGC(id);
+}
+
+// UGC 功能：收藏、评分、评论
+let currentToolId = '';
+
+function initUGC(toolId) {
+  currentToolId = toolId;
+  loadFavoriteState();
+  loadUserReviews(toolId);
+  loadMyFavorites();
+}
+
+// 收藏功能
+function toggleFavorite() {
+  const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+  const index = favorites.indexOf(currentToolId);
+
+  if (index > -1) {
+    favorites.splice(index, 1);
+  } else {
+    favorites.push(currentToolId);
+  }
+
+  localStorage.setItem('favorites', JSON.stringify(favorites));
+  loadFavoriteState();
+  loadMyFavorites();
+}
+
+function loadFavoriteState() {
+  const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+  const btn = document.getElementById('btnFavorite');
+  const isFavorite = favorites.includes(currentToolId);
+
+  if (isFavorite) {
+    btn.classList.add('active');
+    btn.innerHTML = '<span>已收藏</span>';
+  } else {
+    btn.classList.remove('active');
+    btn.innerHTML = '<span>收藏</span>';
+  }
+}
+
+function loadMyFavorites() {
+  const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+  const container = document.getElementById('myFavorites');
+
+  if (favorites.length === 0) {
+    container.innerHTML = '<p style="font-size: 0.85rem; color: var(--text-muted);">暂无收藏</p>';
+    return;
+  }
+
+  container.innerHTML = favorites.map(id => {
+    const tool = TOOLS[id];
+    if (!tool) return '';
+    return `
+      <a href="tool.html?id=${id}" style="display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 6px; text-decoration: none; color: var(--text); transition: background 0.15s; margin-bottom: 8px;">
+        <span style="font-size: 1rem;">${tool.icon}</span>
+        <span style="font-size: 0.85rem;">${tool.name}</span>
+      </a>
+    `;
+  }).join('');
+}
+
+// 评分功能
+function setRating(rating) {
+  document.getElementById('ratingInput').value = rating;
+
+  const buttons = document.querySelectorAll('.star-btn');
+  buttons.forEach((btn, index) => {
+    if (index < rating) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
+}
+
+// 评论功能
+function loadUserReviews(toolId) {
+  const key = `reviews_${toolId}`;
+  const userReviews = JSON.parse(localStorage.getItem(key) || '[]');
+  const container = document.getElementById('toolReviews');
+
+  // 先加载默认评论
+  const tool = TOOLS[toolId];
+  let reviewsHtml = tool.reviews.map(r => `
+    <div class="review-item" itemprop="review" itemscope itemtype="https://schema.org/Review">
+      <div class="review-header">
+        <div class="reviewer-avatar">${r.name.charAt(0)}</div>
+        <div>
+          <div class="reviewer-name" itemprop="author">${r.name}</div>
+          <div class="reviewer-role">${r.role}</div>
+        </div>
+        <div class="review-rating" itemprop="reviewRating" itemscope itemtype="https://schema.org/Rating">
+          <span itemprop="ratingValue">${r.rating}</span>/5 ${'★'.repeat(r.rating)}
+        </div>
+      </div>
+      <p class="review-text" itemprop="reviewBody">${r.text}</p>
+    </div>
+  `).join('');
+
+  // 添加用户评论
+  if (userReviews.length > 0) {
+    reviewsHtml += userReviews.map(r => `
+      <div class="review-item" style="background: var(--bg); padding: 16px; border-radius: 8px; margin-top: 12px;">
+        <div class="review-header">
+          <div class="reviewer-avatar" style="background: linear-gradient(135deg, var(--primary), var(--secondary));">你</div>
+          <div>
+            <div class="reviewer-name">我的评价</div>
+            <div class="reviewer-role">${r.date}</div>
+          </div>
+          <div class="review-rating">
+            <span>${r.rating}</span>/5 ${'★'.repeat(r.rating)}
+          </div>
+        </div>
+        <p class="review-text">${r.text}</p>
+      </div>
+    `).join('');
+  }
+
+  container.innerHTML = reviewsHtml;
+}
+
+function submitReview(event) {
+  event.preventDefault();
+
+  const rating = parseInt(document.getElementById('ratingInput').value);
+  const text = document.getElementById('reviewText').value.trim();
+
+  if (!text) {
+    alert('请输入评价内容');
+    return;
+  }
+
+  const key = `reviews_${currentToolId}`;
+  const userReviews = JSON.parse(localStorage.getItem(key) || '[]');
+
+  const review = {
+    rating: rating,
+    text: text,
+    date: new Date().toLocaleDateString('zh-CN')
+  };
+
+  userReviews.push(review);
+  localStorage.setItem(key, JSON.stringify(userReviews));
+
+  // 清空表单
+  document.getElementById('reviewText').value = '';
+  setRating(5);
+
+  // 重新加载评论
+  loadUserReviews(currentToolId);
+
+  // 显示成功提示
+  alert('评价提交成功！');
 }
 
 // 初始化
