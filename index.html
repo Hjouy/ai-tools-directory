@@ -28,6 +28,9 @@
   <link rel="dns-prefetch" href="//github.com">
   <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 
+  <!-- 引用统一工具数据库 -->
+  <script src="data.js"></script>
+  
   <!-- 性能优化：预加载关键页面 -->
   <link rel="prefetch" href="tool.html">
   <link rel="prefetch" href="writing.html">
@@ -1019,11 +1022,11 @@
 
   <div class="hero-stats" aria-label="网站统计">
     <div class="hero-stat">
-      <div class="hero-stat-num">500+</div>
+      <div class="hero-stat-num" id="totalTools">20+</div>
       <div class="hero-stat-label">收录工具</div>
     </div>
     <div class="hero-stat">
-      <div class="hero-stat-num">12</div>
+      <div class="hero-stat-num" id="totalCategories">9</div>
       <div class="hero-stat-label">工具分类</div>
     </div>
     <div class="hero-stat">
@@ -1075,56 +1078,12 @@
   <!-- 工具分类 -->
   <h2 class="section-title">🗂️ 工具分类</h2>
   <nav aria-label="工具分类导航">
-    <div class="categories-grid">
-      <a href="writing.html" class="category-card" aria-label="AI写作工具分类">
-        <span class="category-icon">✍️</span>
-        <div class="category-name">AI写作</div>
-        <div class="category-count">48 个工具</div>
-      </a>
-      <a href="image.html" class="category-card" aria-label="AI绘画工具分类">
-        <span class="category-icon">🎨</span>
-        <div class="category-name">AI绘画</div>
-        <div class="category-count">62 个工具</div>
-      </a>
-      <a href="video.html" class="category-card" aria-label="AI视频工具分类">
-        <span class="category-icon">🎬</span>
-        <div class="category-name">AI视频</div>
-        <div class="category-count">35 个工具</div>
-      </a>
-      <a href="code.html" class="category-card" aria-label="AI编程工具分类">
-        <span class="category-icon">💻</span>
-        <div class="category-name">AI编程</div>
-        <div class="category-count">41 个工具</div>
-      </a>
-      <a href="audio.html" class="category-card" aria-label="AI音乐工具分类">
-        <span class="category-icon">🎵</span>
-        <div class="category-name">AI音乐</div>
-        <div class="category-count">28 个工具</div>
-      </a>
-      <a href="productivity.html" class="category-card" aria-label="AI效率工具分类">
-        <span class="category-icon">⚡</span>
-        <div class="category-name">AI效率</div>
-        <div class="category-count">53 个工具</div>
-      </a>
-    </div>
+    <div class="categories-grid" id="categoriesGrid"></div>
   </nav>
 
   <!-- 今日精选 -->
   <h2 class="section-title">⭐ 今日精选</h2>
-  <article class="daily-pick" aria-labelledby="daily-pick-title">
-    <div>
-      <div class="daily-pick-badge">⭐ 今日精选工具</div>
-      <h3 id="daily-pick-title">Cursor — AI代码编辑器</h3>
-      <p>全球增长最快的AI编程工具，内置GPT-4支持，智能补全代码、理解上下文、一键重构，让编程效率提升10倍。100万+开发者正在使用。</p>
-      <div class="daily-pick-stats">
-        <div class="dp-stat"><div class="dp-stat-val">4.9</div><div class="dp-stat-lab">用户评分</div></div>
-        <div class="dp-stat"><div class="dp-stat-val">100万+</div><div class="dp-stat-lab">活跃用户</div></div>
-        <div class="dp-stat"><div class="dp-stat-val">$20/月</div><div class="dp-stat-lab">Pro定价</div></div>
-      </div>
-      <a href="tool.html?id=cursor" class="btn-primary" style="display:inline-block; text-decoration:none; padding: 10px 24px; border-radius: 8px; font-size: 0.9rem;">查看详情 →</a>
-    </div>
-    <div class="daily-pick-img" aria-hidden="true">💻</div>
-  </article>
+  <article class="daily-pick" id="dailyPick" aria-labelledby="daily-pick-title"></article>
 
   <!-- 热门工具 -->
   <h2 class="section-title">🔥 热门工具</h2>
@@ -1193,213 +1152,7 @@
     </div>
   </div>
 
-  <div class="tools-grid" role="list" id="toolsGrid">
-
-    <article class="tool-card" role="listitem" onclick="goToTool('chatgpt', 'https://chat.openai.com')" itemscope itemtype="https://schema.org/SoftwareApplication">
-      <span class="hot-tag">HOT</span>
-      <div class="tool-card-header">
-        <div class="tool-logo" style="background: linear-gradient(135deg,#10b981,#059669);">💬</div>
-        <div class="tool-info">
-          <h3 itemprop="name">ChatGPT</h3>
-          <div class="tool-meta">
-            <span class="tool-rating" aria-label="评分4.8">★★★★★ 4.8</span>
-            <span class="tool-users">1亿+用户</span>
-          </div>
-        </div>
-      </div>
-      <p class="tool-desc" itemprop="description">OpenAI出品的超强AI对话助手，支持写作、编程、分析、翻译等多种任务，是最广泛使用的AI工具。</p>
-      <div class="tool-card-footer">
-        <div class="tool-tags"><span class="tag">AI写作</span><span class="tag">对话</span></div>
-        <span class="tool-price price-free" itemprop="offers" itemscope itemtype="https://schema.org/Offer"><span itemprop="price" content="0">免费</span>/$20月</span>
-      </div>
-    </article>
-
-    <article class="tool-card" role="listitem" onclick="goToTool('midjourney', 'https://midjourney.com')" itemscope itemtype="https://schema.org/SoftwareApplication">
-      <span class="hot-tag">HOT</span>
-      <div class="tool-card-header">
-        <div class="tool-logo" style="background: linear-gradient(135deg,#6366f1,#8b5cf6);">🎨</div>
-        <div class="tool-info">
-          <h3 itemprop="name">Midjourney</h3>
-          <div class="tool-meta">
-            <span class="tool-rating">★★★★★ 4.8</span>
-            <span class="tool-users">1500万+用户</span>
-          </div>
-        </div>
-      </div>
-      <p class="tool-desc" itemprop="description">全球最流行的AI绘画工具，通过文字描述生成高质量艺术图片，拥有独特的艺术风格和强大的创意能力。</p>
-      <div class="tool-card-footer">
-        <div class="tool-tags"><span class="tag">AI绘画</span><span class="tag">创意</span></div>
-        <span class="tool-price price-paid">$30/月起</span>
-      </div>
-    </article>
-
-    <article class="tool-card" role="listitem" onclick="goToTool('cursor', 'https://cursor.sh')" itemscope itemtype="https://schema.org/SoftwareApplication">
-      <span class="new-tag">推荐</span>
-      <div class="tool-card-header">
-        <div class="tool-logo" style="background: linear-gradient(135deg,#0f172a,#1e293b);border:1px solid #334155;">⚡</div>
-        <div class="tool-info">
-          <h3 itemprop="name">Cursor</h3>
-          <div class="tool-meta">
-            <span class="tool-rating">★★★★★ 4.9</span>
-            <span class="tool-users">100万+用户</span>
-          </div>
-        </div>
-      </div>
-      <p class="tool-desc" itemprop="description">基于AI的智能代码编辑器，深度集成GPT-4能力，支持代码自动补全、智能重构、自然语言编程。</p>
-      <div class="tool-card-footer">
-        <div class="tool-tags"><span class="tag">AI编程</span><span class="tag">代码</span></div>
-        <span class="tool-price price-free">免费/$20月</span>
-      </div>
-    </article>
-
-    <article class="tool-card" role="listitem" onclick="goToTool('stable-diffusion', 'https://stability.ai')" itemscope itemtype="https://schema.org/SoftwareApplication">
-      <div class="tool-card-header">
-        <div class="tool-logo" style="background: linear-gradient(135deg,#dc2626,#ea580c);">🖼️</div>
-        <div class="tool-info">
-          <h3 itemprop="name">Stable Diffusion</h3>
-          <div class="tool-meta">
-            <span class="tool-rating">★★★★★ 4.7</span>
-            <span class="tool-users">800万+用户</span>
-          </div>
-        </div>
-      </div>
-      <p class="tool-desc" itemprop="description">开源AI图像生成模型，可本地部署免费使用，支持无限自定义，是技术用户的首选AI绘画工具。</p>
-      <div class="tool-card-footer">
-        <div class="tool-tags"><span class="tag">AI绘画</span><span class="tag">开源</span></div>
-        <span class="tool-price price-free">本地免费</span>
-      </div>
-    </article>
-
-    <article class="tool-card" role="listitem" onclick="goToTool('runway', 'https://runwayml.com')" itemscope itemtype="https://schema.org/SoftwareApplication">
-      <div class="tool-card-header">
-        <div class="tool-logo" style="background: linear-gradient(135deg,#0891b2,#0e7490);">🎬</div>
-        <div class="tool-info">
-          <h3 itemprop="name">Runway</h3>
-          <div class="tool-meta">
-            <span class="tool-rating">★★★★☆ 4.6</span>
-            <span class="tool-users">300万+用户</span>
-          </div>
-        </div>
-      </div>
-      <p class="tool-desc" itemprop="description">专业AI视频创作平台，提供文字生视频、视频编辑、背景移除等功能，是专业创作者的首选工具。</p>
-      <div class="tool-card-footer">
-        <div class="tool-tags"><span class="tag">AI视频</span><span class="tag">创作</span></div>
-        <span class="tool-price price-paid">$35/月</span>
-      </div>
-    </article>
-
-    <article class="tool-card" role="listitem" onclick="goToTool('suno', 'https://suno.com')" itemscope itemtype="https://schema.org/SoftwareApplication">
-      <span class="new-tag">NEW</span>
-      <div class="tool-card-header">
-        <div class="tool-logo" style="background: linear-gradient(135deg,#7c3aed,#5b21b6);">🎵</div>
-        <div class="tool-info">
-          <h3 itemprop="name">Suno</h3>
-          <div class="tool-meta">
-            <span class="tool-rating">★★★★☆ 4.5</span>
-            <span class="tool-users">500万+用户</span>
-          </div>
-        </div>
-      </div>
-      <p class="tool-desc" itemprop="description">最热门的AI音乐生成工具，输入歌词和风格描述，即可生成带人声的完整歌曲，支持多种音乐风格。</p>
-      <div class="tool-card-footer">
-        <div class="tool-tags"><span class="tag">AI音乐</span><span class="tag">作曲</span></div>
-        <span class="tool-price price-free">免费/$8月</span>
-      </div>
-    </article>
-
-    <article class="tool-card" role="listitem" onclick="goToTool('gemini', 'https://gemini.google.com')" itemscope itemtype="https://schema.org/SoftwareApplication">
-      <span class="hot-tag">HOT</span>
-      <div class="tool-card-header">
-        <div class="tool-logo" style="background: linear-gradient(135deg,#4285f4,#34a853);">✨</div>
-        <div class="tool-info">
-          <h3 itemprop="name">Google Gemini</h3>
-          <div class="tool-meta">
-            <span class="tool-rating">★★★★☆ 4.6</span>
-            <span class="tool-users">5000万+用户</span>
-          </div>
-        </div>
-      </div>
-      <p class="tool-desc" itemprop="description">Google推出的多模态AI助手，支持200万token超长上下文，能理解和处理文字、图像、音频。</p>
-      <div class="tool-card-footer">
-        <div class="tool-tags"><span class="tag">AI对话</span><span class="tag">多模态</span></div>
-        <span class="tool-price price-free">免费</span>
-      </div>
-    </article>
-
-    <article class="tool-card" role="listitem" onclick="goToTool('claude', 'https://claude.ai')" itemscope itemtype="https://schema.org/SoftwareApplication">
-      <div class="tool-card-header">
-        <div class="tool-logo" style="background: linear-gradient(135deg,#d97706,#b45309);">🧠</div>
-        <div class="tool-info">
-          <h3 itemprop="name">Claude</h3>
-          <div class="tool-meta">
-            <span class="tool-rating">★★★★★ 4.7</span>
-            <span class="tool-users">500万+用户</span>
-          </div>
-        </div>
-      </div>
-      <p class="tool-desc" itemprop="description">Anthropic开发的AI助手，以安全性和准确性著称，支持200K上下文窗口，擅长长文本处理。</p>
-      <div class="tool-card-footer">
-        <div class="tool-tags"><span class="tag">AI写作</span><span class="tag">长文本</span></div>
-        <span class="tool-price price-free">免费/$20月</span>
-      </div>
-    </article>
-
-    <article class="tool-card" role="listitem" onclick="goToTool('perplexity', 'https://perplexity.ai')" itemscope itemtype="https://schema.org/SoftwareApplication">
-      <div class="tool-card-header">
-        <div class="tool-logo" style="background: linear-gradient(135deg,#0f766e,#115e59);">🔎</div>
-        <div class="tool-info">
-          <h3 itemprop="name">Perplexity</h3>
-          <div class="tool-meta">
-            <span class="tool-rating">★★★★☆ 4.6</span>
-            <span class="tool-users">1000万+用户</span>
-          </div>
-        </div>
-      </div>
-      <p class="tool-desc" itemprop="description">AI驱动的智能搜索引擎，不仅给出答案，还展示来源。支持实时联网、追问、收藏历史。</p>
-      <div class="tool-card-footer">
-        <div class="tool-tags"><span class="tag">AI搜索</span><span class="tag">问答</span></div>
-        <span class="tool-price price-free">免费/$20月</span>
-      </div>
-    </article>
-
-    <article class="tool-card" role="listitem" onclick="goToTool('github-copilot', 'https://github.com/features/copilot')" itemscope itemtype="https://schema.org/SoftwareApplication">
-      <div class="tool-card-header">
-        <div class="tool-logo" style="background: linear-gradient(135deg,#1f2937,#374151);border:1px solid #4b5563;">🐙</div>
-        <div class="tool-info">
-          <h3 itemprop="name">GitHub Copilot</h3>
-          <div class="tool-meta">
-            <span class="tool-rating">★★★★★ 4.7</span>
-            <span class="tool-users">100万+用户</span>
-          </div>
-        </div>
-      </div>
-      <p class="tool-desc" itemprop="description">GitHub官方AI编程助手，基于GPT-4架构，提供智能代码补全、函数生成、代码解释等功能。</p>
-      <div class="tool-card-footer">
-        <div class="tool-tags"><span class="tag">AI编程</span><span class="tag">代码</span></div>
-        <span class="tool-price price-paid">$10/月</span>
-      </div>
-    </article>
-
-    <article class="tool-card" role="listitem" onclick="goToTool('eleven-labs', 'https://elevenlabs.io')" itemscope itemtype="https://schema.org/SoftwareApplication">
-      <span class="new-tag">NEW</span>
-      <div class="tool-card-header">
-        <div class="tool-logo" style="background: linear-gradient(135deg,#f97316,#ea580c);">🎙️</div>
-        <div class="tool-info">
-          <h3 itemprop="name">ElevenLabs</h3>
-          <div class="tool-meta">
-            <span class="tool-rating">★★★★★ 4.8</span>
-            <span class="tool-users">100万+用户</span>
-          </div>
-        </div>
-      </div>
-      <p class="tool-desc" itemprop="description">业界领先的AI语音合成平台，提供逼真的文本转语音、语音克隆、多语言配音等服务。</p>
-      <div class="tool-card-footer">
-        <div class="tool-tags"><span class="tag">AI语音</span><span class="tag">配音</span></div>
-        <span class="tool-price price-free">免费/$5月</span>
-      </div>
-    </article>
-
-  </div>
+  <div class="tools-grid" role="list" id="toolsGrid"></div>
 
   <!-- 广告位 2 -->
   <div class="ad-banner">
@@ -1594,33 +1347,234 @@
     document.head.appendChild(ld);
   })();
 
-  // 工具数据
-  const toolsData = [
-    { id: 'chatgpt', name: 'ChatGPT', icon: '💬', color: '#10b981', desc: 'OpenAI出品的超强AI对话助手', price: '免费/$20月', rating: 4.8, users: '1亿+', tag: 'AI写作', url: 'https://chat.openai.com' },
-    { id: 'midjourney', name: 'Midjourney', icon: '🎨', color: '#6366f1', desc: '全球最流行的AI绘画工具', price: '$30/月起', rating: 4.8, users: '1500万+', tag: 'AI绘画', url: 'https://midjourney.com' },
-    { id: 'cursor', name: 'Cursor', icon: '⚡', color: '#818cf8', desc: 'AI智能代码编辑器', price: '免费/$20月', rating: 4.9, users: '100万+', tag: 'AI编程', url: 'https://cursor.sh' },
-    { id: 'stable-diffusion', name: 'Stable Diffusion', icon: '🖼️', color: '#dc2626', desc: '开源AI图像生成模型', price: '本地免费', rating: 4.7, users: '800万+', tag: 'AI绘画', url: 'https://stability.ai' },
-    { id: 'runway', name: 'Runway', icon: '🎬', color: '#0891b2', desc: '专业AI视频创作平台', price: '$35/月', rating: 4.6, users: '300万+', tag: 'AI视频', url: 'https://runwayml.com' },
-    { id: 'suno', name: 'Suno', icon: '🎵', color: '#7c3aed', desc: '最热门AI音乐生成工具', price: '免费/$8月', rating: 4.5, users: '500万+', tag: 'AI音乐', url: 'https://suno.com' },
-    { id: 'claude', name: 'Claude', icon: '🧠', color: '#d97706', desc: 'Anthropic出品的安全AI助手', price: '免费/$20月', rating: 4.7, users: '500万+', tag: 'AI写作', url: 'https://claude.ai' },
-    { id: 'notion-ai', name: 'Notion AI', icon: '📝', color: '#374151', desc: '智能笔记与工作区AI助手', price: '$10/月', rating: 4.6, users: '2000万+', tag: 'AI效率', url: 'https://notion.so' },
-    { id: 'github-copilot', name: 'GitHub Copilot', icon: '🐙', color: '#1f2937', desc: 'GitHub官方AI编程助手', price: '$10/月', rating: 4.7, users: '100万+', tag: 'AI编程', url: 'https://github.com/features/copilot' },
-    { id: 'perplexity', name: 'Perplexity', icon: '🔎', color: '#0f766e', desc: 'AI驱动的智能搜索引擎', price: '免费/$20月', rating: 4.6, users: '1000万+', tag: 'AI搜索', url: 'https://perplexity.ai' },
-    { id: 'gemini', name: 'Google Gemini', icon: '✨', color: '#4285f4', desc: 'Google推出的多模态AI助手', price: '免费', rating: 4.6, users: '5000万+', tag: 'AI对话', url: 'https://gemini.google.com' },
-    { id: 'dall-e', name: 'DALL-E 3', icon: '🖼️', color: '#ec4899', desc: 'OpenAI的AI图像生成模型', price: '$15/115张', rating: 4.7, users: '200万+', tag: 'AI绘画', url: 'https://openai.com/dall-e-3' },
-    { id: 'adobe-firefly', name: 'Adobe Firefly', icon: '🔥', color: '#ff0000', desc: 'Adobe推出的AI创意工具', price: '免费/$4.99月', rating: 4.5, users: '2000万+', tag: 'AI设计', url: 'https://adobe.com/firefly' },
-    { id: 'eleven-labs', name: 'ElevenLabs', icon: '🎙️', color: '#f97316', desc: '业界领先的AI语音合成', price: '免费/$5月', rating: 4.8, users: '100万+', tag: 'AI语音', url: 'https://elevenlabs.io' },
-    { id: 'leonardo', name: 'Leonardo AI', icon: '🎯', color: '#9333ea', desc: '专注游戏创意的AI绘画平台', price: '免费/$10月', rating: 4.6, users: '500万+', tag: 'AI绘画', url: 'https://leonardo.ai' },
-    { id: 'heygen', name: 'HeyGen', icon: '🎭', color: '#8b5cf6', desc: 'AI数字人视频生成平台', price: '免费/$29月', rating: 4.7, users: '100万+', tag: 'AI视频', url: 'https://heygen.com' },
-    { id: 'pika', name: 'Pika', icon: '🎞️', color: '#8b5cf6', desc: '新兴AI视频生成工具', price: '免费/$8月', rating: 4.5, users: '500万+', tag: 'AI视频', url: 'https://pika.art' },
-    { id: 'jasper', name: 'Jasper', icon: '✍️', color: '#f59e0b', desc: '企业级AI营销写作平台', price: '$49/月', rating: 4.5, users: '10万+', tag: 'AI写作', url: 'https://jasper.ai' },
-    { id: 'copy-ai', name: 'Copy.ai', icon: '📋', color: '#06b6d4', desc: '专注商业写作的AI工具', price: '免费/$36月', rating: 4.4, users: '50万+', tag: 'AI写作', url: 'https://copy.ai' },
-    { id: 'canva-ai', name: 'Canva AI', icon: '🎨', color: '#00c4cc', desc: '全球领先的AI在线设计平台', price: '免费/$12.99月', rating: 4.6, users: '1.5亿+', tag: 'AI设计', url: 'https://canva.com' },
-    { id: 'poe', name: 'Poe', icon: '🤖', color: '#6b7280', desc: 'Quora的AI聚合平台', price: '免费/$19.99月', rating: 4.5, users: '100万+', tag: 'AI对话', url: 'https://poe.com' },
-  ];
+
+
+
+  // 使用 data.js 中的工具数据
+  let currentFilters = {
+    price: 'all',
+    users: 'all',
+    rating: 'all',
+    category: 'all'
+  };
+
+  // 初始化页面
+  function initPage() {
+    // 渲染分类导航
+    renderCategories();
+    // 渲染今日精选
+    renderDailyPick();
+    // 渲染工具卡片
+    renderToolsGrid();
+    // 更新统计数字
+    updateStats();
+    // 初始化筛选结果
+    filterTools();
+  }
+
+  // 更新统计数据
+  function updateStats() {
+    const toolsList = getToolsList();
+    const categories = getCategories();
+    document.getElementById('totalTools').textContent = toolsList.length + '+';
+    document.getElementById('totalCategories').textContent = categories.length;
+  }
+
+  // 渲染分类导航
+  function renderCategories() {
+    const container = document.getElementById('categoriesGrid');
+    const categories = getCategories();
+    
+    container.innerHTML = categories.map(cat => `
+      <a href="${cat.id}.html" class="category-card" aria-label="${cat.name}工具分类">
+        <span class="category-icon">${cat.icon}</span>
+        <div class="category-name">${cat.name}</div>
+        <div class="category-count">${cat.count} 个工具</div>
+      </a>
+    `).join('');
+  }
+
+  // 渲染今日精选
+  function renderDailyPick() {
+    const container = document.getElementById('dailyPick');
+    // 选择评分最高的工具作为今日精选
+    const tools = getToolsList();
+    const featured = tools.sort((a, b) => b.rating - a.rating)[0];
+    const toolData = getToolById(featured.id);
+    
+    if (!toolData) return;
+    
+    container.innerHTML = `
+      <div>
+        <div class="daily-pick-badge">⭐ 今日精选工具</div>
+        <h3 id="daily-pick-title">${toolData.name} — ${toolData.category}</h3>
+        <p>${toolData.desc}</p>
+        <div class="daily-pick-stats">
+          <div class="dp-stat"><div class="dp-stat-val">${toolData.rating}</div><div class="dp-stat-lab">用户评分</div></div>
+          <div class="dp-stat"><div class="dp-stat-val">${toolData.users}</div><div class="dp-stat-lab">活跃用户</div></div>
+          <div class="dp-stat"><div class="dp-stat-val">${toolData.price}</div><div class="dp-stat-lab">定价</div></div>
+        </div>
+        <a href="tool.html?id=${toolData.id}" class="btn-primary" style="display:inline-block; text-decoration:none; padding: 10px 24px; border-radius: 8px; font-size: 0.9rem;">查看详情 →</a>
+      </div>
+      <div class="daily-pick-img" aria-hidden="true">${toolData.icon}</div>
+    `;
+  }
+
+  // 渲染工具卡片网格
+  function renderToolsGrid() {
+    const container = document.getElementById('toolsGrid');
+    let tools = getToolsList();
+    
+    // 应用筛选
+    tools = applyFilters(tools);
+    
+    // 更新筛选结果数量
+    document.getElementById('filteredCount').textContent = tools.length;
+    
+    if (tools.length === 0) {
+      container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 48px; color: var(--text-muted);">没有找到符合条件的工具</div>';
+      return;
+    }
+    
+    container.innerHTML = tools.map(tool => {
+      const toolData = getToolById(tool.id);
+      const tags = toolData ? toolData.scenes.slice(0, 2) : [tool.category];
+      const tagBadges = tags.map(t => `<span class="tag">${t}</span>`).join('');
+      
+      let badge = '';
+      if (tool.isHot) badge = '<span class="hot-tag">HOT</span>';
+      else if (tool.isNew) badge = '<span class="new-tag">NEW</span>';
+      
+      const priceClass = tool.priceType === 'free' ? 'price-free' : (tool.priceType === 'paid' ? 'price-paid' : '');
+      const priceText = tool.price;
+      
+      return `
+        <article class="tool-card" role="listitem" onclick="goToTool('${tool.id}')" itemscope itemtype="https://schema.org/SoftwareApplication">
+          ${badge}
+          <div class="tool-card-header">
+            <div class="tool-logo" style="background: ${tool.color}20; color: ${tool.color};">${tool.icon}</div>
+            <div class="tool-info">
+              <h3 itemprop="name">${tool.name}</h3>
+              <div class="tool-meta">
+                <span class="tool-rating" aria-label="评分${tool.rating}">${'★'.repeat(Math.floor(tool.rating))}${tool.rating % 1 >= 0.5 ? '½' : ''}${'☆'.repeat(5 - Math.floor(tool.rating) - (tool.rating % 1 >= 0.5 ? 1 : 0))} ${tool.rating}</span>
+                <span class="tool-users">${tool.users}</span>
+              </div>
+            </div>
+          </div>
+          <p class="tool-desc" itemprop="description">${tool.desc}</p>
+          <div class="tool-card-footer">
+            <div class="tool-tags">${tagBadges}</div>
+            <span class="tool-price ${priceClass}" itemprop="offers" itemscope itemtype="https://schema.org/Offer">${priceText}</span>
+          </div>
+        </article>
+      `;
+    }).join('');
+  }
+
+  // 应用筛选
+  function applyFilters(tools) {
+    return tools.filter(tool => {
+      // 价格筛选
+      if (currentFilters.price !== 'all') {
+        if (currentFilters.price === 'free' && !tool.price.includes('免费')) return false;
+        if (currentFilters.price === 'paid' && !tool.priceType === 'paid') return false;
+        if (currentFilters.price === 'freemium' && tool.priceType !== 'freemium') return false;
+      }
+      
+      // 用户量筛选
+      if (currentFilters.users !== 'all') {
+        const users = parseUsers(tool.users);
+        if (currentFilters.users === 'high' && users < 1000000) return false;
+        if (currentFilters.users === 'medium' && (users < 100000 || users >= 1000000)) return false;
+        if (currentFilters.users === 'low' && users >= 100000) return false;
+      }
+      
+      // 评分筛选
+      if (currentFilters.rating !== 'all') {
+        if (tool.rating < parseFloat(currentFilters.rating)) return false;
+      }
+      
+      // 分类筛选
+      if (currentFilters.category !== 'all' && tool.category !== currentFilters.category) return false;
+      
+      return true;
+    });
+  }
+
+  // 解析用户数量
+  function parseUsers(usersStr) {
+    const match = usersStr.match(/([\d.]+)(万|亿)?/);
+    if (!match) return 0;
+    let num = parseFloat(match[1]);
+    if (match[2] === '亿') num *= 100000000;
+    else if (match[2] === '万') num *= 10000;
+    return num;
+  }
+
+  // 筛选工具
+  function filterTools() {
+    currentFilters.price = document.getElementById('filterPrice').value;
+    currentFilters.users = document.getElementById('filterUsers').value;
+    currentFilters.rating = document.getElementById('filterRating').value;
+    currentFilters.category = document.getElementById('filterCategory').value;
+    
+    renderToolsGrid();
+  }
+
+  // 重置筛选
+  function resetFilters() {
+    document.getElementById('filterPrice').value = 'all';
+    document.getElementById('filterUsers').value = 'all';
+    document.getElementById('filterRating').value = 'all';
+    document.getElementById('filterCategory').value = 'all';
+    
+    currentFilters = {
+      price: 'all',
+      users: 'all',
+      rating: 'all',
+      category: 'all'
+    };
+    
+    renderToolsGrid();
+  }
+
+  // 快速查询筛选（用于弹窗）
+  function filterToolsModal() {
+    const q = document.getElementById('modalInput').value.toLowerCase();
+    const tools = getToolsList().filter(t =>
+      t.name.toLowerCase().includes(q) ||
+      t.desc.toLowerCase().includes(q) ||
+      t.tag.toLowerCase().includes(q)
+    );
+    
+    const container = document.getElementById('modalResults');
+    if (tools.length === 0) {
+      container.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text-muted);">没有找到相关工具，试试其他关键词？</div>';
+      return;
+    }
+    
+    container.innerHTML = `<div style="padding:8px 16px;font-size:0.75rem;color:var(--text-muted);border-bottom:1px solid var(--border);">找到 ${tools.length} 个相关工具</div>` +
+      tools.map(t => `
+      <div class="modal-tool-item" onclick="goToTool('${t.id}');document.getElementById('modalOverlay').classList.remove('open');">
+        <div class="modal-tool-icon" style="background:${t.color}20;color:${t.color};">${t.icon}</div>
+        <div style="flex:1;min-width:0;">
+          <div class="modal-tool-name">${t.name}</div>
+          <div class="modal-tool-desc">${t.desc.substring(0, 30)}... · ★${t.rating} · ${t.users}用户</div>
+        </div>
+        <div class="modal-tool-price">${t.price.includes('免费') ? '免费' : t.price}</div>
+      </div>
+    `).join('');
+  }
+
+  // 页面加载完成后初始化
+  document.addEventListener('DOMContentLoaded', initPage);
+
+  // 修改快速查询弹窗的输入事件
+  document.getElementById('modalInput').oninput = filterToolsModal;
+
 
   // 工具跳转逻辑
-  function goToTool(id, url) {
+  function goToTool(id) {
     // 所有收录工具都跳转到详情页
     window.location.href = 'tool.html?id=' + id;
   }
@@ -1678,87 +1632,7 @@
     if (e.altKey && e.key === 'a') { e.preventDefault(); toggleAI(); }
   });
 
-  function filterTools() {
-    const q = document.getElementById('modalInput').value.toLowerCase();
-    const list = toolsData.filter(t =>
-      t.name.toLowerCase().includes(q) ||
-      t.desc.toLowerCase().includes(q) ||
-      t.tag.toLowerCase().includes(q)
-    );
-    const container = document.getElementById('modalResults');
-    if (list.length === 0) {
-      container.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text-muted);">没有找到相关工具，试试其他关键词？</div>';
-      return;
-    }
-    container.innerHTML = `<div style="padding:8px 16px;font-size:0.75rem;color:var(--text-muted);border-bottom:1px solid var(--border);">找到 ${list.length} 个相关工具</div>` +
-      list.map(t => `
-      <div class="modal-tool-item" onclick="goToTool('${t.id}','${t.url}');document.getElementById('modalOverlay').classList.remove('open');">
-        <div class="modal-tool-icon" style="background:${t.color}20;color:${t.color};">${t.icon}</div>
-        <div style="flex:1;min-width:0;">
-          <div class="modal-tool-name">${t.name}</div>
-          <div class="modal-tool-desc">${t.desc} · ★${t.rating} · ${t.users}用户</div>
-        </div>
-        <div class="modal-tool-price">${t.price.includes('免费') ? '免费' : t.price}</div>
-      </div>
-    `).join('');
-  }
-
-  // AI对话助手 - 接入Gemini API
-  const GEMINI_API_KEY = 'YOUR_GEMINI_API_KEY'; // 请替换为真实API Key
-  const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
-  
-  // 工具知识库
-  const toolsKnowledge = `
-你是AI工具导航网站的智能助手，专门帮助用户发现和选择合适的AI工具。以下是网站收录的工具信息：
-
-【AI写作工具】
-- ChatGPT: OpenAI出品，1亿+用户，免费/$20月，全能型AI对话助手
-- Claude: Anthropic出品，500万+用户，免费/$20月，擅长200K上下文长文本处理
-- Gemini: Google出品，5000万+用户，免费，支持多模态和超长上下文
-
-【AI绘画工具】
-- Midjourney: 1500万+用户，$30/月起，效果最好的AI绘画工具
-- Stable Diffusion: 800万+用户，本地免费，开源可部署
-- DALL-E 3: OpenAI出品，$15/115张，与ChatGPT集成
-- Leonardo AI: 500万+用户，免费/$10月，游戏美术首选
-
-【AI视频工具】
-- Runway: 300万+用户，$35/月，专业AI视频创作平台
-- HeyGen: 100万+用户，$29/月，AI数字人视频
-- Pika: 500万+用户，免费/$8月，新兴AI视频生成
-
-【AI编程工具】
-- Cursor: 100万+用户，免费/$20月，最强AI代码编辑器
-- GitHub Copilot: 100万+用户，$10/月，GitHub官方AI编程助手
-
-【AI语音工具】
-- ElevenLabs: 100万+用户，免费/$5月，业界领先语音合成
-- Suno: 500万+用户，免费/$8月，AI音乐生成
-
-【AI效率工具】
-- Perplexity: 1000万+用户，免费/$20月，AI搜索引擎
-- Notion AI: 2000万+用户，$10/月，笔记+AI助手
-
-【AI设计工具】
-- Canva AI: 1.5亿+用户，免费/$12.99月，在线设计+AI
-- Adobe Firefly: 2000万+用户，免费，Adobe全家桶AI
-
-回复要求：
-1. 根据用户需求推荐合适的工具
-2. 说明工具的核心优势和定价
-3. 如果用户询问具体工具，提供详细信息
-4. 保持友好、专业的语气
-5. 回复控制在100字以内
-`;
-
-  function toggleAI() {
-    const panel = document.getElementById('aiPanel');
-    panel.classList.toggle('open');
-    if (panel.classList.contains('open')) {
-      loadAIHistory();
-      document.getElementById('aiInput').focus();
-    }
-  }
+  function filterTools() { filterToolsModal(); }
 
   function loadAIHistory() {
     const history = JSON.parse(localStorage.getItem('aiHistory') || '[]');

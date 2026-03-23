@@ -612,9 +612,13 @@
   </p>
 </footer>
 
+<script src="data.js"></script>
 <script>
-// 工具完整数据库
-const TOOLS = {
+// 使用 data.js 中的工具数据
+// 使用 data.js 中的 TOOLS_DATA
+// 注意：data.js 中的工具数据结构与这里兼容
+const TOOLS = TOOLS_DATA;
+
   chatgpt: {
     name: 'ChatGPT', icon: '💬', color: '#10b981',
     category: 'AI写作', users: '1亿+用户', rating: 4.8, price: '免费/$20月',
