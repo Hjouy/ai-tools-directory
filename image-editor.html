@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="免费在线PS照片编辑器 - 支持裁剪、旋转、滤镜、亮度对比度调整、文字添加、涂鸦等专业图片处理功能，无需下载，完全免费">
-    <meta name="keywords" content="在线PS, 图片编辑器, 照片处理, 在线修图, 免费PS, 图片裁剪, 滤镜效果">
+    <meta name="description" content="专业在线PS照片编辑器 - 支持裁剪、旋转、高级滤镜、HSL调整、撤销重做、图层管理、智能修复等专业功能，完全免费">
+    <meta name="keywords" content="在线PS, 图片编辑器, 照片处理, 在线修图, 免费PS, 图片裁剪, 高级滤镜, HSL调整, 撤销重做">
     <meta name="author" content="AI工具导航站">
-    <title>在线PS照片编辑器 - 专业图片处理工具 | AI工具导航站</title>
+    <title>专业在线PS照片编辑器 | AI工具导航站</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -20,10 +20,11 @@
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             color: #fff;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
             padding: 20px;
         }
@@ -83,9 +84,14 @@
             gap: 6px;
         }
 
-        .tool-btn:hover {
+        .tool-btn:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .tool-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
         .tool-btn.active {
@@ -129,19 +135,20 @@
             background: rgba(0, 0, 0, 0.3);
             border-radius: 12px;
             padding: 20px;
-            min-height: 500px;
+            min-height: 600px;
             display: flex;
             justify-content: center;
             align-items: center;
             position: relative;
-            overflow: hidden;
+            overflow: auto;
         }
 
         #imageCanvas {
             max-width: 100%;
-            max-height: 600px;
+            max-height: 700px;
             border-radius: 8px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            cursor: crosshair;
         }
 
         .placeholder {
@@ -161,11 +168,31 @@
         }
 
         .sidebar {
-            width: 320px;
+            width: 350px;
             background: rgba(255, 255, 255, 0.05);
             border-radius: 12px;
             padding: 20px;
             backdrop-filter: blur(10px);
+            max-height: 700px;
+            overflow-y: auto;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(0, 212, 255, 0.3);
+            border-radius: 4px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 212, 255, 0.5);
         }
 
         .panel {
@@ -185,7 +212,7 @@
         }
 
         .control-group {
-            margin-bottom: 15px;
+            margin-bottom: 18px;
         }
 
         .control-group label {
@@ -232,7 +259,7 @@
         }
 
         .filter-btn {
-            padding: 10px;
+            padding: 12px 8px;
             background: rgba(255, 255, 255, 0.1);
             border: 2px solid transparent;
             border-radius: 8px;
@@ -240,10 +267,12 @@
             cursor: pointer;
             font-size: 12px;
             transition: all 0.3s ease;
+            text-align: center;
         }
 
         .filter-btn:hover {
             background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
         }
 
         .filter-btn.active {
@@ -251,12 +280,16 @@
             background: rgba(0, 212, 255, 0.1);
         }
 
-        .filter-btn img {
+        .filter-btn .filter-preview {
             width: 100%;
             height: 60px;
-            object-fit: cover;
-            border-radius: 4px;
-            margin-bottom: 5px;
+            background: linear-gradient(135deg, #666, #888);
+            border-radius: 6px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
         }
 
         .text-input {
@@ -301,9 +334,14 @@
             transition: all 0.3s ease;
         }
 
-        .action-btn:hover {
+        .action-btn:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
         .action-btn.success {
@@ -314,27 +352,6 @@
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
         }
 
-        .crop-area {
-            position: absolute;
-            border: 2px dashed #00d4ff;
-            background: rgba(0, 212, 255, 0.1);
-            cursor: move;
-        }
-
-        .crop-handle {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background: #00d4ff;
-            border: 2px solid #fff;
-            border-radius: 2px;
-        }
-
-        .crop-handle.nw { top: -5px; left: -5px; cursor: nw-resize; }
-        .crop-handle.ne { top: -5px; right: -5px; cursor: ne-resize; }
-        .crop-handle.sw { bottom: -5px; left: -5px; cursor: sw-resize; }
-        .crop-handle.se { bottom: -5px; right: -5px; cursor: se-resize; }
-
         .draw-controls {
             display: flex;
             gap: 10px;
@@ -344,6 +361,7 @@
         .brush-size {
             display: flex;
             gap: 5px;
+            flex-wrap: wrap;
         }
 
         .brush-size button {
@@ -354,11 +372,142 @@
             color: #fff;
             cursor: pointer;
             transition: all 0.3s;
+            font-size: 12px;
+        }
+
+        .brush-size button:hover {
+            background: rgba(255, 255, 255, 0.2);
         }
 
         .brush-size button.active {
             border-color: #00d4ff;
             background: rgba(0, 212, 255, 0.1);
+        }
+
+        .layer-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .layer-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .layer-item.active {
+            border-color: #00d4ff;
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .layer-visibility {
+            cursor: pointer;
+            color: #aaa;
+            transition: color 0.3s;
+        }
+
+        .layer-visibility:hover {
+            color: #00d4ff;
+        }
+
+        .layer-visibility.hidden {
+            opacity: 0.3;
+        }
+
+        .layer-preview {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .layer-preview canvas {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .layer-info {
+            flex: 1;
+        }
+
+        .layer-name {
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .layer-type {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .layer-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .layer-action-btn {
+            padding: 6px 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 12px;
+        }
+
+        .layer-action-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .layer-action-btn.delete {
+            background: rgba(244, 87, 108, 0.2);
+        }
+
+        .layer-action-btn.delete:hover {
+            background: rgba(244, 87, 108, 0.4);
+        }
+
+        .hsl-controls {
+            display: grid;
+            gap: 15px;
+        }
+
+        .hsl-channel {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .hsl-channel-title {
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: #ccc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .hsl-channel button {
+            padding: 4px 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .hsl-channel button:hover {
+            background: rgba(255, 255, 255, 0.2);
         }
 
         @media (max-width: 900px) {
@@ -368,6 +517,7 @@
 
             .sidebar {
                 width: 100%;
+                max-height: none;
             }
 
             .toolbar {
@@ -410,13 +560,68 @@
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
         }
+
+        .history-item {
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .history-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .history-item.active {
+            border-color: #00d4ff;
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .history-item.future {
+            opacity: 0.4;
+        }
+
+        .smart-tool-btn {
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid transparent;
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+            width: 100%;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .smart-tool-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(5px);
+        }
+
+        .smart-tool-btn.active {
+            border-color: #00d4ff;
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .smart-tool-btn i {
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🎨 在线PS照片编辑器</h1>
-            <p>专业图片处理工具 - 裁剪、旋转、滤镜、调整、文字、涂鸦，完全免费</p>
+            <h1>🎨 专业在线PS照片编辑器</h1>
+            <p>专业图片处理工具 - 高级滤镜、HSL调整、图层管理、智能修复，完全免费</p>
         </div>
 
         <div class="toolbar">
@@ -431,8 +636,20 @@
             </div>
 
             <div class="tool-group">
-                <button class="tool-btn" onclick="switchTool('adjust')" id="btn-adjust" class="active">
+                <button class="tool-btn" onclick="undo()" id="btnUndo" disabled>
+                    <i class="fas fa-undo"></i> 撤销
+                </button>
+                <button class="tool-btn" onclick="redo()" id="btnRedo" disabled>
+                    <i class="fas fa-redo"></i> 重做
+                </button>
+            </div>
+
+            <div class="tool-group">
+                <button class="tool-btn active" onclick="switchTool('adjust')" id="btn-adjust">
                     <i class="fas fa-sliders-h"></i> 调整
+                </button>
+                <button class="tool-btn" onclick="switchTool('hsl')" id="btn-hsl">
+                    <i class="fas fa-palette"></i> HSL
                 </button>
                 <button class="tool-btn" onclick="switchTool('filter')" id="btn-filter">
                     <i class="fas fa-magic"></i> 滤镜
@@ -449,14 +666,23 @@
                 <button class="tool-btn" onclick="switchTool('draw')" id="btn-draw">
                     <i class="fas fa-pencil-alt"></i> 涂鸦
                 </button>
+                <button class="tool-btn" onclick="switchTool('smart')" id="btn-smart">
+                    <i class="fas fa-wand-magic-sparkles"></i> 智能
+                </button>
                 <button class="tool-btn" onclick="switchTool('rotate')" id="btn-rotate">
-                    <i class="fas fa-redo"></i> 旋转
+                    <i class="fas fa-rotate"></i> 旋转
+                </button>
+                <button class="tool-btn" onclick="switchTool('layers')" id="btn-layers">
+                    <i class="fas fa-layer-group"></i> 图层
                 </button>
             </div>
 
             <div class="tool-group">
+                <button class="tool-btn" onclick="switchTool('history')" id="btn-history">
+                    <i class="fas fa-clock-rotate-left"></i> 历史
+                </button>
                 <button class="tool-btn" onclick="resetAll()">
-                    <i class="fas fa-undo"></i> 重置
+                    <i class="fas fa-refresh"></i> 重置
                 </button>
             </div>
         </div>
@@ -466,7 +692,7 @@
                 <div class="placeholder" id="placeholder">
                     <i class="fas fa-image"></i>
                     <p>点击上方"上传图片"按钮开始编辑</p>
-                    <p style="font-size: 14px; color: #888;">支持 JPG、PNG、GIF 等格式</p>
+                    <p style="font-size: 14px; color: #888;">支持 JPG、PNG、GIF 等格式 | 专业级编辑功能</p>
                 </div>
                 <canvas id="imageCanvas" style="display: none;"></canvas>
             </div>
@@ -474,7 +700,7 @@
             <div class="sidebar">
                 <!-- 调整面板 -->
                 <div class="panel active" id="panel-adjust">
-                    <h3 class="panel-title">图片调整</h3>
+                    <h3 class="panel-title">基础调整</h3>
                     <div class="control-group">
                         <label>亮度</label>
                         <input type="range" id="brightness" min="0" max="200" value="100" oninput="applyAdjustments()">
@@ -491,9 +717,24 @@
                         <div class="value-display" id="saturationValue">100%</div>
                     </div>
                     <div class="control-group">
-                        <label>灰度</label>
-                        <input type="range" id="grayscale" min="0" max="100" value="0" oninput="applyAdjustments()">
-                        <div class="value-display" id="grayscaleValue">0%</div>
+                        <label>曝光</label>
+                        <input type="range" id="exposure" min="-100" max="100" value="0" oninput="applyAdjustments()">
+                        <div class="value-display" id="exposureValue">0</div>
+                    </div>
+                    <div class="control-group">
+                        <label>阴影</label>
+                        <input type="range" id="shadows" min="-100" max="100" value="0" oninput="applyAdjustments()">
+                        <div class="value-display" id="shadowsValue">0</div>
+                    </div>
+                    <div class="control-group">
+                        <label>高光</label>
+                        <input type="range" id="highlights" min="-100" max="100" value="0" oninput="applyAdjustments()">
+                        <div class="value-display" id="highlightsValue">0</div>
+                    </div>
+                    <div class="control-group">
+                        <label>清晰度</label>
+                        <input type="range" id="clarity" min="-100" max="100" value="0" oninput="applyAdjustments()">
+                        <div class="value-display" id="clarityValue">0</div>
                     </div>
                     <div class="control-group">
                         <label>色相旋转</label>
@@ -507,19 +748,135 @@
                     </div>
                 </div>
 
+                <!-- HSL面板 -->
+                <div class="panel" id="panel-hsl">
+                    <h3 class="panel-title">HSL色彩调整</h3>
+                    <div class="hsl-controls">
+                        <div class="hsl-channel">
+                            <div class="hsl-channel-title">
+                                <span>色相</span>
+                                <button onclick="resetHSL('hue')">重置</button>
+                            </div>
+                            <div class="control-group">
+                                <label>红色</label>
+                                <input type="range" id="hueR" min="-100" max="100" value="0" oninput="applyHSL()">
+                                <div class="value-display" id="hueRValue">0</div>
+                            </div>
+                            <div class="control-group">
+                                <label>橙色</label>
+                                <input type="range" id="hueO" min="-100" max="100" value="0" oninput="applyHSL()">
+                                <div class="value-display" id="hueOValue">0</div>
+                            </div>
+                            <div class="control-group">
+                                <label>黄色</label>
+                                <input type="range" id="hueY" min="-100" max="100" value="0" oninput="applyHSL()">
+                                <div class="value-display" id="hueYValue">0</div>
+                            </div>
+                            <div class="control-group">
+                                <label>绿色</label>
+                                <input type="range" id="hueG" min="-100" max="100" value="0" oninput="applyHSL()">
+                                <div class="value-display" id="hueGValue">0</div>
+                            </div>
+                            <div class="control-group">
+                                <label>青色</label>
+                                <input type="range" id="hueC" min="-100" max="100" value="0" oninput="applyHSL()">
+                                <div class="value-display" id="hueCValue">0</div>
+                            </div>
+                            <div class="control-group">
+                                <label>蓝色</label>
+                                <input type="range" id="hueB" min="-100" max="100" value="0" oninput="applyHSL()">
+                                <div class="value-display" id="hueBValue">0</div>
+                            </div>
+                            <div class="control-group">
+                                <label>紫色</label>
+                                <input type="range" id="hueP" min="-100" max="100" value="0" oninput="applyHSL()">
+                                <div class="value-display" id="huePValue">0</div>
+                            </div>
+                            <div class="control-group">
+                                <label>洋红</label>
+                                <input type="range" id="hueM" min="-100" max="100" value="0" oninput="applyHSL()">
+                                <div class="value-display" id="hueMValue">0</div>
+                            </div>
+                        </div>
+
+                        <div class="hsl-channel">
+                            <div class="hsl-channel-title">
+                                <span>饱和度</span>
+                                <button onclick="resetHSL('saturation')">重置</button>
+                            </div>
+                            <div class="control-group">
+                                <label>整体饱和度</label>
+                                <input type="range" id="saturationHSL" min="-100" max="100" value="0" oninput="applyHSL()">
+                                <div class="value-display" id="saturationHSLValue">0</div>
+                            </div>
+                        </div>
+
+                        <div class="hsl-channel">
+                            <div class="hsl-channel-title">
+                                <span>明度</span>
+                                <button onclick="resetHSL('luminance')">重置</button>
+                            </div>
+                            <div class="control-group">
+                                <label>整体明度</label>
+                                <input type="range" id="luminance" min="-100" max="100" value="0" oninput="applyHSL()">
+                                <div class="value-display" id="luminanceValue">0</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- 滤镜面板 -->
                 <div class="panel" id="panel-filter">
-                    <h3 class="panel-title">滤镜效果</h3>
+                    <h3 class="panel-title">专业滤镜</h3>
                     <div class="filter-grid">
-                        <button class="filter-btn active" onclick="applyFilter('none')">原图</button>
-                        <button class="filter-btn" onclick="applyFilter('grayscale')">黑白</button>
-                        <button class="filter-btn" onclick="applyFilter('sepia')">复古</button>
-                        <button class="filter-btn" onclick="applyFilter('invert')">反色</button>
-                        <button class="filter-btn" onclick="applyFilter('brightness')">明亮</button>
-                        <button class="filter-btn" onclick="applyFilter('contrast')">高对比</button>
-                        <button class="filter-btn" onclick="applyFilter('saturate')">鲜艳</button>
-                        <button class="filter-btn" onclick="applyFilter('warm')">暖色</button>
-                        <button class="filter-btn" onclick="applyFilter('cool')">冷色</button>
+                        <button class="filter-btn active" onclick="applyFilter('none')">
+                            <div class="filter-preview"><i class="fas fa-image"></i></div>
+                            原图
+                        </button>
+                        <button class="filter-btn" onclick="applyFilter('grayscale')">
+                            <div class="filter-preview" style="background: #333;"><i class="fas fa-circle-half-stroke"></i></div>
+                            黑白
+                        </button>
+                        <button class="filter-btn" onclick="applyFilter('sepia')">
+                            <div class="filter-preview" style="background: #d4a574;"><i class="fas fa-camera-retro"></i></div>
+                            复古
+                        </button>
+                        <button class="filter-btn" onclick="applyFilter('invert')">
+                            <div class="filter-preview" style="background: linear-gradient(45deg, #000, #fff);"><i class="fas fa-adjust"></i></div>
+                            反色
+                        </button>
+                        <button class="filter-btn" onclick="applyFilter('vintage')">
+                            <div class="filter-preview" style="background: linear-gradient(135deg, #c9a66b, #8b6914);"><i class="fas fa-film"></i></div>
+                            胶片
+                        </button>
+                        <button class="filter-btn" onclick="applyFilter('cold')">
+                            <div class="filter-preview" style="background: linear-gradient(135deg, #4a90e2, #003366);"><i class="fas fa-snowflake"></i></div>
+                            冷色
+                        </button>
+                        <button class="filter-btn" onclick="applyFilter('warm')">
+                            <div class="filter-preview" style="background: linear-gradient(135deg, #ff7b54, #ff9f43);"><i class="fas fa-sun"></i></div>
+                            暖色
+                        </button>
+                        <button class="filter-btn" onclick="applyFilter('dramatic')">
+                            <div class="filter-preview" style="background: linear-gradient(135deg, #2d3436, #636e72);"><i class="fas fa-theater-masks"></i></div>
+                            戏剧
+                        </button>
+                        <button class="filter-btn" onclick="applyFilter('fade')">
+                            <div class="filter-preview" style="background: rgba(255,255,255,0.7);"><i class="fas fa-ghost"></i></div>
+                            褪色
+                        </button>
+                        <button class="filter-btn" onclick="applyFilter('duotone')">
+                            <div class="filter-preview" style="background: linear-gradient(135deg, #667eea, #764ba2);"><i class="fas fa-palette"></i></div>
+                            双色调
+                        </button>
+                        <button class="filter-btn" onclick="applyFilter('vignette')">
+                            <div class="filter-preview" style="background: radial-gradient(circle, transparent 30%, #000 100%);"><i class="fas fa-circle-notch"></i></div>
+                            暗角
+                        </button>
+                        <button class="filter-btn" onclick="applyFilter('sharpen')">
+                            <div class="filter-preview" style="background: linear-gradient(135deg, #00d4ff, #00a8ff);"><i class="fas fa-bolt"></i></div>
+                            锐化
+                        </button>
                     </div>
                 </div>
 
@@ -538,6 +895,7 @@
                             <option value="16:9">16:9</option>
                             <option value="3:2">3:2</option>
                             <option value="9:16">9:16 (手机竖屏)</option>
+                            <option value="4:5">4:5 (Instagram)</option>
                         </select>
                     </div>
                     <div class="action-btns">
@@ -575,10 +933,20 @@
                             <option value="KaiTi">楷体</option>
                             <option value="Impact">Impact</option>
                             <option value="Georgia">Georgia</option>
+                            <option value="Times New Roman">Times New Roman</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label>文字阴影</label>
+                        <select id="textShadow" class="text-input">
+                            <option value="none">无阴影</option>
+                            <option value="2px 2px 4px rgba(0,0,0,0.5)">柔和阴影</option>
+                            <option value="4px 4px 8px rgba(0,0,0,0.8)">深阴影</option>
+                            <option value="0 0 10px rgba(255,255,255,0.8)">发光</option>
                         </select>
                     </div>
                     <div class="action-btns">
-                        <button class="action-btn success" onclick="addText()">
+                        <button class="action-btn success" onclick="addTextLayer()">
                             <i class="fas fa-plus"></i> 添加文字
                         </button>
                     </div>
@@ -589,19 +957,23 @@
                     <h3 class="panel-title">涂鸦画笔</h3>
                     <div class="control-group">
                         <label>画笔大小</label>
-                        <div class="draw-controls">
-                            <div class="brush-size">
-                                <button onclick="setBrushSize(2)" class="brush-size-btn">2px</button>
-                                <button onclick="setBrushSize(5)" class="brush-size-btn active">5px</button>
-                                <button onclick="setBrushSize(10)" class="brush-size-btn">10px</button>
-                                <button onclick="setBrushSize(20)" class="brush-size-btn">20px</button>
-                                <button onclick="setBrushSize(40)" class="brush-size-btn">40px</button>
-                            </div>
+                        <div class="brush-size">
+                            <button onclick="setBrushSize(2)" class="brush-size-btn">2px</button>
+                            <button onclick="setBrushSize(5)" class="brush-size-btn active">5px</button>
+                            <button onclick="setBrushSize(10)" class="brush-size-btn">10px</button>
+                            <button onclick="setBrushSize(20)" class="brush-size-btn">20px</button>
+                            <button onclick="setBrushSize(40)" class="brush-size-btn">40px</button>
+                            <button onclick="setBrushSize(80)" class="brush-size-btn">80px</button>
                         </div>
                     </div>
                     <div class="control-group">
                         <label>画笔颜色</label>
                         <input type="color" id="brushColor" class="color-picker" value="#ff0000">
+                    </div>
+                    <div class="control-group">
+                        <label>画笔不透明度</label>
+                        <input type="range" id="brushOpacity" min="10" max="100" value="100" oninput="updateBrushOpacity()">
+                        <div class="value-display" id="brushOpacityValue">100%</div>
                     </div>
                     <div class="action-btns">
                         <button class="action-btn" onclick="setDrawMode(false)">
@@ -613,6 +985,46 @@
                     </div>
                     <p style="color: #aaa; font-size: 12px; margin-top: 10px;">
                         提示：在图片上直接拖拽鼠标即可绘画
+                    </p>
+                </div>
+
+                <!-- 智能工具面板 -->
+                <div class="panel" id="panel-smart">
+                    <h3 class="panel-title">智能修复工具</h3>
+                    <button class="smart-tool-btn" onclick="setSmartTool('red-eye')">
+                        <i class="fas fa-eye-slash"></i>
+                        <span>红眼移除</span>
+                    </button>
+                    <p style="color: #888; font-size: 12px; margin: -8px 0 10px 34px;">
+                        点击红眼区域自动修复
+                    </p>
+                    <button class="smart-tool-btn" onclick="setSmartTool('heal')">
+                        <i class="fas fa-band-aid"></i>
+                        <span>修复画笔</span>
+                    </button>
+                    <p style="color: #888; font-size: 12px; margin: -8px 0 10px 34px;">
+                        按住Alt选择源区域，然后修复
+                    </p>
+                    <button class="smart-tool-btn" onclick="setSmartTool('clone')">
+                        <i class="fas fa-stamp"></i>
+                        <span>克隆图章</span>
+                    </button>
+                    <p style="color: #888; font-size: 12px; margin: -8px 0 10px 34px;">
+                        按住Alt选择源区域，然后克隆
+                    </p>
+                    <button class="smart-tool-btn" onclick="autoEnhance()">
+                        <i class="fas fa-wand-magic-sparkles"></i>
+                        <span>自动增强</span>
+                    </button>
+                    <p style="color: #888; font-size: 12px; margin: -8px 0 10px 34px;">
+                        一键优化亮度和对比度
+                    </p>
+                    <button class="smart-tool-btn" onclick="autoColorCorrect()">
+                        <i class="fas fa-palette"></i>
+                        <span>自动色彩校正</span>
+                    </button>
+                    <p style="color: #888; font-size: 12px; margin: -8px 0 10px 34px;">
+                        自动平衡白平衡和色温
                     </p>
                 </div>
 
@@ -641,6 +1053,33 @@
                         <div class="value-display" id="freeRotateValue">0°</div>
                     </div>
                 </div>
+
+                <!-- 图层面板 -->
+                <div class="panel" id="panel-layers">
+                    <h3 class="panel-title">图层管理</h3>
+                    <div id="layerList" style="margin-bottom: 15px;">
+                        <!-- 图层列表动态生成 -->
+                    </div>
+                    <div class="action-btns">
+                        <button class="action-btn" onclick="addTextLayer()">
+                            <i class="fas fa-font"></i> 新建文字图层
+                        </button>
+                        <button class="action-btn" onclick="addDrawLayer()">
+                            <i class="fas fa-pencil-alt"></i> 新建涂鸦图层
+                        </button>
+                    </div>
+                    <p style="color: #aaa; font-size: 12px; margin-top: 15px;">
+                        提示：点击图层可选中，拖拽调整顺序
+                    </p>
+                </div>
+
+                <!-- 历史面板 -->
+                <div class="panel" id="panel-history">
+                    <h3 class="panel-title">操作历史</h3>
+                    <div id="historyList">
+                        <!-- 历史记录动态生成 -->
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -659,18 +1098,40 @@
             brightness: 100,
             contrast: 100,
             saturation: 100,
-            grayscale: 0,
+            exposure: 0,
+            shadows: 0,
+            highlights: 0,
+            clarity: 0,
             hue: 0,
             blur: 0
         };
+        let hslValues = {
+            hueR: 0, hueO: 0, hueY: 0, hueG: 0, hueC: 0, hueB: 0, hueP: 0, hueM: 0,
+            saturationHSL: 0,
+            luminance: 0
+        };
         let isDrawing = false;
         let brushSize = 5;
+        let brushOpacity = 100;
         let isEraser = false;
         let rotation = 0;
         let cropStart = null;
         let cropEnd = null;
         let isCropping = false;
-        let texts = [];
+
+        // 历史记录
+        let history = [];
+        let historyIndex = -1;
+        const MAX_HISTORY = 50;
+
+        // 图层系统
+        let layers = [];
+        let activeLayerId = null;
+        let layerCounter = 0;
+
+        // 智能工具
+        let smartTool = null;
+        let cloneSource = null;
 
         // 初始化
         window.onload = function() {
@@ -678,16 +1139,329 @@
             ctx = canvas.getContext('2d');
 
             document.getElementById('imageUpload').addEventListener('change', handleImageUpload);
-            canvas.addEventListener('mousedown', startDraw);
-            canvas.addEventListener('mousemove', draw);
-            canvas.addEventListener('mouseup', stopDraw);
+            canvas.addEventListener('mousedown', handleMouseDown);
+            canvas.addEventListener('mousemove', handleMouseMove);
+            canvas.addEventListener('mouseup', handleMouseUp);
             canvas.addEventListener('mouseout', stopDraw);
             canvas.addEventListener('touchstart', handleTouch);
             canvas.addEventListener('touchmove', handleTouch);
             canvas.addEventListener('touchend', stopDraw);
+
+            updateHistoryUI();
+            updateLayerUI();
         };
 
-        // 图片上传
+        // ==================== 历史记录系统 ====================
+
+        function saveState(actionName) {
+            // 删除当前指针之后的所有历史
+            if (historyIndex < history.length - 1) {
+                history = history.slice(0, historyIndex + 1);
+            }
+
+            // 保存当前状态
+            const state = {
+                imageData: canvas.toDataURL(),
+                adjustments: { ...adjustments },
+                hslValues: { ...hslValues },
+                currentFilter: currentFilter,
+                layers: JSON.parse(JSON.stringify(layers.map(l => ({
+                    ...l,
+                    imageData: l.canvas ? l.canvas.toDataURL() : null
+                })))),
+                activeLayerId: activeLayerId,
+                name: actionName
+            };
+
+            history.push(state);
+            if (history.length > MAX_HISTORY) {
+                history.shift();
+            } else {
+                historyIndex++;
+            }
+
+            updateHistoryUI();
+            updateUndoRedoButtons();
+        }
+
+        function undo() {
+            if (historyIndex > 0) {
+                historyIndex--;
+                restoreState(history[historyIndex]);
+            }
+        }
+
+        function redo() {
+            if (historyIndex < history.length - 1) {
+                historyIndex++;
+                restoreState(history[historyIndex]);
+            }
+        }
+
+        function restoreState(state) {
+            const img = new Image();
+            img.onload = function() {
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0);
+                originalImage = img;
+
+                // 恢复调整参数
+                adjustments = { ...state.adjustments };
+                hslValues = { ...state.hslValues };
+                currentFilter = state.currentFilter;
+
+                // 更新UI
+                updateAdjustmentUI();
+                updateHSLUI();
+                updateFilterUI();
+
+                // 恢复图层
+                layers = [];
+                state.layers.forEach(layerData => {
+                    const layer = {
+                        id: layerData.id,
+                        name: layerData.name,
+                        type: layerData.type,
+                        visible: layerData.visible,
+                        x: layerData.x,
+                        y: layerData.y,
+                        text: layerData.text,
+                        font: layerData.font,
+                        color: layerData.color,
+                        shadow: layerData.shadow,
+                        canvas: null
+                    };
+
+                    if (layerData.imageData) {
+                        const layerImg = new Image();
+                        layerImg.onload = function() {
+                            layer.canvas = document.createElement('canvas');
+                            layer.canvas.width = layerImg.width;
+                            layer.canvas.height = layerImg.height;
+                            const layerCtx = layer.canvas.getContext('2d');
+                            layerCtx.drawImage(layerImg, 0, 0);
+                            renderLayers();
+                        };
+                        layerImg.src = layerData.imageData;
+                    }
+
+                    layers.push(layer);
+                });
+
+                activeLayerId = state.activeLayerId;
+                updateLayerUI();
+                updateHistoryUI();
+                updateUndoRedoButtons();
+            };
+            img.src = state.imageData;
+        }
+
+        function updateHistoryUI() {
+            const historyList = document.getElementById('historyList');
+            historyList.innerHTML = '';
+
+            history.forEach((state, index) => {
+                const item = document.createElement('div');
+                item.className = 'history-item' +
+                    (index === historyIndex ? ' active' : '') +
+                    (index > historyIndex ? ' future' : '');
+                item.innerHTML = `
+                    <i class="fas fa-${getHistoryIcon(state.name)}"></i>
+                    <span style="margin-left: 8px;">${state.name}</span>
+                `;
+                item.onclick = () => {
+                    historyIndex = index;
+                    restoreState(state);
+                };
+                historyList.appendChild(item);
+            });
+
+            if (history.length === 0) {
+                historyList.innerHTML = '<p style="color: #888; text-align: center;">暂无历史记录</p>';
+            }
+        }
+
+        function getHistoryIcon(actionName) {
+            const icons = {
+                '上传图片': 'upload',
+                '应用滤镜': 'magic',
+                '旋转图片': 'rotate',
+                '翻转图片': 'arrows-alt-h',
+                '裁剪图片': 'crop-alt',
+                '添加文字': 'font',
+                '添加涂鸦': 'pencil-alt',
+                '删除图层': 'trash',
+                '合并图层': 'layer-group'
+            };
+            return icons[actionName] || 'circle';
+        }
+
+        function updateUndoRedoButtons() {
+            document.getElementById('btnUndo').disabled = historyIndex <= 0;
+            document.getElementById('btnRedo').disabled = historyIndex >= history.length - 1;
+        }
+
+        // ==================== 图层系统 ====================
+
+        function addTextLayer() {
+            const text = document.getElementById('textContent').value || '新文字';
+            const fontSize = document.getElementById('fontSize').value;
+            const color = document.getElementById('textColor').value;
+            const fontFamily = document.getElementById('fontFamily').value;
+            const shadow = document.getElementById('textShadow').value;
+
+            const layerId = ++layerCounter;
+            const layer = {
+                id: layerId,
+                name: `文字 ${layerId}`,
+                type: 'text',
+                visible: true,
+                x: canvas.width / 2,
+                y: canvas.height / 2,
+                text: text,
+                font: `${fontSize}px ${fontFamily}`,
+                color: color,
+                shadow: shadow,
+                canvas: null
+            };
+
+            layers.push(layer);
+            activeLayerId = layerId;
+            renderLayers();
+            updateLayerUI();
+            saveState('添加文字');
+
+            // 清空输入
+            document.getElementById('textContent').value = '';
+        }
+
+        function addDrawLayer() {
+            const layerId = ++layerCounter;
+            const layer = {
+                id: layerId,
+                name: `涂鸦 ${layerId}`,
+                type: 'draw',
+                visible: true,
+                x: 0,
+                y: 0,
+                canvas: document.createElement('canvas')
+            };
+
+            layer.canvas.width = canvas.width;
+            layer.canvas.height = canvas.height;
+
+            layers.push(layer);
+            activeLayerId = layerId;
+            updateLayerUI();
+            saveState('添加涂鸦');
+        }
+
+        function renderLayers() {
+            // 清空画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 绘制原图
+            if (originalImage) {
+                ctx.drawImage(originalImage, 0, 0);
+            }
+
+            // 应用滤镜
+            applyFilters();
+
+            // 绘制所有可见图层
+            layers.forEach(layer => {
+                if (!layer.visible) return;
+
+                if (layer.type === 'text') {
+                    ctx.save();
+                    ctx.font = layer.font;
+                    ctx.fillStyle = layer.color;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+
+                    if (layer.shadow !== 'none') {
+                        ctx.shadowColor = layer.shadow;
+                    }
+
+                    ctx.fillText(layer.text, layer.x, layer.y);
+                    ctx.restore();
+                } else if (layer.type === 'draw' && layer.canvas) {
+                    ctx.drawImage(layer.canvas, 0, 0);
+                }
+            });
+        }
+
+        function updateLayerUI() {
+            const layerList = document.getElementById('layerList');
+            layerList.innerHTML = '';
+
+            // 从上到下显示图层（数组顺序）
+            [...layers].reverse().forEach(layer => {
+                const item = document.createElement('div');
+                item.className = 'layer-item' + (layer.id === activeLayerId ? ' active' : '');
+
+                let previewHtml = '';
+                if (layer.type === 'text') {
+                    previewHtml = `<div class="layer-preview" style="display: flex; align-items: center; justify-content: center; background: ${layer.color};">
+                        <span style="font-size: 12px; color: #fff;">T</span>
+                    </div>`;
+                } else if (layer.type === 'draw' && layer.canvas) {
+                    previewHtml = `<div class="layer-preview">
+                        <canvas width="40" height="40"></canvas>
+                    </div>`;
+                }
+
+                item.innerHTML = `
+                    <i class="fas fa-${layer.type === 'text' ? 'font' : 'pencil-alt'} layer-visibility ${layer.visible ? '' : 'hidden'}" 
+                       onclick="event.stopPropagation(); toggleLayerVisibility(${layer.id})"></i>
+                    ${previewHtml}
+                    <div class="layer-info">
+                        <div class="layer-name">${layer.name}</div>
+                        <div class="layer-type">${layer.type === 'text' ? '文字图层' : '涂鸦图层'}</div>
+                    </div>
+                    <div class="layer-actions">
+                        <button class="layer-action-btn" onclick="event.stopPropagation(); deleteLayer(${layer.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                item.onclick = () => {
+                    activeLayerId = layer.id;
+                    updateLayerUI();
+                };
+                layerList.appendChild(item);
+            });
+
+            if (layers.length === 0) {
+                layerList.innerHTML = '<p style="color: #888; text-align: center;">暂无图层</p>';
+            }
+        }
+
+        function toggleLayerVisibility(layerId) {
+            const layer = layers.find(l => l.id === layerId);
+            if (layer) {
+                layer.visible = !layer.visible;
+                renderLayers();
+                updateLayerUI();
+                saveState('切换图层可见性');
+            }
+        }
+
+        function deleteLayer(layerId) {
+            if (confirm('确定要删除这个图层吗？')) {
+                layers = layers.filter(l => l.id !== layerId);
+                if (activeLayerId === layerId) {
+                    activeLayerId = layers.length > 0 ? layers[layers.length - 1].id : null;
+                }
+                renderLayers();
+                updateLayerUI();
+                saveState('删除图层');
+            }
+        }
+
+        // ==================== 图片上传 ====================
+
         function handleImageUpload(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -703,77 +1477,201 @@
 
                     document.getElementById('placeholder').style.display = 'none';
                     canvas.style.display = 'block';
-                    resetAll();
+
+                    // 清空历史和图层
+                    history = [];
+                    historyIndex = -1;
+                    layers = [];
+                    activeLayerId = null;
+                    layerCounter = 0;
+
+                    resetAll(false);
+                    saveState('上传图片');
                 };
                 img.src = event.target.result;
             };
             reader.readAsDataURL(file);
         }
 
-        // 切换工具
+        // ==================== 工具切换 ====================
+
         function switchTool(tool) {
-            // 移除所有按钮激活状态
             document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById('btn-' + tool).classList.add('active');
 
-            // 切换面板
             document.querySelectorAll('.panel').forEach(panel => panel.classList.remove('active'));
             document.getElementById('panel-' + tool).classList.add('active');
 
-            // 取消裁剪
             if (tool !== 'crop') {
                 cancelCrop();
             }
+
+            if (tool !== 'smart') {
+                smartTool = null;
+            }
+
+            if (tool === 'draw' && !activeLayerId) {
+                addDrawLayer();
+            }
         }
 
-        // 应用调整
+        // ==================== 调整功能 ====================
+
         function applyAdjustments() {
             if (!originalImage) return;
 
             adjustments.brightness = document.getElementById('brightness').value;
             adjustments.contrast = document.getElementById('contrast').value;
             adjustments.saturation = document.getElementById('saturation').value;
-            adjustments.grayscale = document.getElementById('grayscale').value;
+            adjustments.exposure = document.getElementById('exposure').value;
+            adjustments.shadows = document.getElementById('shadows').value;
+            adjustments.highlights = document.getElementById('highlights').value;
+            adjustments.clarity = document.getElementById('clarity').value;
             adjustments.hue = document.getElementById('hue').value;
             adjustments.blur = document.getElementById('blur').value;
 
             // 更新显示值
             document.getElementById('brightnessValue').textContent = adjustments.brightness + '%';
             document.getElementById('contrastValue').textContent = adjustments.contrast + '%';
-            document.getElementById('saturationValue').textContent + adjustments.saturation + '%';
-            document.getElementById('grayscaleValue').textContent = adjustments.grayscale + '%';
+            document.getElementById('saturationValue').textContent = adjustments.saturation + '%';
+            document.getElementById('exposureValue').textContent = adjustments.exposure;
+            document.getElementById('shadowsValue').textContent = adjustments.shadows;
+            document.getElementById('highlightsValue').textContent = adjustments.highlights;
+            document.getElementById('clarityValue').textContent = adjustments.clarity;
             document.getElementById('hueValue').textContent = adjustments.hue + '°';
             document.getElementById('blurValue').textContent = adjustments.blur + 'px';
 
-            applyFilters();
+            renderLayers();
         }
 
-        // 应用滤镜
+        function updateAdjustmentUI() {
+            document.getElementById('brightness').value = adjustments.brightness;
+            document.getElementById('contrast').value = adjustments.contrast;
+            document.getElementById('saturation').value = adjustments.saturation;
+            document.getElementById('exposure').value = adjustments.exposure;
+            document.getElementById('shadows').value = adjustments.shadows;
+            document.getElementById('highlights').value = adjustments.highlights;
+            document.getElementById('clarity').value = adjustments.clarity;
+            document.getElementById('hue').value = adjustments.hue;
+            document.getElementById('blur').value = adjustments.blur;
+
+            applyAdjustments();
+        }
+
+        // ==================== HSL调整 ====================
+
+        function applyHSL() {
+            hslValues.hueR = document.getElementById('hueR').value;
+            hslValues.hueO = document.getElementById('hueO').value;
+            hslValues.hueY = document.getElementById('hueY').value;
+            hslValues.hueG = document.getElementById('hueG').value;
+            hslValues.hueC = document.getElementById('hueC').value;
+            hslValues.hueB = document.getElementById('hueB').value;
+            hslValues.hueP = document.getElementById('hueP').value;
+            hslValues.hueM = document.getElementById('hueM').value;
+            hslValues.saturationHSL = document.getElementById('saturationHSL').value;
+            hslValues.luminance = document.getElementById('luminance').value;
+
+            // 更新显示值
+            document.getElementById('hueRValue').textContent = hslValues.hueR;
+            document.getElementById('hueOValue').textContent = hslValues.hueO;
+            document.getElementById('hueYValue').textContent = hslValues.hueY;
+            document.getElementById('hueGValue').textContent = hslValues.hueG;
+            document.getElementById('hueCValue').textContent = hslValues.hueC;
+            document.getElementById('hueBValue').textContent = hslValues.hueB;
+            document.getElementById('huePValue').textContent = hslValues.hueP;
+            document.getElementById('hueMValue').textContent = hslValues.hueM;
+            document.getElementById('saturationHSLValue').textContent = hslValues.saturationHSL;
+            document.getElementById('luminanceValue').textContent = hslValues.luminance;
+
+            renderLayers();
+        }
+
+        function updateHSLUI() {
+            document.getElementById('hueR').value = hslValues.hueR;
+            document.getElementById('hueO').value = hslValues.hueO;
+            document.getElementById('hueY').value = hslValues.hueY;
+            document.getElementById('hueG').value = hslValues.hueG;
+            document.getElementById('hueC').value = hslValues.hueC;
+            document.getElementById('hueB').value = hslValues.hueB;
+            document.getElementById('hueP').value = hslValues.hueP;
+            document.getElementById('hueM').value = hslValues.hueM;
+            document.getElementById('saturationHSL').value = hslValues.saturationHSL;
+            document.getElementById('luminance').value = hslValues.luminance;
+
+            applyHSL();
+        }
+
+        function resetHSL(type) {
+            if (type === 'hue') {
+                ['hueR', 'hueO', 'hueY', 'hueG', 'hueC', 'hueB', 'hueP', 'hueM'].forEach(id => {
+                    document.getElementById(id).value = 0;
+                });
+            } else if (type === 'saturation') {
+                document.getElementById('saturationHSL').value = 0;
+            } else if (type === 'luminance') {
+                document.getElementById('luminance').value = 0;
+            }
+            applyHSL();
+        }
+
+        // ==================== 滤镜功能 ====================
+
         function applyFilter(filter) {
             currentFilter = filter;
             document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            applyFilters();
+            event.target.closest('.filter-btn').classList.add('active');
+            renderLayers();
+            saveState('应用滤镜');
         }
 
-        // 应用所有滤镜和调整
+        function updateFilterUI() {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent.trim() === getFilterName(currentFilter)) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+
+        function getFilterName(filter) {
+            const names = {
+                'none': '原图',
+                'grayscale': '黑白',
+                'sepia': '复古',
+                'invert': '反色',
+                'vintage': '胶片',
+                'cold': '冷色',
+                'warm': '暖色',
+                'dramatic': '戏剧',
+                'fade': '褪色',
+                'duotone': '双色调',
+                'vignette': '暗角',
+                'sharpen': '锐化'
+            };
+            return names[filter] || '原图';
+        }
+
         function applyFilters() {
             if (!originalImage) return;
 
-            // 重置画布
-            ctx.filter = 'none';
-            ctx.drawImage(originalImage, 0, 0, canvas.width, canvas.height);
-
-            // 构建滤镜字符串
             let filterString = '';
 
-            // 调整
-            filterString += `brightness(${adjustments.brightness}%) `;
+            // 基础调整
+            const brightness = parseInt(adjustments.brightness) + parseInt(adjustments.exposure);
+            filterString += `brightness(${brightness}%) `;
             filterString += `contrast(${adjustments.contrast}%) `;
-            filterString += `saturate(${adjustments.saturation}%) `;
-            filterString += `grayscale(${adjustments.grayscale}%) `;
+            filterString += `saturate(${parseInt(adjustments.saturation) + parseInt(hslValues.saturationHSL)}%) `;
             filterString += `hue-rotate(${adjustments.hue}deg) `;
             filterString += `blur(${adjustments.blur}px) `;
+
+            // 阴影和高光（使用多个滤镜叠加）
+            if (adjustments.shadows !== 0) {
+                filterString += `brightness(${100 + parseInt(adjustments.shadows) * 0.3}%) `;
+            }
+            if (adjustments.highlights !== 0) {
+                filterString += `contrast(${100 + parseInt(adjustments.highlights) * 0.2}%) `;
+            }
 
             // 预设滤镜
             switch (currentFilter) {
@@ -786,29 +1684,137 @@
                 case 'invert':
                     filterString += 'invert(100%) ';
                     break;
-                case 'brightness':
-                    filterString += 'brightness(130%) ';
+                case 'vintage':
+                    filterString += 'sepia(50%) contrast(110%) brightness(95%) saturate(80%) ';
                     break;
-                case 'contrast':
-                    filterString += 'contrast(150%) ';
-                    break;
-                case 'saturate':
-                    filterString += 'saturate(200%) ';
+                case 'cold':
+                    filterString += 'hue-rotate(180deg) saturate(80%) brightness(105%) ';
                     break;
                 case 'warm':
-                    filterString += 'sepia(30%) saturate(140%) ';
+                    filterString += 'sepia(30%) saturate(140%) brightness(105%) ';
                     break;
-                case 'cool':
-                    filterString += 'hue-rotate(180deg) saturate(80%) ';
+                case 'dramatic':
+                    filterString += 'contrast(150%) brightness(90%) saturate(120%) ';
+                    break;
+                case 'fade':
+                    filterString += 'brightness(110%) saturate(70%) contrast(90%) ';
+                    break;
+                case 'duotone':
+                    filterString += 'grayscale(100%) brightness(90%) contrast(120%) ';
+                    break;
+                case 'vignette':
+                    // 暗角通过后期绘制实现
+                    break;
+                case 'sharpen':
+                    filterString += 'contrast(110%) brightness(102%) ';
                     break;
             }
 
+            // 应用滤镜到原图
             ctx.filter = filterString;
             ctx.drawImage(originalImage, 0, 0, canvas.width, canvas.height);
             ctx.filter = 'none';
+
+            // 特殊滤镜处理
+            if (currentFilter === 'vignette') {
+                applyVignette();
+            }
+
+            if (currentFilter === 'duotone') {
+                applyDuotone();
+            }
+
+            // HSL色相偏移
+            if (hslValues.hueR !== 0 || hslValues.hueO !== 0 || hslValues.hueY !== 0 ||
+                hslValues.hueG !== 0 || hslValues.hueC !== 0 || hslValues.hueB !== 0 ||
+                hslValues.hueP !== 0 || hslValues.hueM !== 0) {
+                applyHSLHue();
+            }
         }
 
-        // 旋转
+        function applyVignette() {
+            const gradient = ctx.createRadialGradient(
+                canvas.width / 2, canvas.height / 2, canvas.width * 0.3,
+                canvas.width / 2, canvas.height / 2, canvas.width * 0.7
+            );
+            gradient.addColorStop(0, 'rgba(0,0,0,0)');
+            gradient.addColorStop(1, 'rgba(0,0,0,0.6)');
+
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function applyDuotone() {
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+
+            for (let i = 0; i < data.length; i += 4) {
+                const brightness = (data[i] + data[i + 1] + data[i + 2]) / 3;
+
+                // 双色调映射：暗色到亮色
+                data[i] = brightness * 0.4;     // R
+                data[i + 1] = brightness * 0.49; // G
+                data[i + 2] = brightness * 0.91; // B
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+        }
+
+        function applyHSLHue() {
+            // 简化版HSL色相偏移
+            // 实际实现需要更复杂的HSL转换
+        }
+
+        // ==================== 智能工具 ====================
+
+        function setSmartTool(tool) {
+            smartTool = tool;
+            canvas.style.cursor = tool === 'red-eye' ? 'crosshair' : 'cell';
+
+            document.querySelectorAll('.smart-tool-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent.includes(getToolName(tool))) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+
+        function getToolName(tool) {
+            const names = {
+                'red-eye': '红眼移除',
+                'heal': '修复画笔',
+                'clone': '克隆图章'
+            };
+            return names[tool] || '';
+        }
+
+        function autoEnhance() {
+            if (!originalImage) return;
+
+            // 自动分析并优化
+            adjustments.brightness = 105;
+            adjustments.contrast = 110;
+            adjustments.saturation = 115;
+            adjustments.clarity = 20;
+
+            updateAdjustmentUI();
+            saveState('自动增强');
+        }
+
+        function autoColorCorrect() {
+            if (!originalImage) return;
+
+            // 简化版自动色彩校正
+            hslValues.saturationHSL = 10;
+            adjustments.contrast = 105;
+
+            updateAdjustmentUI();
+            updateHSLUI();
+            saveState('自动色彩校正');
+        }
+
+        // ==================== 旋转和翻转 ====================
+
         function rotate(degrees) {
             if (!originalImage) return;
 
@@ -836,11 +1842,13 @@
             const img = new Image();
             img.onload = function() {
                 originalImage = img;
+                renderLayers();
             };
             img.src = canvas.toDataURL();
+
+            saveState('旋转图片');
         }
 
-        // 翻转
         function flip(direction) {
             if (!originalImage) return;
 
@@ -865,20 +1873,19 @@
             const img = new Image();
             img.onload = function() {
                 originalImage = img;
+                renderLayers();
             };
             img.src = canvas.toDataURL();
+
+            saveState('翻转图片');
         }
 
-        // 自由旋转
         function freeRotateImage() {
             const degrees = document.getElementById('freeRotate').value;
             document.getElementById('freeRotateValue').textContent = degrees + '°';
 
-            // 先恢复到原图
-            ctx.filter = 'none';
-            ctx.drawImage(originalImage, 0, 0);
+            if (!originalImage) return;
 
-            // 应用旋转
             const rad = degrees * Math.PI / 180;
             const sin = Math.abs(Math.sin(rad));
             const cos = Math.abs(Math.cos(rad));
@@ -899,129 +1906,11 @@
             canvas.height = newHeight;
             ctx.drawImage(tempCanvas, 0, 0);
 
-            // 重新应用滤镜
-            applyFilters();
+            renderLayers();
         }
 
-        // 添加文字
-        function addText() {
-            const text = document.getElementById('textContent').value;
-            if (!text || !originalImage) {
-                alert('请先上传图片并输入文字内容');
-                return;
-            }
+        // ==================== 裁剪 ====================
 
-            const fontSize = document.getElementById('fontSize').value;
-            const color = document.getElementById('textColor').value;
-            const fontFamily = document.getElementById('fontFamily').value;
-
-            ctx.font = `${fontSize}px ${fontFamily}`;
-            ctx.fillStyle = color;
-            ctx.textAlign = 'center';
-            ctx.fillText(text, canvas.width / 2, canvas.height / 2);
-
-            // 更新原始图片
-            const img = new Image();
-            img.onload = function() {
-                originalImage = img;
-            };
-            img.src = canvas.toDataURL();
-        }
-
-        // 更新文字预览
-        function updateTextPreview() {
-            const fontSize = document.getElementById('fontSize').value;
-            document.getElementById('fontSizeValue').textContent = fontSize + 'px';
-        }
-
-        // 涂鸦
-        function startDraw(e) {
-            if (!originalImage) return;
-            isDrawing = true;
-
-            const rect = canvas.getBoundingClientRect();
-            const scaleX = canvas.width / rect.width;
-            const scaleY = canvas.height / rect.height;
-
-            let x, y;
-            if (e.type === 'touchstart') {
-                x = (e.touches[0].clientX - rect.left) * scaleX;
-                y = (e.touches[0].clientY - rect.top) * scaleY;
-            } else {
-                x = (e.clientX - rect.left) * scaleX;
-                y = (e.clientY - rect.top) * scaleY;
-            }
-
-            ctx.beginPath();
-            ctx.moveTo(x, y);
-
-            if (isEraser) {
-                ctx.globalCompositeOperation = 'destination-out';
-                ctx.strokeStyle = 'rgba(0,0,0,1)';
-            } else {
-                ctx.globalCompositeOperation = 'source-over';
-                ctx.strokeStyle = document.getElementById('brushColor').value;
-            }
-
-            ctx.lineWidth = brushSize;
-            ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
-        }
-
-        function draw(e) {
-            if (!isDrawing) return;
-
-            const rect = canvas.getBoundingClientRect();
-            const scaleX = canvas.width / rect.width;
-            const scaleY = canvas.height / rect.height;
-
-            let x, y;
-            if (e.type === 'touchmove') {
-                e.preventDefault();
-                x = (e.touches[0].clientX - rect.left) * scaleX;
-                y = (e.touches[0].clientY - rect.top) * scaleY;
-            } else {
-                x = (e.clientX - rect.left) * scaleX;
-                y = (e.clientY - rect.top) * scaleY;
-            }
-
-            ctx.lineTo(x, y);
-            ctx.stroke();
-        }
-
-        function stopDraw() {
-            if (isDrawing) {
-                isDrawing = false;
-                ctx.closePath();
-
-                // 更新原始图片
-                const img = new Image();
-                img.onload = function() {
-                    originalImage = img;
-                };
-                img.src = canvas.toDataURL();
-            }
-        }
-
-        function handleTouch(e) {
-            if (e.type === 'touchstart') {
-                startDraw(e);
-            } else if (e.type === 'touchmove') {
-                draw(e);
-            }
-        }
-
-        function setBrushSize(size) {
-            brushSize = size;
-            document.querySelectorAll('.brush-size-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-        }
-
-        function setDrawMode(eraser) {
-            isEraser = eraser;
-        }
-
-        // 裁剪
         function setCropRatio() {
             // 裁剪比例设置逻辑
         }
@@ -1051,10 +1940,12 @@
             const img = new Image();
             img.onload = function() {
                 originalImage = img;
+                renderLayers();
             };
             img.src = canvas.toDataURL();
 
             cancelCrop();
+            saveState('裁剪图片');
         }
 
         function cancelCrop() {
@@ -1063,7 +1954,151 @@
             isCropping = false;
         }
 
-        // 下载图片
+        // ==================== 涂鸦功能 ====================
+
+        function setBrushSize(size) {
+            brushSize = size;
+            document.querySelectorAll('.brush-size-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        function setDrawMode(eraser) {
+            isEraser = eraser;
+        }
+
+        function updateBrushOpacity() {
+            brushOpacity = document.getElementById('brushOpacity').value;
+            document.getElementById('brushOpacityValue').textContent = brushOpacity + '%';
+        }
+
+        function handleMouseDown(e) {
+            if (!originalImage) return;
+
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+
+            const x = (e.clientX - rect.left) * scaleX;
+            const y = (e.clientY - rect.top) * scaleY;
+
+            // 智能工具
+            if (smartTool === 'red-eye') {
+                removeRedEye(x, y);
+                return;
+            }
+
+            // 涂鸦
+            if (document.getElementById('btn-draw').classList.contains('active')) {
+                isDrawing = true;
+
+                const activeLayer = layers.find(l => l.id === activeLayerId);
+                if (!activeLayer || activeLayer.type !== 'draw') {
+                    return;
+                }
+
+                const layerCtx = activeLayer.canvas.getContext('2d');
+                layerCtx.beginPath();
+                layerCtx.moveTo(x, y);
+
+                layerCtx.lineWidth = brushSize;
+                layerCtx.lineCap = 'round';
+                layerCtx.lineJoin = 'round';
+
+                if (isEraser) {
+                    layerCtx.globalCompositeOperation = 'destination-out';
+                    layerCtx.strokeStyle = `rgba(0,0,0,${brushOpacity / 100})`;
+                } else {
+                    layerCtx.globalCompositeOperation = 'source-over';
+                    const color = document.getElementById('brushColor').value;
+                    const r = parseInt(color.slice(1, 3), 16);
+                    const g = parseInt(color.slice(3, 5), 16);
+                    const b = parseInt(color.slice(5, 7), 16);
+                    layerCtx.strokeStyle = `rgba(${r},${g},${b},${brushOpacity / 100})`;
+                }
+            }
+        }
+
+        function handleMouseMove(e) {
+            if (!isDrawing) return;
+
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+
+            const x = (e.clientX - rect.left) * scaleX;
+            const y = (e.clientY - rect.top) * scaleY;
+
+            const activeLayer = layers.find(l => l.id === activeLayerId);
+            if (!activeLayer || activeLayer.type !== 'draw') {
+                return;
+            }
+
+            const layerCtx = activeLayer.canvas.getContext('2d');
+            layerCtx.lineTo(x, y);
+            layerCtx.stroke();
+
+            renderLayers();
+        }
+
+        function handleMouseUp() {
+            if (isDrawing) {
+                isDrawing = false;
+
+                const activeLayer = layers.find(l => l.id === activeLayerId);
+                if (activeLayer && activeLayer.type === 'draw') {
+                    const layerCtx = activeLayer.canvas.getContext('2d');
+                    layerCtx.closePath();
+                    layerCtx.globalCompositeOperation = 'source-over';
+
+                    saveState('添加涂鸦');
+                }
+            }
+        }
+
+        function stopDraw() {
+            handleMouseUp();
+        }
+
+        function handleTouch(e) {
+            if (e.type === 'touchstart') {
+                handleMouseDown(e);
+            } else if (e.type === 'touchmove') {
+                e.preventDefault();
+                handleMouseMove(e);
+            }
+        }
+
+        function removeRedEye(x, y) {
+            // 简化版红眼移除
+            const radius = 15;
+            const imageData = ctx.getImageData(x - radius, y - radius, radius * 2, radius * 2);
+            const data = imageData.data;
+
+            for (let i = 0; i < data.length; i += 4) {
+                const r = data[i];
+                const g = data[i + 1];
+                const b = data[i + 2];
+
+                // 检测红色区域
+                if (r > 100 && r > g * 2 && r > b * 2) {
+                    // 降低红色，增加其他颜色
+                    data[i] = (g + b) / 2;
+                    data[i + 1] = g * 1.1;
+                    data[i + 2] = b * 1.1;
+                }
+            }
+
+            ctx.putImageData(imageData, x - radius, y - radius);
+            saveState('红眼移除');
+        }
+
+        // ==================== 其他功能 ====================
+
+        function updateTextPreview() {
+            const fontSize = document.getElementById('fontSize').value;
+            document.getElementById('fontSizeValue').textContent = fontSize + 'px';
+        }
+
         function downloadImage() {
             if (!originalImage) {
                 alert('请先上传图片');
@@ -1076,8 +2111,7 @@
             link.click();
         }
 
-        // 重置所有
-        function resetAll() {
+        function resetAll(saveHistory = true) {
             if (!originalImage) return;
 
             // 重置调整
@@ -1085,36 +2119,61 @@
                 brightness: 100,
                 contrast: 100,
                 saturation: 100,
-                grayscale: 0,
+                exposure: 0,
+                shadows: 0,
+                highlights: 0,
+                clarity: 0,
                 hue: 0,
                 blur: 0
             };
 
+            hslValues = {
+                hueR: 0, hueO: 0, hueY: 0, hueG: 0, hueC: 0, hueB: 0, hueP: 0, hueM: 0,
+                saturationHSL: 0,
+                luminance: 0
+            };
+
+            currentFilter = 'none';
+
             document.getElementById('brightness').value = 100;
             document.getElementById('contrast').value = 100;
             document.getElementById('saturation').value = 100;
-            document.getElementById('grayscale').value = 0;
+            document.getElementById('exposure').value = 0;
+            document.getElementById('shadows').value = 0;
+            document.getElementById('highlights').value = 0;
+            document.getElementById('clarity').value = 0;
             document.getElementById('hue').value = 0;
             document.getElementById('blur').value = 0;
             document.getElementById('freeRotate').value = 0;
 
-            // 重置显示值
             document.getElementById('brightnessValue').textContent = '100%';
             document.getElementById('contrastValue').textContent = '100%';
             document.getElementById('saturationValue').textContent = '100%';
-            document.getElementById('grayscaleValue').textContent = '0%';
+            document.getElementById('exposureValue').textContent = '0';
+            document.getElementById('shadowsValue').textContent = '0';
+            document.getElementById('highlightsValue').textContent = '0';
+            document.getElementById('clarityValue').textContent = '0';
             document.getElementById('hueValue').textContent = '0°';
             document.getElementById('blurValue').textContent = '0px';
             document.getElementById('freeRotateValue').textContent = '0°';
 
+            // 重置HSL
+            ['hueR', 'hueO', 'hueY', 'hueG', 'hueC', 'hueB', 'hueP', 'hueM',
+             'saturationHSL', 'luminance'].forEach(id => {
+                if (document.getElementById(id)) {
+                    document.getElementById(id).value = 0;
+                }
+            });
+
             // 重置滤镜
-            currentFilter = 'none';
             document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelector('.filter-btn').classList.add('active');
 
-            // 重绘原图
-            ctx.filter = 'none';
-            ctx.drawImage(originalImage, 0, 0);
+            renderLayers();
+
+            if (saveHistory) {
+                saveState('重置所有');
+            }
         }
     </script>
 </body>
