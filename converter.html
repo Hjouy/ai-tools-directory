@@ -337,6 +337,16 @@ function processFile(file) {
     return;
   }
   
+  // 验证文件类型
+  const cfg = typeConfig[currentType];
+  const acceptTypes = cfg.accept.split(',');
+  const fileExt = '.' + file.name.split('.').pop().toLowerCase();
+  
+  if (!acceptTypes.includes(fileExt)) {
+    alert(`当前功能"${cfg.title}"只支持 ${cfg.accept} 格式的文件，您上传的是 ${fileExt} 文件。请切换到正确的转换类型。`);
+    return;
+  }
+  
   selectedFile = file;
   const info = document.getElementById('fileInfo');
   document.getElementById('fileName').textContent = file.name;
