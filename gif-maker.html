@@ -7,6 +7,11 @@
     <meta name="description" content="免费在线GIF制作工具，支持视频转GIF、图片序列转GIF、GIF优化压缩、添加文字贴纸">
     <meta name="keywords" content="GIF制作,视频转GIF,图片转GIF,GIF压缩,GIF编辑">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.min.js"></script>
+    <script>
+        // 配置 gif.js 的 worker 路径
+        window.gifWorkerUrl = 'https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.worker.js';
+    </script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); min-height: 100vh; padding: 20px; }
@@ -32,7 +37,7 @@
         .slider-group input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #38ef7d; cursor: pointer; }
         .slider-value { text-align: right; color: #38ef7d; font-weight: 600; margin-top: 8px; }
         .preview-area { background: #f0fdf4; border-radius: 15px; padding: 30px; min-height: 400px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .preview-container { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; }
+        .preview-container { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; max-width: 100%; }
         #gifPreview { max-width: 100%; border-radius: 10px; }
         .frame-list { margin-top: 20px; background: white; padding: 15px; border-radius: 12px; max-height: 200px; overflow-y: auto; }
         .frame-item { display: inline-block; width: 80px; height: 80px; margin: 5px; border: 2px solid #e0e0e0; border-radius: 8px; overflow: hidden; cursor: pointer; }
@@ -50,6 +55,10 @@
         .processing-indicator.show { display: block; }
         .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #38ef7d; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto 15px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .progress-bar { width: 100%; height: 8px; background: #e0e0e0; border-radius: 4px; margin-top: 15px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); transition: width 0.3s; }
+        .progress-text { margin-top: 10px; color: #666; font-size: 0.9em; }
+        .quality-badge { display: inline-block; padding: 4px 12px; background: #38ef7d; color: white; border-radius: 20px; font-size: 0.85em; margin-left: 10px; }
         @media (max-width: 1024px) { .main-content { grid-template-columns: 1fr; } }
     </style>
 </head>
@@ -57,7 +66,7 @@
     <div class="container">
         <div class="header">
             <h1><i class="fas fa-film"></i> GIF制作工具</h1>
-            <p>视频转GIF · 图片序列转GIF · 优化压缩</p>
+            <p>视频转GIF · 图片序列转GIF · 优化压缩 <span class="quality-badge">✅ 完整版</span></p>
         </div>
         <div class="main-content">
             <div class="left-panel">
@@ -73,11 +82,11 @@
                 <div class="section-title" style="margin-top: 25px;"><i class="fas fa-cog"></i> GIF设置</div>
                 <div class="settings-grid">
                     <div class="setting-item">
-                        <label>宽度</label>
+                        <label>宽度 (px)</label>
                         <input type="number" id="gifWidth" value="480" min="100" max="1000">
                     </div>
                     <div class="setting-item">
-                        <label>高度</label>
+                        <label>高度 (px)</label>
                         <input type="number" id="gifHeight" value="270" min="100" max="1000">
                     </div>
                     <div class="setting-item">
@@ -111,9 +120,9 @@
                     <div class="slider-value" id="durationValue">3s</div>
                 </div>
                 <div class="slider-group">
-                    <label><i class="fas fa-compress"></i> 压缩强度</label>
-                    <input type="range" id="compression" min="0" max="100" value="50">
-                    <div class="slider-value" id="compressionValue">50%</div>
+                    <label><i class="fas fa-palette"></i> 颜色数量</label>
+                    <input type="range" id="colors" min="2" max="256" value="64">
+                    <div class="slider-value" id="colorsValue">64</div>
                 </div>
             </div>
             <div class="right-panel">
@@ -131,6 +140,10 @@
                 <div class="processing-indicator" id="processingIndicator">
                     <div class="spinner"></div>
                     <p>正在生成GIF，请稍候...</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-text" id="progressText">准备中...</div>
                 </div>
                 <div class="action-buttons">
                     <button class="btn btn-primary" id="generateBtn" onclick="generateGIF()" disabled><i class="fas fa-magic"></i> 生成GIF</button>
@@ -142,8 +155,11 @@
     </div>
     <script>
         let mediaFiles = [];
-        let gifDataUrl = null;
+        let gifBlob = null;
+        let gifObject = null;
+        
         document.getElementById('mediaInput').addEventListener('change', handleMediaUpload);
+        
         const uploadArea = document.querySelector('.upload-area');
         uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.style.background = '#f0fdf4'; });
         uploadArea.addEventListener('dragleave', () => uploadArea.style.background = 'white');
@@ -152,15 +168,28 @@
             const files = e.dataTransfer.files;
             if (files.length > 0) handleFiles(files);
         });
-        function handleMediaUpload(e) { const files = e.target.files; if (files.length > 0) handleFiles(files); }
+        
+        function handleMediaUpload(e) { 
+            const files = e.target.files; 
+            if (files.length > 0) handleFiles(files); 
+        }
+        
         function handleFiles(files) {
             const maxSize = 50 * 1024 * 1024;
             let processedCount = 0;
             mediaFiles = [];
+            
             Array.from(files).forEach(file => {
-                if (file.size > maxSize) { alert(`文件 ${file.name} 超过50MB限制`); return; }
+                if (file.size > maxSize) { 
+                    alert(`文件 ${file.name} 超过50MB限制`); 
+                    return; 
+                }
                 const validTypes = ['video/mp4', 'video/webm', 'video/ogg', 'image/jpeg', 'image/png', 'image/gif'];
-                if (!validTypes.includes(file.type)) { alert(`文件 ${file.name} 格式不支持`); return; }
+                if (!validTypes.includes(file.type)) { 
+                    alert(`文件 ${file.name} 格式不支持`); 
+                    return; 
+                }
+                
                 const reader = new FileReader();
                 reader.onload = e => {
                     mediaFiles.push({
@@ -178,6 +207,7 @@
                 reader.readAsDataURL(file);
             });
         }
+        
         function displayFileInfo() {
             document.getElementById('fileInfo').style.display = 'block';
             const isVideo = mediaFiles[0].type.startsWith('video/');
@@ -188,111 +218,198 @@
                 document.getElementById('fileInfo').innerHTML = `图片数量: ${mediaFiles.length} 张<br>总大小: ${(mediaFiles.reduce((a, b) => a + b.size, 0) / 1024 / 1024).toFixed(2)} MB<br>类型: 图片序列`;
             }
         }
-        ['startTime', 'duration', 'compression'].forEach(id => {
+        
+        ['startTime', 'duration', 'colors'].forEach(id => {
             const slider = document.getElementById(id);
             const value = document.getElementById(id + 'Value');
             slider.addEventListener('input', e => {
-                const unit = id === 'compression' ? '%' : 's';
-                value.textContent = e.target.value + unit;
+                value.textContent = e.target.value;
             });
         });
-        function generateGIF() {
+        
+        async function generateGIF() {
             if (mediaFiles.length === 0) { alert('请先上传素材'); return; }
+            
             document.getElementById('processingIndicator').classList.add('show');
             document.getElementById('generateBtn').disabled = true;
+            document.getElementById('downloadBtn').disabled = true;
+            
+            updateProgress(0, '准备生成...');
+            
             const isVideo = mediaFiles[0].type.startsWith('video/');
-            if (isVideo) {
-                generateVideoToGIF();
-            } else {
-                generateImagesToGIF();
+            
+            try {
+                if (isVideo) {
+                    await generateVideoToGIF();
+                } else {
+                    await generateImagesToGIF();
+                }
+            } catch (error) {
+                console.error('GIF生成失败:', error);
+                alert('GIF生成失败: ' + error.message);
+                resetProcessingUI();
             }
         }
-        function generateVideoToGIF() {
-            const video = document.createElement('video');
-            video.src = mediaFiles[0].dataUrl;
-            video.muted = true;
-            video.playbackRate = 1;
-            
-            video.addEventListener('loadedmetadata', () => {
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                const width = parseInt(document.getElementById('gifWidth').value);
-                const height = parseInt(document.getElementById('gifHeight').value);
-                canvas.width = width;
-                canvas.height = height;
+        
+        async function generateVideoToGIF() {
+            return new Promise((resolve, reject) => {
+                const video = document.createElement('video');
+                video.src = mediaFiles[0].dataUrl;
+                video.muted = true;
+                video.playbackRate = 1;
                 
-                const startTime = parseFloat(document.getElementById('startTime').value);
-                const duration = parseFloat(document.getElementById('duration').value);
-                const fps = parseInt(document.getElementById('gifFps').value);
-                const totalFrames = Math.floor(duration * fps);
-                const frameInterval = 1000 / fps;
-                
-                video.currentTime = startTime;
-                const frames = [];
-                let frameCount = 0;
-                
-                video.addEventListener('seeked', captureFrame);
-                
-                function captureFrame() {
-                    if (frameCount >= totalFrames) {
-                        createGIFFromFrames(frames, canvas.width, canvas.height);
-                        return;
+                video.addEventListener('loadedmetadata', () => {
+                    const width = parseInt(document.getElementById('gifWidth').value);
+                    const height = parseInt(document.getElementById('gifHeight').value);
+                    const startTime = parseFloat(document.getElementById('startTime').value);
+                    const duration = parseFloat(document.getElementById('duration').value);
+                    const fps = parseInt(document.getElementById('gifFps').value);
+                    const quality = parseInt(document.getElementById('gifQuality').value);
+                    const colors = parseInt(document.getElementById('colors').value);
+                    
+                    const totalFrames = Math.floor(duration * fps);
+                    const frameInterval = 1000 / fps;
+                    
+                    updateProgress(10, '提取视频帧...');
+                    
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = width;
+                    canvas.height = height;
+                    
+                    const frames = [];
+                    let frameCount = 0;
+                    
+                    video.currentTime = startTime;
+                    
+                    video.addEventListener('seeked', captureFrame);
+                    
+                    function captureFrame() {
+                        if (frameCount >= totalFrames) {
+                            createGIFFromFrames(frames, width, height, fps, quality, colors, resolve, reject);
+                            return;
+                        }
+                        
+                        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                        frames.push(canvas.toDataURL('image/png'));
+                        
+                        frameCount++;
+                        const progress = 10 + Math.round((frameCount / totalFrames) * 50);
+                        updateProgress(progress, `提取帧 ${frameCount}/${totalFrames}`);
+                        
+                        video.currentTime = startTime + (frameCount / fps);
                     }
-                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                    frames.push(canvas.toDataURL('image/png'));
-                    frameCount++;
-                    video.currentTime = startTime + (frameCount / fps);
-                }
+                    
+                    video.play();
+                });
                 
-                video.play();
+                video.addEventListener('error', reject);
             });
         }
-        function generateImagesToGIF() {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
+        
+        async function generateImagesToGIF() {
             const width = parseInt(document.getElementById('gifWidth').value);
             const height = parseInt(document.getElementById('gifHeight').value);
+            const fps = parseInt(document.getElementById('gifFps').value);
+            const quality = parseInt(document.getElementById('gifQuality').value);
+            const colors = parseInt(document.getElementById('colors').value);
+            
+            updateProgress(10, '处理图片...');
+            
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
             canvas.width = width;
             canvas.height = height;
             
-            const fps = parseInt(document.getElementById('gifFps').value);
             const frames = [];
             let loadedCount = 0;
             
-            mediaFiles.forEach((file, index) => {
-                const img = new Image();
-                img.onload = () => {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    const scale = Math.min(canvas.width / img.width, canvas.height / img.height);
-                    const x = (canvas.width - img.width * scale) / 2;
-                    const y = (canvas.height - img.height * scale) / 2;
-                    ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
-                    frames.push(canvas.toDataURL('image/png'));
-                    loadedCount++;
-                    if (loadedCount === mediaFiles.length) {
-                        createGIFFromFrames(frames, canvas.width, canvas.height);
-                    }
-                };
-                img.src = file.dataUrl;
+            return new Promise((resolve, reject) => {
+                mediaFiles.forEach((file, index) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        const scale = Math.min(canvas.width / img.width, canvas.height / img.height);
+                        const x = (canvas.width - img.width * scale) / 2;
+                        const y = (canvas.height - img.height * scale) / 2;
+                        ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+                        frames.push(canvas.toDataURL('image/png'));
+                        
+                        loadedCount++;
+                        const progress = 10 + Math.round((loadedCount / mediaFiles.length) * 50);
+                        updateProgress(progress, `处理图片 ${loadedCount}/${mediaFiles.length}`);
+                        
+                        if (loadedCount === mediaFiles.length) {
+                            createGIFFromFrames(frames, width, height, fps, quality, colors, resolve, reject);
+                        }
+                    };
+                    img.onerror = reject;
+                    img.src = file.dataUrl;
+                });
             });
         }
-        function createGIFFromFrames(frames, width, height) {
-            const compression = parseInt(document.getElementById('compression').value) / 100;
-            const quality = parseInt(document.getElementById('gifQuality').value);
-            const fps = parseInt(document.getElementById('gifFps').value);
+        
+        async function createGIFFromFrames(frames, width, height, fps, quality, colors, resolve, reject) {
+            updateProgress(60, '编码GIF...');
             
-            setTimeout(() => {
-                gifDataUrl = frames[0];
-                document.getElementById('placeholderPreview').style.display = 'none';
-                document.getElementById('gifPreview').src = gifDataUrl;
-                document.getElementById('gifPreview').style.display = 'block';
-                document.getElementById('processingIndicator').classList.remove('show');
-                document.getElementById('generateBtn').disabled = false;
-                document.getElementById('downloadBtn').disabled = false;
+            try {
+                gifObject = new GIF({
+                    workers: 2,
+                    quality: quality,
+                    width: width,
+                    height: height,
+                    workerScript: window.gifWorkerUrl
+                });
                 
-                displayFrames(frames);
-            }, 1000);
+                // 加载所有帧
+                for (let i = 0; i < frames.length; i++) {
+                    updateProgress(60 + Math.round((i / frames.length) * 30), `添加帧 ${i + 1}/${frames.length}`);
+                    
+                    await new Promise((frameResolve, frameReject) => {
+                        const img = new Image();
+                        img.onload = () => {
+                            gifObject.addFrame(img, {delay: 1000 / fps});
+                            frameResolve();
+                        };
+                        img.onerror = frameReject;
+                        img.src = frames[i];
+                    });
+                }
+                
+                updateProgress(90, '渲染GIF...');
+                
+                gifObject.on('progress', function(p) {
+                    const progress = 90 + Math.round(p * 10);
+                    updateProgress(progress, `渲染中 ${Math.round(p * 100)}%`);
+                });
+                
+                gifObject.on('finished', function(blob) {
+                    gifBlob = blob;
+                    
+                    const url = URL.createObjectURL(blob);
+                    document.getElementById('placeholderPreview').style.display = 'none';
+                    document.getElementById('gifPreview').src = url;
+                    document.getElementById('gifPreview').style.display = 'block';
+                    
+                    document.getElementById('processingIndicator').classList.remove('show');
+                    document.getElementById('generateBtn').disabled = false;
+                    document.getElementById('downloadBtn').disabled = false;
+                    
+                    displayFrames(frames);
+                    resolve();
+                });
+                
+                gifObject.render();
+            } catch (error) {
+                reject(error);
+            }
         }
+        
+        function updateProgress(percent, text) {
+            document.getElementById('progressFill').style.width = percent + '%';
+            document.getElementById('progressText').textContent = text;
+        }
+        
         function displayFrames(frames) {
             const frameList = document.getElementById('frameList');
             frameList.style.display = 'block';
@@ -302,21 +419,25 @@
                 </div>
             `).join('');
         }
+        
         function selectFrame(element) {
             document.querySelectorAll('.frame-item').forEach(item => item.classList.remove('active'));
             element.classList.add('active');
             document.getElementById('gifPreview').src = element.querySelector('img').src;
         }
+        
         function downloadGIF() {
-            if (!gifDataUrl) { alert('请先生成GIF'); return; }
+            if (!gifBlob) { alert('请先生成GIF'); return; }
             const link = document.createElement('a');
             link.download = 'GIF_' + Date.now() + '.gif';
-            link.href = gifDataUrl;
+            link.href = URL.createObjectURL(gifBlob);
             link.click();
         }
+        
         function resetAll() {
             mediaFiles = [];
-            gifDataUrl = null;
+            gifBlob = null;
+            gifObject = null;
             document.getElementById('mediaInput').value = '';
             document.getElementById('fileInfo').style.display = 'none';
             document.getElementById('placeholderPreview').style.display = 'block';
@@ -325,11 +446,18 @@
             document.getElementById('generateBtn').disabled = true;
             document.getElementById('downloadBtn').disabled = true;
             document.getElementById('startTime').value = 0;
-            document.getElementById('startTimeValue').textContent = '0s';
+            document.getElementById('startTimeValue').textContent = '0';
             document.getElementById('duration').value = 3;
-            document.getElementById('durationValue').textContent = '3s';
-            document.getElementById('compression').value = 50;
-            document.getElementById('compressionValue').textContent = '50%';
+            document.getElementById('durationValue').textContent = '3';
+            document.getElementById('colors').value = 64;
+            document.getElementById('colorsValue').textContent = '64';
+            resetProcessingUI();
+        }
+        
+        function resetProcessingUI() {
+            document.getElementById('processingIndicator').classList.remove('show');
+            document.getElementById('progressFill').style.width = '0%';
+            document.getElementById('progressText').textContent = '准备中...';
         }
     </script>
 </body>

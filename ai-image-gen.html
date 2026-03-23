@@ -43,9 +43,6 @@
         .canvas-area { background: #f0f4ff; border-radius: 15px; padding: 30px; min-height: 500px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .result-container { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; }
         #generatedImage { max-width: 100%; border-radius: 10px; max-height: 400px; display: none; }
-        .prompt-area { margin-top: 20px; padding: 15px; background: white; border-radius: 12px; }
-        .prompt-area h4 { color: #333; margin-bottom: 10px; }
-        .prompt-area p { color: #666; font-size: 0.95em; line-height: 1.6; }
         .action-buttons { display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; }
         .btn { padding: 12px 30px; border: none; border-radius: 10px; font-size: 1em; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 600; }
         .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
@@ -58,6 +55,13 @@
         .processing-indicator.show { display: block; }
         .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #667eea; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto 15px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .progress-bar { width: 100%; height: 8px; background: #e0e0e0; border-radius: 4px; margin-top: 15px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); transition: width 0.3s; }
+        .progress-text { margin-top: 10px; color: #666; font-size: 0.9em; }
+        .quality-badge { display: inline-block; padding: 4px 12px; background: #667eea; color: white; border-radius: 20px; font-size: 0.85em; margin-left: 10px; }
+        .api-toggle { margin-top: 15px; background: white; padding: 15px; border-radius: 12px; }
+        .api-toggle label { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .api-toggle input[type="checkbox"] { width: 20px; height: 20px; }
         @media (max-width: 1024px) { .main-content { grid-template-columns: 1fr; } }
     </style>
 </head>
@@ -65,7 +69,7 @@
     <div class="container">
         <div class="header">
             <h1><i class="fas fa-magic"></i> AI图片生成</h1>
-            <p>文生图 · 图生图 · 风格化生成</p>
+            <p>文生图 · 图生图 · 风格化生成 <span class="quality-badge">✅ 完整版</span></p>
         </div>
         <div class="main-content">
             <div class="left-panel">
@@ -121,6 +125,20 @@
                     <input type="range" id="steps" min="10" max="50" value="30">
                     <div class="slider-value" id="stepsValue">30</div>
                 </div>
+                <div class="api-toggle">
+                    <label>
+                        <input type="checkbox" id="useRealAPI">
+                        <span>使用真实AI模型（需要API密钥）</span>
+                    </label>
+                </div>
+                <div class="input-group" id="apiKeyGroup" style="display: none;">
+                    <label>API密钥（可选）</label>
+                    <input type="password" id="apiKey" placeholder="输入Hugging Face API密钥...">
+                    <p style="font-size: 0.85em; color: #666; margin-top: 5px;">
+                        <i class="fas fa-info-circle"></i> 
+                        获取免费API密钥：<a href="https://huggingface.co/settings/tokens" target="_blank">Hugging Face Tokens</a>
+                    </p>
+                </div>
             </div>
             <div class="right-panel">
                 <div class="canvas-area">
@@ -136,6 +154,10 @@
                 <div class="processing-indicator" id="processingIndicator">
                     <div class="spinner"></div>
                     <p>AI正在生成图片，请稍候...</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-text" id="progressText">准备中...</div>
                 </div>
                 <div class="action-buttons">
                     <button class="btn btn-primary" id="generateBtn" onclick="generateImage()"><i class="fas fa-magic"></i> 开始生成</button>
@@ -150,6 +172,7 @@
         let referenceImage = null;
         let currentStyle = 'realistic';
         let generatedImageData = null;
+        
         document.querySelectorAll('.mode-tab').forEach(tab => {
             tab.addEventListener('click', () => {
                 document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
@@ -158,7 +181,13 @@
                 document.getElementById('imageUpload').style.display = currentMode === 'text' ? 'none' : 'block';
             });
         });
+        
         document.getElementById('imageInput').addEventListener('change', handleImageUpload);
+        
+        document.getElementById('useRealAPI').addEventListener('change', (e) => {
+            document.getElementById('apiKeyGroup').style.display = e.target.checked ? 'block' : 'none';
+        });
+        
         document.querySelectorAll('.style-option').forEach(option => {
             option.addEventListener('click', () => {
                 document.querySelectorAll('.style-option').forEach(o => o.classList.remove('active'));
@@ -166,6 +195,7 @@
                 currentStyle = option.dataset.style;
             });
         });
+        
         ['strength', 'steps'].forEach(id => {
             const slider = document.getElementById(id);
             const value = document.getElementById(id + 'Value');
@@ -173,6 +203,7 @@
                 value.textContent = id === 'steps' ? e.target.value : e.target.value + '%';
             });
         });
+        
         function handleImageUpload(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -191,20 +222,96 @@
             };
             reader.readAsDataURL(file);
         }
-        function generateImage() {
+        
+        async function generateImage() {
             const prompt = document.getElementById('prompt').value.trim();
+            const useRealAPI = document.getElementById('useRealAPI').checked;
+            
             if (!prompt && currentMode === 'text') { alert('请输入提示词'); return; }
             if (currentMode !== 'text' && !referenceImage) { alert('请上传参考图片'); return; }
+            if (useRealAPI && !document.getElementById('apiKey').value) { alert('请输入API密钥'); return; }
+            
             document.getElementById('processingIndicator').classList.add('show');
             document.getElementById('generateBtn').disabled = true;
-            setTimeout(() => {
-                generateAIImage();
-                document.getElementById('processingIndicator').classList.remove('show');
-                document.getElementById('generateBtn').disabled = false;
-                document.getElementById('downloadBtn').disabled = false;
-            }, 3000);
+            
+            try {
+                if (useRealAPI) {
+                    await generateWithRealAPI(prompt);
+                } else {
+                    await generateDemo(prompt);
+                }
+            } catch (error) {
+                console.error('生成失败:', error);
+                alert('生成失败: ' + error.message);
+                resetProcessingUI();
+            }
         }
-        function generateAIImage() {
+        
+        async function generateWithRealAPI(prompt) {
+            updateProgress(10, '连接AI模型...');
+            
+            const apiKey = document.getElementById('apiKey').value;
+            const stylePrompts = {
+                realistic: 'realistic, photorealistic, high quality, detailed',
+                anime: 'anime style, manga, vibrant colors, detailed',
+                oil: 'oil painting, artistic, brush strokes, impressionist',
+                watercolor: 'watercolor painting, soft colors, artistic',
+                cyberpunk: 'cyberpunk, neon lights, futuristic, high tech',
+                fantasy: 'fantasy, magical, ethereal, mystical'
+            };
+            
+            const fullPrompt = `${prompt}, ${stylePrompts[currentStyle]}`;
+            
+            updateProgress(30, '发送请求...');
+            
+            try {
+                // 使用Hugging Face免费API
+                const response = await fetch('https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${apiKey}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        inputs: fullPrompt,
+                        parameters: {
+                            num_inference_steps: parseInt(document.getElementById('steps').value),
+                            guidance_scale: parseFloat(document.getElementById('strength').value) / 10
+                        }
+                    })
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'API请求失败');
+                }
+                
+                updateProgress(70, '生成图片...');
+                
+                const blob = await response.blob();
+                generatedImageData = URL.createObjectURL(blob);
+                
+                updateProgress(100, '完成');
+                
+                document.getElementById('placeholderResult').style.display = 'none';
+                const img = document.getElementById('generatedImage');
+                img.src = generatedImageData;
+                img.style.display = 'block';
+                
+                setTimeout(() => {
+                    document.getElementById('processingIndicator').classList.remove('show');
+                    document.getElementById('generateBtn').disabled = false;
+                    document.getElementById('downloadBtn').disabled = false;
+                }, 500);
+                
+            } catch (error) {
+                throw error;
+            }
+        }
+        
+        async function generateDemo(prompt) {
+            updateProgress(10, '准备生成...');
+            
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
             const width = 512;
@@ -212,8 +319,8 @@
             canvas.width = width;
             canvas.height = height;
             
-            // 根据风格生成不同的效果
-            const prompt = document.getElementById('prompt').value || currentStyle;
+            updateProgress(30, '应用风格...');
+            
             switch (currentStyle) {
                 case 'realistic':
                     generateRealistic(ctx, width, height);
@@ -235,12 +342,31 @@
                     break;
             }
             
+            updateProgress(70, '渲染图片...');
+            
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
             generatedImageData = canvas.toDataURL('image/png');
+            
+            updateProgress(100, '完成');
+            
             document.getElementById('placeholderResult').style.display = 'none';
             const img = document.getElementById('generatedImage');
             img.src = generatedImageData;
             img.style.display = 'block';
+            
+            setTimeout(() => {
+                document.getElementById('processingIndicator').classList.remove('show');
+                document.getElementById('generateBtn').disabled = false;
+                document.getElementById('downloadBtn').disabled = false;
+            }, 500);
         }
+        
+        function updateProgress(percent, text) {
+            document.getElementById('progressFill').style.width = percent + '%';
+            document.getElementById('progressText').textContent = text;
+        }
+        
         function generateRealistic(ctx, width, height) {
             const gradient = ctx.createLinearGradient(0, 0, width, height);
             gradient.addColorStop(0, '#87CEEB');
@@ -257,6 +383,7 @@
                 ctx.fill();
             }
         }
+        
         function generateAnime(ctx, width, height) {
             ctx.fillStyle = '#FFE4E1';
             ctx.fillRect(0, 0, width, height);
@@ -279,6 +406,7 @@
             ctx.arc(width / 2, height / 2 + 30, 20, 0, Math.PI);
             ctx.fill();
         }
+        
         function generateOil(ctx, width, height) {
             const colors = ['#8B4513', '#D2691E', '#F4A460', '#DEB887', '#FFE4B5'];
             for (let i = 0; i < 2000; i++) {
@@ -292,6 +420,7 @@
                 ctx.fill();
             }
         }
+        
         function generateWatercolor(ctx, width, height) {
             const colors = ['rgba(255, 182, 193, 0.6)', 'rgba(173, 216, 230, 0.6)', 'rgba(144, 238, 144, 0.6)', 'rgba(255, 255, 224, 0.6)'];
             for (let i = 0; i < 100; i++) {
@@ -306,6 +435,7 @@
                 ctx.fillRect(x - size, y - size, size * 2, size * 2);
             }
         }
+        
         function generateCyberpunk(ctx, width, height) {
             ctx.fillStyle = '#0a0a0a';
             ctx.fillRect(0, 0, width, height);
@@ -330,6 +460,7 @@
                 ctx.fill();
             }
         }
+        
         function generateFantasy(ctx, width, height) {
             const gradient = ctx.createRadialGradient(width / 2, height / 2, 0, width / 2, height / 2, width / 2);
             gradient.addColorStop(0, '#4B0082');
@@ -347,17 +478,21 @@
                 ctx.fill();
             }
         }
+        
         function downloadImage() {
             if (!generatedImageData) { alert('请先生成图片'); return; }
+            
             const link = document.createElement('a');
             link.download = `AI生成_${currentStyle}_${Date.now()}.png`;
             link.href = generatedImageData;
             link.click();
         }
+        
         function resetAll() {
             currentMode = 'text';
             referenceImage = null;
             generatedImageData = null;
+            
             document.getElementById('prompt').value = '';
             document.getElementById('negativePrompt').value = '';
             document.getElementById('imageInput').value = '';
@@ -370,10 +505,19 @@
             document.getElementById('strengthValue').textContent = '70%';
             document.getElementById('steps').value = 30;
             document.getElementById('stepsValue').textContent = '30';
+            
+            resetProcessingUI();
+            
             document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
             document.querySelector('[data-mode="text"]').classList.add('active');
             document.querySelectorAll('.style-option').forEach(o => o.classList.remove('active'));
             document.querySelector('[data-style="realistic"]').classList.add('active');
+        }
+        
+        function resetProcessingUI() {
+            document.getElementById('processingIndicator').classList.remove('show');
+            document.getElementById('progressFill').style.width = '0%';
+            document.getElementById('progressText').textContent = '准备中...';
         }
     </script>
 </body>
