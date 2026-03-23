@@ -126,4 +126,20 @@
     <priority>0.7</priority>
   </url>
 
+  <!-- 工具对比页 -->
+  <url>
+    <loc>https://hjouy.github.io/ai-tools-directory/compare.html</loc>
+    <lastmod>2026-03-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 教程页 -->
+  <url>
+    <loc>https://hjouy.github.io/ai-tools-directory/tutorials.html</loc>
+    <lastmod>2026-03-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
 </urlset>

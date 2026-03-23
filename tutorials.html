@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI工具教程 - 如何使用Midjourney、ChatGPT等热门AI工具 | AI工具导航</title>
+  <meta name="description" content="详细AI工具使用教程，包括Midjourney绘画教程、ChatGPT使用指南、Stable Diffusion本地部署教程等。从入门到精通，轻松掌握AI工具。">
+  <meta name="keywords" content="AI工具教程,Midjourney教程,ChatGPT教程,Stable Diffusion教程,AI绘画教程,AI写作教程,AI视频教程">
+  <meta name="author" content="AI工具导航">
+  <meta name="robots" content="index, follow">
+  <!-- Open Graph -->
+  <meta property="og:title" content="AI工具教程 - 从入门到精通 | AI工具导航">
+  <meta property="og:description" content="详细AI工具使用教程，Midjourney、ChatGPT、Stable Diffusion等热门工具全攻略">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://hjouy.github.io/ai-tools-directory/tutorials.html">
+  <meta property="og:site_name" content="AI工具导航">
+  <meta property="og:locale" content="zh_CN">
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="AI工具教程 - 从入门到精通">
+  <meta name="twitter:description" content="详细AI工具使用教程，热门工具全攻略">
+  <!-- Canonical -->
+  <link rel="canonical" href="https://hjouy.github.io/ai-tools-directory/tutorials.html">
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --secondary: #a855f7;
+      --accent: #06b6d4;
+      --bg: #0f0f1a;
+      --bg-card: #1a1a2e;
+      --bg-card2: #16213e;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --border: #2d2d4e;
+      --success: #10b981;
+      --warning: #f59e0b;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* 导航栏 */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(15,15,26,0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      font-size: 1.3rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+
+    .nav-links a:hover, .nav-links a.active {
+      color: var(--text);
+      background: var(--border);
+    }
+
+    /* 面包屑 */
+    .breadcrumb {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 16px 24px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .breadcrumb a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .breadcrumb a:hover { color: var(--primary); }
+    .breadcrumb span { margin: 0 8px; }
+
+    /* 主内容 */
+    .main-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px 60px;
+    }
+
+    /* 页面头部 */
+    .page-header {
+      text-align: center;
+      padding: 40px 24px 48px;
+      background: radial-gradient(ellipse at top, rgba(168,85,247,0.1) 0%, transparent 70%);
+    }
+
+    .page-header h1 {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 800;
+      margin-bottom: 16px;
+      line-height: 1.3;
+    }
+
+    .page-header h1 span {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .page-header p {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* 分类筛选 */
+    .filter-bar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .filter-btn {
+      padding: 8px 20px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+
+    .filter-btn:hover, .filter-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    /* 教程网格 */
+    .tutorials-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 20px;
+    }
+
+    .tutorial-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: all 0.25s;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .tutorial-card:hover {
+      border-color: rgba(99,102,241,0.4);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+    }
+
+    .tutorial-cover {
+      height: 180px;
+      background: linear-gradient(135deg, var(--bg-card2), var(--bg-card));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tutorial-cover::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(168,85,247,0.1));
+    }
+
+    .tutorial-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      z-index: 1;
+    }
+
+    .tutorial-content {
+      padding: 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .tutorial-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+
+    .tutorial-desc {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 16px;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .tutorial-meta {
+      margin-top: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .tutorial-tags {
+      display: flex;
+      gap: 6px;
+    }
+
+    .tag {
+      background: rgba(99,102,241,0.1);
+      color: #a5b4fc;
+      padding: 2px 10px;
+      border-radius: 10px;
+      font-size: 0.7rem;
+    }
+
+    .tutorial-time {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* 底部 */
+    footer {
+      background: var(--bg-card);
+      border-top: 1px solid var(--border);
+      padding: 48px 24px 24px;
+      margin-top: 60px;
+    }
+
+    .footer-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 40px;
+      margin-bottom: 32px;
+    }
+
+    .footer-brand p {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      margin: 12px 0;
+    }
+
+    .footer-col h4 {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+
+    .footer-col ul {
+      list-style: none;
+    }
+
+    .footer-col ul li {
+      margin-bottom: 8px;
+    }
+
+    .footer-col ul li a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: color 0.2s;
+    }
+
+    .footer-col ul li a:hover { color: var(--primary); }
+
+    .footer-bottom {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* 响应式 */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .tutorials-grid { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- 导航栏 -->
+<nav class="navbar" aria-label="主导航">
+  <a href="index.html" class="nav-logo">🤖 AI工具导航</a>
+  <ul class="nav-links">
+    <li><a href="index.html">首页</a></li>
+    <li><a href="ranking.html">排行榜</a></li>
+    <li><a href="news.html">AI资讯</a></li>
+    <li><a href="tutorials.html" class="active">教程</a></li>
+    <li><a href="submit.html" style="background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 6px 16px; border-radius: 20px; font-weight: 500;">提交工具</a></li>
+  </ul>
+</nav>
+
+<!-- 面包屑导航 -->
+<nav class="breadcrumb" aria-label="面包屑导航">
+  <a href="index.html">首页</a> <span>/</span> <span>AI工具教程</span>
+</nav>
+
+<!-- 页面头部 -->
+<header class="page-header">
+  <h1>AI工具<span>使用教程</span></h1>
+  <p>从入门到精通，详细解析热门AI工具的使用方法、技巧和最佳实践</p>
+</header>
+
+<!-- 主内容 -->
+<main class="main-content">
+
+  <!-- 分类筛选 -->
+  <div class="filter-bar" role="tablist">
+    <button class="filter-btn active" onclick="filterTutorials('all')">全部教程</button>
+    <button class="filter-btn" onclick="filterTutorials('painting')">AI绘画</button>
+    <button class="filter-btn" onclick="filterTutorials('writing')">AI写作</button>
+    <button class="filter-btn" onclick="filterTutorials('code')">AI编程</button>
+    <button class="filter-btn" onclick="filterTutorials('video')">AI视频</button>
+    <button class="filter-btn" onclick="filterTutorials('music')">AI音乐</button>
+  </div>
+
+  <!-- 教程网格 -->
+  <div class="tutorials-grid" id="tutorialsGrid">
+
+    <!-- Midjourney 教程 -->
+    <article class="tutorial-card" data-category="painting" itemscope itemtype="https://schema.org/HowTo">
+      <div class="tutorial-cover">
+        <span class="tutorial-badge">热门</span>
+        <span style="z-index:1;">🎨</span>
+      </div>
+      <div class="tutorial-content">
+        <h3 class="tutorial-title" itemprop="name">Midjourney 完全指南：从零开始学会AI绘画</h3>
+        <p class="tutorial-desc" itemprop="description">全面解析 Midjourney 的使用方法，包括账号注册、基础命令、Prompt编写技巧、参数设置、图像优化等。包含20+实战案例，让你快速掌握AI绘画技能。</p>
+        <div class="tutorial-meta">
+          <div class="tutorial-tags">
+            <span class="tag">AI绘画</span>
+            <span class="tag">入门</span>
+          </div>
+          <div class="tutorial-time" itemprop="totalTime" content="PT30M">⏱️ 30分钟</div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ChatGPT 教程 -->
+    <article class="tutorial-card" data-category="writing" itemscope itemtype="https://schema.org/HowTo">
+      <div class="tutorial-cover">
+        <span class="tutorial-badge">精选</span>
+        <span style="z-index:1;">💬</span>
+      </div>
+      <div class="tutorial-content">
+        <h3 class="tutorial-title" itemprop="name">ChatGPT 使用技巧：提升对话质量的10个秘诀</h3>
+        <p class="tutorial-desc" itemprop="description">掌握 ChatGPT 的高级用法，包括角色扮演、链式提示、思维链推理、代码生成优化等技巧。让AI输出更精准、更符合你的需求。</p>
+        <div class="tutorial-meta">
+          <div class="tutorial-tags">
+            <span class="tag">AI写作</span>
+            <span class="tag">进阶</span>
+          </div>
+          <div class="tutorial-time" itemprop="totalTime" content="PT20M">⏱️ 20分钟</div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Stable Diffusion 教程 -->
+    <article class="tutorial-card" data-category="painting" itemscope itemtype="https://schema.org/HowTo">
+      <div class="tutorial-cover">
+        <span class="tutorial-badge">详细</span>
+        <span style="z-index:1;">🖼️</span>
+      </div>
+      <div class="tutorial-content">
+        <h3 class="tutorial-title" itemprop="name">Stable Diffusion 本地部署完整教程</h3>
+        <p class="tutorial-desc" itemprop="description">手把手教你本地部署 Stable Diffusion，包括环境配置、模型下载、WebUI安装、插件使用、参数调优。完全免费，无限使用。</p>
+        <div class="tutorial-meta">
+          <div class="tutorial-tags">
+            <span class="tag">AI绘画</span>
+            <span class="tag">部署</span>
+          </div>
+          <div class="tutorial-time" itemprop="totalTime" content="PT45M">⏱️ 45分钟</div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Cursor 教程 -->
+    <article class="tutorial-card" data-category="code" itemscope itemtype="https://schema.org/HowTo">
+      <div class="tutorial-cover">
+        <span class="tutorial-badge">新</span>
+        <span style="z-index:1;">⚡</span>
+      </div>
+      <div class="tutorial-content">
+        <h3 class="tutorial-title" itemprop="name">Cursor AI 编程入门：用自然语言写代码</h3>
+        <p class="tutorial-desc" itemprop="description">学习 Cursor 的核心功能，包括代码补全、代码解释、一键重构、Agent模式等。让AI成为你的编程助手，大幅提升开发效率。</p>
+        <div class="tutorial-meta">
+          <div class="tutorial-tags">
+            <span class="tag">AI编程</span>
+            <span class="tag">入门</span>
+          </div>
+          <div class="tutorial-time" itemprop="totalTime" content="PT25M">⏱️ 25分钟</div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Runway 教程 -->
+    <article class="tutorial-card" data-category="video" itemscope itemtype="https://schema.org/HowTo">
+      <div class="tutorial-cover">
+        <span style="z-index:1;">🎬</span>
+      </div>
+      <div class="tutorial-content">
+        <h3 class="tutorial-title" itemprop="name">Runway AI 视频生成入门指南</h3>
+        <p class="tutorial-desc" itemprop="description">掌握 Runway 的视频生成功能，包括文字生视频、视频风格化、背景移除、AI字幕等。快速制作专业级视频内容。</p>
+        <div class="tutorial-meta">
+          <div class="tutorial-tags">
+            <span class="tag">AI视频</span>
+            <span class="tag">入门</span>
+          </div>
+          <div class="tutorial-time" itemprop="totalTime" content="PT20M">⏱️ 20分钟</div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Suno 教程 -->
+    <article class="tutorial-card" data-category="music" itemscope itemtype="https://schema.org/HowTo">
+      <div class="tutorial-cover">
+        <span class="tutorial-badge">热门</span>
+        <span style="z-index:1;">🎵</span>
+      </div>
+      <div class="tutorial-content">
+        <h3 class="tutorial-title" itemprop="name">Suno AI 音乐创作完整教程</h3>
+        <p class="tutorial-desc" itemprop="description">用 Suno 生成专业级音乐，包括歌词创作、曲风选择、人声调整、混音优化。0基础也能创作出惊艳的音乐作品。</p>
+        <div class="tutorial-meta">
+          <div class="tutorial-tags">
+            <span class="tag">AI音乐</span>
+            <span class="tag">创作</span>
+          </div>
+          <div class="tutorial-time" itemprop="totalTime" content="PT15M">⏱️ 15分钟</div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Claude 教程 -->
+    <article class="tutorial-card" data-category="writing" itemscope itemtype="https://schema.org/HowTo">
+      <div class="tutorial-cover">
+        <span style="z-index:1;">🧠</span>
+      </div>
+      <div class="tutorial-content">
+        <h3 class="tutorial-title" itemprop="name">Claude 长文本处理技巧</h3>
+        <p class="tutorial-desc" itemprop="description">利用 Claude 200K的上下文窗口，处理大型文档、研究报告、小说创作。学会如何高效地与AI协作完成长文本项目。</p>
+        <div class="tutorial-meta">
+          <div class="tutorial-tags">
+            <span class="tag">AI写作</span>
+            <span class="tag">进阶</span>
+          </div>
+          <div class="tutorial-time" itemprop="totalTime" content="PT20M">⏱️ 20分钟</div>
+        </div>
+      </div>
+    </article>
+
+    <!-- GitHub Copilot 教程 -->
+    <article class="tutorial-card" data-category="code" itemscope itemtype="https://schema.org/HowTo">
+      <div class="tutorial-cover">
+        <span style="z-index:1;">🐙</span>
+      </div>
+      <div class="tutorial-content">
+        <h3 class="tutorial-title" itemprop="name">GitHub Copilot 高效编程实战</h3>
+        <p class="tutorial-desc" itemprop="description">将 GitHub Copilot 集成到你的开发工作流，包括 VS Code 配置、快捷键使用、代码生成优化、多语言支持等。</p>
+        <div class="tutorial-meta">
+          <div class="tutorial-tags">
+            <span class="tag">AI编程</span>
+            <span class="tag">实战</span>
+          </div>
+          <div class="tutorial-time" itemprop="totalTime" content="PT18M">⏱️ 18分钟</div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Prompt Engineering 教程 -->
+    <article class="tutorial-card" data-category="writing" itemscope itemtype="https://schema.org/HowTo">
+      <div class="tutorial-cover">
+        <span class="tutorial-badge">必看</span>
+        <span style="z-index:1;">✨</span>
+      </div>
+      <div class="tutorial-content">
+        <h3 class="tutorial-title" itemprop="name">Prompt Engineering：提示词工程核心技巧</h3>
+        <p class="tutorial-desc" itemprop="description">掌握提示词工程的艺术，学习结构化提示、思维链推理、少样本学习等高级技巧。让AI输出质量提升10倍。</p>
+        <div class="tutorial-meta">
+          <div class="tutorial-tags">
+            <span class="tag">AI写作</span>
+            <span class="tag">核心</span>
+          </div>
+          <div class="tutorial-time" itemprop="totalTime" content="PT35M">⏱️ 35分钟</div>
+        </div>
+      </div>
+    </article>
+
+  </div>
+
+</main>
+
+<!-- 底部 -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">🤖 AI工具导航</div>
+      <p>发现最好用的AI工具，提升你的工作效率。收录500+人工智能工具，每日更新。</p>
+      <p style="font-size:0.8rem;">© 2026 AI工具导航 · 免费使用</p>
+    </div>
+    <div class="footer-col">
+      <h4>工具分类</h4>
+      <ul>
+        <li><a href="writing.html">AI写作</a></li>
+        <li><a href="image.html">AI绘画</a></li>
+        <li><a href="video.html">AI视频</a></li>
+        <li><a href="code.html">AI编程</a></li>
+        <li><a href="audio.html">AI音乐</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>功能</h4>
+      <ul>
+        <li><a href="ranking.html">排行榜</a></li>
+        <li><a href="compare.html">工具对比</a></li>
+        <li><a href="tutorials.html">使用教程</a></li>
+        <li><a href="submit.html">提交工具</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>关于</h4>
+      <ul>
+        <li><a href="#">关于我们</a></li>
+        <li><a href="#">联系我们</a></li>
+        <li><a href="#">隐私政策</a></li>
+        <li><a href="#">用户协议</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 AI工具导航 · 专注发现最好用的AI工具</span>
+    <span>
+      <a href="sitemap.xml" style="color:var(--text-muted);text-decoration:none;margin-right:16px;">网站地图</a>
+      <a href="https://github.com/Hjouy/ai-tools-directory" target="_blank" rel="noopener" style="color:var(--text-muted);text-decoration:none;">GitHub</a>
+    </span>
+  </div>
+</footer>
+
+<script>
+  function filterTutorials(category) {
+    const cards = document.querySelectorAll('.tutorial-card');
+    const buttons = document.querySelectorAll('.filter-btn');
+
+    buttons.forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+
+    cards.forEach(card => {
+      if (category === 'all' || card.dataset.category === category) {
+        card.style.display = 'flex';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  }
+</script>
+
+</body>
+</html>
