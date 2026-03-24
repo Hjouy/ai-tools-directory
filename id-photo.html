@@ -118,14 +118,12 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            position: relative;
         }
         .bg-option:hover { transform: scale(1.1); }
         .bg-option.active { border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,0.3); }
         .bg-white { background: #ffffff; }
         .bg-blue { background: #2196F3; }
         .bg-red { background: #E53935; }
-        .bg-option span { font-size: 0.7em; color: #666; }
         .beauty-section { margin-top: 15px; }
         .slider-group { margin-bottom: 12px; }
         .slider-group label { display: block; font-size: 0.85em; color: #555; margin-bottom: 4px; }
@@ -158,11 +156,7 @@
             gap: 15px;
         }
         .preview-hint { text-align: center; color: #888; font-size: 0.9em; }
-        #mainCanvas {
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            max-width: 100%;
-        }
+        #mainCanvas { border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); max-width: 100%; }
         .action-buttons {
             display: flex;
             gap: 10px;
@@ -200,14 +194,22 @@
         .status-bar.processing { background: #e3f2fd; border-color: #90caf9; color: #1565c0; display: block; }
         .status-bar.success { background: #e8f5e9; border-color: #a5d6a7; color: #2e7d32; display: block; }
         .status-bar.error { background: #ffebee; border-color: #ef9a9a; color: #c62828; display: block; }
-        .model-status {
-            font-size: 0.8em;
-            color: #888;
-            margin-top: 5px;
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            display: none;
         }
-        .model-loaded { color: #4caf50; }
-        .model-loading { color: #ff9800; }
-        .model-error { color: #f44336; }
+        .progress-bar.active { display: block; }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s;
+        }
         .quality-modes {
             display: flex;
             gap: 8px;
@@ -227,22 +229,6 @@
         .quality-mode span { font-weight: 600; }
         .quality-mode:hover { border-color: #667eea; background: #f0f4ff; }
         .quality-mode.active { border-color: #667eea; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: #e0e0e0;
-            border-radius: 4px;
-            overflow: hidden;
-            margin-top: 10px;
-            display: none;
-        }
-        .progress-bar.active { display: block; }
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-            width: 0%;
-            transition: width 0.3s;
-        }
         @media (max-width: 900px) {
             .main-content { grid-template-columns: 1fr; }
         }
@@ -293,11 +279,11 @@
 
                 <div class="section-title" style="margin-top: 20px;"><i class="fas fa-sliders-h"></i> 处理模式</div>
                 <div class="quality-modes">
-                    <div class="quality-mode active" data-mode="fast" title="快速处理，适合预览">
+                    <div class="quality-mode active" data-mode="fast" title="快速处理">
                         <i class="fas fa-bolt"></i>
                         <span>快速</span>
                     </div>
-                    <div class="quality-mode" data-mode="quality" title="最佳边缘质量，处理更精细">
+                    <div class="quality-mode" data-mode="quality" title="精细边缘">
                         <i class="fas fa-crown"></i>
                         <span>高清</span>
                     </div>
@@ -320,7 +306,7 @@
                     <div class="slider-group">
                         <label>对比度</label>
                         <input type="range" id="contrast" min="-50" max="50" value="0">
-                        <div class="slider-value" id="contralistVal">0</div>
+                        <div class="slider-value" id="contrastVal">0</div>
                     </div>
                     <div class="slider-group">
                         <label>磨皮</label>
@@ -364,9 +350,8 @@
         </div>
     </div>
 
-    <!-- TensorFlow.js Body Segmentation -->
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.17.0/dist/tf.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/body-segmentation@1.0.1/dist/body-segmentation.umd.min.js"></script>
+    <!-- MediaPipe Selfie Segmentation -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.4.1646421024/selfie_segmentation.js" crossorigin="anonymous"></script>
 
     <script>
         // ========== 全局状态 ==========
@@ -379,43 +364,27 @@
         let segmenter = null;
         let segmenterReady = false;
 
-        // ========== TensorFlow.js Body Segmentation 初始化 ==========
+        // ========== MediaPipe SelfieSegmentation 初始化 ==========
         async function initSegmenter() {
             const statusBar = document.getElementById('statusBar');
             statusBar.textContent = '正在加载AI模型，请稍候...';
             statusBar.className = 'status-bar processing';
             
             try {
-                // 检查 TensorFlow.js 是否加载
-                if (typeof tf === 'undefined') {
-                    throw new Error('TensorFlow.js 未加载');
+                if (typeof SelfieSegmentation === 'undefined') {
+                    throw new Error('MediaPipe SelfieSegmentation 未加载');
                 }
                 
-                // 检查 body-segmentation 是否加载
-                if (typeof bodySegmentation === 'undefined') {
-                    throw new Error('Body Segmentation 未加载');
-                }
-                
-                showProgress('加载AI模型中...', 10);
-                
-                // 配置 TensorFlow.js 后端
-                await tf.setBackend('webgl');
-                await tf.ready();
-                showProgress('WebGL 后端已就绪', 30);
-                
-                // 创建分割器 - 使用 MediaPipe SelfieSegmentation 模型
-                const model = bodySegmentation.SupportedModels.MediaPipeSelfieSegmentation;
-                const segmenterConfig = {
-                    runtime: 'tfjs',
-                    modelType: 'general',
-                    solutionOptions: {
-                        selfieMode: false
+                segmenter = await SelfieSegmentation.create({
+                    locateFile: (file) => {
+                        return `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.4.1646421024/${file}`;
                     }
-                };
+                });
                 
-                showProgress('正在初始化分割模型...', 50);
-                segmenter = await bodySegmentation.createSegmenter(model, segmenterConfig);
-                showProgress('模型加载完成', 90);
+                await segmenter.setOptions({
+                    modelType: 'general',
+                    selfieMode: false
+                });
                 
                 segmenterReady = true;
                 statusBar.textContent = '✓ AI模型加载完成，可以开始处理';
@@ -423,14 +392,12 @@
                 
                 setTimeout(() => {
                     statusBar.className = 'status-bar';
-                    document.getElementById('progressBar').classList.remove('active');
-                }, 2000);
+                }, 3000);
                 
             } catch (err) {
                 console.error('模型加载失败:', err);
-                document.getElementById('progressBar').classList.remove('active');
                 statusBar.textContent = 'AI模型加载失败，将使用备用算法';
-                statusBar.className = 'status-bar warning';
+                statusBar.className = 'status-bar error';
                 segmenterReady = false;
             }
         }
@@ -567,7 +534,7 @@
                 const workCanvas = document.createElement('canvas');
                 const workCtx = workCanvas.getContext('2d');
                 
-                // 使用合适尺寸进行处理
+                // 处理尺寸
                 const maxDim = currentQualityMode === 'quality' ? 1024 : 768;
                 let w = originalImage.width;
                 let h = originalImage.height;
@@ -584,49 +551,49 @@
                 showProgress('AI识别人像中...', 20);
                 
                 // 获取分割 mask
-                let mask;
+                let maskData;
                 if (segmenterReady && segmenter) {
                     try {
-                        const segmentationConfig = {
+                        // MediaPipe SelfieSegmentation 返回 ImageData
+                        const maskImageData = await segmenter.segmentPeople(workCanvas, {
                             multiSegmentation: false,
                             segmentBodyParts: false
-                        };
+                        });
                         
-                        const segmentations = await segmenter.segmentPeople(workCanvas, segmentationConfig);
-                        
-                        if (segmentations && segmentations.length > 0) {
-                            mask = segmentations[0].mask;
-                        } else {
-                            throw new Error('未检测到人像');
+                        // maskImageData 是 ImageData，alpha通道表示人像概率
+                        // 255 = 人像, 0 = 背景
+                        maskData = new Float32Array(w * h);
+                        for (let i = 0; i < w * h; i++) {
+                            // 使用 alpha 通道
+                            maskData[i] = maskImageData.data[i * 4 + 3] / 255;
                         }
+                        
+                        // 检查 mask 是否有效
+                        let minVal = Infinity, maxVal = -Infinity;
+                        for (let i = 0; i < maskData.length; i++) {
+                            if (maskData[i] < minVal) minVal = maskData[i];
+                            if (maskData[i] > maxVal) maxVal = maskData[i];
+                        }
+                        
+                        console.log('MediaPipe Mask: min=' + minVal.toFixed(3) + ', max=' + maxVal.toFixed(3));
+                        
+                        // 如果 mask 无变化，使用备用算法
+                        if (maxVal - minVal < 0.01) {
+                            console.warn('MediaPipe mask 无变化，切换到备用算法');
+                            maskData = await fallbackSegmentation(workCtx, w, h);
+                        }
+                        
                     } catch (segErr) {
-                        console.warn('TensorFlow分割失败，使用备用算法:', segErr);
-                        mask = await fallbackSegmentation(workCtx, w, h);
+                        console.warn('MediaPipe分割失败:', segErr);
+                        maskData = await fallbackSegmentation(workCtx, w, h);
                     }
                 } else {
-                    mask = await fallbackSegmentation(workCtx, w, h);
+                    maskData = await fallbackSegmentation(workCtx, w, h);
                 }
                 
                 showProgress('处理中...', 60);
                 
-                // 转换为 Float32Array
-                let maskData;
-                if (mask instanceof ImageData) {
-                    maskData = new Float32Array(w * h);
-                    for (let i = 0; i < w * h; i++) {
-                        maskData[i] = mask.data[i * 4] / 255;
-                    }
-                } else if (mask.data) {
-                    maskData = new Float32Array(mask.data);
-                } else if (mask instanceof Float32Array || Array.isArray(mask)) {
-                    maskData = new Float32Array(mask);
-                } else {
-                    throw new Error('未知的mask格式');
-                }
-                
-                showProgress('正在合成...', 75);
-                
-                // 应用高质量边缘处理
+                // 边缘平滑
                 maskData = applyEdgeSmoothing(maskData, w, h);
                 
                 // 创建输出画布
@@ -642,10 +609,12 @@
                 // 解析目标底色
                 const targetColor = hexToRgb(currentBgColor);
                 
-                // 合成
+                showProgress('正在合成...', 75);
+                
+                // 合成图像
                 compositeImage(pixels, w, h, maskData, targetColor);
                 
-                // 应用美颜（仅对人像区域）
+                // 应用美颜
                 const beautyMask = new Float32Array(w * h);
                 for (let i = 0; i < w * h; i++) {
                     beautyMask[i] = maskData[i] > 0.5 ? 1 : 0;
@@ -664,7 +633,7 @@
                 
                 showProgress('生成证件照...', 90);
                 
-                // 绘制最终证件照尺寸
+                // 绘制最终尺寸
                 const finalCanvas = document.createElement('canvas');
                 const finalCtx = finalCanvas.getContext('2d');
                 finalCanvas.width = currentSize.width;
@@ -734,7 +703,7 @@
         // 边缘平滑处理
         function applyEdgeSmoothing(mask, w, h) {
             const result = new Float32Array(w * h);
-            const kernel = 2;
+            const kernel = currentQualityMode === 'quality' ? 2 : 1;
             
             for (let y = 0; y < h; y++) {
                 for (let x = 0; x < w; x++) {
@@ -766,7 +735,8 @@
             return result;
         }
 
-        // 图像合成
+        // 图像合成 - 使用正确的 mask 语义
+        // mask = 1 表示人像，mask = 0 表示背景
         function compositeImage(pixels, w, h, mask, targetColor) {
             const threshold = 0.5;
             const featherWidth = currentQualityMode === 'quality' ? 0.15 : 0.1;
@@ -774,16 +744,16 @@
             for (let y = 0; y < h; y++) {
                 for (let x = 0; x < w; x++) {
                     const i = (y * w + x) * 4;
-                    const prob = mask[y * w + x];
+                    const personProb = mask[y * w + x];
                     
-                    if (prob < threshold) {
-                        // 背景区域
+                    if (personProb < threshold) {
+                        // 背景区域：替换成目标颜色
                         pixels[i] = targetColor.r;
                         pixels[i + 1] = targetColor.g;
                         pixels[i + 2] = targetColor.b;
-                    } else if (prob < threshold + featherWidth) {
+                    } else if (personProb < threshold + featherWidth) {
                         // 边缘过渡区域
-                        const t = (prob - threshold) / featherWidth;
+                        const t = (personProb - threshold) / featherWidth;
                         const smoothT = t * t * (3 - 2 * t);
                         
                         pixels[i] = Math.round(pixels[i] * smoothT + targetColor.r * (1 - smoothT));
@@ -795,70 +765,66 @@
             }
         }
 
-        // 备用分割算法（基于GrabCut思想）
+        // 备用分割算法（基于颜色分析）
         async function fallbackSegmentation(ctx, w, h) {
             const imageData = ctx.getImageData(0, 0, w, h);
             const data = imageData.data;
             
             // 采集背景样本（四个角）
-            const cornerSamples = [];
-            const sampleSize = Math.min(20, Math.floor(Math.min(w, h) * 0.08));
+            const sampleSize = Math.min(25, Math.floor(Math.min(w, h) * 0.08));
+            let bgR = 0, bgG = 0, bgB = 0, bgCount = 0;
             
+            // 四个角
             const corners = [
-                { x: 0, y: 0 },
-                { x: w - sampleSize, y: 0 },
-                { x: 0, y: h - sampleSize },
-                { x: w - sampleSize, y: h - sampleSize }
+                {x: 0, y: 0}, {x: w - sampleSize, y: 0},
+                {x: 0, y: h - sampleSize}, {x: w - sampleSize, y: h - sampleSize}
             ];
             
             corners.forEach(corner => {
-                let r = 0, g = 0, b = 0, count = 0;
                 for (let dy = 0; dy < sampleSize; dy++) {
                     for (let dx = 0; dx < sampleSize; dx++) {
                         const x = corner.x + dx, y = corner.y + dy;
-                        const i = (y * w + x) * 4;
-                        r += data[i];
-                        g += data[i + 1];
-                        b += data[i + 2];
-                        count++;
+                        if (x < w && y < h) {
+                            const i = (y * w + x) * 4;
+                            bgR += data[i];
+                            bgG += data[i + 1];
+                            bgB += data[i + 2];
+                            bgCount++;
+                        }
                     }
                 }
-                cornerSamples.push({ r: r / count, g: g / count, b: b / count });
             });
             
-            // 计算平均背景色
-            const bgColor = {
-                r: cornerSamples.reduce((s, c) => s + c.r, 0) / 4,
-                g: cornerSamples.reduce((s, c) => s + c.g, 0) / 4,
-                b: cornerSamples.reduce((s, c) => s + c.b, 0) / 4
-            };
+            bgR /= bgCount;
+            bgG /= bgCount;
+            bgB /= bgCount;
             
-            // 生成初始mask
+            console.log('Fallback 背景色:', bgR.toFixed(0), bgG.toFixed(0), bgB.toFixed(0));
+            
+            // 生成 mask：远离背景色的区域更可能是人像
             const mask = new Float32Array(w * h);
             for (let y = 0; y < h; y++) {
                 for (let x = 0; x < w; x++) {
                     const i = y * w + x;
                     const pi = i * 4;
                     
-                    const dr = data[pi] - bgColor.r;
-                    const dg = data[pi + 1] - bgColor.g;
-                    const db = data[pi + 2] - bgColor.b;
+                    const dr = data[pi] - bgR;
+                    const dg = data[pi + 1] - bgG;
+                    const db = data[pi + 2] - bgB;
                     const diff = Math.sqrt(dr * dr + dg * dg + db * db);
                     
-                    // 中心区域更可能是主体
-                    const centerDist = Math.sqrt(
-                        Math.pow((x - w/2) / w, 2) + 
-                        Math.pow((y - h/2) / h, 2)
-                    );
+                    // 中心区域更可能是人像
+                    const centerX = w / 2, centerY = h / 2;
+                    const distFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+                    const maxDist = Math.sqrt(centerX ** 2 + centerY ** 2);
+                    const centerBoost = 1 - (distFromCenter / maxDist) * 0.3;
                     
-                    const edgeFactor = 1 - Math.min(centerDist * 2, 1);
-                    const threshold = 60 - edgeFactor * 20;
-                    
-                    mask[i] = diff < threshold ? 1 - diff / threshold : 0;
+                    const threshold = 50 * centerBoost;
+                    mask[i] = diff > threshold ? 1 : Math.max(0, diff / threshold);
                 }
             }
             
-            // 形态学处理
+            // 形态学闭运算
             return morphologicalClose(mask, w, h, 2);
         }
 
@@ -911,23 +877,22 @@
                     // 亮度
                     if (brightness !== 0) {
                         const delta = brightness * 2.55;
-                        r = r + delta;
-                        g = g + delta;
-                        b = b + delta;
+                        r = Math.max(0, Math.min(255, r + delta));
+                        g = Math.max(0, Math.min(255, g + delta));
+                        b = Math.max(0, Math.min(255, b + delta));
                     }
                     
                     // 对比度
                     if (contrast !== 0) {
                         const factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
-                        r = factor * (r - 128) + 128;
-                        g = factor * (g - 128) + 128;
-                        b = factor * (b - 128) + 128;
+                        r = Math.max(0, Math.min(255, factor * (r - 128) + 128));
+                        g = Math.max(0, Math.min(255, factor * (g - 128) + 128));
+                        b = Math.max(0, Math.min(255, factor * (b - 128) + 128));
                     }
                     
                     // 磨皮（对肤色）
                     if (smooth > 0 && isSkinColor(r, g, b)) {
                         const factor = smooth / 100 * 0.4;
-                        // 简单模糊
                         const avgR = (pixels[i - 4] + pixels[i + 4] + pixels[i - w*4] + pixels[i + w*4]) / 4;
                         const avgG = (pixels[i - 3] + pixels[i + 5] + pixels[i - w*4 + 1] + pixels[i + w*4 + 1]) / 4;
                         const avgB = (pixels[i - 2] + pixels[i + 6] + pixels[i - w*4 + 2] + pixels[i + w*4 + 2]) / 4;
@@ -941,14 +906,14 @@
                     if (whitening > 0) {
                         const gray = 0.299 * r + 0.587 * g + 0.114 * b;
                         const f = whitening / 100 * 0.35;
-                        r = r + (255 - gray) * f;
-                        g = g + (255 - gray) * f * 0.8;
-                        b = b + (255 - gray) * f * 0.6;
+                        r = Math.max(0, Math.min(255, r + (255 - gray) * f));
+                        g = Math.max(0, Math.min(255, g + (255 - gray) * f * 0.8));
+                        b = Math.max(0, Math.min(255, b + (255 - gray) * f * 0.6));
                     }
                     
-                    pixels[i] = Math.max(0, Math.min(255, Math.round(r)));
-                    pixels[i + 1] = Math.max(0, Math.min(255, Math.round(g)));
-                    pixels[i + 2] = Math.max(0, Math.min(255, Math.round(b)));
+                    pixels[i] = Math.round(r);
+                    pixels[i + 1] = Math.round(g);
+                    pixels[i + 2] = Math.round(b);
                 }
             }
         }
