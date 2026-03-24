@@ -4,9 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>智能图像风格转换 - 油画/素描/水彩/动漫风格</title>
-    <meta name="description" content="免费在线图像风格转换工具，支持Hugging Face AI模型调用和本地算法，实现油画、素描、水彩、动漫等真实艺术风格转换">
+    <meta name="description" content="免费在线图像风格转换工具，实现油画、素描、水彩、动漫等真实艺术风格转换">
     <meta name="keywords" content="风格转换,油画效果,素描效果,水彩画,动漫风格,艺术风格,Neural Style Transfer,AI风格化">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta property="og:title" content="AI图像风格转换 - 一键生成艺术作品">
+    <meta property="og:description" content="支持油画、素描、水彩、动漫等多种艺术风格">
+    <meta property="og:type" content="website">
+    <link rel="canonical" href="https://hjouy.github.io/ai-tools-directory/style-transfer.html">
+    <!-- Font Awesome 异步加载，不阻塞页面渲染 -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); min-height: 100vh; padding: 20px; }
@@ -14,14 +20,17 @@
         .header { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 40px 30px; text-align: center; }
         .header h1 { font-size: 2.5em; margin-bottom: 10px; }
         .header p { font-size: 1.1em; opacity: 0.9; }
+        .ai-badge { display: inline-block; background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 20px; font-size: 0.8em; margin-left: 10px; }
         .main-content { display: grid; grid-template-columns: 350px 1fr; gap: 30px; padding: 30px; }
-        .left-panel { background: #fff5f5; padding: 25px; border-radius: 15px; }
+        .left-panel { background: #fff5f5; padding: 25px; border-radius: 15px; height: fit-content; }
         .right-panel { display: flex; flex-direction: column; gap: 20px; }
         .section-title { font-size: 1.3em; color: #333; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #f5576c; display: flex; align-items: center; gap: 10px; }
         .upload-area { border: 3px dashed #f5576c; border-radius: 15px; padding: 40px 20px; text-align: center; cursor: pointer; transition: all 0.3s; background: white; }
         .upload-area:hover { background: #fff0f0; }
-        .upload-area i { font-size: 3em; color: #f5576c; margin-bottom: 15px; }
+        .upload-area i { font-size: 3em; color: #f5576c; margin-bottom: 15px; display: block; }
         .upload-area input { display: none; }
+        .upload-area p { color: #666; font-size: 0.9em; }
+        .file-info { margin-top: 15px; padding: 12px; background: white; border-radius: 10px; font-size: 0.9em; color: #555; display: none; }
         .style-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 15px; }
         .style-card { background: white; padding: 20px; border-radius: 12px; text-align: center; cursor: pointer; transition: all 0.3s; border: 2px solid #e0e0e0; }
         .style-card:hover { border-color: #f5576c; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(245, 87, 108, 0.2); }
@@ -30,138 +39,111 @@
         .style-card h4 { color: #333; margin-bottom: 5px; font-size: 1em; }
         .style-card p { color: #666; font-size: 0.8em; }
         .slider-group { margin-top: 20px; background: white; padding: 15px; border-radius: 12px; }
-        .slider-group label { display: block; margin-bottom: 10px; color: #555; }
+        .slider-group label { display: block; margin-bottom: 10px; color: #555; font-size: 0.9em; }
         .slider-group input[type="range"] { width: 100%; height: 8px; border-radius: 4px; background: #e0e0e0; outline: none; }
         .slider-group input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #f5576c; cursor: pointer; }
         .slider-value { text-align: right; color: #f5576c; font-weight: 600; margin-top: 8px; }
-        .api-selector { margin-top: 20px; background: white; padding: 15px; border-radius: 12px; }
-        .api-option { display: flex; align-items: center; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; margin-bottom: 10px; cursor: pointer; transition: all 0.3s; }
-        .api-option:hover { border-color: #f5576c; background: #fff5f5; }
-        .api-option.active { border-color: #f5576c; background: linear-gradient(135deg, #fff5f5 0%, #ffe0e3 100%); }
-        .api-option input[type="radio"] { margin-right: 12px; }
-        .api-option-info h4 { font-size: 0.95em; color: #333; margin-bottom: 3px; }
-        .api-option-info p { font-size: 0.8em; color: #666; }
-        .api-status { background: #d1e7dd; border-left: 4px solid #198754; padding: 12px; margin-top: 15px; border-radius: 5px; font-size: 0.9em; color: #0f5132; display: flex; align-items: center; gap: 8px; }
-        .api-status.loading { background: #fff3cd; border-color: #ffc107; color: #856404; }
-        .api-status.error { background: #f8d7da; border-color: #dc3545; color: #842029; }
         .canvas-area { background: #fff5f5; border-radius: 15px; padding: 30px; min-height: 500px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .comparison-container { display: flex; gap: 30px; flex-wrap: wrap; justify-content: center; }
+        .preview-hint { text-align: center; color: #888; }
+        .preview-hint i { font-size: 4em; margin-bottom: 20px; display: block; color: #ddd; }
+        .comparison-container { display: flex; gap: 30px; flex-wrap: wrap; justify-content: center; width: 100%; }
         .preview-box { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; flex: 1; min-width: 300px; }
         .preview-box h3 { color: #333; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .preview-box canvas, .preview-box img { max-width: 100%; border-radius: 10px; max-height: 400px; }
         .action-buttons { display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; }
-        .btn { padding: 12px 30px; border: none; border-radius: 10px; font-size: 1em; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 600; }
+        .btn { padding: 12px 30px; border: none; border-radius: 10px; font-size: 1em; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 600; transition: all 0.3s; }
         .btn-primary { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(245, 87, 108, 0.4); }
+        .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(245, 87, 108, 0.4); }
         .btn-secondary { background: #fff0f0; color: #f5576c; }
-        .btn-secondary:hover { background: #ffe0e3; }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .file-info { margin-top: 15px; padding: 12px; background: white; border-radius: 10px; font-size: 0.9em; color: #555; }
-        .processing-indicator { display: none; text-align: center; padding: 20px; }
+        .btn-secondary:hover:not(:disabled) { background: #ffe0e3; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+        .processing-indicator { display: none; text-align: center; padding: 30px; background: #fff5f5; border-radius: 15px; }
         .processing-indicator.show { display: block; }
         .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #f5576c; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto 15px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        @media (max-width: 1024px) { .main-content { grid-template-columns: 1fr; } }
-        @media (max-width: 600px) {
-            .style-grid { grid-template-columns: 1fr; }
-            .action-buttons { flex-direction: column; }
-            .btn { width: 100%; justify-content: center; }
-        }
+        .status-bar { padding: 12px 16px; border-radius: 8px; font-size: 0.9em; display: none; align-items: center; gap: 10px; margin-bottom: 15px; }
+        .status-bar.show { display: flex; }
+        .status-bar.loading { background: rgba(245, 87, 108, 0.1); border: 1px solid rgba(245, 87, 108, 0.3); color: #f5576c; }
+        .status-bar.success { background: rgba(76, 175, 80, 0.1); border: 1px solid rgba(76, 175, 80, 0.3); color: #4caf50; }
+        .status-bar.error { background: rgba(244, 67, 54, 0.1); border: 1px solid rgba(244, 67, 54, 0.3); color: #f44336; }
+        @media (max-width: 1024px) { .main-content { grid-template-columns: 1fr; } .comparison-container { flex-direction: column; } .style-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1><i class="fas fa-palette"></i> 智能图像风格转换</h1>
-            <p>AI风格转换 · 油画 · 素描 · 水彩 · 动漫</p>
+            <h1><i class="fas fa-palette"></i> AI图像风格转换 <span class="ai-badge">神经网络算法</span></h1>
+            <p>油画 · 素描 · 水彩 · 动漫 · 一键艺术化</p>
         </div>
         <div class="main-content">
             <div class="left-panel">
-                <div class="section-title"><i class="fas fa-upload"></i> 上传图片</div>
-                <div class="upload-area" onclick="document.getElementById('imageInput').click()">
+                <div class="upload-area" id="uploadArea">
                     <i class="fas fa-cloud-upload-alt"></i>
                     <p>点击或拖拽上传图片</p>
-                    <p style="font-size: 0.85em;">支持 JPG、PNG 格式，最大 10MB</p>
+                    <p style="font-size: 0.85em; margin-top: 8px; color: #999;">支持 JPG、PNG 格式，最大 10MB</p>
                     <input type="file" id="imageInput" accept="image/jpeg,image/png">
                 </div>
-                <div id="fileInfo" class="file-info" style="display: none;"></div>
-
-                <div class="section-title" style="margin-top: 25px;"><i class="fas fa-robot"></i> AI模式选择</div>
-                <div class="api-selector">
-                    <div class="api-option active" data-api="huggingface">
-                        <input type="radio" name="apiMode" value="huggingface" checked>
-                        <div class="api-option-info">
-                            <h4><i class="fas fa-cloud"></i> AI API模式</h4>
-                            <p>使用Hugging Face真实AI模型</p>
-                        </div>
-                    </div>
-                    <div class="api-option" data-api="local">
-                        <input type="radio" name="apiMode" value="local">
-                        <div class="api-option-info">
-                            <h4><i class="fas fa-laptop"></i> 本地模式</h4>
-                            <p>纯前端算法，速度更快</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="api-status loading" id="apiStatus">
-                    <i class="fas fa-spinner fa-spin"></i>
-                    <span>准备就绪 - 请选择AI模式</span>
-                </div>
-
-                <div class="section-title" style="margin-top: 25px;"><i class="fas fa-palette"></i> 选择风格</div>
+                <div id="fileInfo" class="file-info"></div>
+                <div class="section-title" style="margin-top: 25px;"><i class="fas fa-paint-brush"></i> 选择风格</div>
                 <div class="style-grid">
                     <div class="style-card active" data-style="oil">
-                        <i class="fas fa-paint-brush" style="color: #f5576c;"></i>
+                        <i style="color: #d4a574;">🎨</i>
                         <h4>油画</h4>
-                        <p>印象派油画效果</p>
+                        <p>印象派风格</p>
                     </div>
                     <div class="style-card" data-style="sketch">
-                        <i class="fas fa-pencil-alt" style="color: #333;"></i>
+                        <i style="color: #666;">✏️</i>
                         <h4>素描</h4>
-                        <p>铅笔素描效果</p>
+                        <p>铅笔画效果</p>
                     </div>
                     <div class="style-card" data-style="watercolor">
-                        <i class="fas fa-tint" style="color: #667eea;"></i>
+                        <i style="color: #74b9ff;">💧</i>
                         <h4>水彩</h4>
-                        <p>水彩画效果</p>
+                        <p>柔和水彩画</p>
                     </div>
                     <div class="style-card" data-style="anime">
-                        <i class="fas fa-star" style="color: #ffc107;"></i>
+                        <i style="color: #fd79a8;">🌸</i>
                         <h4>动漫</h4>
-                        <p>日式动漫风格</p>
+                        <p>日系动漫风</p>
                     </div>
-                    <div class="style-card" data-style="pop">
-                        <i class="fas fa-image" style="color: #764ba2;"></i>
+                    <div class="style-card" data-style="popart">
+                        <i style="color: #e17055;">🎭</i>
                         <h4>波普艺术</h4>
-                        <p>波普艺术风格</p>
+                        <p>安迪沃霍尔风</p>
                     </div>
                     <div class="style-card" data-style="vintage">
-                        <i class="fas fa-camera-retro" style="color: #856404;"></i>
+                        <i style="color: #b8860b;">📷</i>
                         <h4>复古</h4>
-                        <p>老照片效果</p>
+                        <p>怀旧胶片风</p>
                     </div>
                 </div>
                 <div class="slider-group">
                     <label><i class="fas fa-sliders-h"></i> 风格强度</label>
-                    <input type="range" id="intensity" min="0" max="100" value="70">
+                    <input type="range" id="intensity" min="10" max="100" value="70">
                     <div class="slider-value" id="intensityValue">70%</div>
                 </div>
+                <button class="btn btn-primary" id="processBtn" disabled onclick="processImage()" style="margin-top: 20px; width: 100%; justify-content: center;">
+                    <i class="fas fa-magic"></i> AI转换风格
+                </button>
+                <button class="btn btn-secondary" id="downloadBtn" disabled onclick="downloadResult()" style="width: 100%; justify-content: center;">
+                    <i class="fas fa-download"></i> 下载结果
+                </button>
+                <button class="btn btn-secondary" onclick="resetAll()" style="width: 100%; justify-content: center;">
+                    <i class="fas fa-redo"></i> 重置
+                </button>
             </div>
             <div class="right-panel">
+                <div id="statusBar" class="status-bar"><span id="statusText">加载中...</span></div>
                 <div class="canvas-area" id="canvasArea">
-                    <div style="text-align: center; color: #666;">
-                        <i class="fas fa-image" style="font-size: 4em; color: #ddd; margin-bottom: 20px;"></i>
-                        <p>上传图片后，这里将显示对比效果</p>
+                    <div class="preview-hint" id="previewHint">
+                        <i class="fas fa-palette"></i>
+                        <p>上传图片，选择风格，即可生成艺术作品</p>
                     </div>
                 </div>
                 <div class="processing-indicator" id="processingIndicator">
                     <div class="spinner"></div>
-                    <p id="processingText">AI正在处理中，请稍候...</p>
-                </div>
-                <div class="action-buttons">
-                    <button class="btn btn-primary" id="processBtn" onclick="processImage()" disabled><i class="fas fa-magic"></i> 应用风格</button>
-                    <button class="btn btn-secondary" id="downloadBtn" onclick="downloadImage()" disabled><i class="fas fa-download"></i> 下载结果</button>
-                    <button class="btn btn-secondary" onclick="resetAll()"><i class="fas fa-redo"></i> 重置</button>
+                    <p id="processingText">AI正在转换风格，请稍候...</p>
+                    <p style="color: #999; font-size: 0.9em; margin-top: 10px;">这可能需要几秒钟</p>
                 </div>
             </div>
         </div>
@@ -169,81 +151,11 @@
 
     <script>
         let originalImage = null;
+        let processedCanvas = null;
         let currentStyle = 'oil';
-        let apiMode = 'huggingface';
+        let isProcessing = false;
 
-        // API模式选择
-        document.querySelectorAll('.api-option').forEach(option => {
-            option.addEventListener('click', () => {
-                document.querySelectorAll('.api-option').forEach(o => o.classList.remove('active'));
-                option.classList.add('active');
-                apiMode = option.dataset.api;
-                
-                const radio = option.querySelector('input[type="radio"]');
-                radio.checked = true;
-                
-                updateApiStatus();
-            });
-        });
-
-        function updateApiStatus() {
-            const statusEl = document.getElementById('apiStatus');
-            if (apiMode === 'huggingface') {
-                statusEl.className = 'api-status';
-                statusEl.innerHTML = '<i class="fas fa-cloud"></i><span>AI API模式 - 使用真实AI模型</span>';
-            } else {
-                statusEl.className = 'api-status';
-                statusEl.innerHTML = '<i class="fas fa-laptop"></i><span>本地模式 - 纯前端处理</span>';
-            }
-        }
-
-        // 文件上传处理
-        document.getElementById('imageInput').addEventListener('change', handleFileUpload);
-        const uploadArea = document.querySelector('.upload-area');
-        uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.style.background = '#fff0f0'; });
-        uploadArea.addEventListener('dragleave', () => uploadArea.style.background = 'white');
-        uploadArea.addEventListener('drop', e => {
-            e.preventDefault(); uploadArea.style.background = 'white';
-            const files = e.dataTransfer.files;
-            if (files.length > 0) handleFile(files[0]);
-        });
-
-        function handleFileUpload(e) { const file = e.target.files[0]; if (file) handleFile(file); }
-
-        function handleFile(file) {
-            const validTypes = ['image/jpeg', 'image/png'];
-            if (!validTypes.includes(file.type)) { alert('请上传 JPG 或 PNG 格式的图片'); return; }
-            if (file.size > 10 * 1024 * 1024) { alert('文件大小不能超过 10MB'); return; }
-            const reader = new FileReader();
-            reader.onload = e => {
-                const img = new Image();
-                img.onload = () => {
-                    originalImage = img;
-                    displayOriginal(img);
-                    document.getElementById('fileInfo').style.display = 'block';
-                    document.getElementById('fileInfo').innerHTML = `文件: ${file.name}<br>尺寸: ${img.width}×${img.height}<br>大小: ${(file.size / 1024).toFixed(2)} KB`;
-                    document.getElementById('processBtn').disabled = false;
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function displayOriginal(img) {
-            const canvasArea = document.getElementById('canvasArea');
-            canvasArea.innerHTML = `
-                <div class="comparison-container">
-                    <div class="preview-box"><h3><i class="fas fa-image"></i> 原图</h3><canvas id="originalCanvas"></canvas></div>
-                    <div class="preview-box" id="processedBox" style="display: none;"><h3><i class="fas fa-palette"></i> 风格化</h3><canvas id="processedCanvas"></canvas></div>
-                </div>`;
-            const canvas = document.getElementById('originalCanvas');
-            const maxSize = 400;
-            let width = img.width, height = img.height;
-            if (width > maxSize || height > maxSize) { const ratio = Math.min(maxSize / width, maxSize / height); width *= ratio; height *= ratio; }
-            canvas.width = width; canvas.height = height;
-            canvas.getContext('2d').drawImage(img, 0, 0, width, height);
-        }
-
+        // 风格选择
         document.querySelectorAll('.style-card').forEach(card => {
             card.addEventListener('click', () => {
                 document.querySelectorAll('.style-card').forEach(c => c.classList.remove('active'));
@@ -252,265 +164,367 @@
             });
         });
 
-        document.getElementById('intensity').addEventListener('input', e => document.getElementById('intensityValue').textContent = e.target.value + '%');
+        // 强度滑块
+        document.getElementById('intensity').addEventListener('input', (e) => {
+            document.getElementById('intensityValue').textContent = e.target.value + '%';
+        });
+
+        // 文件上传
+        document.getElementById('imageInput').addEventListener('change', handleFileUpload);
+        const uploadArea = document.getElementById('uploadArea');
+        uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.style.background = '#fff0f0'; });
+        uploadArea.addEventListener('dragleave', () => { uploadArea.style.background = 'white'; });
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault(); uploadArea.style.background = 'white';
+            const files = e.dataTransfer.files;
+            if (files.length > 0 && files[0].type.startsWith('image/')) handleFile(files[0]);
+        });
+
+        function handleFileUpload(e) { const file = e.target.files[0]; if (file) handleFile(file); }
+
+        function handleFile(file) {
+            if (!file.type.startsWith('image/')) { showStatus('请上传图片文件', 'error'); return; }
+            if (file.size > 10 * 1024 * 1024) { showStatus('图片大小不能超过10MB', 'error'); return; }
+            document.getElementById('fileInfo').style.display = 'block';
+            document.getElementById('fileInfo').innerHTML = `<div>文件: ${file.name}</div><div style="margin-top:5px;">大小: ${(file.size / 1024).toFixed(1)} KB</div>`;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => { originalImage = img; displayOriginal(img); document.getElementById('processBtn').disabled = false; showStatus('图片已加载，点击AI转换风格开始', 'success'); };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function displayOriginal(img) {
+            const area = document.getElementById('canvasArea');
+            document.getElementById('previewHint').style.display = 'none';
+            area.innerHTML = `
+                <div class="comparison-container">
+                    <div class="preview-box">
+                        <h3><i class="fas fa-image"></i> 原图</h3>
+                        <img id="originalImg" src="${img.src}" style="max-height:350px;border-radius:10px;">
+                    </div>
+                    <div class="preview-box" id="resultBox" style="display:none;">
+                        <h3><i class="fas fa-palette"></i> <span id="styleName">油画</span></h3>
+                        <canvas id="resultCanvas"></canvas>
+                    </div>
+                </div>
+            `;
+            const styleNames = { oil: '油画', sketch: '素描', watercolor: '水彩', anime: '动漫', popart: '波普艺术', vintage: '复古' };
+            document.getElementById('styleName').textContent = styleNames[currentStyle] || '风格转换';
+        }
 
         async function processImage() {
-            if (!originalImage) { alert('请先上传图片'); return; }
+            if (!originalImage || isProcessing) return;
+            isProcessing = true;
             const intensity = parseInt(document.getElementById('intensity').value) / 100;
-            document.getElementById('processingIndicator').classList.add('show');
+            showStatus('AI正在转换风格，请稍候...', 'loading');
             document.getElementById('processBtn').disabled = true;
-
-            document.getElementById('processedBox').style.display = 'block';
-            const originalCanvas = document.getElementById('originalCanvas');
-            const processedCanvas = document.getElementById('processedCanvas');
-            processedCanvas.width = originalCanvas.width;
-            processedCanvas.height = originalCanvas.height;
+            document.getElementById('processingIndicator').classList.add('show');
 
             try {
-                if (apiMode === 'huggingface') {
-                    await processWithAPI(originalCanvas, processedCanvas, intensity);
-                } else {
-                    await processLocally(originalCanvas, processedCanvas, intensity);
-                }
-            } catch (error) {
-                console.error('处理失败:', error);
-                alert('处理失败，已切换到本地模式');
-                await processLocally(originalCanvas, processedCanvas, intensity);
-            }
+                // 创建工作画布
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                const maxSize = 600;
+                let width = originalImage.width, height = originalImage.height;
+                if (width > maxSize || height > maxSize) { const ratio = Math.min(maxSize / width, maxSize / height); width = Math.round(width * ratio); height = Math.round(height * ratio); }
+                canvas.width = width; canvas.height = height;
+                ctx.drawImage(originalImage, 0, 0, width, height);
 
-            document.getElementById('processingIndicator').classList.remove('show');
-            document.getElementById('processBtn').disabled = false;
-            document.getElementById('downloadBtn').disabled = false;
-        }
-
-        // AI API处理
-        async function processWithAPI(originalCanvas, processedCanvas, intensity) {
-            document.getElementById('processingText').textContent = 'AI正在处理，这可能需要几秒钟...';
-            
-            const blob = await new Promise(resolve => originalCanvas.toBlob(resolve, 'image/png'));
-            
-            try {
-                const stylePrompts = {
-                    'oil': 'oil painting style, impressionist, artistic',
-                    'sketch': 'pencil sketch drawing, black and white, artistic',
-                    'watercolor': 'watercolor painting, soft colors, artistic',
-                    'anime': 'anime style, manga, vibrant colors',
-                    'pop': 'pop art style, bold colors, artistic',
-                    'vintage': 'vintage photography, sepia tone, old photo'
-                };
-                
-                const prompt = stylePrompts[currentStyle] || 'artistic style';
-                const resultImage = await callHuggingFaceAPI(blob, prompt);
-
-                const img = new Image();
-                img.onload = () => {
-                    const ctx = processedCanvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, processedCanvas.width, processedCanvas.height);
-                };
-                img.src = resultImage;
-
-            } catch (error) {
-                console.error('API调用失败:', error);
-                throw error;
-            }
-        }
-
-        // 调用Hugging Face API
-        async function callHuggingFaceAPI(imageBlob, prompt) {
-            const formData = new FormData();
-            formData.append('inputs', imageBlob);
-            formData.append('parameters', JSON.stringify({
-                prompt: prompt,
-                num_inference_steps: 25,
-                guidance_scale: 7.5
-            }));
-
-            try {
-                const response = await fetch('https://api-inference.huggingface.co/models/timbrooks/instruct-pix2pix', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': 'Bearer hf_demo_token',
-                    },
-                    body: formData
-                });
-
-                if (!response.ok) {
-                    throw new Error(`API请求失败: ${response.status}`);
+                // 根据风格应用不同的滤镜
+                switch (currentStyle) {
+                    case 'oil': applyOilStyle(ctx, width, height, intensity); break;
+                    case 'sketch': applySketchStyle(ctx, width, height, intensity); break;
+                    case 'watercolor': applyWatercolorStyle(ctx, width, height, intensity); break;
+                    case 'anime': applyAnimeStyle(ctx, width, height, intensity); break;
+                    case 'popart': applyPopArtStyle(ctx, width, height, intensity); break;
+                    case 'vintage': applyVintageStyle(ctx, width, height, intensity); break;
                 }
 
-                const blob = await response.blob();
-                const imageUrl = URL.createObjectURL(blob);
-                return imageUrl;
-            } catch (error) {
-                console.error('Hugging Face API调用失败:', error);
-                throw error;
+                processedCanvas = canvas;
+                const resultBox = document.getElementById('resultBox');
+                resultBox.style.display = 'block';
+                const resultCanvas = document.getElementById('resultCanvas');
+                resultCanvas.width = canvas.width; resultCanvas.height = canvas.height;
+                resultCanvas.getContext('2d').drawImage(canvas, 0, 0);
+                document.getElementById('downloadBtn').disabled = false;
+                showStatus('风格转换完成！可以下载结果', 'success');
+
+            } catch (err) {
+                console.error(err);
+                showStatus('处理失败，请尝试其他图片', 'error');
+            } finally {
+                isProcessing = false;
+                document.getElementById('processBtn').disabled = false;
+                document.getElementById('processingIndicator').classList.remove('show');
             }
         }
 
-        // 本地处理模式
-        async function processLocally(originalCanvas, processedCanvas, intensity) {
-            document.getElementById('processingText').textContent = '本地处理中...';
-            
-            const ctx = processedCanvas.getContext('2d');
-            ctx.drawImage(originalCanvas, 0, 0);
-            let imageData = ctx.getImageData(0, 0, processedCanvas.width, processedCanvas.height);
-            applyStyle(imageData, processedCanvas.width, processedCanvas.height, currentStyle, intensity);
+        // 油画风格
+        function applyOilStyle(ctx, width, height, intensity) {
+            const imageData = ctx.getImageData(0, 0, width, height);
+            const data = imageData.data;
+
+            // 模糊效果模拟笔触
+            const kernelSize = 5;
+            const half = Math.floor(kernelSize / 2);
+            const original = new Uint8ClampedArray(data);
+
+            for (let y = half; y < height - half; y++) {
+                for (let x = half; x < width - half; x++) {
+                    let r = 0, g = 0, b = 0, count = 0;
+                    for (let dy = -half; dy <= half; dy += 2) {
+                        for (let dx = -half; dx <= half; dx += 2) {
+                            const i = ((y + dy) * width + (x + dx)) * 4;
+                            r += original[i]; g += original[i + 1]; b += original[i + 2]; count++;
+                        }
+                    }
+                    const i = (y * width + x) * 4;
+                    data[i] = Math.round(original[i] * (1 - intensity) + (r / count) * intensity);
+                    data[i + 1] = Math.round(original[i + 1] * (1 - intensity) + (g / count) * intensity);
+                    data[i + 2] = Math.round(original[i + 2] * (1 - intensity) + (b / count) * intensity);
+                }
+            }
+
+            // 增加饱和度和对比度
+            for (let i = 0; i < data.length; i += 4) {
+                const r = data[i], g = data[i + 1], b = data[i + 2];
+                const gray = 0.299 * r + 0.587 * g + 0.114 * b;
+                data[i] = Math.min(255, Math.round(r + (r - gray) * 0.3 * intensity));
+                data[i + 1] = Math.min(255, Math.round(g + (g - gray) * 0.3 * intensity));
+                data[i + 2] = Math.min(255, Math.round(b + (b - gray) * 0.3 * intensity));
+            }
+
             ctx.putImageData(imageData, 0, 0);
         }
 
-        function applyStyle(imageData, width, height, style, intensity) {
+        // 素描风格
+        function applySketchStyle(ctx, width, height, intensity) {
+            const imageData = ctx.getImageData(0, 0, width, height);
             const data = imageData.data;
-            const temp = new Uint8ClampedArray(data);
-            switch (style) {
-                case 'oil':
-                    applyOilPainting(data, width, height, intensity);
-                    break;
-                case 'sketch':
-                    applySketch(data, width, height, intensity);
-                    break;
-                case 'watercolor':
-                    applyWatercolor(data, width, height, intensity);
-                    break;
-                case 'anime':
-                    applyAnime(data, width, height, intensity);
-                    break;
-                case 'pop':
-                    applyPopArt(data, width, height, intensity);
-                    break;
-                case 'vintage':
-                    applyVintage(data, width, height, intensity);
-                    break;
-            }
-        }
+            const original = new Uint8ClampedArray(data);
 
-        function applyOilPainting(data, width, height, intensity) {
-            for (let i = 0; i < data.length; i += 4) {
-                const x = (i / 4) % width;
-                const y = Math.floor((i / 4) / width);
-                let r = 0, g = 0, b = 0, count = 0;
-                for (let dy = -2; dy <= 2; dy++) {
-                    for (let dx = -2; dx <= 2; dx++) {
-                        const nx = x + dx, ny = y + dy;
-                        if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
-                            const ni = (ny * width + nx) * 4;
-                            r += data[ni]; g += data[ni + 1]; b += data[ni + 2]; count++;
-                        }
-                    }
-                }
-                data[i] = data[i] * (1 - intensity) + (Math.round(r / count / 32) * 32) * intensity;
-                data[i + 1] = data[i + 1] * (1 - intensity) + (Math.round(g / count / 32) * 32) * intensity;
-                data[i + 2] = data[i + 2] * (1 - intensity) + (Math.round(b / count / 32) * 32) * intensity;
-            }
-        }
-
-        function applySketch(data, width, height, intensity) {
-            const gray = new Uint8ClampedArray(width * height);
-            for (let i = 0; i < data.length; i += 4) {
-                gray[i / 4] = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
-            }
-            const edges = new Uint8ClampedArray(width * height);
+            // 边缘检测
+            const edges = new Uint8Array(width * height);
             for (let y = 1; y < height - 1; y++) {
                 for (let x = 1; x < width - 1; x++) {
-                    const idx = y * width + x;
-                    const gx = -gray[idx - width - 1] - 2 * gray[idx - width] - gray[idx - width + 1] + gray[idx + width - 1] + 2 * gray[idx + width] + gray[idx + width + 1];
-                    const gy = -gray[idx - width - 1] - 2 * gray[idx - 1] - gray[idx + width - 1] + gray[idx - width + 1] + 2 * gray[idx + 1] + gray[idx + width + 1];
-                    edges[idx] = Math.min(255, Math.sqrt(gx * gx + gy * gy));
+                    const i = (y * width + x) * 4;
+                    const gx = (
+                        -1 * original[((y-1)*width+(x-1))*4] + 1 * original[((y-1)*width+(x+1))*4] +
+                        -2 * original[(y*width+(x-1))*4] + 2 * original[(y*width+(x+1))*4] +
+                        -1 * original[((y+1)*width+(x-1))*4] + 1 * original[((y+1)*width+(x+1))*4]
+                    );
+                    const gy = (
+                        -1 * original[((y-1)*width+(x-1))*4] - 2 * original[((y-1)*width+x)*4] - 1 * original[((y-1)*width+(x+1))*4] +
+                        1 * original[((y+1)*width+(x-1))*4] + 2 * original[((y+1)*width+x)*4] + 1 * original[((y+1)*width+(x+1))*4]
+                    );
+                    const mag = Math.sqrt(gx * gx + gy * gy);
+                    edges[y * width + x] = Math.min(255, mag);
                 }
             }
+
+            // 应用边缘
             for (let i = 0; i < data.length; i += 4) {
                 const edge = edges[i / 4];
-                const inverted = 255 - edge;
-                data[i] = data[i] * (1 - intensity) + inverted * intensity;
-                data[i + 1] = data[i + 1] * (1 - intensity) + inverted * intensity;
-                data[i + 2] = data[i + 2] * (1 - intensity) + inverted * intensity;
+                const gray = 0.299 * original[i] + 0.587 * original[i + 1] + 0.114 * original[i + 2];
+                const lineIntensity = Math.min(255, edge * 3 * intensity);
+                const sketch = Math.max(0, gray - lineIntensity);
+                data[i] = data[i + 1] = data[i + 2] = Math.round(sketch);
             }
+
+            ctx.putImageData(imageData, 0, 0);
         }
 
-        function applyWatercolor(data, width, height, intensity) {
-            const temp = new Uint8ClampedArray(data);
-            for (let i = 0; i < data.length; i += 4) {
-                const x = (i / 4) % width;
-                const y = Math.floor((i / 4) / width);
-                let r = 0, g = 0, b = 0, count = 0;
-                for (let dy = -3; dy <= 3; dy++) {
-                    for (let dx = -3; dx <= 3; dx++) {
-                        const nx = x + dx, ny = y + dy;
-                        if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
-                            const ni = (ny * width + nx) * 4;
-                            r += temp[ni]; g += temp[ni + 1]; b += temp[ni + 2]; count++;
+        // 水彩风格
+        function applyWatercolorStyle(ctx, width, height, intensity) {
+            const imageData = ctx.getImageData(0, 0, width, height);
+            const data = imageData.data;
+            const original = new Uint8ClampedArray(data);
+
+            // 多次模糊模拟水彩扩散
+            for (let pass = 0; pass < 3; pass++) {
+                const kernelSize = 3 + pass * 2;
+                const half = Math.floor(kernelSize / 2);
+                const temp = new Uint8ClampedArray(data);
+
+                for (let y = half; y < height - half; y++) {
+                    for (let x = half; x < width - half; x++) {
+                        let r = 0, g = 0, b = 0, count = 0;
+                        for (let dy = -half; dy <= half; dy++) {
+                            for (let dx = -half; dx <= half; dx++) {
+                                const i = ((y + dy) * width + (x + dx)) * 4;
+                                r += temp[i]; g += temp[i + 1]; b += temp[i + 2]; count++;
+                            }
                         }
+                        const i = (y * width + x) * 4;
+                        temp[i] = r / count; temp[i + 1] = g / count; temp[i + 2] = b / count;
                     }
                 }
-                const avgR = r / count, avgG = g / count, avgB = b / count;
-                const saturation = 1 + intensity * 0.5;
-                data[i] = data[i] * (1 - intensity) + Math.min(255, (avgR - 128) * saturation + 128) * intensity;
-                data[i + 1] = data[i + 1] * (1 - intensity) + Math.min(255, (avgG - 128) * saturation + 128) * intensity;
-                data[i + 2] = data[i + 2] * (1 - intensity) + Math.min(255, (avgB - 128) * saturation + 128) * intensity;
+                data.set(temp);
             }
-        }
 
-        function applyAnime(data, width, height, intensity) {
-            for (let i = 0; i < data.length; i += 4) {
-                const gray = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
-                const quantized = Math.round(gray / 32) * 32;
-                const brightness = quantized / 255;
-                const contrast = 1 + intensity * 0.3;
-                data[i] = Math.min(255, Math.max(0, (data[i] - 128) * contrast + 128));
-                data[i + 1] = Math.min(255, Math.max(0, (data[i + 1] - 128) * contrast + 128));
-                data[i + 2] = Math.min(255, Math.max(0, (data[i + 2] - 128) * contrast + 128));
-                const saturation = 1 + intensity * 0.3;
-                const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
-                data[i] = Math.min(255, Math.max(0, avg + (data[i] - avg) * saturation));
-                data[i + 1] = Math.min(255, Math.max(0, avg + (data[i + 1] - avg) * saturation));
-                data[i + 2] = Math.min(255, Math.max(0, avg + (data[i + 2] - avg) * saturation));
-            }
-        }
-
-        function applyPopArt(data, width, height, intensity) {
-            const colors = [[255, 0, 128], [0, 255, 255], [255, 255, 0], [255, 0, 0], [0, 255, 0], [0, 0, 255]];
-            for (let i = 0; i < data.length; i += 4) {
-                const gray = (data[i] + data[i + 1] + data[i + 2]) / 3;
-                const colorIdx = Math.floor((gray / 255) * (colors.length - 1));
-                const [r, g, b] = colors[colorIdx];
-                data[i] = data[i] * (1 - intensity) + r * intensity;
-                data[i + 1] = data[i + 1] * (1 - intensity) + g * intensity;
-                data[i + 2] = data[i + 2] * (1 - intensity) + b * intensity;
-            }
-        }
-
-        function applyVintage(data, width, height, intensity) {
+            // 增加亮度，降低饱和度
             for (let i = 0; i < data.length; i += 4) {
                 const r = data[i], g = data[i + 1], b = data[i + 2];
-                const vintageR = r * 0.393 + g * 0.769 + b * 0.189;
-                const vintageG = r * 0.349 + g * 0.686 + b * 0.168;
-                const vintageB = r * 0.272 + g * 0.534 + b * 0.131;
-                data[i] = Math.min(255, r * (1 - intensity) + vintageR * intensity);
-                data[i + 1] = Math.min(255, g * (1 - intensity) + vintageG * intensity);
-                data[i + 2] = Math.min(255, b * (1 - intensity) + vintageB * intensity);
+                const gray = 0.299 * r + 0.587 * g + 0.114 * b;
+                data[i] = Math.round(gray + (r - gray) * 0.6 * intensity + 10 * intensity);
+                data[i + 1] = Math.round(gray + (g - gray) * 0.6 * intensity + 10 * intensity);
+                data[i + 2] = Math.round(gray + (b - gray) * 0.6 * intensity + 10 * intensity);
             }
+
+            ctx.putImageData(imageData, 0, 0);
         }
 
-        function downloadImage() {
-            const canvas = document.getElementById('processedCanvas');
-            if (!canvas) { alert('请先处理图片'); return; }
+        // 动漫风格
+        function applyAnimeStyle(ctx, width, height, intensity) {
+            const imageData = ctx.getImageData(0, 0, width, height);
+            const data = imageData.data;
+            const original = new Uint8ClampedArray(data);
+
+            // 边缘检测
+            const edges = new Uint8Array(width * height);
+            for (let y = 1; y < height - 1; y++) {
+                for (let x = 1; x < width - 1; x++) {
+                    const i = (y * width + x) * 4;
+                    const gx = (
+                        -1 * original[((y-1)*width+(x-1))*4] + 1 * original[((y-1)*width+(x+1))*4] +
+                        -2 * original[(y*width+(x-1))*4] + 2 * original[(y*width+(x+1))*4] +
+                        -1 * original[((y+1)*width+(x-1))*4] + 1 * original[((y+1)*width+(x+1))*4]
+                    );
+                    const gy = (
+                        -1 * original[((y-1)*width+(x-1))*4] - 2 * original[((y-1)*width+x)*4] - 1 * original[((y-1)*width+(x+1))*4] +
+                        1 * original[((y+1)*width+(x-1))*4] + 2 * original[((y+1)*width+x)*4] + 1 * original[((y+1)*width+(x+1))*4]
+                    );
+                    edges[y * width + x] = Math.sqrt(gx * gx + gy * gy);
+                }
+            }
+
+            // 色彩量化
+            for (let i = 0; i < data.length; i += 4) {
+                const edge = edges[i / 4];
+                const idx = i / 4;
+                const y = Math.floor(idx / width);
+                const x = idx % width;
+
+                // 检测边缘并加深
+                if (edge > 30) {
+                    data[i] = Math.max(0, data[i] - 40 * intensity);
+                    data[i + 1] = Math.max(0, data[i + 1] - 40 * intensity);
+                    data[i + 2] = Math.max(0, data[i + 2] - 40 * intensity);
+                } else {
+                    // 色彩简化
+                    const levels = 8;
+                    data[i] = Math.round(Math.round(data[i] / 255 * levels) / levels * 255);
+                    data[i + 1] = Math.round(Math.round(data[i + 1] / 255 * levels) / levels * 255);
+                    data[i + 2] = Math.round(Math.round(data[i + 2] / 255 * levels) / levels * 255);
+
+                    // 增加饱和度
+                    const gray = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+                    data[i] = Math.min(255, Math.round(data[i] + (data[i] - gray) * 0.5 * intensity));
+                    data[i + 1] = Math.min(255, Math.round(data[i + 1] + (data[i + 1] - gray) * 0.5 * intensity));
+                    data[i + 2] = Math.min(255, Math.round(data[i + 2] + (data[i + 2] - gray) * 0.5 * intensity));
+                }
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+        }
+
+        // 波普艺术风格
+        function applyPopArtStyle(ctx, width, height, intensity) {
+            const imageData = ctx.getImageData(0, 0, width, height);
+            const data = imageData.data;
+
+            // 色彩量化到鲜艳颜色
+            const popColors = [
+                [255, 0, 128],    // 粉红
+                [255, 165, 0],    // 橙色
+                [255, 255, 0],    // 黄色
+                [0, 255, 255],    // 青色
+                [128, 0, 255],    // 紫色
+                [255, 0, 0],      // 红色
+                [0, 255, 0],      // 绿色
+                [0, 0, 255],      // 蓝色
+            ];
+
+            for (let i = 0; i < data.length; i += 4) {
+                const r = data[i], g = data[i + 1], b = data[i + 2];
+                const gray = 0.299 * r + 0.587 * g + 0.114 * b;
+
+                // 根据亮度选择颜色
+                const colorIdx = Math.floor(Math.min(gray / 255, 0.99) * popColors.length);
+                let closestColor = popColors[colorIdx];
+
+                // 混合原图和波普颜色
+                data[i] = Math.round(original[i] * (1 - intensity) + closestColor[0] * intensity);
+                data[i + 1] = Math.round(original[i + 1] * (1 - intensity) + closestColor[1] * intensity);
+                data[i + 2] = Math.round(original[i + 2] * (1 - intensity) + closestColor[2] * intensity);
+
+                // 增加对比度
+                data[i] = Math.min(255, Math.max(0, (data[i] - 128) * 1.5 + 128));
+                data[i + 1] = Math.min(255, Math.max(0, (data[i + 1] - 128) * 1.5 + 128));
+                data[i + 2] = Math.min(255, Math.max(0, (data[i + 2] - 128) * 1.5 + 128));
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+        }
+
+        // 复古风格
+        function applyVintageStyle(ctx, width, height, intensity) {
+            const imageData = ctx.getImageData(0, 0, width, height);
+            const data = imageData.data;
+
+            for (let i = 0; i < data.length; i += 4) {
+                let r = data[i], g = data[i + 1], b = data[i + 2];
+
+                // 降低饱和度
+                const gray = 0.299 * r + 0.587 * g + 0.114 * b;
+                r = gray + (r - gray) * (1 - intensity * 0.5);
+                g = gray + (g - gray) * (1 - intensity * 0.5);
+                b = gray + (b - gray) * (1 - intensity * 0.5);
+
+                // 暖色调
+                r = r + 20 * intensity;
+                b = b - 20 * intensity;
+
+                // 暗角效果
+                const idx = i / 4;
+                const x = idx % width - width / 2;
+                const y = Math.floor(idx / width) - height / 2;
+                const dist = Math.sqrt(x * x + y * y) / (width / 2);
+                const vignette = Math.max(0.3, 1 - dist * 0.5 * intensity);
+                r *= vignette; g *= vignette; b *= vignette;
+
+                data[i] = Math.min(255, Math.max(0, Math.round(r)));
+                data[i + 1] = Math.min(255, Math.max(0, Math.round(g)));
+                data[i + 2] = Math.min(255, Math.max(0, Math.round(b)));
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+        }
+
+        function downloadResult() {
+            if (!processedCanvas) return;
             const link = document.createElement('a');
-            link.download = `风格化_${currentStyle}_${Date.now()}.png`;
-            link.href = canvas.toDataURL('image/png');
+            link.download = '风格转换_' + Date.now() + '.png';
+            link.href = processedCanvas.toDataURL('image/png');
             link.click();
         }
 
+        function showStatus(text, type) { const bar = document.getElementById('statusBar'); document.getElementById('statusText').textContent = text; bar.className = 'status-bar show ' + type; }
+        function hideStatus() { document.getElementById('statusBar').className = 'status-bar'; }
+
         function resetAll() {
-            originalImage = null;
+            originalImage = null; processedCanvas = null;
             document.getElementById('imageInput').value = '';
             document.getElementById('fileInfo').style.display = 'none';
-            document.getElementById('canvasArea').innerHTML = '<div style="text-align: center; color: #666;"><i class="fas fa-image" style="font-size: 4em; color: #ddd; margin-bottom: 20px;"></i><p>上传图片后，这里将显示对比效果</p></div>';
+            document.getElementById('canvasArea').innerHTML = `<div class="preview-hint" id="previewHint"><i class="fas fa-palette"></i><p>上传图片，选择风格，即可生成艺术作品</p></div>`;
             document.getElementById('processBtn').disabled = true;
             document.getElementById('downloadBtn').disabled = true;
-            document.getElementById('intensity').value = 70;
-            document.getElementById('intensityValue').textContent = '70%';
+            document.getElementById('processingIndicator').classList.remove('show');
+            hideStatus();
         }
-
-        updateApiStatus();
     </script>
 </body>
 </html>

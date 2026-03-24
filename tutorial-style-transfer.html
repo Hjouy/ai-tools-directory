@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI风格转换工具使用教程 - 照片秒变艺术画</title>
+    <meta name="description" content="免费在线AI风格转换工具，将照片转换为油画、素描、水彩、动漫等6种艺术风格。详细教程教你如何制作个性化艺术作品。">
+    <meta name="keywords" content="风格转换,AI绘画,照片转油画,照片转素描,艺术风格,Neural Style">
+    <link rel="canonical" href="https://hjouy.github.io/ai-tools-directory/tutorial-style-transfer.html">
+    <meta property="og:title" content="AI风格转换工具使用教程">
+    <meta property="og:description" content="照片秒变艺术画">
+    <meta property="og:type" content="article">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif; background: #0f0f1a; color: #e2e8f0; line-height: 1.7; }
+        .container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+        .breadcrumb { margin-bottom: 24px; font-size: 0.9rem; color: #94a3b8; }
+        .breadcrumb a { color: #a5b4fc; text-decoration: none; }
+        h1 { font-size: 2rem; margin-bottom: 16px; background: linear-gradient(135deg, #ec4899, #db2777); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .meta { color: #94a3b8; font-size: 0.9rem; margin-bottom: 32px; }
+        h2 { font-size: 1.5rem; margin: 40px 0 16px; border-bottom: 1px solid #2d2d4e; padding-bottom: 8px; }
+        p { margin-bottom: 16px; color: #cbd5e1; }
+        .styles { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin: 24px 0; }
+        .style-card { background: #1a1a2e; border: 1px solid #2d2d4e; border-radius: 12px; padding: 20px; text-align: center; }
+        .style-icon { font-size: 2.5rem; margin-bottom: 12px; }
+        .style-name { font-weight: 600; margin-bottom: 8px; }
+        .style-desc { font-size: 0.85rem; color: #94a3b8; }
+        .step { background: #1a1a2e; border-radius: 12px; padding: 24px; margin: 24px 0; }
+        .step-num { display: inline-block; width: 32px; height: 32px; background: linear-gradient(135deg, #ec4899, #db2777); border-radius: 50%; text-align: center; line-height: 32px; font-weight: 600; margin-right: 12px; }
+        .step h4 { display: inline; font-size: 1.1rem; }
+        .tip { background: rgba(236, 72, 153, 0.1); border-left: 4px solid #ec4899; padding: 16px; margin: 24px 0; border-radius: 0 8px 8px 0; }
+        .tip-title { color: #f472b6; font-weight: 600; margin-bottom: 8px; }
+        .cta { background: linear-gradient(135deg, #ec4899, #db2777); border-radius: 12px; padding: 32px; text-align: center; margin: 40px 0; }
+        .cta h3 { color: white; margin-bottom: 12px; }
+        .cta a { display: inline-block; background: white; color: #ec4899; padding: 12px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; }
+        footer { background: #1a1a2e; border-top: 1px solid #2d2d4e; padding: 24px; text-align: center; margin-top: 48px; }
+        footer a { color: #a5b4fc; text-decoration: none; }
+        @media (max-width: 768px) { .container { padding: 20px 16px; } .styles { grid-template-columns: 1fr 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">首页</a> &gt; <a href="tutorials.html">教程</a> &gt; AI风格转换教程
+        </nav>
+
+        <h1>AI风格转换工具使用教程</h1>
+        <div class="meta">📅 2026-03-23 | ⏱️ 阅读时间 4 分钟</div>
+
+        <h2>支持的风格</h2>
+        <div class="styles">
+            <div class="style-card">
+                <div class="style-icon">🖼️</div>
+                <div class="style-name">油画</div>
+                <div class="style-desc">梵高、莫奈等大师风格</div>
+            </div>
+            <div class="style-card">
+                <div class="style-icon">✏️</div>
+                <div class="style-name">素描</div>
+                <div class="style-desc">铅笔画艺术效果</div>
+            </div>
+            <div class="style-card">
+                <div class="style-icon">🎨</div>
+                <div class="style-name">水彩</div>
+                <div class="style-desc">水彩晕染效果</div>
+            </div>
+            <div class="style-card">
+                <div class="style-icon">📺</div>
+                <div class="style-name">动漫</div>
+                <div class="style-desc">日漫动画风格</div>
+            </div>
+            <div class="style-card">
+                <div class="style-icon">🧊</div>
+                <div class="style-name">冰霜</div>
+                <div class="style-desc">冰雪质感效果</div>
+            </div>
+            <div class="style-card">
+                <div class="style-icon">🔥</div>
+                <div class="style-name">火焰</div>
+                <div class="style-desc">烈焰燃烧效果</div>
+            </div>
+        </div>
+
+        <h2>使用步骤</h2>
+
+        <div class="step">
+            <span class="step-num">1</span><h4>上传照片</h4>
+            <p>点击上传按钮选择一张照片。建议使用清晰、主体突出的照片。</p>
+        </div>
+
+        <div class="step">
+            <span class="step-num">2</span><h4>选择艺术风格</h4>
+            <p>从6种风格中选择喜欢的一种。每种风格都有独特的视觉效果。</p>
+        </div>
+
+        <div class="step">
+            <span class="step-num">3</span><h4>预览并下载</h4>
+            <p>点击转换按钮，稍等片刻即可看到风格转换效果。满意后点击下载保存。</p>
+        </div>
+
+        <div class="tip">
+            <div class="tip-title">💡 最佳效果照片</div>
+            <p>• 光线充足、对比度适中的照片</p>
+            <p>• 主体明确、背景不太杂乱</p>
+            <p>• 人像、风景、建筑效果都不错</p>
+        </div>
+
+        <div class="cta">
+            <h3>🎨 开始使用风格转换工具</h3>
+            <p>免费在线使用，6种艺术风格任选</p>
+            <a href="style-transfer.html">立即体验 →</a>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2026 AI工具导航 · <a href="index.html">返回首页</a></p>
+    </footer>
+</body>
+</html>
