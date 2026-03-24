@@ -557,73 +557,72 @@
                 
                 showStatus('正在合成证件照...', 'processing');
                 
-                // 创建输出画布
-                const outputCanvas = document.createElement('canvas');
-                const outputCtx = outputCanvas.getContext('2d');
-                outputCanvas.width = w;
-                outputCanvas.height = h;
-                
-                // 绘制原图
-                outputCtx.drawImage(workCanvas, 0, 0);
-                
-                // 获取图像数据
-                const imageData = outputCtx.getImageData(0, 0, w, h);
-                const data = imageData.data;
-                
-                // 应用美颜效果到主体
+                // 获取美颜参数
                 const brightness = parseInt(document.getElementById('brightness').value);
                 const contrast = parseInt(document.getElementById('contrast').value);
                 const smooth = parseInt(document.getElementById('smooth').value);
                 const whitening = parseInt(document.getElementById('whitening').value);
                 
-                // 创建临时画布用于模糊
-                const tempCanvas = document.createElement('canvas');
-                tempCanvas.width = w;
-                tempCanvas.height = h;
-                const tempCtx = tempCanvas.getContext('2d');
-                
                 // 解析目标底色
                 const targetColor = hexToRgb(currentBgColor);
                 
-                // 遍历每个像素
+                // ========== 专业证件照处理 ==========
+                // 第一步：创建纯净背景的 ImageData
+                const bgImageData = new ImageData(w, h);
+                const bgData = bgImageData.data;
+                for (let i = 0; i < w * h; i++) {
+                    bgData[i * 4] = targetColor.r;
+                    bgData[i * 4 + 1] = targetColor.g;
+                    bgData[i * 4 + 2] = targetColor.b;
+                    bgData[i * 4 + 3] = 255;
+                }
+                
+                // 第二步：获取原图数据
+                const workCtx = workCanvas.getContext('2d');
+                const personImageData = workCtx.getImageData(0, 0, w, h);
+                const personData = personImageData.data;
+                
+                // 第三步：边缘羽化参数（专业级别）
+                const featherStart = 0.2;
+                const featherEnd = 0.8;
+                
+                // 第四步：合成人物到背景上
                 for (let y = 0; y < h; y++) {
                     for (let x = 0; x < w; x++) {
-                        const i = (y * w + x);
+                        const i = y * w + x;
                         const pixelIdx = i * 4;
-                        
-                        // 获取人物置信度
                         const personProb = mask[i] || 0;
                         
-                        // 人像置信度阈值（低于此值认为是背景）
-                        const lowThreshold = 0.35;
-                        const highThreshold = 0.65;
-                        
-                        if (personProb < lowThreshold) {
-                            // 背景区域：直接替换为目标颜色
-                            data[pixelIdx] = targetColor.r;
-                            data[pixelIdx + 1] = targetColor.g;
-                            data[pixelIdx + 2] = targetColor.b;
-                        } else if (personProb < highThreshold) {
-                            // 边缘区域：平滑过渡，扩大过渡范围
-                            const blend = (personProb - lowThreshold) / (highThreshold - lowThreshold);
-                            const origR = data[pixelIdx];
-                            const origG = data[pixelIdx + 1];
-                            const origB = data[pixelIdx + 2];
+                        if (personProb < featherStart) {
+                            // 背景区域：保持纯净背景色
+                        } else if (personProb < featherEnd) {
+                            // 边缘区域：smoothstep 羽化
+                            const t = (personProb - featherStart) / (featherEnd - featherStart);
+                            const smoothT = t * t * (3 - 2 * t); // smoothstep
                             
-                            data[pixelIdx] = Math.round(origR * blend + targetColor.r * (1 - blend));
-                            data[pixelIdx + 1] = Math.round(origG * blend + targetColor.g * (1 - blend));
-                            data[pixelIdx + 2] = Math.round(origB * blend + targetColor.b * (1 - blend));
+                            bgData[pixelIdx] = Math.round(personData[pixelIdx] * smoothT + targetColor.r * (1 - smoothT));
+                            bgData[pixelIdx + 1] = Math.round(personData[pixelIdx + 1] * smoothT + targetColor.g * (1 - smoothT));
+                            bgData[pixelIdx + 2] = Math.round(personData[pixelIdx + 2] * smoothT + targetColor.b * (1 - smoothT));
+                        } else {
+                            // 人物主体区域：保持原图
+                            bgData[pixelIdx] = personData[pixelIdx];
+                            bgData[pixelIdx + 1] = personData[pixelIdx + 1];
+                            bgData[pixelIdx + 2] = personData[pixelIdx + 2];
                         }
-                        // else: 人物区域，保持原样
                     }
                 }
                 
-                // 应用美颜效果（仅对人像区域）
-                applyBeautyEffect(data, w, h, mask, brightness, contrast, smooth, whitening);
+                // 第五步：对人物区域应用美颜效果
+                applyBeautyEffect(bgData, w, h, mask, brightness, contrast, smooth, whitening);
                 
-                outputCtx.putImageData(imageData, 0, 0);
+                // 创建输出画布
+                const outputCanvas = document.createElement('canvas');
+                const outputCtx = outputCanvas.getContext('2d');
+                outputCanvas.width = w;
+                outputCanvas.height = h;
+                outputCtx.putImageData(bgImageData, 0, 0);
                 
-                // 绘制最终证件照尺寸
+                // ========== 绘制最终证件照尺寸 ==========
                 const finalCanvas = document.createElement('canvas');
                 const finalCtx = finalCanvas.getContext('2d');
                 finalCanvas.width = currentSize.width;
