@@ -351,8 +351,8 @@
     </div>
 
     <!-- MediaPipe Selfie Segmentation -->
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.4.1646421024/selfie_segmentation.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3.1675466380/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/selfie_segmentation.js?v=20260324" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js?v=20260324" crossorigin="anonymous"></script>
 
     <script>
         // ========== 全局状态 ==========
@@ -364,7 +364,6 @@
         let isProcessing = false;
         let segmenter = null;
         let segmenterReady = false;
-        let lastMask = null; // 保存最后一次有效的mask
 
         // ========== MediaPipe SelfieSegmentation 初始化 ==========
         async function initSegmenter() {
@@ -379,7 +378,7 @@
                 
                 segmenter = await SelfieSegmentation.createFromOptions({
                     locateFile: (file) => {
-                        return `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.4.1646421024/${file}`;
+                        return `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/${file}`;
                     }
                 });
                 
@@ -526,6 +525,11 @@
         async function processImage() {
             if (!originalImage || isProcessing) return;
             
+            if (!segmenterReady) {
+                showStatus('AI模型未加载，请刷新页面等待加载完成', 'error');
+                return;
+            }
+            
             isProcessing = true;
             showStatus('正在处理...', 'processing');
             document.getElementById('processBtn').disabled = true;
@@ -552,74 +556,52 @@
                 
                 showProgress('AI识别人像中...', 20);
                 
-                // 获取分割 mask - 尝试 MediaPipe，如果失败则使用备用算法
-                let maskData = null;
-                let method = '';
+                // 使用 MediaPipe SelfieSegmentation
+                console.log('使用 MediaPipe SelfieSegmentation...');
+                const result = await segmenter.segment(workCanvas, {
+                    selfieMode: false
+                });
                 
-                // 方法1：尝试 MediaPipe SelfieSegmentation
-                if (segmenterReady && segmenter) {
-                    try {
-                        console.log('尝试 MediaPipe SelfieSegmentation...');
-                        const result = await segmenter.segment(workCanvas, {
-                            selfieMode: false
-                        });
-                        
-                        // 检查 result 的格式
-                        if (result && result.imageData) {
-                            const maskImageData = result.imageData;
-                            maskData = new Float32Array(w * h);
-                            
-                            // 提取 mask: 检查所有通道
-                            let totalVal = 0;
-                            for (let i = 0; i < w * h; i++) {
-                                // 取所有通道的平均值
-                                const val = (maskImageData.data[i * 4] + 
-                                            maskImageData.data[i * 4 + 1] + 
-                                            maskImageData.data[i * 4 + 2]) / 3;
-                                maskData[i] = val / 255;
-                                totalVal += val;
-                            }
-                            
-                            const avgVal = totalVal / (w * h);
-                            console.log('MediaPipe mask 平均值:', avgVal.toFixed(1), '(255=全部人像, 0=全部背景)');
-                            
-                            // 检查 mask 是否有效
-                            let minVal = Infinity, maxVal = -Infinity;
-                            for (let i = 0; i < maskData.length; i++) {
-                                if (maskData[i] < minVal) minVal = maskData[i];
-                                if (maskData[i] > maxVal) maxVal = maskData[i];
-                            }
-                            console.log('Mask范围: min=' + minVal.toFixed(3) + ', max=' + maxVal.toFixed(3));
-                            
-                            // 如果平均值为0或255，说明分割失败
-                            if (avgVal < 1 || avgVal > 254) {
-                                console.warn('MediaPipe mask 无变化，切换到备用算法');
-                                maskData = null;
-                            } else {
-                                method = 'MediaPipe';
-                            }
-                        } else {
-                            console.warn('MediaPipe 返回格式异常:', result);
-                        }
-                    } catch (segErr) {
-                        console.warn('MediaPipe分割失败:', segErr);
+                let maskData = new Float32Array(w * h);
+                
+                // 检查 result 的格式
+                if (result && result.imageData) {
+                    const maskImageData = result.imageData;
+                    
+                    // 提取 mask: 检查所有通道
+                    let totalVal = 0;
+                    for (let i = 0; i < w * h; i++) {
+                        // 取所有通道的平均值
+                        const val = (maskImageData.data[i * 4] + 
+                                    maskImageData.data[i * 4 + 1] + 
+                                    maskImageData.data[i * 4 + 2]) / 3;
+                        maskData[i] = val / 255;
+                        totalVal += val;
                     }
-                }
-                
-                // 方法2：使用备用算法
-                if (!maskData) {
-                    console.log('使用备用分割算法...');
-                    maskData = await smartSegmentation(workCtx, w, h);
-                    method = '智能分割';
+                    
+                    const avgVal = totalVal / (w * h);
+                    console.log('MediaPipe mask 平均值:', avgVal.toFixed(1), '(255=全部人像, 0=全部背景)');
+                    
+                    // 检查 mask 是否有效
+                    let minVal = Infinity, maxVal = -Infinity;
+                    for (let i = 0; i < maskData.length; i++) {
+                        if (maskData[i] < minVal) minVal = maskData[i];
+                        if (maskData[i] > maxVal) maxVal = maskData[i];
+                    }
+                    console.log('Mask范围: min=' + minVal.toFixed(3) + ', max=' + maxVal.toFixed(3));
+                    
+                    // 如果平均值为0或255，说明分割失败
+                    if (avgVal < 1 || avgVal > 254) {
+                        throw new Error('AI分割失败，请尝试其他照片');
+                    }
+                } else {
+                    throw new Error('AI分割失败，请尝试其他照片');
                 }
                 
                 showProgress('处理中...', 60);
                 
                 // 边缘平滑
                 maskData = applyEdgeSmoothing(maskData, w, h);
-                
-                // 保存有效的 mask
-                lastMask = maskData;
                 
                 // 创建输出画布
                 const outputCanvas = document.createElement('canvas');
@@ -708,7 +690,7 @@
                 resultCanvas.style.height = (finalCanvas.height * displayScale) + 'px';
                 
                 document.getElementById('downloadBtn').disabled = false;
-                showStatus('✓ 换底成功！点击下载保存证件照', 'success');
+                showStatus('✓ AI换底成功！点击下载保存证件照', 'success');
                 showProgress('处理完成', 100);
                 
                 setTimeout(() => {
@@ -725,286 +707,7 @@
             }
         }
 
-        // ========== 智能分割算法 ==========
-        // 使用多种策略组合：边缘检测 + 肤色分析 + 背景减除
-        async function smartSegmentation(ctx, w, h) {
-            const imageData = ctx.getImageData(0, 0, w, h);
-            const data = imageData.data;
-            
-            console.log('开始智能分割，尺寸:', w, 'x', h);
-            
-            // 策略1: 分析背景颜色（四角采样）
-            const bgSamples = analyzeBackgroundSamples(data, w, h);
-            console.log('背景颜色分析:', bgSamples);
-            
-            // 策略2: 创建初始 mask（基于背景差异）
-            const initialMask = createInitialMask(data, w, h, bgSamples);
-            
-            // 策略3: 使用 GrabCut-like 迭代优化
-            const refinedMask = grabCutIterate(data, w, h, initialMask, bgSamples);
-            
-            // 策略4: 形态学处理
-            const finalMask = morphologicalProcess(refinedMask, w, h);
-            
-            // 统计 mask
-            let personPixels = 0;
-            for (let i = 0; i < finalMask.length; i++) {
-                if (finalMask[i] > 0.5) personPixels++;
-            }
-            console.log('人像像素比例:', (personPixels / finalMask.length * 100).toFixed(1) + '%');
-            
-            return finalMask;
-        }
-        
-        // 分析背景颜色
-        function analyzeBackgroundSamples(data, w, h) {
-            const sampleSize = Math.min(30, Math.floor(Math.min(w, h) * 0.1));
-            const samples = [];
-            
-            // 四个角
-            const corners = [
-                {x: 0, y: 0},
-                {x: w - sampleSize, y: 0},
-                {x: 0, y: h - sampleSize},
-                {x: w - sampleSize, y: h - sampleSize}
-            ];
-            
-            corners.forEach(corner => {
-                let r = 0, g = 0, b = 0, count = 0;
-                for (let dy = 0; dy < sampleSize; dy++) {
-                    for (let dx = 0; dx < sampleSize; dx++) {
-                        const x = corner.x + dx, y = corner.y + dy;
-                        if (x < w && y < h) {
-                            const i = (y * w + x) * 4;
-                            r += data[i];
-                            g += data[i + 1];
-                            b += data[i + 2];
-                            count++;
-                        }
-                    }
-                }
-                if (count > 0) {
-                    samples.push({r: r/count, g: g/count, b: b/count});
-                }
-            });
-            
-            // 计算平均背景色
-            let avgR = 0, avgG = 0, avgB = 0;
-            samples.forEach(s => { avgR += s.r; avgG += s.g; avgB += s.b; });
-            avgR /= samples.length;
-            avgG /= samples.length;
-            avgB /= samples.length;
-            
-            return {r: avgR, g: avgG, b: avgB, samples};
-        }
-        
-        // 创建初始 mask
-        function createInitialMask(data, w, h, bg) {
-            const mask = new Float32Array(w * h);
-            const centerX = w / 2, centerY = h * 0.45; // 人像通常在中心偏上
-            
-            for (let y = 0; y < h; y++) {
-                for (let x = 0; x < w; x++) {
-                    const i = y * w + x;
-                    const pi = i * 4;
-                    
-                    // 1. 背景差异度
-                    const dr = data[pi] - bg.r;
-                    const dg = data[pi + 1] - bg.g;
-                    const db = data[pi + 2] - bg.b;
-                    const bgDiff = Math.sqrt(dr * dr + dg * dg + db * db);
-                    
-                    // 2. 肤色概率
-                    const skinProb = getSkinProbability(data[pi], data[pi + 1], data[pi + 2]);
-                    
-                    // 3. 到中心距离（椭圆形，人像区域）
-                    const dx = (x - centerX) / (w * 0.35);
-                    const dy = (y - centerY) / (h * 0.4);
-                    const distFromCenter = Math.sqrt(dx * dx + dy * dy);
-                    const centerWeight = Math.max(0, 1 - distFromCenter);
-                    
-                    // 4. 组合计算
-                    const bgThreshold = 40;
-                    const bgScore = Math.min(1, bgDiff / bgThreshold);
-                    
-                    // 最终分数：背景差异 + 肤色 + 中心加权
-                    let score = bgScore * 0.4 + skinProb * 0.4 + centerWeight * 0.2;
-                    
-                    // 边缘区域平滑过渡
-                    if (distFromCenter > 1.2) {
-                        score *= 0.3;
-                    }
-                    
-                    mask[i] = Math.max(0, Math.min(1, score));
-                }
-            }
-            
-            return mask;
-        }
-        
-        // 获取肤色概率
-        function getSkinProbability(r, g, b) {
-            const r2 = r / 255;
-            const g2 = g / 255;
-            const b2 = b / 255;
-            
-            // 简单肤色检测
-            const max = Math.max(r2, g2, b2);
-            const min = Math.min(r2, g2, b2);
-            
-            // 排除过暗或过亮
-            if (max < 0.15 || max > 0.95) return 0;
-            if (min > 0.75) return 0;
-            
-            // 排除蓝色系（背景常见）
-            if (b2 > r2 * 1.2 && b2 > g2 * 1.1) return 0;
-            
-            // 肤色范围
-            const isSkin = r2 > 0.2 && g2 > 0.15 && b2 > 0.1 &&
-                          r2 > b2 && g2 > b2 * 0.5;
-            
-            return isSkin ? 0.6 : 0.2;
-        }
-        
-        // GrabCut-like 迭代
-        function grabCutIterate(data, w, h, mask, bg) {
-            let currentMask = new Float32Array(mask);
-            
-            for (let iter = 0; iter < 3; iter++) {
-                const newMask = new Float32Array(w * h);
-                
-                for (let y = 1; y < h - 1; y++) {
-                    for (let x = 1; x < w - 1; x++) {
-                        const i = y * w + x;
-                        const pi = i * 4;
-                        
-                        // 当前像素分类
-                        const isPerson = currentMask[i] > 0.5;
-                        
-                        // 计算邻域人像比例
-                        let neighborPerson = 0;
-                        let neighborBg = 0;
-                        for (let dy = -1; dy <= 1; dy++) {
-                            for (let dx = -1; dx <= 1; dx++) {
-                                const ni = (y + dy) * w + (x + dx);
-                                if (currentMask[ni] > 0.5) neighborPerson++;
-                                else neighborBg++;
-                            }
-                        }
-                        
-                        // 颜色差异
-                        const dr = data[pi] - bg.r;
-                        const dg = data[pi + 1] - bg.g;
-                        const db = data[pi + 2] - bg.b;
-                        const colorDiff = Math.sqrt(dr * dr + dg * dg + db * db);
-                        
-                        // 更新分数
-                        let newScore = currentMask[i];
-                        
-                        // 如果邻域大部分是人像，当前也更可能是人像
-                        if (neighborPerson > 4) {
-                            newScore = Math.min(1, newScore + 0.2);
-                        } else if (neighborBg > 6) {
-                            newScore = Math.max(0, newScore - 0.2);
-                        }
-                        
-                        // 颜色差异小=背景，大=前景
-                        if (colorDiff < 30) {
-                            newScore = Math.max(0, newScore - 0.15);
-                        } else if (colorDiff > 60) {
-                            newScore = Math.min(1, newScore + 0.1);
-                        }
-                        
-                        newMask[i] = Math.max(0, Math.min(1, newScore));
-                    }
-                }
-                
-                currentMask = newMask;
-            }
-            
-            return currentMask;
-        }
-        
-        // 形态学处理
-        function morphologicalProcess(mask, w, h) {
-            // 闭运算（先膨胀后腐蚀，填充小孔洞）
-            let result = morphologicalClose(mask, w, h, 2);
-            
-            // 开运算（先腐蚀后膨胀，去除噪点）
-            result = morphologicalOpen(result, w, h, 1);
-            
-            return result;
-        }
-        
-        function morphologicalClose(mask, w, h, kernel) {
-            // 膨胀
-            const dilated = new Float32Array(w * h);
-            for (let y = kernel; y < h - kernel; y++) {
-                for (let x = kernel; x < w - kernel; x++) {
-                    let max = 0;
-                    for (let dy = -kernel; dy <= kernel; dy++) {
-                        for (let dx = -kernel; dx <= kernel; dx++) {
-                            const d = mask[(y + dy) * w + (x + dx)];
-                            if (d > max) max = d;
-                        }
-                    }
-                    dilated[y * w + x] = max;
-                }
-            }
-            
-            // 腐蚀
-            const result = new Float32Array(w * h);
-            for (let y = kernel; y < h - kernel; y++) {
-                for (let x = kernel; x < w - kernel; x++) {
-                    let min = 1;
-                    for (let dy = -kernel; dy <= kernel; dy++) {
-                        for (let dx = -kernel; dx <= kernel; dx++) {
-                            const d = dilated[(y + dy) * w + (x + dx)];
-                            if (d < min) min = d;
-                        }
-                    }
-                    result[y * w + x] = min;
-                }
-            }
-            
-            return result;
-        }
-        
-        function morphologicalOpen(mask, w, h, kernel) {
-            // 腐蚀
-            const eroded = new Float32Array(w * h);
-            for (let y = kernel; y < h - kernel; y++) {
-                for (let x = kernel; x < w - kernel; x++) {
-                    let min = 1;
-                    for (let dy = -kernel; dy <= kernel; dy++) {
-                        for (let dx = -kernel; dx <= kernel; dx++) {
-                            const d = mask[(y + dy) * w + (x + dx)];
-                            if (d < min) min = d;
-                        }
-                    }
-                    eroded[y * w + x] = min;
-                }
-            }
-            
-            // 膨胀
-            const result = new Float32Array(w * h);
-            for (let y = kernel; y < h - kernel; y++) {
-                for (let x = kernel; x < w - kernel; x++) {
-                    let max = 0;
-                    for (let dy = -kernel; dy <= kernel; dy++) {
-                        for (let dx = -kernel; dx <= kernel; dx++) {
-                            const d = eroded[(y + dy) * w + (x + dx)];
-                            if (d > max) max = d;
-                        }
-                    }
-                    result[y * w + x] = max;
-                }
-            }
-            
-            return result;
-        }
-
-        // 边缘平滑处理
+        // ========== 边缘平滑处理 ==========
         function applyEdgeSmoothing(mask, w, h) {
             const result = new Float32Array(w * h);
             const kernel = currentQualityMode === 'quality' ? 2 : 1;
@@ -1095,8 +798,8 @@
                         b = Math.max(0, Math.min(255, factor * (b - 128) + 128));
                     }
                     
-                    // 磨皮（对肤色）
-                    if (smooth > 0 && isSkinColor(r, g, b)) {
+                    // 磨皮
+                    if (smooth > 0) {
                         const factor = smooth / 100 * 0.4;
                         const avgR = (pixels[i - 4] + pixels[i + 4] + pixels[i - w*4] + pixels[i + w*4]) / 4;
                         const avgG = (pixels[i - 3] + pixels[i + 5] + pixels[i - w*4 + 1] + pixels[i + w*4 + 1]) / 4;
@@ -1121,21 +824,6 @@
                     pixels[i + 2] = Math.round(b);
                 }
             }
-        }
-
-        // 肤色检测
-        function isSkinColor(r, g, b) {
-            const r2 = r / 255, g2 = g / 255, b2 = b / 255;
-            const max = Math.max(r2, g2, b2);
-            const min = Math.min(r2, g2, b2);
-            
-            if (max < 0.15 || max > 0.95) return false;
-            if (min > 0.75) return false;
-            
-            // 排除蓝色系
-            if (b2 > r2 * 1.15 && b2 > g2 * 1.05) return false;
-            
-            return true;
         }
 
         // ========== 辅助函数 ==========
@@ -1166,7 +854,6 @@
         function resetAll() {
             originalImage = null;
             processedCanvas = null;
-            lastMask = null;
             document.getElementById('imageInput').value = '';
             document.getElementById('fileInfo').style.display = 'none';
             document.getElementById('canvasArea').innerHTML = `
