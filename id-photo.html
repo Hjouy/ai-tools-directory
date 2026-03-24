@@ -595,16 +595,17 @@
                         const personProb = mask[i] || 0;
                         
                         // 人像置信度阈值（低于此值认为是背景）
-                        const threshold = 0.5;
+                        const lowThreshold = 0.35;
+                        const highThreshold = 0.65;
                         
-                        if (personProb < threshold) {
+                        if (personProb < lowThreshold) {
                             // 背景区域：直接替换为目标颜色
                             data[pixelIdx] = targetColor.r;
                             data[pixelIdx + 1] = targetColor.g;
                             data[pixelIdx + 2] = targetColor.b;
-                        } else if (personProb < threshold + 0.15) {
-                            // 边缘区域：平滑过渡
-                            const blend = (personProb - threshold) / 0.15;
+                        } else if (personProb < highThreshold) {
+                            // 边缘区域：平滑过渡，扩大过渡范围
+                            const blend = (personProb - lowThreshold) / (highThreshold - lowThreshold);
                             const origR = data[pixelIdx];
                             const origG = data[pixelIdx + 1];
                             const origB = data[pixelIdx + 2];
