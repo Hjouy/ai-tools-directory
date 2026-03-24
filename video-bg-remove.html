@@ -152,7 +152,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.17.0/dist/tf.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.1.1632779610/selfie_segmentation.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.4.1646421024/selfie_segmentation.js" crossorigin="anonymous"></script>
 
     <script>
         let originalVideo = null;
@@ -170,7 +170,7 @@
             try {
                 showStatus('正在加载AI模型...', 'loading');
                 segmenter = await SelfieSegmentation.create({
-                    locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.1.1632779610/${file}`
+                    locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.4.1646421024/${file}`
                 });
                 segmenter.setOptions({ modelType: 'general', selfieMode: false });
                 segmenterReady = true;

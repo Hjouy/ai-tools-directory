@@ -144,3 +144,10 @@ chatgpt, midjourney, cursor, stable-diffusion, runway, suno, claude, notion-ai
   - tutorial-style-transfer.html
   - tutorial-image-compress.html
 - 关键文件：share-buttons.js, watermark.js, optimize_fa.py
+
+## 在线工具质量优化 (2026-03-24)
+- **修复style-transfer.html BUG**：applyPopArtStyle和applyVintageStyle中original变量未定义，添加Uint8ClampedArray副本
+- **完善pdf-tools.html**：
+  - PDF转PNG：使用PDF.js实现多页PDF逐页转换为PNG图片
+  - PDF压缩：使用pdf-lib的useObjectStreams选项压缩，显示压缩前后大小对比
+- **检查结果**：background-remover/id-photo/gif-maker/image-compress/video-bg-remove/old-photo-restore/converter等功能均正常
