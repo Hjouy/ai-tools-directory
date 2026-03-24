@@ -608,50 +608,31 @@
                     showStatus('AI模型分析中，请稍候...', 'processing');
                     
                     try {
-                        console.log('开始MediaPipe分割...');
                         const result = await segmenter.segment(workCanvas, { selfieMode: false });
-                        console.log('MediaPipe分割完成, result:', result);
-                        console.log('result.data类型:', result?.data?.constructor?.name);
-                        console.log('result.data长度:', result?.data?.length);
                         
-                        // MediaPipe 返回分割掩码在 R 通道（0=背景, 1=人物）
                         if (result && result.data && result.data.length > 0) {
                             mask = new Float32Array(w * h);
-                            // 检查数据格式：可能是Float32Array或Uint8Array
-                            const isFloat = result.data instanceof Float32Array;
-                            const isUint8 = result.data instanceof Uint8Array;
-                            console.log('数据类型:', isFloat ? 'Float32Array' : (isUint8 ? 'Uint8Array' : '其他'));
                             
-                            if (isFloat) {
-                                // Float32Array: 值已经是0-1范围
+                            // 尝试多种数据格式
+                            if (result.data instanceof Float32Array) {
+                                // Float32Array: 值已是0-1
                                 for (let i = 0; i < w * h && i < result.data.length; i++) {
                                     mask[i] = Math.max(0, Math.min(1, result.data[i]));
                                 }
-                            } else if (isUint8) {
-                                // Uint8Array: 值是0-255，需要归一化
-                                for (let i = 0; i < w * h && i < result.data.length; i++) {
-                                    mask[i] = result.data[i * 4] / 255;  // R通道
-                                }
                             } else {
-                                // 其他格式，尝试通用处理
+                                // Uint8Array/其他: 值是0-255
                                 for (let i = 0; i < w * h && i < result.data.length / 4; i++) {
                                     mask[i] = result.data[i * 4] / 255;
                                 }
                             }
-                            
-                            console.log('mask生成完成, min:', Math.min(...mask.slice(0, 1000)), 'max:', Math.max(...mask.slice(0, 1000)));
                         } else {
-                            console.error('分割结果无效或为空');
-                            throw new Error('Invalid segmentation result');
+                            throw new Error('分割结果无效');
                         }
                     } catch (segErr) {
-                        console.error('MediaPipe分割失败:', segErr);
-                        console.log('切换到备用分割算法...');
-                        showStatus('使用备用算法处理中...', 'processing');
+                        console.warn('MediaPipe失败:', segErr);
                         mask = await fallbackSegmentation(workCtx, w, h);
                     }
                 } else {
-                    // 使用备用算法
                     showStatus('使用备用算法处理中...', 'processing');
                     mask = await fallbackSegmentation(workCtx, w, h);
                 }
@@ -676,15 +657,7 @@
                         break;
                     default: // normal
                         showStatus('快速处理中...', 'processing');
-                        // 不执行额外算法，直接使用原始mask
                 }
-                
-                // 验证mask有效性
-                if (!mask || mask.length !== w * h) {
-                    console.error('mask无效，使用备用算法');
-                    mask = await fallbackSegmentation(workCtx, w, h);
-                }
-                console.log('开始合成, mask范围:', Math.min(...mask.slice(0, 1000)), '-', Math.max(...mask.slice(0, 1000)));
                 
                 showStatus('正在合成证件照...', 'processing');
                 
