@@ -1,0 +1,62 @@
+name: 📰 Daily News Auto Update
+
+on:
+  # 每天 3 个时间点自动更新
+  schedule:
+    - cron: '0 23 * * *'   # 北京时间 07:00
+    - cron: '0 4 * * *'    # 北京时间 12:00
+    - cron: '0 12 * * *'   # 北京时间 20:00
+  # 也支持手动触发（GitHub Actions 页面点 Run workflow）
+  workflow_dispatch:
+
+jobs:
+  update-news:
+    name: Fetch & Update Daily News
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      # 1. 拉取代码
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      # 2. 安装 Python 环境
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # 3. 运行抓取脚本
+      - name: Install dependencies
+        run: pip install requests -q
+
+      - name: Run news fetcher
+        run: python fetch-news.py
+        env:
+          # 可在此配置代理（如果 GitHub Actions 无法直连国内接口）
+          HTTP_PROXY: ${{ secrets.HTTP_PROXY }}
+          HTTPS_PROXY: ${{ secrets.HTTPS_PROXY }}
+
+      # 4. 验证输出文件
+      - name: Verify output
+        run: |
+          echo "=== news-data.json 检查 ==="
+          if [ -f news-data.json ]; then
+            echo "文件大小: $(wc -c < news-data.json) bytes"
+            echo "更新时间: $(python3 -c "import json; d=json.load(open('news-data.json')); print(d.get('updatedAt','N/A'))")"
+            echo "分类数量: $(python3 -c "import json; d=json.load(open('news-data.json')); print(len(d.get('categories',[])))")"
+          else
+            echo "❌ news-data.json 未生成"
+            exit 1
+          fi
+
+      # 5. 提交并推送（仅当有变化时）
+      - name: Commit & Push
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: |
+            📰 Auto update news data - ${{ github.event.head_commit.timestamp || 'scheduled' }}
+            [skip ci]
+          file_pattern: news-data.json
+          skip_dirty_check: false
+          commit_options: '--no-verify'
