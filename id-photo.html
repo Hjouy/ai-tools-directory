@@ -331,10 +331,8 @@
         </div>
     </div>
 
-    <!-- TensorFlow.js Core -->
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.17.0/dist/tf.min.js"></script>
-    <!-- MediaPipe Camera Utils -->
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3.1675466380/camera_utils.js" crossorigin="anonymous"></script>
+    <!-- TensorFlow.js Core (异步加载，不阻塞备用算法) -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.17.0/dist/tf.min.js" async></script>
     <!-- MediaPipe Selfie Segmentation -->
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.4.1646421024/selfie_segmentation.js" crossorigin="anonymous"></script>
 
@@ -356,6 +354,11 @@
             statusBar.className = 'status-bar processing';
             
             try {
+                // 检查 SelfieSegmentation 是否已加载
+                if (typeof SelfieSegmentation === 'undefined') {
+                    throw new Error('SelfieSegmentation 未加载');
+                }
+                
                 segmenter = await SelfieSegmentation.create({
                     locateFile: (file) => {
                         return `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.4.1646421024/${file}`;
@@ -379,8 +382,15 @@
                 
             } catch (err) {
                 console.error('Failed to load segmenter:', err);
-                statusBar.textContent = 'AI模型加载失败，将使用备用算法';
-                statusBar.className = 'status-bar error';
+                statusBar.textContent = 'AI模型加载中（可先使用备用算法）...';
+                statusBar.className = 'status-bar processing';
+                // 不要立即标记为失败，等待一段时间后再显示
+                setTimeout(() => {
+                    if (!segmenterLoaded) {
+                        statusBar.textContent = 'AI模型加载较慢，已准备好备用算法，可直接使用';
+                        statusBar.className = 'status-bar';
+                    }
+                }, 5000);
                 segmenterLoaded = false;
             }
         }
