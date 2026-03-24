@@ -11,11 +11,8 @@
     <meta property="og:description" content="免费在线证件照换底色工具，AI智能识别主体、一键换底色">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://hjouy.github.io/ai-tools-directory/id-photo.html">
-    <!-- Font Awesome 异步加载，不阻塞页面渲染 -->
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><!-- Font Awesome 异步加载，不阻塞页面渲染 -->
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript></noscript>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -71,10 +68,7 @@
             transition: all 0.3s;
             background: white;
         }
-        .upload-area:hover {
-            background: #f0f4ff;
-            border-color: #764ba2;
-        }
+        .upload-area:hover { background: #f0f4ff; border-color: #764ba2; }
         .upload-area i { font-size: 2.5em; color: #667eea; margin-bottom: 10px; display: block; }
         .upload-area p { color: #666; font-size: 0.9em; }
         .upload-area input { display: none; }
@@ -106,11 +100,7 @@
         .size-option.active { border-color: #667eea; background: #667eea; color: white; }
         .size-name { font-weight: 600; }
         .size-dim { font-size: 0.8em; opacity: 0.8; }
-        .bg-options {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
+        .bg-options { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
         .bg-option {
             width: 50px;
             height: 50px;
@@ -121,14 +111,12 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            position: relative;
         }
         .bg-option:hover { transform: scale(1.1); }
         .bg-option.active { border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,0.3); }
         .bg-white { background: #ffffff; }
         .bg-blue { background: #2196F3; }
         .bg-red { background: #E53935; }
-        .bg-option span { font-size: 0.7em; color: #666; }
         .beauty-section { margin-top: 15px; }
         .slider-group { margin-bottom: 12px; }
         .slider-group label { display: block; font-size: 0.85em; color: #555; margin-bottom: 4px; }
@@ -161,11 +149,7 @@
             gap: 15px;
         }
         .preview-hint { text-align: center; color: #888; font-size: 0.9em; }
-        #mainCanvas {
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            max-width: 100%;
-        }
+        #mainCanvas { border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); max-width: 100%; }
         .action-buttons {
             display: flex;
             gap: 10px;
@@ -203,28 +187,51 @@
         .status-bar.processing { background: #e3f2fd; border-color: #90caf9; color: #1565c0; display: block; }
         .status-bar.success { background: #e8f5e9; border-color: #a5d6a7; color: #2e7d32; display: block; }
         .status-bar.error { background: #ffebee; border-color: #ef9a9a; color: #c62828; display: block; }
-        .loading-spinner {
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 15px;
             display: none;
-            width: 40px;
-            height: 40px;
-            border: 4px solid #e0e0e0;
-            border-top: 4px solid #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
         }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .progress-bar.active { display: block; }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s;
         }
-        .model-status {
+        .quality-modes { display: flex; gap: 8px; margin-top: 10px; }
+        .quality-mode {
+            flex: 1;
+            padding: 10px 5px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
             font-size: 0.8em;
-            color: #888;
-            margin-top: 5px;
         }
-        .model-loaded { color: #4caf50; }
-        .model-loading { color: #ff9800; }
-        .model-error { color: #f44336; }
+        .quality-mode i { display: block; font-size: 1.2em; margin-bottom: 4px; }
+        .quality-mode span { font-weight: 600; }
+        .quality-mode:hover { border-color: #667eea; background: #f0f4ff; }
+        .quality-mode.active { border-color: #667eea; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        /* 模型状态角标 */
+        .model-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.75em;
+            padding: 2px 8px;
+            border-radius: 12px;
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffc107;
+            margin-left: auto;
+        }
+        .model-badge.ready { background: #d1e7dd; color: #0a3622; border-color: #a3cfbb; }
         @media (max-width: 900px) {
             .main-content { grid-template-columns: 1fr; }
         }
@@ -244,7 +251,10 @@
 
         <div class="main-content">
             <div class="left-panel">
-                <div class="section-title"><i class="fas fa-upload"></i> 上传照片</div>
+                <div class="section-title">
+                    <i class="fas fa-upload"></i> 上传照片
+                    <span class="model-badge" id="modelBadge"><i class="fas fa-circle-notch fa-spin"></i> 加载中</span>
+                </div>
                 <div class="upload-area" onclick="document.getElementById('imageInput').click()">
                     <i class="fas fa-cloud-upload-alt"></i>
                     <p>点击或拖拽上传照片</p>
@@ -270,6 +280,18 @@
                     <div class="size-option" data-width="413" data-height="531">
                         <div class="size-name">小二寸</div>
                         <div class="size-dim">413×531px</div>
+                    </div>
+                </div>
+
+                <div class="section-title" style="margin-top: 20px;"><i class="fas fa-sliders-h"></i> 处理模式</div>
+                <div class="quality-modes">
+                    <div class="quality-mode active" data-mode="fast" title="快速处理">
+                        <i class="fas fa-bolt"></i>
+                        <span>快速</span>
+                    </div>
+                    <div class="quality-mode" data-mode="quality" title="精细边缘">
+                        <i class="fas fa-crown"></i>
+                        <span>高清</span>
                     </div>
                 </div>
 
@@ -307,6 +329,9 @@
 
             <div class="right-panel">
                 <div id="statusBar" class="status-bar"></div>
+                <div id="progressBar" class="progress-bar">
+                    <div id="progressFill" class="progress-fill"></div>
+                </div>
                 
                 <div class="canvas-area" id="canvasArea">
                     <div class="preview-hint">
@@ -331,702 +356,541 @@
         </div>
     </div>
 
-    <!-- TensorFlow.js Core -->
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.17.0/dist/tf.min.js"></script>
-    <!-- MediaPipe Camera Utils -->
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3.1675466380/camera_utils.js" crossorigin="anonymous"></script>
-    <!-- MediaPipe Selfie Segmentation (最新版本) -->
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.4.1646421024/selfie_segmentation.js" crossorigin="anonymous"></script>
-
+    <!-- MediaPipe Tasks Vision (稳定的官方 CDN) -->
     <script>
-        let originalImage = null;
-        let processedCanvas = null;
-        let currentBgColor = '#FFFFFF';
-        let currentSize = { width: 295, height: 413 };
-        let isProcessing = false;
-        
-        // MediaPipe Selfie Segmentation 实例
-        let segmenter = null;
-        let segmenterLoaded = false;
+    // ============================================================
+    // 全局状态
+    // ============================================================
+    let originalImage = null;
+    let processedCanvas = null;
+    let currentBgColor = '#FFFFFF';
+    let currentSize = { width: 295, height: 413 };
+    let currentQualityMode = 'fast';
+    let isProcessing = false;
 
-        // 初始化 MediaPipe Selfie Segmentation
-        async function initSegmenter() {
-            const statusBar = document.getElementById('statusBar');
-            statusBar.textContent = '正在加载AI模型，请稍候...';
-            statusBar.className = 'status-bar processing';
-            
-            try {
-                // 检查 SelfieSegmentation 是否已加载
-                if (typeof SelfieSegmentation === 'undefined') {
-                    throw new Error('SelfieSegmentation 未加载');
-                }
-                
-                segmenter = await SelfieSegmentation.create({
-                    locateFile: (file) => {
-                        return `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.4.1646421024/${file}`;
-                    }
+    // MediaPipe ImageSegmenter 实例 & 状态
+    let imageSegmenter = null;
+    let segmenterReady = false;
+    let segmenterLoading = false;
+
+    // ============================================================
+    // MediaPipe 懒加载 —— 只在用户上传图片后才加载
+    // ============================================================
+    function setBadge(text, ready) {
+        const badge = document.getElementById('modelBadge');
+        if (ready) {
+            badge.innerHTML = '<i class="fas fa-check-circle"></i> AI就绪';
+            badge.className = 'model-badge ready';
+        } else {
+            badge.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> ' + text;
+            badge.className = 'model-badge';
+        }
+    }
+
+    async function loadMediaPipe() {
+        if (segmenterReady || segmenterLoading) return;
+        segmenterLoading = true;
+        setBadge('加载中', false);
+        showStatus('正在加载 AI 模型，请稍候...', 'processing');
+
+        try {
+            // 动态加载 MediaPipe Tasks Vision
+            await loadScript('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/vision_bundle.js');
+
+            const vision = window.MediaPipeTasksVision || window['@mediapipe/tasks-vision'];
+
+            // 新版 API: ImageSegmenter
+            if (vision && vision.ImageSegmenter) {
+                const { ImageSegmenter, FilesetResolver } = vision;
+                const filesetResolver = await FilesetResolver.forVisionTasks(
+                    'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm'
+                );
+                imageSegmenter = await ImageSegmenter.createFromOptions(filesetResolver, {
+                    baseOptions: {
+                        modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_segmenter/float16/latest/selfie_segmenter.tflite',
+                        delegate: 'GPU'
+                    },
+                    outputCategoryMask: false,
+                    outputConfidenceMasks: true,
+                    runningMode: 'IMAGE'
                 });
-                
-                // 设置模型为通用模式（更好的边缘处理）
-                segmenter.setOptions({
-                    modelType: 'general',
-                    selfieMode: false
-                });
-                
-                segmenterLoaded = true;
-                statusBar.textContent = '✓ AI模型加载完成，可以开始处理';
-                statusBar.className = 'status-bar success';
-                
-                // 3秒后隐藏状态栏
-                setTimeout(() => {
-                    statusBar.className = 'status-bar';
-                }, 3000);
-                
-            } catch (err) {
-                console.error('Failed to load segmenter:', err);
-                statusBar.textContent = 'AI模型加载中（可先使用备用算法）...';
-                statusBar.className = 'status-bar processing';
-                // 不要立即标记为失败，等待一段时间后再显示
-                setTimeout(() => {
-                    if (!segmenterLoaded) {
-                        statusBar.textContent = 'AI模型加载较慢，已准备好备用算法，可直接使用';
-                        statusBar.className = 'status-bar';
-                    }
-                }, 5000);
-                segmenterLoaded = false;
+                segmenterReady = true;
+                setBadge('AI就绪', true);
+                showStatus('✓ AI 模型加载完成，可以开始处理', 'success');
+                setTimeout(() => { document.getElementById('statusBar').className = 'status-bar'; }, 2500);
+            } else {
+                throw new Error('MediaPipe Tasks Vision 未能正确加载');
             }
+        } catch (err) {
+            console.warn('MediaPipe 加载失败，将使用备用算法:', err);
+            segmenterReady = false;
+            setBadge('备用模式', false);
+            showStatus('AI 模型加载失败，将使用智能备用算法处理', 'error');
+            setTimeout(() => { document.getElementById('statusBar').className = 'status-bar'; }, 3000);
+        } finally {
+            segmenterLoading = false;
         }
+    }
 
-        // 页面加载时初始化模型
-        initSegmenter();
-
-        // 文件上传
-        document.getElementById('imageInput').addEventListener('change', handleFileUpload);
-        
-        // 拖拽上传
-        const uploadArea = document.querySelector('.upload-area');
-        uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.style.background = '#f0f4ff'; });
-        uploadArea.addEventListener('dragleave', () => { uploadArea.style.background = 'white'; });
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.style.background = 'white';
-            const files = e.dataTransfer.files;
-            if (files.length > 0 && files[0].type.startsWith('image/')) handleFile(files[0]);
+    function loadScript(src) {
+        return new Promise((resolve, reject) => {
+            if (document.querySelector('script[src="' + src + '"]')) { resolve(); return; }
+            const s = document.createElement('script');
+            s.src = src;
+            s.onload = resolve;
+            s.onerror = reject;
+            document.head.appendChild(s);
         });
+    }
 
-        function handleFileUpload(e) {
-            const file = e.target.files[0];
-            if (file) handleFile(file);
-        }
+    // ============================================================
+    // 文件上传
+    // ============================================================
+    document.getElementById('imageInput').addEventListener('change', handleFileUpload);
 
-        function handleFile(file) {
-            if (!file.type.startsWith('image/')) {
-                showStatus('请上传图片文件', 'error');
-                return;
-            }
-            if (file.size > 10 * 1024 * 1024) {
-                showStatus('图片大小不能超过10MB', 'error');
-                return;
-            }
+    const uploadArea = document.querySelector('.upload-area');
+    uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.style.background = '#f0f4ff'; });
+    uploadArea.addEventListener('dragleave', () => { uploadArea.style.background = 'white'; });
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.style.background = 'white';
+        const files = e.dataTransfer.files;
+        if (files.length > 0 && files[0].type.startsWith('image/')) handleFile(files[0]);
+    });
 
-            document.getElementById('fileInfo').style.display = 'block';
-            document.getElementById('fileInfo').textContent = `${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+    function handleFileUpload(e) {
+        const file = e.target.files[0];
+        if (file) handleFile(file);
+    }
 
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const img = new Image();
-                img.onload = () => {
-                    originalImage = img;
-                    displayPreview(img);
-                    document.getElementById('processBtn').disabled = false;
-                    showStatus('照片已加载，点击「AI换底色」开始处理', 'success');
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
+    function handleFile(file) {
+        if (!file.type.startsWith('image/')) { showStatus('请上传图片文件', 'error'); return; }
+        if (file.size > 10 * 1024 * 1024) { showStatus('图片大小不能超过 10MB', 'error'); return; }
 
-        function displayPreview(img) {
-            const area = document.getElementById('canvasArea');
-            area.innerHTML = `
-                <div style="position:relative;">
-                    <canvas id="mainCanvas"></canvas>
-                    <p style="text-align:center;font-size:0.8em;color:#888;margin-top:10px;">原图预览</p>
-                </div>
-            `;
-            
-            const canvas = document.getElementById('mainCanvas');
-            const ctx = canvas.getContext('2d');
-            
-            // 预览时自适应显示尺寸
-            const maxW = Math.min(400, area.clientWidth - 40);
-            const scale = maxW / img.width;
-            canvas.width = img.width;
-            canvas.height = img.height;
-            canvas.style.width = maxW + 'px';
-            canvas.style.height = (img.height * scale) + 'px';
-            
-            ctx.drawImage(img, 0, 0);
-        }
+        document.getElementById('fileInfo').style.display = 'block';
+        document.getElementById('fileInfo').textContent = file.name + ' (' + (file.size / 1024).toFixed(1) + ' KB)';
 
-        // 尺寸选择
-        document.querySelectorAll('.size-option').forEach(opt => {
-            opt.addEventListener('click', () => {
-                document.querySelectorAll('.size-option').forEach(o => o.classList.remove('active'));
-                opt.classList.add('active');
-                currentSize = {
-                    width: parseInt(opt.dataset.width),
-                    height: parseInt(opt.dataset.height)
-                };
-            });
-        });
-
-        // 底色选择
-        document.querySelectorAll('.bg-option').forEach(opt => {
-            opt.addEventListener('click', () => {
-                document.querySelectorAll('.bg-option').forEach(o => o.classList.remove('active'));
-                opt.classList.add('active');
-                currentBgColor = opt.dataset.color;
-            });
-        });
-
-        // 美颜滑块
-        ['brightness', 'contrast', 'smooth', 'whitening'].forEach(id => {
-            const slider = document.getElementById(id);
-            const val = document.getElementById(id + 'Val');
-            slider.addEventListener('input', () => { val.textContent = slider.value; });
-        });
-
-        // AI抠图换底色 - 使用 MediaPipe Selfie Segmentation
-        async function processImage() {
-            if (!originalImage || isProcessing) return;
-            
-            isProcessing = true;
-            showStatus('正在AI识别人像，请稍候...', 'processing');
-            document.getElementById('processBtn').disabled = true;
-
-            try {
-                // 创建工作画布
-                const workCanvas = document.createElement('canvas');
-                const workCtx = workCanvas.getContext('2d');
-                
-                // 使用合适的处理尺寸
-                const maxDim = 1024;
-                let w = originalImage.width;
-                let h = originalImage.height;
-                if (w > maxDim || h > maxDim) {
-                    const ratio = Math.min(maxDim / w, maxDim / h);
-                    w = Math.round(w * ratio);
-                    h = Math.round(h * ratio);
-                }
-                
-                workCanvas.width = w;
-                workCanvas.height = h;
-                workCtx.drawImage(originalImage, 0, 0, w, h);
-                
-                let mask;
-                
-                if (segmenterLoaded && segmenter) {
-                    // 使用 MediaPipe Selfie Segmentation
-                    showStatus('AI模型分析中，请稍候...', 'processing');
-                    
-                    try {
-                        const result = await segmenter.segment(workCanvas, { selfieMode: false });
-                        
-                        // MediaPipe 0.4 返回 ImageData，提取 alpha 通道
-                        if (result && result.data) {
-                            mask = new Float32Array(w * h);
-                            for (let i = 0; i < w * h; i++) {
-                                mask[i] = result.data[i * 4 + 3] / 255;
-                            }
-                        } else {
-                            throw new Error('Invalid segmentation result');
-                        }
-                    } catch (segErr) {
-                        console.warn('MediaPipe segmentation failed, using fallback:', segErr);
-                        mask = await fallbackSegmentation(workCtx, w, h);
-                    }
-                } else {
-                    // 使用备用算法
-                    showStatus('使用备用算法处理中...', 'processing');
-                    mask = await fallbackSegmentation(workCtx, w, h);
-                }
-                
-                // ========== 专业级Mask处理流程 ==========
-                showStatus('AI深度优化中...', 'processing');
-                
-                // 1. 形态学闭运算 - 消除毛刺、填补空洞
-                mask = applyMorphologicalClose(mask, w, h, 1);
-                
-                // 2. 双边滤波 - 保边平滑（比高斯模糊更自然）
-                mask = applyBilateralFilter(mask, w, h);
-                
-                // 3. 头发丝检测 - 保护头发边缘
-                const hairMask = detectHairEdge(mask, w, h);
-                
-                showStatus('正在合成证件照...', 'processing');
-                
-                // 获取美颜参数
-                const brightness = parseInt(document.getElementById('brightness').value);
-                const contrast = parseInt(document.getElementById('contrast').value);
-                const smooth = parseInt(document.getElementById('smooth').value);
-                const whitening = parseInt(document.getElementById('whitening').value);
-                
-                // 解析目标底色
-                const targetColor = hexToRgb(currentBgColor);
-                
-                // ========== 专业证件照处理（优化版）==========
-                // 第一步：获取原图数据
-                const workCtx = workCanvas.getContext('2d');
-                const personImageData = workCtx.getImageData(0, 0, w, h);
-                const personData = personImageData.data;
-                
-                // 第二步：创建背景 ImageData（单次循环同时完成填充和合成）
-                const bgImageData = new ImageData(w, h);
-                const bgData = bgImageData.data;
-                
-                // 边缘羽化参数
-                const featherStart = 0.2;
-                const featherEnd = 0.8;
-                
-                // 单次循环完成所有处理
-                for (let i = 0; i < w * h; i++) {
-                    const pixelIdx = i * 4;
-                    const personProb = mask[i] || 0;
-                    
-                    if (personProb < featherStart) {
-                        // 背景区域：纯净背景色
-                        bgData[pixelIdx] = targetColor.r;
-                        bgData[pixelIdx + 1] = targetColor.g;
-                        bgData[pixelIdx + 2] = targetColor.b;
-                    } else if (personProb < featherEnd) {
-                        // 边缘区域：smoothstep 羽化混合
-                        const t = (personProb - featherStart) / (featherEnd - featherStart);
-                        const smoothT = t * t * (3 - 2 * t);
-                        
-                        bgData[pixelIdx] = Math.round(personData[pixelIdx] * smoothT + targetColor.r * (1 - smoothT));
-                        bgData[pixelIdx + 1] = Math.round(personData[pixelIdx + 1] * smoothT + targetColor.g * (1 - smoothT));
-                        bgData[pixelIdx + 2] = Math.round(personData[pixelIdx + 2] * smoothT + targetColor.b * (1 - smoothT));
-                    } else {
-                        // 人物主体区域：保持原图
-                        bgData[pixelIdx] = personData[pixelIdx];
-                        bgData[pixelIdx + 1] = personData[pixelIdx + 1];
-                        bgData[pixelIdx + 2] = personData[pixelIdx + 2];
-                    }
-                }
-                
-                // 第三步：对人物主体区域应用美颜（只对 mask >= 0.8 的区域，避免边缘模糊）
-                const beautyMask = new Float32Array(w * h);
-                for (let i = 0; i < w * h; i++) {
-                    beautyMask[i] = mask[i] >= featherEnd ? 1 : 0; // 只对人像主体美颜
-                }
-                applyBeautyEffect(bgData, w, h, beautyMask, brightness, contrast, smooth, whitening);
-                
-                // 4. Gamma校正 - 优化背景色彩准确性
-                applyGammaCorrection(bgData, w, h, mask, 1.1);
-                
-                // 创建输出画布
-                const outputCanvas = document.createElement('canvas');
-                const outputCtx = outputCanvas.getContext('2d');
-                outputCanvas.width = w;
-                outputCanvas.height = h;
-                outputCtx.putImageData(bgImageData, 0, 0);
-                
-                // ========== 绘制最终证件照尺寸 ==========
-                const finalCanvas = document.createElement('canvas');
-                const finalCtx = finalCanvas.getContext('2d');
-                finalCanvas.width = currentSize.width;
-                finalCanvas.height = currentSize.height;
-                
-                // 填充底色
-                finalCtx.fillStyle = currentBgColor;
-                finalCtx.fillRect(0, 0, currentSize.width, currentSize.height);
-                
-                // 居中裁剪绘制
-                const srcRatio = outputCanvas.width / outputCanvas.height;
-                const dstRatio = currentSize.width / currentSize.height;
-                
-                let sx, sy, sw, sh;
-                if (srcRatio > dstRatio) {
-                    sh = outputCanvas.height;
-                    sw = sh * dstRatio;
-                    sx = (outputCanvas.width - sw) / 2;
-                    sy = 0;
-                } else {
-                    sw = outputCanvas.width;
-                    sh = sw / dstRatio;
-                    sx = 0;
-                    sy = (outputCanvas.height - sh) / 2;
-                }
-                
-                finalCtx.drawImage(outputCanvas, sx, sy, sw, sh, 0, 0, currentSize.width, currentSize.height);
-                
-                // 显示结果
-                processedCanvas = finalCanvas;
-                const area = document.getElementById('canvasArea');
-                area.innerHTML = `
-                    <div style="text-align:center;">
-                        <canvas id="resultCanvas"></canvas>
-                        <p style="text-align:center;font-size:0.85em;color:#888;margin-top:10px;">${currentSize.width}×${currentSize.height}px</p>
-                    </div>
-                `;
-                
-                const resultCanvas = document.getElementById('resultCanvas');
-                resultCanvas.width = finalCanvas.width;
-                resultCanvas.height = finalCanvas.height;
-                resultCanvas.getContext('2d').drawImage(finalCanvas, 0, 0);
-                
-                // 缩放显示
-                const displayW = Math.min(350, area.clientWidth - 40);
-                const displayScale = displayW / finalCanvas.width;
-                resultCanvas.style.width = displayW + 'px';
-                resultCanvas.style.height = (finalCanvas.height * displayScale) + 'px';
-                
-                document.getElementById('downloadBtn').disabled = false;
-                showStatus('换底成功！点击下载保存证件照', 'success');
-                
-            } catch (err) {
-                console.error(err);
-                showStatus('处理失败，请尝试其他照片', 'error');
-            } finally {
-                isProcessing = false;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            const img = new Image();
+            img.onload = () => {
+                originalImage = img;
+                displayPreview(img);
                 document.getElementById('processBtn').disabled = false;
-            }
-        }
-
-        // 备用分割算法（基于颜色和边缘检测）
-        async function fallbackSegmentation(ctx, w, h) {
-            const imageData = ctx.getImageData(0, 0, w, h);
-            const data = imageData.data;
-            
-            // 分析四个角的颜色（假设背景是均匀的）
-            const cornerColors = [];
-            
-            // 采集样本
-            const sampleSize = Math.min(30, Math.floor(w * 0.1), Math.floor(h * 0.1));
-            
-            // 四个角
-            const corners = [
-                { x: 0, y: 0 },
-                { x: w - sampleSize, y: 0 },
-                { x: 0, y: h - sampleSize },
-                { x: w - sampleSize, y: h - sampleSize }
-            ];
-            
-            corners.forEach(corner => {
-                let r = 0, g = 0, b = 0, count = 0;
-                for (let dy = 0; dy < sampleSize; dy++) {
-                    for (let dx = 0; dx < sampleSize; dx++) {
-                        const x = corner.x + dx;
-                        const y = corner.y + dy;
-                        if (x < w && y < h) {
-                            const i = (y * w + x) * 4;
-                            r += data[i];
-                            g += data[i + 1];
-                            b += data[i + 2];
-                            count++;
-                        }
-                    }
-                }
-                cornerColors.push({ r: r / count, g: g / count, b: b / count });
-            });
-            
-            // 计算平均背景色
-            const bgColor = {
-                r: cornerColors.reduce((s, c) => s + c.r, 0) / 4,
-                g: cornerColors.reduce((s, c) => s + c.g, 0) / 4,
-                b: cornerColors.reduce((s, c) => s + c.b, 0) / 4
+                showStatus('照片已加载，点击「AI换底色」开始处理', 'success');
+                // 懒加载 AI 模型
+                loadMediaPipe();
             };
-            
-            // 生成 mask（Float32Array）
-            const mask = new Float32Array(w * h);
-            
-            for (let y = 0; y < h; y++) {
-                for (let x = 0; x < w; x++) {
-                    const i = y * w + x;
-                    const pixelIdx = i * 4;
-                    
-                    const r = data[pixelIdx];
-                    const g = data[pixelIdx + 1];
-                    const b = data[pixelIdx + 2];
-                    
-                    // 计算与背景色的差异
-                    const diff = Math.sqrt(
-                        Math.pow(r - bgColor.r, 2) +
-                        Math.pow(g - bgColor.g, 2) +
-                        Math.pow(b - bgColor.b, 2)
-                    );
-                    
-                    // 边缘更敏感
-                    const edgeDist = Math.min(x, y, w - x, h - y);
-                    const threshold = edgeDist < 50 ? 40 : 55;
-                    
-                    // mask语义：0=背景，1=主体
-                    // 差异小=背景→mask低，差异大=人物→mask高
-                    if (diff < threshold) {
-                        mask[i] = diff / threshold; // 平滑过渡
-                    } else {
-                        mask[i] = 1;
-                    }
+            img.src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function displayPreview(img) {
+        const area = document.getElementById('canvasArea');
+        area.innerHTML = '<div style="position:relative;"><canvas id="mainCanvas"></canvas><p style="text-align:center;font-size:0.8em;color:#888;margin-top:10px;">原图预览</p></div>';
+        const canvas = document.getElementById('mainCanvas');
+        const ctx = canvas.getContext('2d');
+        const maxW = Math.min(400, area.clientWidth - 40);
+        const scale = maxW / img.width;
+        canvas.width = img.width;
+        canvas.height = img.height;
+        canvas.style.width = maxW + 'px';
+        canvas.style.height = (img.height * scale) + 'px';
+        ctx.drawImage(img, 0, 0);
+    }
+
+    // ============================================================
+    // 选项绑定
+    // ============================================================
+    document.querySelectorAll('.size-option').forEach(opt => {
+        opt.addEventListener('click', () => {
+            document.querySelectorAll('.size-option').forEach(o => o.classList.remove('active'));
+            opt.classList.add('active');
+            currentSize = { width: parseInt(opt.dataset.width), height: parseInt(opt.dataset.height) };
+        });
+    });
+
+    document.querySelectorAll('.bg-option').forEach(opt => {
+        opt.addEventListener('click', () => {
+            document.querySelectorAll('.bg-option').forEach(o => o.classList.remove('active'));
+            opt.classList.add('active');
+            currentBgColor = opt.dataset.color;
+        });
+    });
+
+    ['brightness', 'contrast', 'smooth', 'whitening'].forEach(id => {
+        const slider = document.getElementById(id);
+        const val = document.getElementById(id + 'Val');
+        slider.addEventListener('input', () => { val.textContent = slider.value; });
+    });
+
+    document.querySelectorAll('.quality-mode').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.quality-mode').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentQualityMode = btn.dataset.mode;
+        });
+    });
+
+    // ============================================================
+    // 核心处理
+    // ============================================================
+    async function processImage() {
+        if (!originalImage || isProcessing) return;
+        isProcessing = true;
+        showStatus('正在处理...', 'processing');
+        document.getElementById('processBtn').disabled = true;
+        showProgress(5);
+
+        try {
+            const maxDim = currentQualityMode === 'quality' ? 1024 : 768;
+            let w = originalImage.width, h = originalImage.height;
+            if (w > maxDim || h > maxDim) {
+                const ratio = Math.min(maxDim / w, maxDim / h);
+                w = Math.round(w * ratio);
+                h = Math.round(h * ratio);
+            }
+
+            const workCanvas = document.createElement('canvas');
+            workCanvas.width = w;
+            workCanvas.height = h;
+            workCanvas.getContext('2d').drawImage(originalImage, 0, 0, w, h);
+
+            showProgress(20);
+
+            let maskData = null;
+            let method = '备用算法';
+
+            // ---- 尝试 MediaPipe ----
+            if (segmenterReady && imageSegmenter) {
+                try {
+                    maskData = await runMediaPipeSegment(workCanvas, w, h);
+                    method = 'AI智能抠图';
+                } catch (e) {
+                    console.warn('MediaPipe 分割失败，回退到备用算法:', e);
+                    maskData = null;
                 }
             }
-            
-            // 形态学处理 - 膨胀和腐蚀使mask更平滑
-            const processedMask = new Float32Array(w * h);
-            const kernel = 3;
-            
-            for (let y = 0; y < h; y++) {
-                for (let x = 0; x < w; x++) {
-                    let maxVal = 0;
-                    let sumVal = 0;
-                    let count = 0;
-                    
-                    for (let dy = -kernel; dy <= kernel; dy++) {
-                        for (let dx = -kernel; dx <= kernel; dx++) {
-                            const nx = x + dx;
-                            const ny = y + dy;
-                            if (nx >= 0 && nx < w && ny >= 0 && ny < h) {
-                                const val = mask[ny * w + nx];
-                                maxVal = Math.max(maxVal, val);
-                                sumVal += val;
-                                count++;
-                            }
-                        }
-                    }
-                    
-                    // 使用均值和最大值混合
-                    processedMask[y * w + x] = maxVal * 0.6 + (sumVal / count) * 0.4;
-                }
+
+            showProgress(50);
+
+            // ---- 备用：颜色聚类抠图 ----
+            if (!maskData) {
+                maskData = fallbackColorSegment(workCanvas, w, h);
+                method = '智能颜色分割';
             }
-            
-            return processedMask;
+
+            showProgress(65);
+
+            // 边缘平滑
+            maskData = applyEdgeSmoothing(maskData, w, h);
+
+            showProgress(75);
+
+            // 合成输出图像
+            const outputCanvas = document.createElement('canvas');
+            outputCanvas.width = w;
+            outputCanvas.height = h;
+            const outputCtx = outputCanvas.getContext('2d');
+            outputCtx.drawImage(workCanvas, 0, 0);
+            const imageData = outputCtx.getImageData(0, 0, w, h);
+            const pixels = imageData.data;
+            const targetColor = hexToRgb(currentBgColor);
+            compositeImage(pixels, w, h, maskData, targetColor);
+
+            // 美颜
+            const beautyMask = maskData.map(v => v > 0.5 ? 1 : 0);
+            const brightness = parseInt(document.getElementById('brightness').value);
+            const contrast   = parseInt(document.getElementById('contrast').value);
+            const smooth     = parseInt(document.getElementById('smooth').value);
+            const whitening  = parseInt(document.getElementById('whitening').value);
+            if (brightness !== 0 || contrast !== 0 || smooth !== 0 || whitening !== 0) {
+                applyBeautyEffect(pixels, w, h, beautyMask, brightness, contrast, smooth, whitening);
+            }
+            outputCtx.putImageData(imageData, 0, 0);
+
+            showProgress(88);
+
+            // 生成证件照尺寸
+            const finalCanvas = document.createElement('canvas');
+            finalCanvas.width = currentSize.width;
+            finalCanvas.height = currentSize.height;
+            const finalCtx = finalCanvas.getContext('2d');
+            finalCtx.fillStyle = currentBgColor;
+            finalCtx.fillRect(0, 0, currentSize.width, currentSize.height);
+
+            const srcRatio = w / h;
+            const dstRatio = currentSize.width / currentSize.height;
+            let sx, sy, sw, sh;
+            if (srcRatio > dstRatio) {
+                sh = h; sw = sh * dstRatio; sx = (w - sw) / 2; sy = 0;
+            } else {
+                sw = w; sh = sw / dstRatio; sx = 0; sy = (h - sh) / 2;
+            }
+            finalCtx.drawImage(outputCanvas, sx, sy, sw, sh, 0, 0, currentSize.width, currentSize.height);
+
+            processedCanvas = finalCanvas;
+            showProgress(100);
+
+            // 显示结果
+            const area = document.getElementById('canvasArea');
+            area.innerHTML = '<div style="text-align:center;"><canvas id="resultCanvas"></canvas><p style="text-align:center;font-size:0.85em;color:#888;margin-top:10px;">' + currentSize.width + '×' + currentSize.height + 'px | ' + method + '</p></div>';
+            const resultCanvas = document.getElementById('resultCanvas');
+            resultCanvas.width = finalCanvas.width;
+            resultCanvas.height = finalCanvas.height;
+            resultCanvas.getContext('2d').drawImage(finalCanvas, 0, 0);
+            const displayW = Math.min(350, area.clientWidth - 40);
+            resultCanvas.style.width = displayW + 'px';
+            resultCanvas.style.height = (finalCanvas.height * displayW / finalCanvas.width) + 'px';
+
+            document.getElementById('downloadBtn').disabled = false;
+            showStatus('✓ 换底色成功！点击下载保存证件照（' + method + '）', 'success');
+            setTimeout(() => { document.getElementById('progressBar').classList.remove('active'); }, 1000);
+
+        } catch (err) {
+            console.error(err);
+            showStatus('处理失败：' + err.message, 'error');
+            document.getElementById('progressBar').classList.remove('active');
+        } finally {
+            isProcessing = false;
+            document.getElementById('processBtn').disabled = false;
         }
+    }
 
-        // ========== 轻量级图像处理算法（优化性能） ==========
-
-        // 1. 轻量级闭运算 - 消除毛刺
-        function applyMorphologicalClose(mask, w, h, iterations = 1) {
-            const radius = 1; // 减小radius提升性能
-            for (let iter = 0; iter < iterations; iter++) {
-                let result = new Float32Array(w * h);
-                // 膨胀
-                for (let y = 0; y < h; y++) {
-                    for (let x = 0; x < w; x++) {
-                        let maxVal = 0;
-                        for (let dy = -radius; dy <= radius; dy++) {
-                            for (let dx = -radius; dx <= radius; dx++) {
-                                const nx = x + dx, ny = y + dy;
-                                if (nx >= 0 && nx < w && ny >= 0 && ny < h) {
-                                    maxVal = Math.max(maxVal, mask[ny * w + nx]);
-                                }
-                            }
-                        }
-                        result[y * w + x] = maxVal;
-                    }
+    // ============================================================
+    // MediaPipe Tasks Vision 分割
+    // ============================================================
+    function runMediaPipeSegment(canvas, w, h) {
+        return new Promise((resolve, reject) => {
+            try {
+                const results = imageSegmenter.segment(canvas);
+                if (!results || !results.confidenceMasks || results.confidenceMasks.length === 0) {
+                    reject(new Error('MediaPipe 返回空结果'));
+                    return;
                 }
-                mask = result;
-            }
-            return mask;
-        }
+                // confidenceMasks[0] 是前景（人物）置信度
+                const maskWebGLTexture = results.confidenceMasks[0];
+                const floatArr = maskWebGLTexture.getAsFloat32Array();
 
-        // 2. 简化高斯模糊 - 保留核心效果
-        function applyBilateralFilter(mask, w, h) {
-            const kernel = 1; // 减小kernel
-            const sigma = 1.0;
-            const kernelSize = 2 * kernel + 1;
-            const gaussKernel = [];
-            let sum = 0;
-            
-            for (let i = -kernel; i <= kernel; i++) {
-                for (let j = -kernel; j <= kernel; j++) {
-                    const g = Math.exp(-(i * i + j * j) / (2 * sigma * sigma));
-                    gaussKernel.push(g);
-                    sum += g;
+                const maskData = new Float32Array(w * h);
+                let minV = 1, maxV = 0;
+                for (let i = 0; i < w * h; i++) {
+                    maskData[i] = floatArr[i];
+                    if (floatArr[i] < minV) minV = floatArr[i];
+                    if (floatArr[i] > maxV) maxV = floatArr[i];
                 }
+                console.log('MediaPipe mask 范围: min=' + minV.toFixed(3) + ', max=' + maxV.toFixed(3));
+                if (maxV - minV < 0.05) { reject(new Error('mask 无效（范围太小）')); return; }
+                // 关闭 mask 资源
+                maskWebGLTexture.close && maskWebGLTexture.close();
+                results.close && results.close();
+                resolve(maskData);
+            } catch (e) {
+                reject(e);
             }
-            for (let i = 0; i < gaussKernel.length; i++) gaussKernel[i] /= sum;
-            
-            const result = new Float32Array(w * h);
-            for (let y = 0; y < h; y++) {
-                for (let x = 0; x < w; x++) {
-                    let val = 0;
-                    let weightSum = 0;
-                    for (let ky = -kernel; ky <= kernel; ky++) {
-                        for (let kx = -kernel; kx <= kernel; kx++) {
-                            const nx = x + kx, ny = y + ky;
-                            if (nx >= 0 && nx < w && ny >= 0 && ny < h) {
-                                const ki = (ky + kernel) * kernelSize + (kx + kernel);
-                                val += mask[ny * w + nx] * gaussKernel[ki];
-                                weightSum += gaussKernel[ki];
-                            }
-                        }
-                    }
-                    result[y * w + x] = val / weightSum;
-                }
-            }
-            return result;
-        }
+        });
+    }
 
-        // 3. 头发丝检测（简化版）
-        function detectHairEdge(mask, w, h) {
-            return mask; // 不增加额外计算
-        }
+    // ============================================================
+    // 备用算法：颜色聚类抠图（GrabCut 简化版）
+    // ============================================================
+    function fallbackColorSegment(canvas, w, h) {
+        const ctx = canvas.getContext('2d');
+        const imgData = ctx.getImageData(0, 0, w, h);
+        const data = imgData.data;
+        const mask = new Float32Array(w * h);
 
-        // 4. 轻量级Gamma校正
-        function applyGammaCorrection(data, w, h, mask, gamma = 1.0) {
-            if (Math.abs(gamma - 1.0) < 0.05) return;
-            
-            const lut = new Uint8Array(256);
-            const invGamma = 1.0 / gamma;
-            for (let i = 0; i < 256; i++) {
-                lut[i] = Math.round(Math.pow(i / 255, invGamma) * 255);
-            }
-            
-            // 只处理边缘区域加速
-            for (let y = 0; y < h; y += 3) {
-                for (let x = 0; x < w; x += 3) {
+        // 采样四周边框像素作为背景样本
+        const bgSamples = [];
+        const border = Math.max(3, Math.round(Math.min(w, h) * 0.04));
+        for (let y = 0; y < h; y++) {
+            for (let x = 0; x < w; x++) {
+                if (x < border || x >= w - border || y < border || y >= h - border) {
                     const i = (y * w + x) * 4;
-                    const maskVal = mask[y * w + x];
-                    if (maskVal > 0.3 && maskVal < 0.6) {
-                        data[i] = lut[data[i]];
-                        data[i + 1] = lut[data[i + 1]];
-                        data[i + 2] = lut[data[i + 2]];
-                    }
+                    bgSamples.push([data[i], data[i+1], data[i+2]]);
                 }
             }
         }
 
-        // 快速美颜效果（优化版，无LAB转换）
-        function applyBeautyEffect(data, w, h, mask, brightness, contrast, smooth, whitening) {
-            // 快速路径：无美颜参数直接返回
-            if (brightness === 0 && contrast === 0 && smooth === 0 && whitening === 0) return;
-            
-            for (let y = 0; y < h; y++) {
-                for (let x = 0; x < w; x++) {
-                    const idx = (y * w + x) * 4;
-                    const maskIdx = y * w + x;
-                    
-                    if (mask[maskIdx] < 0.6) continue; // 只对主体美颜
-                    
-                    let r = data[idx];
-                    let g = data[idx + 1];
-                    let b = data[idx + 2];
-                    
-                    // 亮度
-                    if (brightness !== 0) {
-                        const delta = brightness * 2.0;
-                        r = Math.max(0, Math.min(255, r + delta));
-                        g = Math.max(0, Math.min(255, g + delta));
-                        b = Math.max(0, Math.min(255, b + delta));
-                    }
-                    
-                    // 对比度
-                    if (contrast !== 0) {
-                        const factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
-                        r = Math.max(0, Math.min(255, factor * (r - 128) + 128));
-                        g = Math.max(0, Math.min(255, factor * (g - 128) + 128));
-                        b = Math.max(0, Math.min(255, factor * (b - 128) + 128));
-                    }
-                    
-                    // 磨皮
-                    if (smooth > 0) {
-                        if (isSkinColor(r, g, b)) {
-                            const factor = smooth / 100 * 0.2;
-                            r = r * (1 - factor) + (r + 8) * factor;
-                            g = g * (1 - factor) + (g + 8) * factor;
-                            b = b * (1 - factor) + (b + 8) * factor;
+        // 计算背景平均颜色
+        let bgR = 0, bgG = 0, bgB = 0;
+        bgSamples.forEach(s => { bgR += s[0]; bgG += s[1]; bgB += s[2]; });
+        bgR /= bgSamples.length; bgG /= bgSamples.length; bgB /= bgSamples.length;
+
+        // 计算背景颜色标准差（用于自适应阈值）
+        let varR = 0, varG = 0, varB = 0;
+        bgSamples.forEach(s => {
+            varR += (s[0] - bgR) ** 2;
+            varG += (s[1] - bgG) ** 2;
+            varB += (s[2] - bgB) ** 2;
+        });
+        const stdDev = Math.sqrt((varR + varG + varB) / (3 * bgSamples.length));
+        const threshold = Math.max(35, Math.min(80, stdDev * 2.5 + 25));
+
+        // 计算每个像素与背景颜色的距离
+        for (let i = 0; i < w * h; i++) {
+            const pi = i * 4;
+            const dr = data[pi]   - bgR;
+            const dg = data[pi+1] - bgG;
+            const db = data[pi+2] - bgB;
+            const dist = Math.sqrt(dr*dr + dg*dg + db*db);
+            // 距离越大 → 越像前景
+            const prob = Math.min(1, Math.max(0, (dist - threshold * 0.4) / (threshold * 0.8)));
+            mask[i] = prob;
+        }
+
+        // 中心加权：图像中心偏向前景
+        const cx = w / 2, cy = h / 2;
+        const maxDist = Math.sqrt(cx * cx + cy * cy);
+        for (let y = 0; y < h; y++) {
+            for (let x = 0; x < w; x++) {
+                const idx = y * w + x;
+                const d = Math.sqrt((x - cx) ** 2 + (y - cy) ** 2);
+                const centerWeight = 1 - (d / maxDist) * 0.35;
+                mask[idx] = Math.min(1, mask[idx] * centerWeight + (1 - d / maxDist) * 0.1);
+            }
+        }
+
+        return mask;
+    }
+
+    // ============================================================
+    // 边缘平滑
+    // ============================================================
+    function applyEdgeSmoothing(mask, w, h) {
+        const result = new Float32Array(w * h);
+        const kernel = currentQualityMode === 'quality' ? 2 : 1;
+        for (let y = 0; y < h; y++) {
+            for (let x = 0; x < w; x++) {
+                const idx = y * w + x;
+                if (mask[idx] > 0.9 || mask[idx] < 0.1) { result[idx] = mask[idx]; continue; }
+                let sum = 0, weight = 0;
+                for (let dy = -kernel; dy <= kernel; dy++) {
+                    for (let dx = -kernel; dx <= kernel; dx++) {
+                        const nx = x + dx, ny = y + dy;
+                        if (nx >= 0 && nx < w && ny >= 0 && ny < h) {
+                            const dist = Math.sqrt(dx*dx + dy*dy);
+                            const wgt = Math.exp(-dist*dist / 4);
+                            sum += mask[ny * w + nx] * wgt;
+                            weight += wgt;
                         }
                     }
-                    
-                    // 美白
-                    if (whitening > 0) {
-                        const gray = 0.299 * r + 0.587 * g + 0.114 * b;
-                        const f = whitening / 100 * 0.25;
-                        r = Math.min(255, r + (255 - gray) * f);
-                        g = Math.min(255, g + (255 - gray) * f);
-                        b = Math.min(255, b + (255 - gray) * f);
-                    }
-                    
-                    data[idx] = Math.round(r);
-                    data[idx + 1] = Math.round(g);
-                    data[idx + 2] = Math.round(b);
                 }
+                result[idx] = weight > 0 ? sum / weight : mask[idx];
             }
         }
-        }
+        return result;
+    }
 
-        // 辅助函数
-        function hexToRgb(hex) {
-            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-            return result ? {
-                r: parseInt(result[1], 16),
-                g: parseInt(result[2], 16),
-                b: parseInt(result[3], 16)
-            } : { r: 255, g: 255, b: 255 };
+    // ============================================================
+    // 图像合成
+    // ============================================================
+    function compositeImage(pixels, w, h, mask, targetColor) {
+        const threshold = 0.5;
+        const featherWidth = currentQualityMode === 'quality' ? 0.15 : 0.1;
+        for (let i = 0; i < w * h; i++) {
+            const pi = i * 4;
+            const personProb = mask[i];
+            if (personProb < threshold) {
+                pixels[pi]   = targetColor.r;
+                pixels[pi+1] = targetColor.g;
+                pixels[pi+2] = targetColor.b;
+            } else if (personProb < threshold + featherWidth) {
+                const t = (personProb - threshold) / featherWidth;
+                const smoothT = t * t * (3 - 2 * t);
+                pixels[pi]   = Math.round(pixels[pi]   * smoothT + targetColor.r * (1 - smoothT));
+                pixels[pi+1] = Math.round(pixels[pi+1] * smoothT + targetColor.g * (1 - smoothT));
+                pixels[pi+2] = Math.round(pixels[pi+2] * smoothT + targetColor.b * (1 - smoothT));
+            }
         }
+    }
 
-        function isSkinColor(r, g, b) {
-            const r2 = r / 255, g2 = g / 255, b2 = b / 255;
-            const max = Math.max(r2, g2, b2);
-            const min = Math.min(r2, g2, b2);
-            
-            if (max < 0.2 || max > 0.95) return false;
-            if (min > 0.8) return false;
-            
-            // 排除蓝色系
-            if (b2 > r2 * 1.2 && b2 > g2 * 1.1) return false;
-            
-            return true;
+    // ============================================================
+    // 美颜效果
+    // ============================================================
+    function applyBeautyEffect(pixels, w, h, mask, brightness, contrast, smooth, whitening) {
+        for (let y = 1; y < h - 1; y++) {
+            for (let x = 1; x < w - 1; x++) {
+                const i = (y * w + x) * 4;
+                if (mask[y * w + x] < 0.5) continue;
+                let r = pixels[i], g = pixels[i+1], b = pixels[i+2];
+                if (brightness !== 0) {
+                    const delta = brightness * 2.55;
+                    r = Math.max(0, Math.min(255, r + delta));
+                    g = Math.max(0, Math.min(255, g + delta));
+                    b = Math.max(0, Math.min(255, b + delta));
+                }
+                if (contrast !== 0) {
+                    const f = (259 * (contrast + 255)) / (255 * (259 - contrast));
+                    r = Math.max(0, Math.min(255, f * (r - 128) + 128));
+                    g = Math.max(0, Math.min(255, f * (g - 128) + 128));
+                    b = Math.max(0, Math.min(255, f * (b - 128) + 128));
+                }
+                if (smooth > 0) {
+                    const fac = smooth / 100 * 0.4;
+                    const avgR = (pixels[i-4] + pixels[i+4] + pixels[i-w*4] + pixels[i+w*4]) / 4;
+                    const avgG = (pixels[i-3] + pixels[i+5] + pixels[i-w*4+1] + pixels[i+w*4+1]) / 4;
+                    const avgB = (pixels[i-2] + pixels[i+6] + pixels[i-w*4+2] + pixels[i+w*4+2]) / 4;
+                    r = r * (1 - fac) + avgR * fac;
+                    g = g * (1 - fac) + avgG * fac;
+                    b = b * (1 - fac) + avgB * fac;
+                }
+                if (whitening > 0) {
+                    const gray = 0.299 * r + 0.587 * g + 0.114 * b;
+                    const f = whitening / 100 * 0.35;
+                    r = Math.max(0, Math.min(255, r + (255 - gray) * f));
+                    g = Math.max(0, Math.min(255, g + (255 - gray) * f * 0.8));
+                    b = Math.max(0, Math.min(255, b + (255 - gray) * f * 0.6));
+                }
+                pixels[i] = Math.round(r); pixels[i+1] = Math.round(g); pixels[i+2] = Math.round(b);
+            }
         }
+    }
 
-        function showStatus(msg, type) {
-            const bar = document.getElementById('statusBar');
-            bar.textContent = msg;
-            bar.className = 'status-bar ' + type;
-        }
+    // ============================================================
+    // 工具函数
+    // ============================================================
+    function hexToRgb(hex) {
+        const res = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return res ? { r: parseInt(res[1], 16), g: parseInt(res[2], 16), b: parseInt(res[3], 16) } : { r: 255, g: 255, b: 255 };
+    }
 
-        function downloadImage() {
-            if (!processedCanvas) return;
-            
-            // 创建带水印的画布
-            const tempCanvas = document.createElement('canvas');
-            tempCanvas.width = processedCanvas.width;
-            tempCanvas.height = processedCanvas.height;
-            const ctx = tempCanvas.getContext('2d');
-            ctx.drawImage(processedCanvas, 0, 0);
-            
-            // 添加水印
-            ctx.font = '16px Arial';
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-            ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
-            ctx.lineWidth = 1;
-            ctx.textAlign = 'right';
-            ctx.textBaseline = 'bottom';
-            ctx.strokeText('AI工具导航', tempCanvas.width - 10, tempCanvas.height - 10);
-            ctx.fillText('AI工具导航', tempCanvas.width - 10, tempCanvas.height - 10);
-            
-            const link = document.createElement('a');
-            link.download = '证件照_' + currentSize.width + 'x' + currentSize.height + '.png';
-            link.href = tempCanvas.toDataURL('image/png');
-            link.click();
-        }
+    function showStatus(msg, type) {
+        const bar = document.getElementById('statusBar');
+        bar.textContent = msg;
+        bar.className = 'status-bar ' + type;
+    }
 
-        function resetAll() {
-            originalImage = null;
-            processedCanvas = null;
-            document.getElementById('imageInput').value = '';
-            document.getElementById('fileInfo').style.display = 'none';
-            document.getElementById('canvasArea').innerHTML = `
-                <div class="preview-hint">
-                    <i class="fas fa-id-card" style="font-size: 3em; color: #ddd; margin-bottom: 15px; display: block;"></i>
-                    <p>上传照片后，AI自动识别主体并换底色</p>
-                    <p style="font-size: 0.8em; color: #bbb; margin-top: 5px;">支持各种背景颜色，智能识别人像</p>
-                </div>
-            `;
-            document.getElementById('processBtn').disabled = true;
-            document.getElementById('downloadBtn').disabled = true;
-            document.getElementById('statusBar').className = 'status-bar';
-        }
+    function showProgress(percent) {
+        const bar = document.getElementById('progressBar');
+        const fill = document.getElementById('progressFill');
+        bar.classList.add('active');
+        fill.style.width = percent + '%';
+    }
+
+    function downloadImage() {
+        if (!processedCanvas) return;
+        const link = document.createElement('a');
+        link.download = '证件照_' + currentSize.width + 'x' + currentSize.height + '.png';
+        link.href = processedCanvas.toDataURL('image/png');
+        link.click();
+    }
+
+    function resetAll() {
+        originalImage = null;
+        processedCanvas = null;
+        document.getElementById('imageInput').value = '';
+        document.getElementById('fileInfo').style.display = 'none';
+        document.getElementById('canvasArea').innerHTML = '<div class="preview-hint"><i class="fas fa-id-card" style="font-size:3em;color:#ddd;margin-bottom:15px;display:block;"></i><p>上传照片后，AI自动识别主体并换底色</p><p style="font-size:0.8em;color:#bbb;margin-top:5px;">支持各种背景颜色，智能识别人像</p></div>';
+        document.getElementById('processBtn').disabled = true;
+        document.getElementById('downloadBtn').disabled = true;
+        document.getElementById('statusBar').className = 'status-bar';
+        document.getElementById('progressBar').classList.remove('active');
+    }
+
+    // 初始化角标：显示等待上传状态
+    setBadge('待上传', false);
     </script>
 </body>
 </html>
