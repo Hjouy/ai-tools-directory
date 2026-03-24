@@ -150,4 +150,11 @@ chatgpt, midjourney, cursor, stable-diffusion, runway, suno, claude, notion-ai
 - **完善pdf-tools.html**：
   - PDF转PNG：使用PDF.js实现多页PDF逐页转换为PNG图片
   - PDF压缩：使用pdf-lib的useObjectStreams选项压缩，显示压缩前后大小对比
-- **检查结果**：background-remover/id-photo/gif-maker/image-compress/video-bg-remove/old-photo-restore/converter等功能均正常
+- **MediaPipe依赖升级**：统一升级到最新版本
+  - SelfieSegmentation@0.4.1646421024
+  - FaceMesh@0.4.1707981112
+  - CameraUtils@0.3.1675466380
+- **抠图算法修复**：
+  - 修复MediaPipe 0.4返回格式（从Float32Array改为ImageData提取alpha）
+  - 添加高斯模糊优化边缘
+  - 优化边缘羽化处理，提升头发丝等细节保留

@@ -284,9 +284,22 @@
                     tempCtx.drawImage(originalVideo, 0, 0, outWidth, outHeight);
                     if (frameCount % sampleInterval === 0 || !lastMask) {
                         if (segmenterReady && segmenter) {
-                            try { lastMask = await segmenter.segmentPeople(tempCanvas, { multiSegmentation: false }); }
-                            catch (e) { lastMask = await fallbackSegmentation(tempCtx, outWidth, outHeight); }
-                        } else { lastMask = await fallbackSegmentation(tempCtx, outWidth, outHeight); }
+                            try {
+                                const result = await segmenter.segment(tempCanvas, { selfieMode: false });
+                                if (result && result.data) {
+                                    lastMask = new Float32Array(outWidth * outHeight);
+                                    for (let i = 0; i < outWidth * outHeight; i++) {
+                                        lastMask[i] = result.data[i * 4 + 3] / 255;
+                                    }
+                                } else {
+                                    throw new Error('Invalid mask');
+                                }
+                            } catch (e) { 
+                                lastMask = await fallbackSegmentation(tempCtx, outWidth, outHeight); 
+                            }
+                        } else { 
+                            lastMask = await fallbackSegmentation(tempCtx, outWidth, outHeight); 
+                        }
                     }
                     applySegmentation(outputCtx = outputCanvas.getContext('2d'), tempCtx, lastMask, outWidth, outHeight, feathering, currentBg);
                     const progress = Math.round((frameCount / totalFrames) * 90) + 5;
@@ -303,11 +316,36 @@
             const imageData = ctx.getImageData(0, 0, w, h);
             const data = imageData.data;
             const edgeSamples = [];
-            const step = 10;
-            for (let y = 0; y < h; y += step) { for (let x = 0; x < w; x += step) { if (x < 30 || x > w - 30 || y < 30 || y > h - 30) { const i = (y * w + x) * 4; edgeSamples.push({ r: data[i], g: data[i + 1], b: data[i + 2] }); } } }
-            const bgColor = { r: Math.round(edgeSamples.reduce((s, c) => s + c.r, 0) / edgeSamples.length), g: Math.round(edgeSamples.reduce((s, c) => s + c.g, 0) / edgeSamples.length), b: Math.round(edgeSamples.reduce((s, c) => s + c.b, 0) / edgeSamples.length) };
+            const step = 5;
+            for (let y = 0; y < h; y += step) { 
+                for (let x = 0; x < w; x += step) { 
+                    if (x < 30 || x > w - 30 || y < 30 || y > h - 30) { 
+                        const i = (y * w + x) * 4; 
+                        edgeSamples.push({ r: data[i], g: data[i + 1], b: data[i + 2] }); 
+                    } 
+                } 
+            }
+            const bgColor = { 
+                r: Math.round(edgeSamples.reduce((s, c) => s + c.r, 0) / edgeSamples.length), 
+                g: Math.round(edgeSamples.reduce((s, c) => s + c.g, 0) / edgeSamples.length), 
+                b: Math.round(edgeSamples.reduce((s, c) => s + c.b, 0) / edgeSamples.length) 
+            };
             const mask = new Float32Array(w * h);
-            for (let y = 0; y < h; y++) { for (let x = 0; x < w; x++) { const i = y * w + x; const pixelIdx = i * 4; const diff = Math.sqrt(Math.pow(data[pixelIdx] - bgColor.r, 2) + Math.pow(data[pixelIdx + 1] - bgColor.g, 2) + Math.pow(data[pixelIdx + 2] - bgColor.b, 2)); const edgeDist = Math.min(x, y, w - 1 - x, h - 1 - y); const threshold = edgeDist < 30 ? 45 : 60; mask[i] = diff < threshold ? (1 - diff / threshold) : 1; } }
+            for (let y = 0; y < h; y++) { 
+                for (let x = 0; x < w; x++) { 
+                    const i = y * w + x; 
+                    const pixelIdx = i * 4; 
+                    const diff = Math.sqrt(Math.pow(data[pixelIdx] - bgColor.r, 2) + Math.pow(data[pixelIdx + 1] - bgColor.g, 2) + Math.pow(data[pixelIdx + 2] - bgColor.b, 2)); 
+                    const edgeDist = Math.min(x, y, w - 1 - x, h - 1 - y); 
+                    const threshold = 45 + edgeDist * 0.3;
+                    // 差异小=背景(mask低)，差异大=主体(mask高)
+                    if (diff < threshold) { 
+                        mask[i] = 1 - diff / threshold; 
+                    } else { 
+                        mask[i] = 1; 
+                    }
+                } 
+            }
             return mask;
         }
 
