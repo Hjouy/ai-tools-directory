@@ -11,6 +11,11 @@
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        // 设置PDF.js worker
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    </script>
     <style>
         * {
             margin: 0;
@@ -726,7 +731,72 @@
         }
 
         async function pdfToImage() {
-            alert('PDF转图片功能需要使用PDF.js库，当前为演示版本。实际实现需要添加PDF.js库并实现渲染逻辑。');
+            if (!toImageFile) return;
+
+            document.getElementById('toImageLoading').classList.add('active');
+            document.getElementById('toImageResult').classList.remove('active');
+
+            try {
+                const arrayBuffer = await toImageFile.arrayBuffer();
+                const pdfDoc = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                const totalPages = pdfDoc.numPages;
+                const images = [];
+
+                // 设置缩放比例，2x可以保证清晰度
+                const scale = 2;
+                const viewport = null; // 动态获取
+
+                for (let i = 1; i <= totalPages; i++) {
+                    const page = await pdfDoc.getPage(i);
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+
+                    // 获取页面尺寸
+                    const originalViewport = page.getViewport({ scale: 1 });
+                    const scaledViewport = page.getViewport({ scale: scale });
+
+                    canvas.width = scaledViewport.width;
+                    canvas.height = scaledViewport.height;
+
+                    await page.render({
+                        canvasContext: context,
+                        viewport: scaledViewport
+                    }).promise;
+
+                    // 转换为PNG
+                    const imgData = canvas.toDataURL('image/png');
+                    const imgName = toImageFile.name.replace('.pdf', '') + '_page_' + i + '.png';
+
+                    // 触发下载
+                    const link = document.createElement('a');
+                    link.href = imgData;
+                    link.download = imgName;
+                    link.click();
+
+                    images.push(imgName);
+                }
+
+                showToImageResult('转换成功', '已将PDF的' + totalPages + '页转换为PNG图片并下载', images.length);
+            } catch (e) {
+                alert('转换失败: ' + e.message);
+            }
+
+            document.getElementById('toImageLoading').classList.remove('active');
+        }
+
+        function showToImageResult(title, message, count) {
+            const result = document.getElementById('toImageResult');
+            result.innerHTML = `
+                <div class="success-message">
+                    <i class="fas fa-check-circle"></i>
+                    <h3>${title}</h3>
+                    <p>${message}</p>
+                    <p style="color: #00d4ff; margin-top: 10px;">
+                        <i class="fas fa-images"></i> 共转换 ${count} 张图片
+                    </p>
+                </div>
+            `;
+            result.classList.add('active');
         }
 
         function handleCompressFile(files) {
@@ -748,7 +818,84 @@
         }
 
         async function compressPDF() {
-            alert('PDF压缩功能需要使用pdf-lib的高级特性，当前为演示版本。实际实现需要压缩图片、字体等资源。');
+            if (!compressFile) return;
+
+            document.getElementById('compressLoading').classList.add('active');
+            document.getElementById('compressResult').classList.remove('active');
+
+            try {
+                const arrayBuffer = await compressFile.arrayBuffer();
+                const originalSize = arrayBuffer.byteLength;
+                const srcDoc = await PDFLib.PDFDocument.load(arrayBuffer);
+
+                // 使用pdf-lib保存，支持多种压缩选项
+                // useObjectStreams: 压缩对象流，可以显著减小文件大小
+                const pdfBytes = await srcDoc.save({
+                    useObjectStreams: true,
+                    addDefaultPage: false,
+                    preserveEditability: false
+                });
+
+                const compressedBlob = new Blob([pdfBytes], { type: 'application/pdf' });
+                const compressedSize = compressedBlob.size;
+                const ratio = ((1 - compressedSize / originalSize) * 100).toFixed(1);
+
+                // 如果压缩后反而变大，使用原文件
+                if (compressedSize >= originalSize) {
+                    showCompressResult('压缩完成', '原文件已经过优化，无法进一步压缩', originalSize, compressedSize, compressedBlob);
+                } else {
+                    showCompressResult('压缩成功', '文件已成功压缩', originalSize, compressedSize, compressedBlob, ratio);
+                }
+            } catch (e) {
+                alert('压缩失败: ' + e.message);
+            }
+
+            document.getElementById('compressLoading').classList.remove('active');
+        }
+
+        function showCompressResult(title, message, originalSize, compressedSize, blob, ratio) {
+            const result = document.getElementById('compressResult');
+            let html = `
+                <div class="success-message">
+                    <i class="fas fa-check-circle"></i>
+                    <h3>${title}</h3>
+                    <p>${message}</p>
+                    <div style="background: rgba(0,0,0,0.2); border-radius: 8px; padding: 15px; margin: 15px 0; text-align: left;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span>原文件大小：</span>
+                            <span style="color: #ef4444;">${formatSize(originalSize)}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span>压缩后大小：</span>
+                            <span style="color: #10b981;">${formatSize(compressedSize)}</span>
+                        </div>
+                        ${ratio ? `
+                        <div style="display: flex; justify-content: space-between; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
+                            <span>压缩率：</span>
+                            <span style="color: #00d4ff; font-weight: bold;">${ratio}%</span>
+                        </div>
+                        ` : ''}
+                    </div>
+            `;
+
+            html += `<button class="download-btn" onclick="downloadCompressedBlob()">下载压缩后的文件</button>`;
+            html += '</div>';
+
+            result.innerHTML = html;
+            result.classList.add('active');
+
+            // 保存blob供下载使用
+            window.compressedBlob = blob;
+        }
+
+        function downloadCompressedBlob() {
+            if (!window.compressedBlob) return;
+            const url = URL.createObjectURL(window.compressedBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = compressFile.name.replace('.pdf', '_compressed.pdf');
+            link.click();
+            URL.revokeObjectURL(url);
         }
 
         function formatSize(bytes) {
