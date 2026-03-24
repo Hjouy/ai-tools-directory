@@ -350,13 +350,78 @@
         }
 
         function applySegmentation(outputCtx, inputCtx, mask, w, h, feathering, bg) {
+            // 应用高斯模糊优化边缘
+            const smoothMask = applyGaussianBlur(mask, w, h);
+            
             const inputData = inputCtx.getImageData(0, 0, w, h);
             const data = inputData.data;
             if (bg !== 'transparent') { outputCtx.fillStyle = bg; outputCtx.fillRect(0, 0, w, h); }
-            for (let y = 0; y < h; y++) { for (let x = 0; x < w; x++) { const i = y * w + x; const pixelIdx = i * 4; const prob = mask[i] || 0; if (prob < 0.3) { continue; } else if (prob < 0.6) { const alpha = (prob - 0.3) / 0.3; data[pixelIdx + 3] = Math.round(alpha * 255); } } }
+            
+            // 边缘羽化阈值
+            const lowThreshold = 0.25;
+            const highThreshold = 0.75;
+            
+            for (let y = 0; y < h; y++) { 
+                for (let x = 0; x < w; x++) { 
+                    const i = y * w + x; 
+                    const pixelIdx = i * 4; 
+                    const prob = smoothMask[i] || 0; 
+                    
+                    if (prob < lowThreshold) {
+                        // 背景区域：透明或替换背景色
+                        data[pixelIdx + 3] = 0;
+                    } else if (prob < highThreshold) {
+                        // 边缘过渡区域
+                        const alpha = Math.round(((prob - lowThreshold) / (highThreshold - lowThreshold)) * 255);
+                        data[pixelIdx + 3] = alpha;
+                    } else {
+                        // 主体区域：完全不透明
+                        data[pixelIdx + 3] = 255;
+                    }
+                } 
+            }
             inputCtx.putImageData(inputData, 0, 0);
             if (bg === 'transparent') { outputCtx.clearRect(0, 0, w, h); }
             outputCtx.drawImage(inputCtx.canvas, 0, 0);
+        }
+        
+        // 高斯模糊优化边缘
+        function applyGaussianBlur(mask, w, h) {
+            const kernel = 2;
+            const sigma = 1.2;
+            const kernelSize = 2 * kernel + 1;
+            const gaussKernel = [];
+            let sum = 0;
+            
+            for (let i = -kernel; i <= kernel; i++) {
+                for (let j = -kernel; j <= kernel; j++) {
+                    const g = Math.exp(-(i * i + j * j) / (2 * sigma * sigma));
+                    gaussKernel.push(g);
+                    sum += g;
+                }
+            }
+            for (let i = 0; i < gaussKernel.length; i++) gaussKernel[i] /= sum;
+            
+            const result = new Float32Array(w * h);
+            for (let y = 0; y < h; y++) {
+                for (let x = 0; x < w; x++) {
+                    let val = 0;
+                    let weightSum = 0;
+                    for (let ky = -kernel; ky <= kernel; ky++) {
+                        for (let kx = -kernel; kx <= kernel; kx++) {
+                            const nx = x + kx, ny = y + ky;
+                            if (nx >= 0 && nx < w && ny >= 0 && ny < h) {
+                                const ki = (ky + kernel) * kernelSize + (kx + kernel);
+                                const weight = gaussKernel[ki];
+                                val += mask[ny * w + nx] * weight;
+                                weightSum += weight;
+                            }
+                        }
+                    }
+                    result[y * w + x] = val / weightSum;
+                }
+            }
+            return result;
         }
 
         function updateProgress(percent, text) { document.getElementById('progressFill').style.width = percent + '%'; document.getElementById('progressText').textContent = text; document.getElementById('processingText').textContent = text; }
