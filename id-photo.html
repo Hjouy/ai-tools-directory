@@ -566,54 +566,52 @@
                 // 解析目标底色
                 const targetColor = hexToRgb(currentBgColor);
                 
-                // ========== 专业证件照处理 ==========
-                // 第一步：创建纯净背景的 ImageData
-                const bgImageData = new ImageData(w, h);
-                const bgData = bgImageData.data;
-                for (let i = 0; i < w * h; i++) {
-                    bgData[i * 4] = targetColor.r;
-                    bgData[i * 4 + 1] = targetColor.g;
-                    bgData[i * 4 + 2] = targetColor.b;
-                    bgData[i * 4 + 3] = 255;
-                }
-                
-                // 第二步：获取原图数据
+                // ========== 专业证件照处理（优化版）==========
+                // 第一步：获取原图数据
                 const workCtx = workCanvas.getContext('2d');
                 const personImageData = workCtx.getImageData(0, 0, w, h);
                 const personData = personImageData.data;
                 
-                // 第三步：边缘羽化参数（专业级别）
+                // 第二步：创建背景 ImageData（单次循环同时完成填充和合成）
+                const bgImageData = new ImageData(w, h);
+                const bgData = bgImageData.data;
+                
+                // 边缘羽化参数
                 const featherStart = 0.2;
                 const featherEnd = 0.8;
                 
-                // 第四步：合成人物到背景上
-                for (let y = 0; y < h; y++) {
-                    for (let x = 0; x < w; x++) {
-                        const i = y * w + x;
-                        const pixelIdx = i * 4;
-                        const personProb = mask[i] || 0;
+                // 单次循环完成所有处理
+                for (let i = 0; i < w * h; i++) {
+                    const pixelIdx = i * 4;
+                    const personProb = mask[i] || 0;
+                    
+                    if (personProb < featherStart) {
+                        // 背景区域：纯净背景色
+                        bgData[pixelIdx] = targetColor.r;
+                        bgData[pixelIdx + 1] = targetColor.g;
+                        bgData[pixelIdx + 2] = targetColor.b;
+                    } else if (personProb < featherEnd) {
+                        // 边缘区域：smoothstep 羽化混合
+                        const t = (personProb - featherStart) / (featherEnd - featherStart);
+                        const smoothT = t * t * (3 - 2 * t);
                         
-                        if (personProb < featherStart) {
-                            // 背景区域：保持纯净背景色
-                        } else if (personProb < featherEnd) {
-                            // 边缘区域：smoothstep 羽化
-                            const t = (personProb - featherStart) / (featherEnd - featherStart);
-                            const smoothT = t * t * (3 - 2 * t); // smoothstep
-                            
-                            bgData[pixelIdx] = Math.round(personData[pixelIdx] * smoothT + targetColor.r * (1 - smoothT));
-                            bgData[pixelIdx + 1] = Math.round(personData[pixelIdx + 1] * smoothT + targetColor.g * (1 - smoothT));
-                            bgData[pixelIdx + 2] = Math.round(personData[pixelIdx + 2] * smoothT + targetColor.b * (1 - smoothT));
-                        } else {
-                            // 人物主体区域：保持原图
-                            bgData[pixelIdx] = personData[pixelIdx];
-                            bgData[pixelIdx + 1] = personData[pixelIdx + 1];
-                            bgData[pixelIdx + 2] = personData[pixelIdx + 2];
-                        }
+                        bgData[pixelIdx] = Math.round(personData[pixelIdx] * smoothT + targetColor.r * (1 - smoothT));
+                        bgData[pixelIdx + 1] = Math.round(personData[pixelIdx + 1] * smoothT + targetColor.g * (1 - smoothT));
+                        bgData[pixelIdx + 2] = Math.round(personData[pixelIdx + 2] * smoothT + targetColor.b * (1 - smoothT));
+                    } else {
+                        // 人物主体区域：保持原图
+                        bgData[pixelIdx] = personData[pixelIdx];
+                        bgData[pixelIdx + 1] = personData[pixelIdx + 1];
+                        bgData[pixelIdx + 2] = personData[pixelIdx + 2];
                     }
                 }
                 
-                // 第五步：对人物区域应用美颜效果
-                applyBeautyEffect(bgData, w, h, mask, brightness, contrast, smooth, whitening);
+                // 第三步：对人物主体区域应用美颜（只对 mask >= 0.8 的区域，避免边缘模糊）
+                const beautyMask = new Float32Array(w * h);
+                for (let i = 0; i < w * h; i++) {
+                    beautyMask[i] = mask[i] >= featherEnd ? 1 : 0; // 只对人像主体美颜
+                }
+                applyBeautyEffect(bgData, w, h, beautyMask, brightness, contrast, smooth, whitening);
                 
                 // 创建输出画布
                 const outputCanvas = document.createElement('canvas');
