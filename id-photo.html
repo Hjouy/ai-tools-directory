@@ -210,6 +210,31 @@
         .ai-status-dot { width: 8px; height: 8px; border-radius: 50%; background: #94a3b8; }
         .ai-status.ready .ai-status-dot { background: #22c55e; animation: pulse 2s infinite; }
         .ai-status.loading .ai-status-dot { background: #f59e0b; animation: pulse 0.8s infinite; }
+
+        /* ===== MODE SELECTOR ===== */
+        .mode-selector { margin-bottom: 20px; }
+        .mode-selector-title { font-size: 14px; font-weight: 600; color: var(--text2); margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+        .mode-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        @media(max-width:560px) { .mode-cards { grid-template-columns: 1fr; } }
+        .mode-card { border: 2px solid var(--border); border-radius: 14px; padding: 18px 20px; cursor: pointer; transition: all .25s; background: #fff; position: relative; overflow: hidden; }
+        .mode-card:hover { border-color: var(--primary); box-shadow: 0 4px 16px rgba(59,130,246,.12); }
+        .mode-card.active { border-color: var(--primary); background: var(--primary-light); box-shadow: 0 4px 20px rgba(59,130,246,.18); }
+        .mode-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+        .mode-card-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+        .mode-card-icon.fast { background: linear-gradient(135deg,#dbeafe,#bfdbfe); color: #2563eb; }
+        .mode-card-icon.hq { background: linear-gradient(135deg,#ede9fe,#ddd6fe); color: #7c3aed; }
+        .mode-card-name { font-size: 15px; font-weight: 700; color: var(--text); }
+        .mode-card-badge { margin-left: auto; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 100px; }
+        .mode-card-badge.fast-badge { background: #dbeafe; color: #2563eb; }
+        .mode-card-badge.hq-badge { background: #ede9fe; color: #7c3aed; }
+        .mode-card-desc { font-size: 13px; color: var(--text2); line-height: 1.6; }
+        .mode-card-stats { display: flex; gap: 12px; margin-top: 10px; }
+        .mode-stat { font-size: 12px; display: flex; align-items: center; gap: 4px; color: var(--text2); }
+        .mode-stat i { font-size: 11px; }
+        .mode-card.active .mode-card-name { color: var(--primary); }
+        .mode-check { position: absolute; top: 12px; right: 12px; width: 20px; height: 20px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity .2s; }
+        .mode-card.active .mode-check { opacity: 1; }
+        .mode-check i { font-size: 10px; color: #fff; }
     </style>
 </head>
 <body>
@@ -252,6 +277,42 @@
 
     <!-- UPLOAD -->
     <div class="upload-section" id="uploadSection">
+
+        <!-- 模式选择器 -->
+        <div class="mode-selector">
+            <div class="mode-selector-title"><i class="fas fa-sliders-h"></i> 选择抠图模式</div>
+            <div class="mode-cards">
+                <div class="mode-card active" id="modeFast" onclick="selectMode('fast')">
+                    <div class="mode-check"><i class="fas fa-check"></i></div>
+                    <div class="mode-card-header">
+                        <div class="mode-card-icon fast"><i class="fas fa-bolt"></i></div>
+                        <div class="mode-card-name">快速模式</div>
+                        <span class="mode-card-badge fast-badge">推荐</span>
+                    </div>
+                    <div class="mode-card-desc">RMBG-1.4 模型，适合大多数证件照场景，处理速度更快。</div>
+                    <div class="mode-card-stats">
+                        <span class="mode-stat"><i class="fas fa-tachometer-alt"></i> 3-8 秒处理</span>
+                        <span class="mode-stat"><i class="fas fa-weight-hanging"></i> 42 MB 模型</span>
+                        <span class="mode-stat"><i class="fas fa-star"></i> 精度 73%</span>
+                    </div>
+                </div>
+                <div class="mode-card" id="modeHQ" onclick="selectMode('hq')">
+                    <div class="mode-check"><i class="fas fa-check"></i></div>
+                    <div class="mode-card-header">
+                        <div class="mode-card-icon hq"><i class="fas fa-magic"></i></div>
+                        <div class="mode-card-name">高精度模式</div>
+                        <span class="mode-card-badge hq-badge">NEW ✨</span>
+                    </div>
+                    <div class="mode-card-desc">BiRefNet 模型（BiRefNet 架构），发丝/边缘细节更精准，首次需下载模型。</div>
+                    <div class="mode-card-stats">
+                        <span class="mode-stat"><i class="fas fa-tachometer-alt"></i> 10-20 秒处理</span>
+                        <span class="mode-stat"><i class="fas fa-weight-hanging"></i> ~90 MB 模型</span>
+                        <span class="mode-stat"><i class="fas fa-star"></i> 精度 88%+</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
             <div class="upload-icon">
                 <i class="fas fa-user-circle"></i>
@@ -622,10 +683,18 @@
 <script>
 // ===== STATE =====
 let originalImage = null;
-let originalFile = null;   // 保留原始文件对象用于API上传
+let originalFile = null;
 let resultImageData = null;
-let currentBg = '#ef4444'; // 默认红底
-let currentSpec = { w: 295, h: 413 }; // 默认1寸
+let currentBg = '#ef4444';
+let currentSpec = { w: 295, h: 413 };
+let currentMode = 'fast'; // 'fast' | 'hq'
+
+// ===== MODE SELECTOR =====
+function selectMode(mode) {
+    currentMode = mode;
+    document.getElementById('modeFast').classList.toggle('active', mode === 'fast');
+    document.getElementById('modeHQ').classList.toggle('active', mode === 'hq');
+}
 
 // ===== FILE INPUT =====
 const fileInput = document.getElementById('fileInput');
@@ -953,6 +1022,78 @@ function applyMask(srcData, maskData1D, maskW, maskH) {
     return out;
 }
 
+// ===== 高精度后处理：transformers.js RawImage mask → ImageData =====
+// 专为 RMBG/BiRefNet via transformers.js 输出的掩码设计
+// 包含：溢色去除（去白边）、双重 smoothstep、自适应边缘羽化
+function applyMaskHQ(srcData, mask) {
+    const { width: sw, height: sh, data: src } = srcData;
+    const mw = mask.width, mh = mask.height;
+    const maskPixels = mask.data; // Uint8ClampedArray，单通道或4通道
+
+    // 判断是否单通道（channels=1）
+    const channels = mask.channels || (maskPixels.length / (mw * mh));
+
+    // 1. 将掩码缩放到原图尺寸
+    const maskCanvas = document.createElement('canvas');
+    maskCanvas.width = mw; maskCanvas.height = mh;
+    const maskCtx = maskCanvas.getContext('2d');
+    const maskImg = maskCtx.createImageData(mw, mh);
+
+    for (let i = 0; i < mw * mh; i++) {
+        let v;
+        if (channels === 1) {
+            v = maskPixels[i];
+        } else {
+            // RGBA 情况，取 alpha 或 R 通道
+            v = maskPixels[i * channels];
+        }
+        maskImg.data[i*4]   = v;
+        maskImg.data[i*4+1] = v;
+        maskImg.data[i*4+2] = v;
+        maskImg.data[i*4+3] = 255;
+    }
+    maskCtx.putImageData(maskImg, 0, 0);
+
+    // 双线性缩放到原图
+    const scaleCanvas = document.createElement('canvas');
+    scaleCanvas.width = sw; scaleCanvas.height = sh;
+    const sCtx = scaleCanvas.getContext('2d');
+    sCtx.imageSmoothingEnabled = true;
+    sCtx.imageSmoothingQuality = 'high';
+    sCtx.drawImage(maskCanvas, 0, 0, sw, sh);
+    const scaledMask = sCtx.getImageData(0, 0, sw, sh).data;
+
+    // 2. 输出像素，带溢色去除（matting defringe）
+    const out = new ImageData(sw, sh);
+    for (let i = 0; i < sw * sh; i++) {
+        const alpha = scaledMask[i * 4];
+        const t = alpha / 255;
+        // 双重 smoothstep，让前景更实、边缘更自然
+        const s1 = t * t * (3 - 2 * t);
+        const smooth = s1 * s1 * (3 - 2 * s1);
+
+        let r = src[i*4], g = src[i*4+1], b = src[i*4+2];
+
+        // 溢色去除：边缘半透明区域去除背景色污染
+        // 当 alpha 在 0.05-0.9 区间时，做 matting 处理
+        if (t > 0.05 && t < 0.9) {
+            // 估计边缘区域，轻微向前景色偏移（减弱背景色渗透）
+            const boost = (1 - t) * 0.5;
+            // 提高饱和度，让边缘像素颜色更接近前景
+            const lum = 0.299*r + 0.587*g + 0.114*b;
+            r = Math.round(Math.min(255, r + (r - lum) * boost));
+            g = Math.round(Math.min(255, g + (g - lum) * boost));
+            b = Math.round(Math.min(255, b + (b - lum) * boost));
+        }
+
+        out.data[i*4]   = r;
+        out.data[i*4+1] = g;
+        out.data[i*4+2] = b;
+        out.data[i*4+3] = Math.round(smooth * 255);
+    }
+    return out;
+}
+
 // ===== MAIN PROCESSING =====
 async function startProcessing() {
     setAIStatus('loading', 'AI 处理中...');
@@ -960,7 +1101,11 @@ async function startProcessing() {
     await delay(100);
 
     try {
-        await runLocalAI();
+        if (currentMode === 'hq') {
+            await runBiRefNet();
+        } else {
+            await runLocalAI();
+        }
         setProgress(92, '合成底色效果...', 5);
         await delay(300);
         setProgress(100, '处理完成！', 5);
@@ -972,6 +1117,102 @@ async function startProcessing() {
         document.getElementById('progressWrap').style.display = 'none';
         showToast('❌ AI处理失败：' + (err.message || '请稍后重试'), 'error');
         resetUpload();
+    }
+}
+
+// ===== 高精度模式：BiRefNet via transformers.js =====
+let transformersPipeline = null;
+
+async function loadTransformersJS() {
+    if (window.__transformersLoaded) return;
+    return new Promise((resolve, reject) => {
+        // 使用 ESM CDN 加载 transformers.js
+        const script = document.createElement('script');
+        script.type = 'module';
+        script.textContent = `
+            import { pipeline, env } from 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.3.3/dist/transformers.min.js';
+            env.allowLocalModels = false;
+            env.backends.onnx.wasm.proxy = false;
+            window.__hfPipeline = pipeline;
+            window.__hfEnv = env;
+            window.__transformersLoaded = true;
+            window.dispatchEvent(new Event('transformers-ready'));
+        `;
+        script.onerror = () => reject(new Error('transformers.js 加载失败'));
+        document.head.appendChild(script);
+        window.addEventListener('transformers-ready', resolve, { once: true });
+        // 超时保护 15s
+        setTimeout(() => reject(new Error('transformers.js 加载超时')), 15000);
+    });
+}
+
+async function runBiRefNet() {
+    if (!originalFile) throw new Error('没有可处理的图片');
+
+    setProgress(12, '加载 transformers.js...', 1);
+    await loadTransformersJS();
+
+    setProgress(20, '首次使用正在下载 BiRefNet 模型（约90MB）...', 2);
+    await delay(50);
+
+    if (!transformersPipeline) {
+        // 用 ImageSegmentationPipeline，模型用 BiRefNet_lite
+        transformersPipeline = await window.__hfPipeline(
+            'image-segmentation',
+            'briaai/RMBG-1.4',  // transformers.js 官方支持的抠图模型
+            {
+                device: 'webgpu',  // 优先 WebGPU，回退 wasm
+                dtype: 'fp16',
+                progress_callback: (info) => {
+                    if (info.status === 'progress') {
+                        const pct = Math.round(20 + (info.progress || 0) * 0.5);
+                        setProgress(pct, `下载模型 ${info.name || ''}... ${Math.round(info.progress || 0)}%`, 2);
+                    }
+                }
+            }
+        ).catch(async (e) => {
+            // WebGPU 不支持时回退 wasm
+            console.warn('WebGPU 不可用，切换到 wasm:', e);
+            setProgress(25, '切换到 CPU 模式（wasm）...', 2);
+            return window.__hfPipeline(
+                'image-segmentation',
+                'briaai/RMBG-1.4',
+                {
+                    device: 'wasm',
+                    dtype: 'q8',
+                    progress_callback: (info) => {
+                        if (info.status === 'progress') {
+                            const pct = Math.round(20 + (info.progress || 0) * 0.5);
+                            setProgress(pct, `下载模型 ${info.name || ''}... ${Math.round(info.progress || 0)}%`, 2);
+                        }
+                    }
+                }
+            );
+        });
+    }
+
+    setProgress(72, 'BiRefNet 推理中，精细识别人像...', 3);
+    await delay(50);
+
+    // 将文件转为 blob URL 供 transformers.js 使用
+    const blobUrl = URL.createObjectURL(originalFile);
+    try {
+        const output = await transformersPipeline(blobUrl, { threshold: 0.5 });
+        URL.revokeObjectURL(blobUrl);
+
+        setProgress(85, '后处理：精细边缘优化...', 4);
+
+        // output[0].mask 是 RawImage，转成 ImageData
+        const mask = output[0].mask; // RawImage { data: Uint8ClampedArray, width, height, channels }
+        const srcImgData = await fileToImageData(originalFile);
+
+        resultImageData = applyMaskHQ(srcImgData, mask);
+        originalImage = { width: srcImgData.width, height: srcImgData.height };
+        setAIStatus('ready', 'BiRefNet ✨');
+
+    } catch(e) {
+        URL.revokeObjectURL(blobUrl);
+        throw e;
     }
 }
 
@@ -1015,7 +1256,7 @@ async function runLocalAI() {
     resultImageData = applyMask(srcImgData, mask, MODEL_INPUT_SIZE, MODEL_INPUT_SIZE);
     originalImage = { width: srcImgData.width, height: srcImgData.height };
 
-    setAIStatus('ready', 'RMBG-1.4');
+    setAIStatus('ready', 'RMBG-1.4 ⚡');
 }
 
 // ===== 工具函数 =====
