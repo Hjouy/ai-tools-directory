@@ -346,6 +346,80 @@
       .tutorials-grid { grid-template-columns: 1fr; }
       .footer-grid { grid-template-columns: 1fr 1fr; }
     }
+
+    /* ======== 搜索框 ======== */
+    .tutorial-search {
+      max-width: 520px; margin: 0 auto 32px; position: relative;
+    }
+    .tutorial-search input {
+      width: 100%; padding: 14px 50px 14px 20px;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 40px; color: var(--text); font-size: 0.95rem; outline: none;
+      transition: all 0.2s;
+    }
+    .tutorial-search input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99,102,241,0.12); }
+    .tutorial-search .search-icon { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none; }
+
+    /* ======== 进度追踪 ======== */
+    .progress-bar-wrap { position: relative; }
+    .progress-hint { font-size: 0.72rem; color: var(--text-muted); text-align: right; margin-bottom: 4px; }
+    .progress-bar { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); border-radius: 2px; transition: width 0.4s; }
+
+    .tutorial-card .done-overlay {
+      position: absolute; inset: 0; background: rgba(16,185,129,0.08);
+      border-radius: 16px; pointer-events: none;
+    }
+    .tutorial-card .done-badge {
+      position: absolute; top: 12px; right: 12px;
+      background: var(--success); color: white;
+      padding: 3px 10px; border-radius: 10px; font-size: 0.7rem; font-weight: 700;
+      z-index: 5;
+    }
+    .tutorial-card { position: relative; }
+    .complete-btn {
+      background: transparent; border: 1px solid var(--border); color: var(--text-muted);
+      padding: 6px 14px; border-radius: 6px; font-size: 0.78rem; cursor: pointer;
+      transition: all 0.2s; margin-top: 10px; width: 100%;
+    }
+    .complete-btn:hover { border-color: var(--success); color: var(--success); }
+    .complete-btn.done { background: rgba(16,185,129,0.1); border-color: var(--success); color: var(--success); }
+
+    /* ======== 学习路径 ======== */
+    .learning-path {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 24px; margin-bottom: 40px;
+    }
+    .path-title { font-size: 1rem; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .path-tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+    .path-tab { background: var(--bg); border: 1px solid var(--border); color: var(--text-muted); padding: 6px 16px; border-radius: 20px; cursor: pointer; font-size: 0.85rem; transition: all 0.2s; }
+    .path-tab:hover, .path-tab.active { background: rgba(99,102,241,0.15); border-color: var(--primary); color: #a5b4fc; }
+    .path-steps { display: flex; gap: 0; overflow-x: auto; padding-bottom: 8px; }
+    .path-step {
+      flex-shrink: 0; background: var(--bg); border: 1px solid var(--border);
+      border-radius: 10px; padding: 14px 16px; min-width: 160px; text-align: center;
+      position: relative; cursor: pointer; transition: all 0.2s;
+    }
+    .path-step:not(:last-child)::after {
+      content: '→'; position: absolute; right: -16px; top: 50%; transform: translateY(-50%);
+      color: var(--text-muted); font-size: 1rem; z-index: 1;
+    }
+    .path-step:not(:last-child) { margin-right: 20px; }
+    .path-step:hover { border-color: var(--primary); transform: translateY(-2px); }
+    .path-step.completed { border-color: var(--success); background: rgba(16,185,129,0.06); }
+    .path-step-icon { font-size: 1.8rem; margin-bottom: 6px; display: block; }
+    .path-step-name { font-size: 0.8rem; font-weight: 600; }
+    .path-step-time { font-size: 0.7rem; color: var(--text-muted); }
+    .path-step-done { width: 16px; height: 16px; border-radius: 50%; background: var(--success); color: white; font-size: 0.6rem; display: inline-flex; align-items: center; justify-content: center; position: absolute; top: 6px; right: 6px; }
+
+    /* ======== 统计摘要 ======== */
+    .stats-bar {
+      display: flex; gap: 20px; background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px 24px; margin-bottom: 24px; flex-wrap: wrap;
+    }
+    .stats-bar-item { text-align: center; }
+    .stats-bar-num { font-size: 1.4rem; font-weight: 700; color: var(--primary); }
+    .stats-bar-lab { font-size: 0.72rem; color: var(--text-muted); }
   </style>
 </head>
 <body>
@@ -376,21 +450,54 @@
 <!-- 主内容 -->
 <main class="main-content">
 
+  <!-- 学习进度统计 -->
+  <div class="stats-bar" id="statsBar">
+    <div class="stats-bar-item">
+      <div class="stats-bar-num" id="totalCount">8</div>
+      <div class="stats-bar-lab">教程总数</div>
+    </div>
+    <div class="stats-bar-item">
+      <div class="stats-bar-num" id="doneCount" style="color:var(--success);">0</div>
+      <div class="stats-bar-lab">已学完</div>
+    </div>
+    <div class="stats-bar-item" style="flex:1;">
+      <div class="progress-hint"><span id="progressPct">0</span>% 完成</div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    </div>
+  </div>
+
+  <!-- 学习路径 -->
+  <div class="learning-path">
+    <div class="path-title">🗺️ 推荐学习路径</div>
+    <div class="path-tabs">
+      <button class="path-tab active" onclick="switchPath('beginner',this)">🌱 AI绘画入门</button>
+      <button class="path-tab" onclick="switchPath('writing',this)">✍️ AI写作进阶</button>
+      <button class="path-tab" onclick="switchPath('coding',this)">💻 AI编程实战</button>
+    </div>
+    <div id="pathSteps" class="path-steps"></div>
+  </div>
+
+  <!-- 搜索框 -->
+  <div class="tutorial-search">
+    <input type="text" id="tutorialSearch" placeholder="搜索教程，如：Midjourney、Prompt、部署..." oninput="searchTutorials()">
+    <span class="search-icon">🔍</span>
+  </div>
+
   <!-- 分类筛选 -->
   <div class="filter-bar" role="tablist">
-    <button class="filter-btn active" onclick="filterTutorials('all')">全部教程</button>
-    <button class="filter-btn" onclick="filterTutorials('painting')">AI绘画</button>
-    <button class="filter-btn" onclick="filterTutorials('writing')">AI写作</button>
-    <button class="filter-btn" onclick="filterTutorials('code')">AI编程</button>
-    <button class="filter-btn" onclick="filterTutorials('video')">AI视频</button>
-    <button class="filter-btn" onclick="filterTutorials('music')">AI音乐</button>
+    <button class="filter-btn active" onclick="filterTutorials('all',this)">全部教程</button>
+    <button class="filter-btn" onclick="filterTutorials('painting',this)">AI绘画</button>
+    <button class="filter-btn" onclick="filterTutorials('writing',this)">AI写作</button>
+    <button class="filter-btn" onclick="filterTutorials('code',this)">AI编程</button>
+    <button class="filter-btn" onclick="filterTutorials('video',this)">AI视频</button>
+    <button class="filter-btn" onclick="filterTutorials('music',this)">AI音乐</button>
   </div>
 
   <!-- 教程网格 -->
   <div class="tutorials-grid" id="tutorialsGrid">
 
     <!-- Midjourney 教程 -->
-    <article class="tutorial-card" data-category="painting" itemscope itemtype="https://schema.org/HowTo">
+    <article class="tutorial-card" data-id="mj-guide" data-category="painting" itemscope itemtype="https://schema.org/HowTo">
       <div class="tutorial-cover">
         <span class="tutorial-badge">热门</span>
         <span style="z-index:1;">🎨</span>
@@ -400,16 +507,16 @@
         <p class="tutorial-desc" itemprop="description">全面解析 Midjourney 的使用方法，包括账号注册、基础命令、Prompt编写技巧、参数设置、图像优化等。包含20+实战案例，让你快速掌握AI绘画技能。</p>
         <div class="tutorial-meta">
           <div class="tutorial-tags">
-            <span class="tag">AI绘画</span>
-            <span class="tag">入门</span>
+            <span class="tag">AI绘画</span><span class="tag">入门</span>
           </div>
-          <div class="tutorial-time" itemprop="totalTime" content="PT30M">⏱️ 30分钟</div>
+          <div class="tutorial-time">⏱️ 30分钟</div>
         </div>
+        <button class="complete-btn" onclick="toggleDone('mj-guide',this)">✓ 标记为已学完</button>
       </div>
     </article>
 
     <!-- ChatGPT 教程 -->
-    <article class="tutorial-card" data-category="writing" itemscope itemtype="https://schema.org/HowTo">
+    <article class="tutorial-card" data-id="chatgpt-tips" data-category="writing" itemscope itemtype="https://schema.org/HowTo">
       <div class="tutorial-cover">
         <span class="tutorial-badge">精选</span>
         <span style="z-index:1;">💬</span>
@@ -419,16 +526,16 @@
         <p class="tutorial-desc" itemprop="description">掌握 ChatGPT 的高级用法，包括角色扮演、链式提示、思维链推理、代码生成优化等技巧。让AI输出更精准、更符合你的需求。</p>
         <div class="tutorial-meta">
           <div class="tutorial-tags">
-            <span class="tag">AI写作</span>
-            <span class="tag">进阶</span>
+            <span class="tag">AI写作</span><span class="tag">进阶</span>
           </div>
-          <div class="tutorial-time" itemprop="totalTime" content="PT20M">⏱️ 20分钟</div>
+          <div class="tutorial-time">⏱️ 20分钟</div>
         </div>
+        <button class="complete-btn" onclick="toggleDone('chatgpt-tips',this)">✓ 标记为已学完</button>
       </div>
     </article>
 
     <!-- Stable Diffusion 教程 -->
-    <article class="tutorial-card" data-category="painting" itemscope itemtype="https://schema.org/HowTo">
+    <article class="tutorial-card" data-id="sd-deploy" data-category="painting" itemscope itemtype="https://schema.org/HowTo">
       <div class="tutorial-cover">
         <span class="tutorial-badge">详细</span>
         <span style="z-index:1;">🖼️</span>
@@ -438,16 +545,16 @@
         <p class="tutorial-desc" itemprop="description">手把手教你本地部署 Stable Diffusion，包括环境配置、模型下载、WebUI安装、插件使用、参数调优。完全免费，无限使用。</p>
         <div class="tutorial-meta">
           <div class="tutorial-tags">
-            <span class="tag">AI绘画</span>
-            <span class="tag">部署</span>
+            <span class="tag">AI绘画</span><span class="tag">部署</span>
           </div>
-          <div class="tutorial-time" itemprop="totalTime" content="PT45M">⏱️ 45分钟</div>
+          <div class="tutorial-time">⏱️ 45分钟</div>
         </div>
+        <button class="complete-btn" onclick="toggleDone('sd-deploy',this)">✓ 标记为已学完</button>
       </div>
     </article>
 
     <!-- Cursor 教程 -->
-    <article class="tutorial-card" data-category="code" itemscope itemtype="https://schema.org/HowTo">
+    <article class="tutorial-card" data-id="cursor-intro" data-category="code" itemscope itemtype="https://schema.org/HowTo">
       <div class="tutorial-cover">
         <span class="tutorial-badge">新</span>
         <span style="z-index:1;">⚡</span>
@@ -457,16 +564,16 @@
         <p class="tutorial-desc" itemprop="description">学习 Cursor 的核心功能，包括代码补全、代码解释、一键重构、Agent模式等。让AI成为你的编程助手，大幅提升开发效率。</p>
         <div class="tutorial-meta">
           <div class="tutorial-tags">
-            <span class="tag">AI编程</span>
-            <span class="tag">入门</span>
+            <span class="tag">AI编程</span><span class="tag">入门</span>
           </div>
-          <div class="tutorial-time" itemprop="totalTime" content="PT25M">⏱️ 25分钟</div>
+          <div class="tutorial-time">⏱️ 25分钟</div>
         </div>
+        <button class="complete-btn" onclick="toggleDone('cursor-intro',this)">✓ 标记为已学完</button>
       </div>
     </article>
 
     <!-- Runway 教程 -->
-    <article class="tutorial-card" data-category="video" itemscope itemtype="https://schema.org/HowTo">
+    <article class="tutorial-card" data-id="runway-guide" data-category="video" itemscope itemtype="https://schema.org/HowTo">
       <div class="tutorial-cover">
         <span style="z-index:1;">🎬</span>
       </div>
@@ -475,16 +582,16 @@
         <p class="tutorial-desc" itemprop="description">掌握 Runway 的视频生成功能，包括文字生视频、视频风格化、背景移除、AI字幕等。快速制作专业级视频内容。</p>
         <div class="tutorial-meta">
           <div class="tutorial-tags">
-            <span class="tag">AI视频</span>
-            <span class="tag">入门</span>
+            <span class="tag">AI视频</span><span class="tag">入门</span>
           </div>
-          <div class="tutorial-time" itemprop="totalTime" content="PT20M">⏱️ 20分钟</div>
+          <div class="tutorial-time">⏱️ 20分钟</div>
         </div>
+        <button class="complete-btn" onclick="toggleDone('runway-guide',this)">✓ 标记为已学完</button>
       </div>
     </article>
 
     <!-- Suno 教程 -->
-    <article class="tutorial-card" data-category="music" itemscope itemtype="https://schema.org/HowTo">
+    <article class="tutorial-card" data-id="suno-music" data-category="music" itemscope itemtype="https://schema.org/HowTo">
       <div class="tutorial-cover">
         <span class="tutorial-badge">热门</span>
         <span style="z-index:1;">🎵</span>
@@ -494,16 +601,16 @@
         <p class="tutorial-desc" itemprop="description">用 Suno 生成专业级音乐，包括歌词创作、曲风选择、人声调整、混音优化。0基础也能创作出惊艳的音乐作品。</p>
         <div class="tutorial-meta">
           <div class="tutorial-tags">
-            <span class="tag">AI音乐</span>
-            <span class="tag">创作</span>
+            <span class="tag">AI音乐</span><span class="tag">创作</span>
           </div>
-          <div class="tutorial-time" itemprop="totalTime" content="PT15M">⏱️ 15分钟</div>
+          <div class="tutorial-time">⏱️ 15分钟</div>
         </div>
+        <button class="complete-btn" onclick="toggleDone('suno-music',this)">✓ 标记为已学完</button>
       </div>
     </article>
 
     <!-- Claude 教程 -->
-    <article class="tutorial-card" data-category="writing" itemscope itemtype="https://schema.org/HowTo">
+    <article class="tutorial-card" data-id="claude-tips" data-category="writing" itemscope itemtype="https://schema.org/HowTo">
       <div class="tutorial-cover">
         <span style="z-index:1;">🧠</span>
       </div>
@@ -512,34 +619,16 @@
         <p class="tutorial-desc" itemprop="description">利用 Claude 200K的上下文窗口，处理大型文档、研究报告、小说创作。学会如何高效地与AI协作完成长文本项目。</p>
         <div class="tutorial-meta">
           <div class="tutorial-tags">
-            <span class="tag">AI写作</span>
-            <span class="tag">进阶</span>
+            <span class="tag">AI写作</span><span class="tag">进阶</span>
           </div>
-          <div class="tutorial-time" itemprop="totalTime" content="PT20M">⏱️ 20分钟</div>
+          <div class="tutorial-time">⏱️ 20分钟</div>
         </div>
+        <button class="complete-btn" onclick="toggleDone('claude-tips',this)">✓ 标记为已学完</button>
       </div>
     </article>
 
-    <!-- GitHub Copilot 教程 -->
-    <article class="tutorial-card" data-category="code" itemscope itemtype="https://schema.org/HowTo">
-      <div class="tutorial-cover">
-        <span style="z-index:1;">🐙</span>
-      </div>
-      <div class="tutorial-content">
-        <h3 class="tutorial-title" itemprop="name">GitHub Copilot 高效编程实战</h3>
-        <p class="tutorial-desc" itemprop="description">将 GitHub Copilot 集成到你的开发工作流，包括 VS Code 配置、快捷键使用、代码生成优化、多语言支持等。</p>
-        <div class="tutorial-meta">
-          <div class="tutorial-tags">
-            <span class="tag">AI编程</span>
-            <span class="tag">实战</span>
-          </div>
-          <div class="tutorial-time" itemprop="totalTime" content="PT18M">⏱️ 18分钟</div>
-        </div>
-      </div>
-    </article>
-
-    <!-- Prompt Engineering 教程 -->
-    <article class="tutorial-card" data-category="writing" itemscope itemtype="https://schema.org/HowTo">
+    <!-- Prompt Engineering -->
+    <article class="tutorial-card" data-id="prompt-eng" data-category="writing" itemscope itemtype="https://schema.org/HowTo">
       <div class="tutorial-cover">
         <span class="tutorial-badge">必看</span>
         <span style="z-index:1;">✨</span>
@@ -549,11 +638,11 @@
         <p class="tutorial-desc" itemprop="description">掌握提示词工程的艺术，学习结构化提示、思维链推理、少样本学习等高级技巧。让AI输出质量提升10倍。</p>
         <div class="tutorial-meta">
           <div class="tutorial-tags">
-            <span class="tag">AI写作</span>
-            <span class="tag">核心</span>
+            <span class="tag">AI写作</span><span class="tag">核心</span>
           </div>
-          <div class="tutorial-time" itemprop="totalTime" content="PT35M">⏱️ 35分钟</div>
+          <div class="tutorial-time">⏱️ 35分钟</div>
         </div>
+        <button class="complete-btn" onclick="toggleDone('prompt-eng',this)">✓ 标记为已学完</button>
       </div>
     </article>
 
@@ -608,21 +697,150 @@
 </footer>
 
 <script>
-  function filterTutorials(category) {
+  // ============ 进度追踪 ============
+  function getDone() { return JSON.parse(localStorage.getItem('doneTutorials') || '[]'); }
+  function saveDone(arr) { localStorage.setItem('doneTutorials', JSON.stringify(arr)); }
+
+  function toggleDone(id, btn) {
+    const done = getDone();
+    const idx = done.indexOf(id);
+    if (idx === -1) {
+      done.push(id);
+      btn.classList.add('done');
+      btn.textContent = '✓ 已学完';
+    } else {
+      done.splice(idx, 1);
+      btn.classList.remove('done');
+      btn.textContent = '✓ 标记为已学完';
+    }
+    saveDone(done);
+    updateCard(id);
+    updateProgress();
+    updatePathSteps();
+  }
+
+  function updateCard(id) {
+    const card = document.querySelector(`[data-id="${id}"]`);
+    if (!card) return;
+    const done = getDone();
+    const isDone = done.includes(id);
+    let overlay = card.querySelector('.done-overlay');
+    let badge = card.querySelector('.done-badge');
+    if (isDone) {
+      if (!overlay) { overlay = document.createElement('div'); overlay.className = 'done-overlay'; card.appendChild(overlay); }
+      if (!badge) { badge = document.createElement('div'); badge.className = 'done-badge'; badge.textContent = '✓ 已学完'; card.appendChild(badge); }
+    } else {
+      if (overlay) overlay.remove();
+      if (badge) badge.remove();
+    }
+  }
+
+  function updateProgress() {
+    const cards = document.querySelectorAll('.tutorial-card[data-id]');
+    const total = cards.length;
+    const done = getDone();
+    const doneCount = done.length;
+    const pct = total > 0 ? Math.round(doneCount / total * 100) : 0;
+    document.getElementById('doneCount').textContent = doneCount;
+    document.getElementById('progressPct').textContent = pct;
+    document.getElementById('progressFill').style.width = pct + '%';
+  }
+
+  function initDoneState() {
+    const done = getDone();
+    done.forEach(id => {
+      updateCard(id);
+      const btn = document.querySelector(`[data-id="${id}"] .complete-btn`);
+      if (btn) { btn.classList.add('done'); btn.textContent = '✓ 已学完'; }
+    });
+    updateProgress();
+  }
+
+  // ============ 分类筛选 ============
+  function filterTutorials(category, btn) {
     const cards = document.querySelectorAll('.tutorial-card');
-    const buttons = document.querySelectorAll('.filter-btn');
-
-    buttons.forEach(btn => btn.classList.remove('active'));
-    event.target.classList.add('active');
-
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    const q = document.getElementById('tutorialSearch').value.toLowerCase();
     cards.forEach(card => {
-      if (category === 'all' || card.dataset.category === category) {
-        card.style.display = 'flex';
-      } else {
-        card.style.display = 'none';
-      }
+      const catMatch = category === 'all' || card.dataset.category === category;
+      const textMatch = !q || card.textContent.toLowerCase().includes(q);
+      card.style.display = catMatch && textMatch ? 'flex' : 'none';
     });
   }
+
+  // ============ 搜索 ============
+  function searchTutorials() {
+    const q = document.getElementById('tutorialSearch').value.toLowerCase();
+    const cards = document.querySelectorAll('.tutorial-card');
+    const activeFilter = document.querySelector('.filter-btn.active');
+    const cat = activeFilter ? (activeFilter.onclick?.toString().match(/'([^']+)'/) || ['','all'])[1] : 'all';
+    cards.forEach(card => {
+      const catMatch = cat === 'all' || card.dataset.category === cat;
+      const textMatch = !q || card.textContent.toLowerCase().includes(q);
+      card.style.display = catMatch && textMatch ? 'flex' : 'none';
+    });
+  }
+
+  // ============ 学习路径 ============
+  const PATHS = {
+    beginner: [
+      { id: 'mj-guide', icon: '🎨', name: 'Midjourney入门', time: '30分钟' },
+      { id: 'sd-deploy', icon: '🖼️', name: 'SD本地部署', time: '45分钟' },
+      { id: 'prompt-eng', icon: '✨', name: 'Prompt技巧', time: '35分钟' },
+    ],
+    writing: [
+      { id: 'prompt-eng', icon: '✨', name: 'Prompt入门', time: '35分钟' },
+      { id: 'chatgpt-tips', icon: '💬', name: 'ChatGPT进阶', time: '20分钟' },
+      { id: 'claude-tips', icon: '🧠', name: 'Claude长文本', time: '20分钟' },
+    ],
+    coding: [
+      { id: 'cursor-intro', icon: '⚡', name: 'Cursor入门', time: '25分钟' },
+      { id: 'chatgpt-tips', icon: '💬', name: 'ChatGPT辅助', time: '20分钟' },
+      { id: 'prompt-eng', icon: '✨', name: '提示词优化', time: '35分钟' },
+    ],
+  };
+
+  function switchPath(key, btn) {
+    document.querySelectorAll('.path-tab').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    renderPath(key);
+  }
+
+  function renderPath(key) {
+    const steps = PATHS[key] || [];
+    const done = getDone();
+    const container = document.getElementById('pathSteps');
+    container.innerHTML = steps.map(step => {
+      const isDone = done.includes(step.id);
+      return `
+        <div class="path-step ${isDone ? 'completed' : ''}" onclick="scrollToTutorial('${step.id}')">
+          ${isDone ? '<div class="path-step-done">✓</div>' : ''}
+          <span class="path-step-icon">${step.icon}</span>
+          <div class="path-step-name">${step.name}</div>
+          <div class="path-step-time">⏱️ ${step.time}</div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function updatePathSteps() {
+    const activeTab = document.querySelector('.path-tab.active');
+    const key = activeTab ? (activeTab.getAttribute('onclick').match(/'([^']+)'/) || ['','beginner'])[1] : 'beginner';
+    renderPath(key);
+  }
+
+  function scrollToTutorial(id) {
+    const card = document.querySelector(`[data-id="${id}"]`);
+    if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  // ============ 初始化 ============
+  document.addEventListener('DOMContentLoaded', () => {
+    initDoneState();
+    renderPath('beginner');
+    document.getElementById('totalCount').textContent = document.querySelectorAll('.tutorial-card[data-id]').length;
+  });
 </script>
 
 <!-- ==================== 统计代码 ==================== -->

@@ -3,1142 +3,771 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI工具对比 - ChatGPT vs Claude vs Midjourney vs Stable Diffusion 全面评测</title>
-  <meta name="description" content="详细对比 ChatGPT vs Claude、Midjourney vs Stable Diffusion、Cursor vs GitHub Copilot 等热门AI工具，帮你选择最适合的AI助手。">
+  <title>AI工具对比 - 自由选择任意工具横向对比 | AI工具导航</title>
+  <meta name="description" content="自由选择2-3个AI工具进行全面横向对比，包括评分、用户量、定价、核心功能、适用场景等维度，帮你快速选出最适合的AI工具。">
   <meta name="keywords" content="AI工具对比,ChatGPT vs Claude,Midjourney vs Stable Diffusion,Cursor vs GitHub Copilot,AI工具评测">
   <meta name="author" content="AI工具导航">
   <meta name="robots" content="index, follow">
-  <!-- Open Graph -->
-  <meta property="og:title" content="AI工具对比 - 全面对比评测">
-  <meta property="og:description" content="详细对比热门AI工具，帮你选择最适合的AI助手">
+  <meta property="og:title" content="AI工具对比 - 自由横向对比">
+  <meta property="og:description" content="自由选择AI工具进行全面横向对比，一键找到最适合你的AI助手。">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://hjouy.github.io/ai-tools-directory/compare.html">
   <meta property="og:site_name" content="AI工具导航">
-  <meta property="og:locale" content="zh_CN">
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="AI工具对比 - 全面对比评测">
-  <meta name="twitter:description" content="详细对比热门AI工具，帮你选择最适合的AI助手">
-  <!-- Canonical -->
   <link rel="canonical" href="https://hjouy.github.io/ai-tools-directory/compare.html">
-
-  <!-- 性能优化：DNS 预加载 -->
   <link rel="dns-prefetch" href="//github.com">
+  <script src="data.js"></script>
   <style>
     :root {
-      --primary: #6366f1;
-      --primary-dark: #4f46e5;
-      --secondary: #a855f7;
-      --accent: #06b6d4;
-      --bg: #0f0f1a;
-      --bg-card: #1a1a2e;
-      --bg-card2: #16213e;
-      --text: #e2e8f0;
-      --text-muted: #94a3b8;
-      --border: #2d2d4e;
-      --success: #10b981;
-      --warning: #f59e0b;
-      --danger: #ef4444;
+      --primary: #6366f1; --primary-dark: #4f46e5; --secondary: #a855f7;
+      --accent: #06b6d4; --bg: #0f0f1a; --bg-card: #1a1a2e; --bg-card2: #16213e;
+      --text: #e2e8f0; --text-muted: #94a3b8; --border: #2d2d4e;
+      --success: #10b981; --warning: #f59e0b; --danger: #ef4444;
     }
-
     * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-    }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
 
     /* 导航栏 */
-    .navbar {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(15,15,26,0.95);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-      padding: 0 24px;
-      height: 60px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
+    .navbar { position: sticky; top: 0; z-index: 100; background: rgba(15,15,26,.95); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 0 24px; height: 60px; display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { font-size: 1.3rem; font-weight: 700; background: linear-gradient(135deg, #6366f1, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-decoration: none; }
+    .nav-links { display: flex; align-items: center; gap: 8px; list-style: none; }
+    .nav-links a { color: var(--text-muted); text-decoration: none; padding: 6px 12px; border-radius: 6px; font-size: .9rem; transition: all .2s; }
+    .nav-links a:hover, .nav-links a.active { color: var(--text); background: var(--border); }
+    .nav-btn { background: linear-gradient(135deg, #6366f1, #a855f7) !important; color: white !important; border-radius: 20px !important; font-weight: 500; }
 
-    .nav-logo {
-      font-size: 1.3rem;
-      font-weight: 700;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      text-decoration: none;
-    }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      list-style: none;
-    }
-
-    .nav-links a {
-      color: var(--text-muted);
-      text-decoration: none;
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-size: 0.9rem;
-      transition: all 0.2s;
-    }
-
-    .nav-links a:hover, .nav-links a.active {
-      color: var(--text);
-      background: var(--border);
-    }
-
-    /* 面包屑导航 */
-    .breadcrumb {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 16px 24px;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-
-    .breadcrumb a {
-      color: var(--text-muted);
-      text-decoration: none;
-      transition: color 0.2s;
-    }
-
+    /* 面包屑 */
+    .breadcrumb { max-width: 1200px; margin: 0 auto; padding: 16px 24px; font-size: .85rem; color: var(--text-muted); }
+    .breadcrumb a { color: var(--text-muted); text-decoration: none; }
     .breadcrumb a:hover { color: var(--primary); }
     .breadcrumb span { margin: 0 8px; }
 
     /* 主内容 */
-    .main-content {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 24px 60px;
-    }
+    .main-content { max-width: 1200px; margin: 0 auto; padding: 0 24px 80px; }
 
-    .page-header {
-      text-align: center;
-      padding: 40px 24px 32px;
-    }
+    /* 页面标题 */
+    .page-header { text-align: center; padding: 32px 0 40px; }
+    .page-header h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 800; margin-bottom: 12px; }
+    .page-header h1 span { background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .page-header p { color: var(--text-muted); font-size: 1rem; max-width: 600px; margin: 0 auto; }
 
-    .page-header h1 {
-      font-size: clamp(1.8rem, 4vw, 2.8rem);
-      font-weight: 800;
-      margin-bottom: 16px;
-      line-height: 1.3;
-    }
-
-    .page-header h1 span {
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .page-header p {
-      font-size: 1.1rem;
-      color: var(--text-muted);
-      max-width: 700px;
-      margin: 0 auto;
-    }
-
-    /* 快速导航 */
-    .quick-nav {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 40px;
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    .quick-nav a {
-      background: var(--border);
-      color: var(--text);
-      padding: 8px 20px;
-      border-radius: 20px;
-      text-decoration: none;
-      font-size: 0.9rem;
-      transition: all 0.2s;
-    }
-
-    .quick-nav a:hover {
-      background: var(--primary);
-      transform: translateY(-2px);
-    }
-
-    /* 对比卡片 */
-    .compare-section {
-      margin-bottom: 60px;
-    }
-
-    .compare-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 24px;
-    }
-
-    .compare-header h2 {
-      font-size: 1.5rem;
-      font-weight: 700;
-    }
-
-    .compare-badge {
-      background: rgba(99,102,241,0.15);
-      border: 1px solid rgba(99,102,241,0.3);
-      color: #a5b4fc;
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      font-weight: 600;
-    }
-
-    .vs-table {
+    /* 工具选择器 */
+    .selector-section {
       background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: 16px;
-      overflow: hidden;
-    }
-
-    .vs-table-header {
-      display: grid;
-      grid-template-columns: 2fr 1fr 1fr;
-      background: var(--bg-card2);
-      padding: 16px 20px;
-      border-bottom: 1px solid var(--border);
-      font-weight: 600;
-      font-size: 0.95rem;
-    }
-
-    .vs-header-left {
-      color: var(--text-muted);
-    }
-
-    .vs-header-tool {
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .vs-tool-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-    }
-
-    .vs-tool-name {
-      font-weight: 700;
-      font-size: 1.1rem;
-    }
-
-    .vs-tool-tag {
-      background: rgba(16,185,129,0.15);
-      color: #34d399;
-      padding: 2px 10px;
-      border-radius: 10px;
-      font-size: 0.75rem;
-      font-weight: 600;
-    }
-
-    .vs-table-row {
-      display: grid;
-      grid-template-columns: 2fr 1fr 1fr;
-      padding: 16px 20px;
-      border-bottom: 1px solid var(--border);
-      align-items: center;
-    }
-
-    .vs-table-row:last-child {
-      border-bottom: none;
-    }
-
-    .vs-table-row:nth-child(even) {
-      background: rgba(255,255,255,0.02);
-    }
-
-    .vs-row-label {
-      color: var(--text-muted);
-      font-weight: 500;
-    }
-
-    .vs-row-value {
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .vs-rating {
-      color: var(--warning);
-      font-weight: 600;
-    }
-
-    .vs-price {
-      font-weight: 600;
-      font-size: 0.95rem;
-    }
-
-    .price-free { color: var(--success); }
-    .price-paid { color: var(--warning); }
-
-    .vs-users {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-
-    .vs-check {
-      color: var(--success);
-      font-weight: 600;
-    }
-
-    .vs-cross {
-      color: var(--text-muted);
-    }
-
-    .vs-partial {
-      color: var(--warning);
-      font-weight: 600;
-    }
-
-    /* 结论部分 */
-    .verdict-box {
-      background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(168,85,247,0.1));
-      border: 1px solid rgba(99,102,241,0.3);
-      border-radius: 12px;
       padding: 24px;
-      margin-top: 24px;
-    }
-
-    .verdict-title {
-      font-weight: 700;
-      font-size: 1.1rem;
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .verdict-content {
-      color: var(--text-muted);
-      font-size: 0.95rem;
-      line-height: 1.7;
-    }
-
-    /* 底部 */
-    footer {
-      background: var(--bg-card);
-      border-top: 1px solid var(--border);
-      padding: 48px 24px 24px;
-      margin-top: 60px;
-    }
-
-    .footer-grid {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: 2fr 1fr 1fr 1fr;
-      gap: 40px;
       margin-bottom: 32px;
     }
-
-    .footer-brand p {
-      color: var(--text-muted);
-      font-size: 0.875rem;
-      margin: 12px 0;
+    .selector-title { font-size: 1rem; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .selector-slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .selector-slot {
+      background: var(--bg);
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      min-height: 100px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 10px; cursor: pointer; transition: all 0.2s; position: relative;
     }
-
-    .footer-col h4 {
-      font-size: 0.9rem;
-      font-weight: 600;
-      margin-bottom: 16px;
-      color: var(--text);
+    .selector-slot:hover { border-color: var(--primary); }
+    .selector-slot.filled { border-style: solid; border-color: rgba(99,102,241,0.4); }
+    .selector-slot.filled:hover { border-color: var(--danger); }
+    .slot-icon { font-size: 2rem; }
+    .slot-name { font-size: 0.9rem; font-weight: 600; }
+    .slot-cat { font-size: 0.75rem; color: var(--text-muted); }
+    .slot-empty-text { color: var(--text-muted); font-size: 0.85rem; text-align: center; }
+    .slot-empty-icon { font-size: 1.5rem; opacity: 0.3; }
+    .slot-remove {
+      position: absolute; top: 8px; right: 8px;
+      background: rgba(239,68,68,0.15); border: none; color: #ef4444;
+      width: 22px; height: 22px; border-radius: 50%; cursor: pointer;
+      font-size: 0.75rem; display: none; align-items: center; justify-content: center;
+      transition: all 0.2s;
     }
+    .selector-slot.filled:hover .slot-remove { display: flex; }
+    .slot-remove:hover { background: #ef4444; color: white; }
 
-    .footer-col ul {
-      list-style: none;
+    /* 预设对比按钮 */
+    .preset-section { margin-bottom: 16px; }
+    .preset-label { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px; }
+    .preset-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+    .preset-btn {
+      background: var(--bg); border: 1px solid var(--border);
+      color: var(--text-muted); padding: 6px 14px; border-radius: 20px;
+      font-size: 0.8rem; cursor: pointer; transition: all 0.2s;
     }
+    .preset-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .preset-btn.active { background: rgba(99,102,241,0.15); border-color: var(--primary); color: #a5b4fc; }
 
-    .footer-col ul li {
-      margin-bottom: 8px;
+    /* 开始对比按钮 */
+    .compare-btn {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border: none; color: white; padding: 12px 32px; border-radius: 10px;
+      font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+      margin-top: 20px; display: block; width: 100%; text-align: center;
     }
+    .compare-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+    .compare-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
-    .footer-col ul li a {
-      color: var(--text-muted);
-      text-decoration: none;
-      font-size: 0.875rem;
-      transition: color 0.2s;
+    /* 工具选择弹窗 */
+    .tool-picker-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(4px); z-index: 200; display: none;
+      align-items: center; justify-content: center;
     }
-
-    .footer-col ul li a:hover { color: var(--primary); }
-
-    .footer-bottom {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding-top: 24px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.8rem;
-      color: var(--text-muted);
+    .tool-picker-overlay.open { display: flex; }
+    .tool-picker {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 16px; width: 100%; max-width: 600px;
+      max-height: 80vh; display: flex; flex-direction: column; overflow: hidden;
     }
+    .picker-head { padding: 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+    .picker-head input { flex: 1; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px 16px; color: var(--text); font-size: 0.95rem; outline: none; }
+    .picker-head input:focus { border-color: var(--primary); }
+    .picker-head button { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.2rem; padding: 4px; }
+    .picker-filters { padding: 12px 20px; border-bottom: 1px solid var(--border); display: flex; gap: 8px; flex-wrap: wrap; }
+    .picker-filter-btn { background: var(--bg); border: 1px solid var(--border); color: var(--text-muted); padding: 4px 12px; border-radius: 12px; font-size: 0.78rem; cursor: pointer; transition: all 0.15s; }
+    .picker-filter-btn:hover, .picker-filter-btn.active { background: rgba(99,102,241,0.15); border-color: var(--primary); color: #a5b4fc; }
+    .picker-list { overflow-y: auto; padding: 8px; }
+    .picker-item {
+      display: flex; align-items: center; gap: 12px; padding: 10px 16px;
+      border-radius: 8px; cursor: pointer; transition: background 0.15s;
+    }
+    .picker-item:hover { background: var(--border); }
+    .picker-item.selected { background: rgba(99,102,241,0.15); }
+    .picker-item.disabled { opacity: 0.4; cursor: not-allowed; }
+    .picker-item-icon { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+    .picker-item-info { flex: 1; }
+    .picker-item-name { font-size: 0.9rem; font-weight: 600; }
+    .picker-item-meta { font-size: 0.75rem; color: var(--text-muted); }
+    .picker-item-price { font-size: 0.78rem; color: var(--success); font-weight: 600; white-space: nowrap; }
+
+    /* 对比结果区域 */
+    .compare-result { display: none; }
+    .compare-result.show { display: block; }
+
+    /* 对比头部 */
+    .result-header {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 16px; overflow: hidden; margin-bottom: 16px;
+    }
+    .result-header-row {
+      display: grid; gap: 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .result-header-label {
+      padding: 16px 20px;
+      background: var(--bg-card2);
+      border-right: 1px solid var(--border);
+      font-size: 0.85rem; color: var(--text-muted); font-weight: 600;
+      display: flex; align-items: center;
+    }
+    .result-header-tool {
+      padding: 24px 20px; text-align: center;
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+      border-right: 1px solid var(--border);
+    }
+    .result-header-tool:last-child { border-right: none; }
+    .result-tool-logo { width: 64px; height: 64px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 2rem; }
+    .result-tool-name { font-size: 1.2rem; font-weight: 800; }
+    .result-tool-cat { font-size: 0.75rem; color: var(--text-muted); }
+    .result-tool-rating { color: var(--warning); font-size: 0.9rem; font-weight: 600; }
+    .result-tool-link { color: var(--primary); text-decoration: none; font-size: 0.8rem; border: 1px solid rgba(99,102,241,0.3); padding: 4px 12px; border-radius: 12px; transition: all 0.2s; }
+    .result-tool-link:hover { background: rgba(99,102,241,0.15); }
+
+    /* 对比行 */
+    .compare-table {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 16px; overflow: hidden; margin-bottom: 16px;
+    }
+    .compare-row {
+      display: grid; transition: background 0.15s;
+    }
+    .compare-row:hover { background: rgba(99,102,241,0.03); }
+    .compare-row:not(:last-child) { border-bottom: 1px solid var(--border); }
+    .compare-row-label {
+      padding: 14px 20px; background: var(--bg-card2);
+      border-right: 1px solid var(--border);
+      font-size: 0.85rem; color: var(--text-muted); font-weight: 600;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .compare-row-label .label-icon { font-size: 1rem; }
+    .compare-cell {
+      padding: 14px 20px; text-align: center;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.875rem; border-right: 1px solid var(--border);
+      flex-direction: column; gap: 4px;
+    }
+    .compare-cell:last-child { border-right: none; }
+    .compare-cell.best { background: rgba(16,185,129,0.06); }
+    .best-badge { background: rgba(16,185,129,0.15); color: #34d399; padding: 2px 8px; border-radius: 8px; font-size: 0.7rem; font-weight: 600; }
+    .check-yes { color: var(--success); font-size: 1.1rem; }
+    .check-no { color: var(--danger); font-size: 1.1rem; }
+    .check-partial { color: var(--warning); font-size: 1.1rem; }
+
+    /* 雷达图 */
+    .radar-section {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 24px; margin-bottom: 16px;
+    }
+    .radar-title { font-size: 1rem; font-weight: 700; margin-bottom: 20px; }
+    .radar-wrap { display: flex; justify-content: center; align-items: flex-start; gap: 32px; flex-wrap: wrap; }
+    .radar-chart { position: relative; }
+    .radar-legend { display: flex; flex-direction: column; gap: 10px; min-width: 160px; }
+    .legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+    /* 总结推荐卡片 */
+    .verdict-section { display: grid; gap: 12px; margin-bottom: 16px; }
+    .verdict-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 20px;
+    }
+    .verdict-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .verdict-tool-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+    .verdict-tool-name { font-weight: 700; font-size: 1rem; }
+    .verdict-best-for { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
+    .verdict-pros { list-style: none; }
+    .verdict-pros li { font-size: 0.85rem; color: var(--text-muted); padding: 3px 0; display: flex; align-items: flex-start; gap: 8px; }
+    .verdict-pros li::before { content: '✓'; color: var(--success); flex-shrink: 0; margin-top: 1px; }
+    .verdict-link { display: inline-block; margin-top: 12px; background: linear-gradient(135deg,var(--primary),var(--secondary)); color: white; padding: 8px 20px; border-radius: 8px; text-decoration: none; font-size: 0.85rem; font-weight: 600; transition: opacity 0.2s; }
+    .verdict-link:hover { opacity: 0.9; }
+
+    /* 快捷预设 */
+    .quick-compares {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 20px; margin-bottom: 32px;
+    }
+    .quick-compares h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 12px; }
+    .quick-compare-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+    .quick-compare-btn {
+      background: var(--bg); border: 1px solid var(--border);
+      color: var(--text); padding: 8px 16px; border-radius: 8px;
+      font-size: 0.85rem; cursor: pointer; transition: all 0.2s;
+    }
+    .quick-compare-btn:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-1px); }
 
     /* 响应式 */
     @media (max-width: 768px) {
+      .selector-slots { grid-template-columns: 1fr; }
       .nav-links { display: none; }
-      .vs-table-header, .vs-table-row {
-        grid-template-columns: 1fr;
-        gap: 12px;
-      }
-      .vs-header-tool, .vs-row-value {
-        text-align: left;
-        align-items: flex-start;
-      }
-      .vs-tool-icon { margin-bottom: 8px; }
-      .footer-grid { grid-template-columns: 1fr 1fr; }
     }
   </style>
 </head>
 <body>
 
 <!-- 导航栏 -->
-<nav class="navbar" aria-label="主导航">
+<nav class="navbar">
   <a href="index.html" class="nav-logo">🤖 AI工具导航</a>
   <ul class="nav-links">
     <li><a href="index.html">首页</a></li>
     <li><a href="ranking.html">排行榜</a></li>
-    <li><a href="news.html">AI资讯</a></li>
     <li><a href="compare.html" class="active">工具对比</a></li>
-    <li><a href="submit.html" class="nav-btn" style="background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 6px 16px; border-radius: 20px; font-weight: 500;">提交工具</a></li>
+    <li><a href="use-cases.html">使用场景</a></li>
+    <li><a href="news.html">AI资讯</a></li>
+    <li><a href="submit.html" class="nav-btn">提交工具</a></li>
   </ul>
 </nav>
 
-<!-- 面包屑导航 -->
-<nav class="breadcrumb" aria-label="面包屑导航">
-  <a href="index.html">首页</a> <span>/</span> <span>AI工具对比</span>
+<!-- 面包屑 -->
+<nav class="breadcrumb">
+  <a href="index.html">首页</a><span>›</span><span>AI工具对比</span>
 </nav>
 
-<!-- 主内容 -->
-<main class="main-content">
-  <header class="page-header">
-    <h1>AI工具<span>深度对比</span></h1>
-    <p>详细对比热门AI工具的核心功能、定价、优缺点，帮你选择最适合的人工智能助手</p>
-  </header>
+<div class="main-content">
+  <!-- 页面标题 -->
+  <div class="page-header">
+    <h1>AI工具<span>横向对比</span></h1>
+    <p>自由选择 2-3 个工具进行全面对比，从评分、定价、功能到适用场景，一次看清所有差异</p>
+  </div>
 
-  <!-- 快速导航 -->
-  <nav class="quick-nav" aria-label="对比文章快速导航">
-    <a href="#chatgpt-vs-claude">ChatGPT vs Claude</a>
-    <a href="#midjourney-vs-sd">Midjourney vs Stable Diffusion</a>
-    <a href="#cursor-vs-copilot">Cursor vs GitHub Copilot</a>
-    <a href="#suno-vs-udio">Suno vs Udio</a>
-    <a href="#perplexity-vs-notion">Perplexity vs Notion AI</a>
-    <a href="#runway-vs-pika">Runway vs Pika</a>
-  </nav>
-
-  <!-- ChatGPT vs Claude -->
-  <section class="compare-section" id="chatgpt-vs-claude">
-    <div class="compare-header">
-      <h2>ChatGPT vs Claude</h2>
-      <span class="compare-badge">AI对话助手</span>
+  <!-- 快捷预设 -->
+  <div class="quick-compares">
+    <h3>⚡ 热门对比</h3>
+    <div class="quick-compare-btns">
+      <button class="quick-compare-btn" onclick="loadPreset(['chatgpt','claude','gemini'])">💬 ChatGPT vs Claude vs Gemini</button>
+      <button class="quick-compare-btn" onclick="loadPreset(['midjourney','stable-diffusion'])">🎨 Midjourney vs Stable Diffusion</button>
+      <button class="quick-compare-btn" onclick="loadPreset(['cursor','github-copilot'])">⚡ Cursor vs GitHub Copilot</button>
+      <button class="quick-compare-btn" onclick="loadPreset(['chatgpt','perplexity'])">🔍 ChatGPT vs Perplexity</button>
+      <button class="quick-compare-btn" onclick="loadPreset(['suno','elevenlabs'])">🎵 Suno vs ElevenLabs</button>
+      <button class="quick-compare-btn" onclick="loadPreset(['notion-ai','chatgpt','claude'])">📝 写作工具三强对比</button>
     </div>
+  </div>
 
-    <div class="vs-table">
-      <div class="vs-table-header">
-        <div class="vs-header-left">对比维度</div>
-        <div class="vs-header-tool">
-          <div class="vs-tool-icon" style="background: linear-gradient(135deg,#10b981,#059669);">💬</div>
-          <div class="vs-tool-name">ChatGPT</div>
-          <span class="vs-tool-tag">全能王者</span>
+  <!-- 工具选择器 -->
+  <div class="selector-section">
+    <div class="selector-title">🔧 选择要对比的工具（2-3个）</div>
+    <div class="selector-slots" id="selectorSlots">
+      <div class="selector-slot" id="slot-0" onclick="openPicker(0)">
+        <div class="slot-empty-icon">＋</div>
+        <div class="slot-empty-text">点击选择第1个工具</div>
+      </div>
+      <div class="selector-slot" id="slot-1" onclick="openPicker(1)">
+        <div class="slot-empty-icon">＋</div>
+        <div class="slot-empty-text">点击选择第2个工具</div>
+      </div>
+      <div class="selector-slot" id="slot-2" onclick="openPicker(2)">
+        <div class="slot-empty-icon">＋</div>
+        <div class="slot-empty-text">点击选择第3个工具（可选）</div>
+      </div>
+    </div>
+    <button class="compare-btn" id="compareBtn" onclick="runCompare()" disabled>选择至少2个工具开始对比</button>
+  </div>
+
+  <!-- 对比结果 -->
+  <div class="compare-result" id="compareResult"></div>
+</div>
+
+<!-- 工具选择弹窗 -->
+<div class="tool-picker-overlay" id="pickerOverlay" onclick="closePicker(event)">
+  <div class="tool-picker">
+    <div class="picker-head">
+      <span style="font-size:1.1rem;">🔍</span>
+      <input type="text" id="pickerSearch" placeholder="搜索工具名称..." oninput="renderPickerList()">
+      <button onclick="document.getElementById('pickerOverlay').classList.remove('open')">✕</button>
+    </div>
+    <div class="picker-filters" id="pickerFilters"></div>
+    <div class="picker-list" id="pickerList"></div>
+  </div>
+</div>
+
+<script>
+  // ============ 状态管理 ============
+  let selectedTools = [null, null, null]; // 三个槽位
+  let currentSlot = 0;
+  let pickerCategoryFilter = 'all';
+
+  // 雷达图维度
+  const RADAR_DIMS = ['功能丰富度', '易用性', '性价比', '中文支持', '更新活跃度', '社区生态'];
+
+  // 工具评分维度数据（补充）
+  const TOOL_SCORES = {
+    chatgpt:          { 功能丰富度: 95, 易用性: 92, 性价比: 85, 中文支持: 88, 更新活跃度: 95, 社区生态: 98 },
+    claude:           { 功能丰富度: 88, 易用性: 90, 性价比: 80, 中文支持: 82, 更新活跃度: 90, 社区生态: 75 },
+    gemini:           { 功能丰富度: 90, 易用性: 88, 性价比: 95, 中文支持: 85, 更新活跃度: 92, 社区生态: 88 },
+    midjourney:       { 功能丰富度: 85, 易用性: 70, 性价比: 60, 中文支持: 72, 更新活跃度: 88, 社区生态: 95 },
+    'stable-diffusion': { 功能丰富度: 98, 易用性: 55, 性价比: 98, 中文支持: 75, 更新活跃度: 85, 社区生态: 98 },
+    cursor:           { 功能丰富度: 90, 易用性: 88, 性价比: 85, 中文支持: 80, 更新活跃度: 95, 社区生态: 85 },
+    'github-copilot': { 功能丰富度: 82, 易用性: 90, 性价比: 78, 中文支持: 78, 更新活跃度: 88, 社区生态: 90 },
+    runway:           { 功能丰富度: 88, 易用性: 85, 性价比: 62, 中文支持: 75, 更新活跃度: 90, 社区生态: 78 },
+    suno:             { 功能丰富度: 82, 易用性: 92, 性价比: 90, 中文支持: 80, 更新活跃度: 88, 社区生态: 82 },
+    perplexity:       { 功能丰富度: 85, 易用性: 90, 性价比: 88, 中文支持: 82, 更新活跃度: 88, 社区生态: 80 },
+    'notion-ai':      { 功能丰富度: 80, 易用性: 92, 性价比: 75, 中文支持: 85, 更新活跃度: 82, 社区生态: 88 },
+    elevenlabs:       { 功能丰富度: 85, 易用性: 88, 性价比: 78, 中文支持: 70, 更新活跃度: 85, 社区生态: 78 },
+  };
+
+  // 工具特性矩阵
+  const TOOL_FEATURES = {
+    chatgpt:          { 免费版: true, API访问: true, 移动端: true, 中文界面: true, 本地部署: false, 无需账号: false },
+    claude:           { 免费版: true, API访问: true, 移动端: true, 中文界面: false, 本地部署: false, 无需账号: false },
+    gemini:           { 免费版: true, API访问: true, 移动端: true, 中文界面: true, 本地部署: false, 无需账号: false },
+    midjourney:       { 免费版: false, API访问: '部分', 移动端: '部分', 中文界面: false, 本地部署: false, 无需账号: false },
+    'stable-diffusion': { 免费版: true, API访问: true, 移动端: '部分', 中文界面: true, 本地部署: true, 无需账号: true },
+    cursor:           { 免费版: true, API访问: false, 移动端: false, 中文界面: '部分', 本地部署: true, 无需账号: false },
+    'github-copilot': { 免费版: '学生免费', API访问: false, 移动端: false, 中文界面: '部分', 本地部署: false, 无需账号: false },
+    runway:           { 免费版: true, API访问: true, 移动端: true, 中文界面: false, 本地部署: false, 无需账号: false },
+    suno:             { 免费版: true, API访问: false, 移动端: true, 中文界面: false, 本地部署: false, 无需账号: false },
+    perplexity:       { 免费版: true, API访问: true, 移动端: true, 中文界面: '部分', 本地部署: false, 无需账号: false },
+    'notion-ai':      { 免费版: true, API访问: false, 移动端: true, 中文界面: true, 本地部署: false, 无需账号: false },
+    elevenlabs:       { 免费版: true, API访问: true, 移动端: true, 中文界面: '部分', 本地部署: false, 无需账号: false },
+  };
+
+  // 工具适用人群
+  const TOOL_FOR = {
+    chatgpt: '内容创作者、学生、开发者、各行业专业人士',
+    claude: '学术研究者、律师、长文档处理用户',
+    gemini: 'Google生态用户、多模态需求者',
+    midjourney: '设计师、插画师、游戏原画师',
+    'stable-diffusion': 'AI研究者、技术用户、批量生成需求者',
+    cursor: '软件开发者、独立开发者、编程学习者',
+    'github-copilot': '企业开发者、VS Code/JetBrains用户',
+    runway: '视频创作者、广告制作公司、导演',
+    suno: '音乐爱好者、短视频创作者、广告制作',
+    perplexity: '研究人员、记者、知识工作者',
+    'notion-ai': '团队协作用户、项目管理者、知识型工作者',
+    elevenlabs: 'YouTuber、播客主、有声书作者',
+  };
+
+  // ============ 工具选择器 ============
+  function openPicker(slotIndex) {
+    currentSlot = slotIndex;
+    pickerCategoryFilter = 'all';
+    document.getElementById('pickerSearch').value = '';
+    document.getElementById('pickerOverlay').classList.add('open');
+    renderPickerFilters();
+    renderPickerList();
+    setTimeout(() => document.getElementById('pickerSearch').focus(), 100);
+  }
+
+  function closePicker(e) {
+    if (e && e.target !== document.getElementById('pickerOverlay')) return;
+    document.getElementById('pickerOverlay').classList.remove('open');
+  }
+
+  function renderPickerFilters() {
+    const categories = ['all', ...new Set(getToolsList().map(t => t.category))];
+    const container = document.getElementById('pickerFilters');
+    container.innerHTML = categories.map(cat => `
+      <button class="picker-filter-btn ${pickerCategoryFilter === cat ? 'active' : ''}"
+        onclick="pickerCategoryFilter='${cat}';this.parentNode.querySelectorAll('.picker-filter-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active');renderPickerList()">
+        ${cat === 'all' ? '全部' : cat}
+      </button>
+    `).join('');
+  }
+
+  function renderPickerList() {
+    const q = document.getElementById('pickerSearch').value.toLowerCase();
+    let tools = getToolsList();
+    if (pickerCategoryFilter !== 'all') tools = tools.filter(t => t.category === pickerCategoryFilter);
+    if (q) tools = tools.filter(t => t.name.toLowerCase().includes(q) || t.desc.toLowerCase().includes(q));
+
+    const container = document.getElementById('pickerList');
+    container.innerHTML = tools.map(t => {
+      const alreadySelected = selectedTools.includes(t.id) && selectedTools[currentSlot] !== t.id;
+      return `
+        <div class="picker-item ${alreadySelected ? 'disabled' : ''} ${selectedTools[currentSlot] === t.id ? 'selected' : ''}"
+          onclick="${alreadySelected ? '' : `selectTool('${t.id}')`}">
+          <div class="picker-item-icon" style="background:${t.color}20;color:${t.color};">${t.icon}</div>
+          <div class="picker-item-info">
+            <div class="picker-item-name">${t.name}</div>
+            <div class="picker-item-meta">★${t.rating} · ${t.users} · ${t.category}</div>
+          </div>
+          <div class="picker-item-price">${t.price.includes('免费') ? '免费' : t.price.split('/')[0]}</div>
         </div>
-        <div class="vs-header-tool">
-          <div class="vs-tool-icon" style="background: linear-gradient(135deg,#d97706,#b45309);">🧠</div>
-          <div class="vs-tool-name">Claude</div>
-          <span class="vs-tool-tag">长文专家</span>
-        </div>
-      </div>
+      `;
+    }).join('');
+  }
 
-      <div class="vs-table-row">
-        <div class="vs-row-label">开发者</div>
-        <div class="vs-row-value">OpenAI</div>
-        <div class="vs-row-value">Anthropic</div>
-      </div>
+  function selectTool(id) {
+    selectedTools[currentSlot] = id;
+    document.getElementById('pickerOverlay').classList.remove('open');
+    updateSlots();
+    updateCompareBtn();
+  }
 
-      <div class="vs-table-row">
-        <div class="vs-row-label">用户评分</div>
-        <div class="vs-row-value"><span class="vs-rating">★★★★★ 4.8</span></div>
-        <div class="vs-row-value"><span class="vs-rating">★★★★★ 4.7</span></div>
-      </div>
+  function removeSlot(slotIndex, e) {
+    e.stopPropagation();
+    selectedTools[slotIndex] = null;
+    updateSlots();
+    updateCompareBtn();
+    // 隐藏对比结果
+    document.getElementById('compareResult').classList.remove('show');
+  }
 
-      <div class="vs-table-row">
-        <div class="vs-row-label">活跃用户</div>
-        <div class="vs-row-value"><span class="vs-users">1亿+</span></div>
-        <div class="vs-row-value"><span class="vs-users">500万+</span></div>
-      </div>
+  function updateSlots() {
+    for (let i = 0; i < 3; i++) {
+      const slot = document.getElementById(`slot-${i}`);
+      const id = selectedTools[i];
+      if (id) {
+        const t = getToolById(id);
+        slot.classList.add('filled');
+        slot.innerHTML = `
+          <button class="slot-remove" onclick="removeSlot(${i},event)">✕</button>
+          <div class="slot-icon">${t.icon}</div>
+          <div class="slot-name">${t.name}</div>
+          <div class="slot-cat">${t.category} · ★${t.rating}</div>
+        `;
+        slot.onclick = () => openPicker(i);
+      } else {
+        slot.classList.remove('filled');
+        slot.innerHTML = `
+          <div class="slot-empty-icon">＋</div>
+          <div class="slot-empty-text">${i === 2 ? '点击选择第3个工具（可选）' : `点击选择第${i+1}个工具`}</div>
+        `;
+        slot.onclick = () => openPicker(i);
+      }
+    }
+  }
 
-      <div class="vs-table-row">
-        <div class="vs-row-label">定价</div>
-        <div class="vs-row-value"><span class="vs-price price-free">免费</span><br><span class="vs-users">或 $20/月</span></div>
-        <div class="vs-row-value"><span class="vs-price price-free">免费</span><br><span class="vs-users">或 $20/月</span></div>
-      </div>
+  function updateCompareBtn() {
+    const filled = selectedTools.filter(Boolean).length;
+    const btn = document.getElementById('compareBtn');
+    if (filled >= 2) {
+      btn.disabled = false;
+      btn.textContent = `🔍 开始对比 ${filled} 个工具`;
+    } else {
+      btn.disabled = true;
+      btn.textContent = '选择至少2个工具开始对比';
+    }
+  }
 
-      <div class="vs-table-row">
-        <div class="vs-row-label">对话上下文</div>
-        <div class="vs-row-value"><span class="vs-partial">128K (GPT-4)</span></div>
-        <div class="vs-row-value"><span class="vs-check">200K (Claude 3)</span></div>
-      </div>
+  // ============ 加载预设 ============
+  function loadPreset(ids) {
+    selectedTools = [ids[0] || null, ids[1] || null, ids[2] || null];
+    updateSlots();
+    updateCompareBtn();
+    runCompare();
+    document.querySelector('.selector-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 
-      <div class="vs-table-row">
-        <div class="vs-row-label">长文本处理</div>
-        <div class="vs-row-value"><span class="vs-partial">良好</span></div>
-        <div class="vs-row-value"><span class="vs-check">优秀</span></div>
-      </div>
+  // ============ 执行对比 ============
+  function runCompare() {
+    const tools = selectedTools.filter(Boolean).map(id => getToolById(id));
+    if (tools.length < 2) return;
 
-      <div class="vs-table-row">
-        <div class="vs-row-label">代码能力</div>
-        <div class="vs-row-value"><span class="vs-check">优秀</span></div>
-        <div class="vs-row-value"><span class="vs-partial">良好</span></div>
-      </div>
+    const result = document.getElementById('compareResult');
+    result.innerHTML = buildCompareHTML(tools);
+    result.classList.add('show');
 
-      <div class="vs-table-row">
-        <div class="vs-row-label">多模态（图片/文档）</div>
-        <div class="vs-row-value"><span class="vs-check">支持</span></div>
-        <div class="vs-row-value"><span class="vs-check">支持</span></div>
-      </div>
+    // 绘制雷达图
+    tools.forEach((t, i) => {
+      drawRadar(tools, i);
+    });
+    drawRadarAll(tools);
 
-      <div class="vs-table-row">
-        <div class="vs-row-label">插件生态</div>
-        <div class="vs-row-value"><span class="vs-check">丰富</span></div>
-        <div class="vs-row-value"><span class="vs-cross">暂无</span></div>
-      </div>
+    result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 
-      <div class="vs-table-row">
-        <div class="vs-row-label">安全性</div>
-        <div class="vs-row-value"><span class="vs-partial">良好</span></div>
-        <div class="vs-row-value"><span class="vs-check">优秀</span></div>
-      </div>
-    </div>
+  function buildCompareHTML(tools) {
+    const n = tools.length;
+    const gridCols = `1fr ${tools.map(() => '1fr').join(' ')}`;
 
-    <div class="verdict-box">
-      <div class="verdict-title">🏆 总结</div>
-      <div class="verdict-content">
-        <strong>ChatGPT</strong>：全能型AI助手，适合日常对话、编程、创意写作，插件生态丰富，适合快速上手和广泛使用。<br><br>
-        <strong>Claude</strong>：长文本处理能力更强，适合处理大型文档、研究报告、小说创作，安全性更高，适合需要处理大量文本内容的用户。
-      </div>
-    </div>
-  </section>
+    // 计算各维度最优
+    const ratings = tools.map(t => t.rating);
+    const maxRating = Math.max(...ratings);
+    const prices = tools.map(t => t.price.includes('免费') ? 0 : parseFloat(t.price.replace(/[^0-9.]/g, '')) || 999);
+    const minPrice = Math.min(...prices);
+    const userNums = tools.map(t => parseUsersNum(t.users));
+    const maxUsers = Math.max(...userNums);
 
-  <!-- Midjourney vs Stable Diffusion -->
-  <section class="compare-section" id="midjourney-vs-sd">
-    <div class="compare-header">
-      <h2>Midjourney vs Stable Diffusion</h2>
-      <span class="compare-badge">AI绘画工具</span>
-    </div>
+    let html = '';
 
-    <div class="vs-table">
-      <div class="vs-table-header">
-        <div class="vs-header-left">对比维度</div>
-        <div class="vs-header-tool">
-          <div class="vs-tool-icon" style="background: linear-gradient(135deg,#6366f1,#8b5cf6);">🎨</div>
-          <div class="vs-tool-name">Midjourney</div>
-          <span class="vs-tool-tag">艺术先锋</span>
-        </div>
-        <div class="vs-header-tool">
-          <div class="vs-tool-icon" style="background: linear-gradient(135deg,#dc2626,#ea580c);">🖼️</div>
-          <div class="vs-tool-name">Stable Diffusion</div>
-          <span class="vs-tool-tag">自由开放</span>
-        </div>
-      </div>
-
-      <div class="vs-table-row">
-        <div class="vs-row-label">开发者</div>
-        <div class="vs-row-value">Midjourney Inc.</div>
-        <div class="vs-row-value">Stability AI</div>
-      </div>
-
-      <div class="vs-table-row">
-        <div class="vs-row-label">用户评分</div>
-        <div class="vs-row-value"><span class="vs-rating">★★★★★ 4.8</span></div>
-        <div class="vs-row-value"><span class="vs-rating">★★★★★ 4.7</span></div>
-      </div>
-
-      <div class="vs-table-row">
-        <div class="vs-row-label">活跃用户</div>
-        <div class="vs-row-value"><span class="vs-users">1500万+</span></div>
-        <div class="vs-row-value"><span class="vs-users">800万+</span></div>
-      </div>
-
-      <div class="vs-table-row">
-        <div class="vs-row-label">定价</div>
-        <div class="vs-row-value"><span class="vs-price price-paid">$30/月起</span></div>
-        <div class="vs-row-value"><span class="vs-price price-free">本地免费</span></div>
-      </div>
-
-      <div class="vs-table-row">
-        <div class="vs-row-label">使用方式</div>
-        <div class="vs-row-value"><span class="vs-partial">Discord</span></div>
-        <div class="vs-row-value"><span class="vs-check">Web/本地/API</span></div>
-      </div>
-
-      <div class="vs-table-row">
-        <div class="vs-row-label">画质质量</div>
-        <div class="vs-row-value"><span class="vs-check">顶级</span></div>
-        <div class="vs-row-value"><span class="vs-partial">优秀（可调优）</span></div>
-      </div>
-
-      <div class="vs-table-row">
-        <div class="vs-row-label">创作自由度</div>
-        <div class="vs-row-value"><span class="vs-partial">中等</span></div>
-        <div class="vs-row-value"><span class="vs-check">极高</span></div>
-      </div>
-
-      <div class="vs-table-row">
-        <div class="vs-row-label">模型/插件</div>
-        <div class="vs-row-value"><span class="vs-cross">无</span></div>
-        <div class="vs-row-value"><span class="vs-check">海量开源模型</span></div>
-      </div>
-
-      <div class="vs-table-row">
-        <div class="vs-row-label">学习成本</div>
-        <div class="vs-row-value"><span class="vs-check">低</span></div>
-        <div class="vs-row-value"><span class="vs-partial">中等</span></div>
-      </div>
-
-      <div class="vs-table-row">
-        <div class="vs-row-label">商业使用</div>
-        <div class="vs-row-value"><span class="vs-check">付费用户可用</span></div>
-        <div class="vs-row-value"><span class="vs-check">开源自由</span></div>
-      </div>
-    </div>
-
-    <div class="verdict-box">
-      <div class="verdict-title">🏆 总结</div>
-      <div class="verdict-content">
-        <strong>Midjourney</strong>：上手简单，画质顶级，艺术风格独特，适合快速创作高质量图片，但成本较高且自由度有限。<br><br>
-        <strong>Stable Diffusion</strong>：完全免费，高度可定制，拥有海量模型和插件，适合技术用户、开发者、需要深度定制的专业创作者。
-      </div>
-    </div>
-  </section>
-
-  <!-- Cursor vs GitHub Copilot -->
-  <section class="compare-section" id="cursor-vs-copilot">
-    <div class="compare-header">
-      <h2>Cursor vs GitHub Copilot</h2>
-      <span class="compare-badge">AI编程工具</span>
-    </div>
-
-    <div class="vs-table">
-      <div class="vs-table-header">
-        <div class="vs-header-left">对比维度</div>
-        <div class="vs-header-tool">
-          <div class="vs-tool-icon" style="background: linear-gradient(135deg,#0f172a,#1e293b);">⚡</div>
-          <div class="vs-tool-name">Cursor</div>
-          <span class="vs-tool-tag">AI原生</span>
-        </div>
-        <div class="vs-header-tool">
-          <div class="vs-tool-icon" style="background: linear-gradient(135deg,#1f2937,#374151);">🐙</div>
-          <div class="vs-tool-name">GitHub Copilot</div>
-          <span class="vs-tool-tag">代码助手</span>
-        </div>
-      </div>
-
-      <div class="vs-table-row">
-        <div class="vs-row-label">开发者</div>
-        <div class="vs-row-value">Cursor Inc.</div>
-        <div class="vs-row-value">GitHub/Microsoft</div>
-      </div>
-
-      <div class="vs-table-row">
-        <div class="vs-row-label">用户评分</div>
-        <div class="vs-row-value"><span class="vs-rating">★★★★★ 4.9</span></div>
-        <div class="vs-row-value"><span class="vs-rating">★★★★★ 4.7</span></div>
-      </div>
-
-      <div class="vs-table-row">
-        <div class="vs-row-label">活跃用户</div>
-        <div class="vs-row-value"><span class="vs-users">100万+</span></div>
-        <div class="vs-row-value"><span class="vs-users">100万+</span></div>
-      </div>
-
-      <div class="vs-table-row">
-        <div class="vs-row-label">定价</div>
-        <div class="vs-row-value"><span class="vs-price price-free">免费</span><br><span class="vs-users">或 $20/月</span></div>
-        <div class="vs-row-value"><span class="vs-price price-free">免费</span><br><span class="vs-users">或 $10/月</span></div>
-      </div>
-
-      <div class="vs-table-row">
-        <div class="vs-row-label">编辑器类型</div>
-        <div class="vs-row-value"><span class="vs-check">独立AI编辑器</span></div>
-        <div class="vs-row-value"><span class="vs-partial">VS Code 插件</span></div>
-      </div>
-
-      <div class="vs-table-row">
-        <div class="vs-row-label">代码理解深度</div>
-        <div class="vs-row-value"><span class="vs-check">优秀</span></div>
-        <div class="vs-row-value"><span class="vs-partial">良好</span></div>
-      </div>
-
-      <div class="vs-table-row">
-        <div class="vs-row-label">自然语言编程</div>
-        <div class="vs-row-value"><span class="vs-check">深度集成</span></div>
-        <div class="vs-row-value"><span class="vs-partial">基础支持</span></div>
-      </div>
-
-      <div class="vs-table-row">
-        <div class="vs-row-label">AI模型</div>
-        <div class="vs-row-value"><span class="vs-check">GPT-4 + Claude</span></div>
-        <div class="vs-row-value"><span class="vs-partial">OpenAI 模型</span></div>
-      </div>
-
-      <div class="vs-table-row">
-        <div class="vs-row-label">多文件编辑</div>
-        <div class="vs-row-value"><span class="vs-check">支持</span></div>
-        <div class="vs-row-value"><span class="vs-cross">不支持</span></div>
-      </div>
-
-      <div class="vs-table-row">
-        <div class="vs-row-label">IDE 集成</div>
-        <div class="vs-row-value"><span class="vs-check">独立应用</span></div>
-        <div class="vs-row-value"><span class="vs-check">多IDE支持</span></div>
-      </div>
-    </div>
-
-    <div class="verdict-box">
-      <div class="verdict-title">🏆 总结</div>
-      <div class="verdict-content">
-        <strong>Cursor</strong>：AI原生代码编辑器，深度理解代码上下文，支持多文件编辑和自然语言编程，适合希望全面拥抱AI的开发者。<br><br>
-        <strong>GitHub Copilot</strong>：经典代码助手，集成到VS Code等主流IDE，提供智能代码补全，适合在现有工作流中增加AI辅助的开发者。
-      </div>
-    </div>
-  </section>
-
-  <!-- Suno vs Udio -->
-  <section class="compare-section" id="suno-vs-udio">
-    <div class="compare-header">
-      <h2>Suno vs Udio</h2>
-      <span class="compare-badge">AI音乐生成</span>
-    </div>
-
-    <div class="vs-table">
-      <div class="vs-table-header">
-        <div class="vs-header-left">对比维度</div>
-        <div class="vs-header-tool">
-          <div class="vs-tool-icon" style="background: linear-gradient(135deg,#7c3aed,#5b21b6);">🎵</div>
-          <div class="vs-tool-name">Suno</div>
-          <span class="vs-tool-tag">音乐先锋</span>
-        </div>
-        <div class="vs-header-tool">
-          <div class="vs-tool-icon" style="background: linear-gradient(135deg,#0891b2,#0e7490);">🎧</div>
-          <div class="vs-tool-name">Udio</div>
-          <span class="vs-tool-tag">新锐挑战者</span>
+    // 工具头部
+    html += `
+      <div class="result-header" style="margin-bottom:16px;">
+        <div class="result-header-row" style="grid-template-columns:${gridCols};">
+          <div class="result-header-label">对比工具</div>
+          ${tools.map(t => `
+            <div class="result-header-tool">
+              <div class="result-tool-logo" style="background:${t.color}20;color:${t.color};">${t.icon}</div>
+              <div class="result-tool-name">${t.name}</div>
+              <div class="result-tool-cat">${t.category}</div>
+              <div class="result-tool-rating">★ ${t.rating}</div>
+              <a class="result-tool-link" href="tool.html?id=${t.id}" target="_blank">查看详情</a>
+            </div>
+          `).join('')}
         </div>
       </div>
+    `;
 
-      <div class="vs-table-row">
-        <div class="vs-row-label">开发者</div>
-        <div class="vs-row-value">Suno AI</div>
-        <div class="vs-row-value">Udio Inc.</div>
+    // 基础数据对比
+    const basicRows = [
+      { label: '📊 综合评分', icon: '📊', key: 'rating', render: (t) => {
+        const isBest = t.rating === maxRating;
+        return `<span style="font-weight:700;font-size:1.1rem;color:${isBest?'var(--success)':'var(--text)'};">${t.rating}</span>${isBest?'<div><span class="best-badge">最高分</span></div>':''}`;
+      }, cellClass: (t) => t.rating === maxRating ? 'best' : '' },
+      { label: '👥 活跃用户', key: 'users', render: (t) => {
+        const isBest = parseUsersNum(t.users) === maxUsers;
+        return `<span style="color:${isBest?'var(--success)':'var(--text)'};">${t.users}</span>${isBest?'<div><span class="best-badge">用户最多</span></div>':''}`;
+      }, cellClass: (t) => parseUsersNum(t.users) === maxUsers ? 'best' : '' },
+      { label: '💰 定价', key: 'price', render: (t) => {
+        const p = t.price.includes('免费') ? 0 : parseFloat(t.price.replace(/[^0-9.]/g, '')) || 999;
+        const isBest = p === minPrice;
+        return `<span style="font-weight:600;color:${isBest?'var(--success)':'var(--warning)'};">${t.price}</span>${isBest?'<div><span class="best-badge">最划算</span></div>':''}`;
+      }, cellClass: (t) => {
+        const p = t.price.includes('免费') ? 0 : parseFloat(t.price.replace(/[^0-9.]/g,'')) || 999;
+        return p === minPrice ? 'best' : '';
+      }},
+      { label: '🏢 开发商', key: 'developer', render: (t) => `<span style="color:var(--text-muted)">${t.info?.developer || '—'}</span>`, cellClass: () => '' },
+      { label: '📅 发布时间', key: 'released', render: (t) => `<span style="color:var(--text-muted)">${t.info?.released || '—'}</span>`, cellClass: () => '' },
+      { label: '🌐 访问平台', key: 'platform', render: (t) => `<span style="font-size:0.8rem;color:var(--text-muted)">${t.info?.platform || '—'}</span>`, cellClass: () => '' },
+    ];
+
+    html += `<div class="compare-table" style="margin-bottom:16px;">`;
+    basicRows.forEach(row => {
+      html += `<div class="compare-row" style="grid-template-columns:${gridCols};">`;
+      html += `<div class="compare-row-label">${row.label}</div>`;
+      tools.forEach(t => {
+        html += `<div class="compare-cell ${row.cellClass(t)}">${row.render(t)}</div>`;
+      });
+      html += `</div>`;
+    });
+    html += `</div>`;
+
+    // 特性支持对比
+    html += `<div class="compare-table" style="margin-bottom:16px;">
+      <div style="padding:14px 20px;background:var(--bg-card2);border-bottom:1px solid var(--border);font-weight:700;font-size:0.9rem;color:var(--text);">
+        🎯 特性支持对比
       </div>
+    `;
+    const featureKeys = Object.keys(TOOL_FEATURES[tools[0].id] || {});
+    featureKeys.forEach(feat => {
+      html += `<div class="compare-row" style="grid-template-columns:${gridCols};">`;
+      html += `<div class="compare-row-label">${feat}</div>`;
+      tools.forEach(t => {
+        const val = (TOOL_FEATURES[t.id] || {})[feat];
+        let display;
+        if (val === true) display = '<span class="check-yes">✓</span>';
+        else if (val === false) display = '<span class="check-no">✕</span>';
+        else if (val) display = `<span class="check-partial">◐</span><div style="font-size:0.72rem;color:var(--text-muted)">${val}</div>`;
+        else display = '<span class="check-no">✕</span>';
+        html += `<div class="compare-cell">${display}</div>`;
+      });
+      html += `</div>`;
+    });
+    html += `</div>`;
 
-      <div class="vs-table-row">
-        <div class="vs-row-label">用户评分</div>
-        <div class="vs-row-value"><span class="vs-rating">★★★★☆ 4.5</span></div>
-        <div class="vs-row-value"><span class="vs-rating">★★★★☆ 4.4</span></div>
-      </div>
-
-      <div class="vs-table-row">
-        <div class="vs-row-label">活跃用户</div>
-        <div class="vs-row-value"><span class="vs-users">500万+</span></div>
-        <div class="vs-row-value"><span class="vs-users">200万+</span></div>
-      </div>
-
-      <div class="vs-table-row">
-        <div class="vs-row-label">定价</div>
-        <div class="vs-row-value"><span class="vs-price price-free">免费</span><br><span class="vs-users">或 $8/月</span></div>
-        <div class="vs-row-value"><span class="vs-price price-free">免费</span><br><span class="vs-users">$10/月</span></div>
-      </div>
-
-      <div class="vs-table-row">
-        <div class="vs-row-label">生成质量</div>
-        <div class="vs-row-value"><span class="vs-check">优秀</span></div>
-        <div class="vs-row-value"><span class="vs-check">优秀</span></div>
-      </div>
-
-      <div class="vs-table-row">
-        <div class="vs-row-label">音乐风格</div>
-        <div class="vs-row-value"><span class="vs-check">广泛</span></div>
-        <div class="vs-row-value"><span class="vs-partial">较新</span></div>
-      </div>
-
-      <div class="vs-table-row">
-        <div class="vs-row-label">人声质量</div>
-        <div class="vs-row-value"><span class="vs-check">自然</span></div>
-        <div class="vs-row-value"><span class="vs-partial">良好</span></div>
-      </div>
-
-      <div class="vs-table-row">
-        <div class="vs-row-label">歌词生成</div>
-        <div class="vs-row-value"><span class="vs-check">支持</span></div>
-        <div class="vs-row-value"><span class="vs-check">支持</span></div>
-      </div>
-
-      <div class="vs-table-row">
-        <div class="vs-row-label">生态成熟度</div>
-        <div class="vs-row-value"><span class="vs-check">成熟</span></div>
-        <div class="vs-row-value"><span class="vs-partial">发展中</span></div>
-      </div>
-
-      <div class="vs-table-row">
-        <div class="vs-row-label">社区活跃度</div>
-        <div class="vs-row-value"><span class="vs-check">高</span></div>
-        <div class="vs-row-value"><span class="vs-partial">中等</span></div>
-      </div>
-    </div>
-
-    <div class="verdict-box">
-      <div class="verdict-title">🏆 总结</div>
-      <div class="verdict-content">
-        <strong>Suno</strong>：AI音乐生成领域的先行者，功能成熟，社区活跃，适合快速生成高质量音乐作品。<br><br>
-        <strong>Udio</strong>：新晋挑战者，技术上各有特色，正在快速发展，适合关注新技术的早期体验者。
-      </div>
-    </div>
-  </section>
-
-  <!-- Perplexity vs Notion AI -->
-  <section class="compare-section" id="perplexity-vs-notion">
-    <div class="compare-header">
-      <h2>Perplexity vs Notion AI</h2>
-      <span class="compare-badge">AI效率工具</span>
-    </div>
-
-    <div class="vs-table">
-      <div class="vs-table-header">
-        <div class="vs-header-left">对比维度</div>
-        <div class="vs-header-tool">
-          <div class="vs-tool-icon" style="background: linear-gradient(135deg,#0f766e,#0d9488);">🔎</div>
-          <div class="vs-tool-name">Perplexity</div>
-          <span class="vs-tool-tag">智能搜索</span>
-        </div>
-        <div class="vs-header-tool">
-          <div class="vs-tool-icon" style="background: linear-gradient(135deg,#374151,#111827);">📝</div>
-          <div class="vs-tool-name">Notion AI</div>
-          <span class="vs-tool-tag">笔记助手</span>
+    // 雷达图 - 多维评分
+    html += `
+      <div class="radar-section" style="margin-bottom:16px;">
+        <div class="radar-title">🕸️ 多维度评分雷达图</div>
+        <div class="radar-wrap">
+          <canvas id="radarCanvas" width="320" height="320"></canvas>
+          <div class="radar-legend" id="radarLegend"></div>
         </div>
       </div>
+    `;
 
-      <div class="vs-table-row">
-        <div class="vs-row-label">开发者</div>
-        <div class="vs-row-value">Perplexity AI</div>
-        <div class="vs-row-value">Notion Labs</div>
-      </div>
-
-      <div class="vs-table-row">
-        <div class="vs-row-label">用户评分</div>
-        <div class="vs-row-value"><span class="vs-rating">★★★★☆ 4.6</span></div>
-        <div class="vs-row-value"><span class="vs-rating">★★★★☆ 4.6</span></div>
-      </div>
-
-      <div class="vs-table-row">
-        <div class="vs-row-label">活跃用户</div>
-        <div class="vs-row-value"><span class="vs-users">1000万+</span></div>
-        <div class="vs-row-value"><span class="vs-users">2000万+</span></div>
-      </div>
-
-      <div class="vs-table-row">
-        <div class="vs-row-label">定价</div>
-        <div class="vs-row-value"><span class="vs-price price-free">免费</span><br><span class="vs-users">或 $20/月</span></div>
-        <div class="vs-row-value"><span class="vs-price price-paid">$10/月</span></div>
-      </div>
-
-      <div class="vs-table-row">
-        <div class="vs-row-label">核心功能</div>
-        <div class="vs-row-value"><span class="vs-check">实时搜索</span></div>
-        <div class="vs-row-value"><span class="vs-check">智能续写</span></div>
-      </div>
-
-      <div class="vs-table-row">
-        <div class="vs-row-label">文档处理</div>
-        <div class="vs-row-value"><span class="vs-check">支持</span></div>
-        <div class="vs-row-value"><span class="vs-check">支持</span></div>
-      </div>
-
-      <div class="vs-table-row">
-        <div class="vs-row-label">引用来源</div>
-        <div class="vs-row-value"><span class="vs-check">自动引用</span></div>
-        <div class="vs-row-value"><span class="vs-cross">不适用</span></div>
-      </div>
-
-      <div class="vs-table-row">
-        <div class="vs-row-label">数据库AI</div>
-        <div class="vs-row-value"><span class="vs-cross">无</span></div>
-        <div class="vs-row-value"><span class="vs-check">支持</span></div>
-      </div>
-
-      <div class="vs-table-row">
-        <div class="vs-row-label">适合场景</div>
-        <div class="vs-row-value"><span class="vs-partial">研究学习</span></div>
-        <div class="vs-row-value"><span class="vs-partial">团队协作</span></div>
-      </div>
-
-      <div class="vs-table-row">
-        <div class="vs-row-label">特色优势</div>
-        <div class="vs-row-value"><span class="vs-check">实时检索</span></div>
-        <div class="vs-row-value"><span class="vs-check">工作流集成</span></div>
-      </div>
-    </div>
-
-    <div class="verdict-box">
-      <div class="verdict-title">🏆 总结</div>
-      <div class="verdict-content">
-        <strong>Perplexity</strong>：AI搜索的王者，实时检索信息并自动引用来源，适合学术研究、市场分析等需要准确信息的场景。<br><br>
-        <strong>Notion AI</strong>：团队协作的神器，AI深度集成在笔记和文档工作流中，适合企业、团队进行内容创作和项目管理。
-      </div>
-    </div>
-  </section>
-
-  <!-- Runway vs Pika -->
-  <section class="compare-section" id="runway-vs-pika">
-    <div class="compare-header">
-      <h2>Runway vs Pika</h2>
-      <span class="compare-badge">AI视频生成</span>
-    </div>
-
-    <div class="vs-table">
-      <div class="vs-table-header">
-        <div class="vs-header-left">对比维度</div>
-        <div class="vs-header-tool">
-          <div class="vs-tool-icon" style="background: linear-gradient(135deg,#0891b2,#0e7490);">🎬</div>
-          <div class="vs-tool-name">Runway</div>
-          <span class="vs-tool-tag">全能平台</span>
+    // 总结推荐
+    html += `<div style="font-size:1rem;font-weight:700;margin-bottom:12px;">💡 选购建议</div>`;
+    html += `<div class="verdict-section" style="grid-template-columns:repeat(${n},1fr);">`;
+    tools.forEach(t => {
+      const scores = TOOL_SCORES[t.id] || {};
+      const topScore = Object.entries(scores).sort((a,b)=>b[1]-a[1])[0];
+      const pros = (t.features || []).slice(0, 3).map(f => f.title);
+      html += `
+        <div class="verdict-card">
+          <div class="verdict-header">
+            <div class="verdict-tool-icon" style="background:${t.color}20;color:${t.color};">${t.icon}</div>
+            <div>
+              <div class="verdict-tool-name">${t.name}</div>
+              <div class="verdict-best-for">最擅长：${topScore ? topScore[0] : t.category}</div>
+            </div>
+          </div>
+          <div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:8px;">适合人群：${TOOL_FOR[t.id] || '各类用户'}</div>
+          <ul class="verdict-pros">
+            ${pros.map(p => `<li>${p}</li>`).join('')}
+          </ul>
+          <a class="verdict-link" href="tool.html?id=${t.id}">查看完整详情 →</a>
         </div>
-        <div class="vs-header-tool">
-          <div class="vs-tool-icon" style="background: linear-gradient(135deg,#7c3aed,#6d28d9);">🎥</div>
-          <div class="vs-tool-name">Pika</div>
-          <span class="vs-tool-tag">专注短视频</span>
-        </div>
-      </div>
+      `;
+    });
+    html += `</div>`;
 
-      <div class="vs-table-row">
-        <div class="vs-row-label">开发者</div>
-        <div class="vs-row-value">Runway AI Inc.</div>
-        <div class="vs-row-value">Pika Labs</div>
-      </div>
+    return html;
+  }
 
-      <div class="vs-table-row">
-        <div class="vs-row-label">用户评分</div>
-        <div class="vs-row-value"><span class="vs-rating">★★★★☆ 4.6</span></div>
-        <div class="vs-row-value"><span class="vs-rating">★★★★☆ 4.5</span></div>
-      </div>
+  // ============ 雷达图绘制 ============
+  function drawRadarAll(tools) {
+    requestAnimationFrame(() => {
+      const canvas = document.getElementById('radarCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const W = canvas.width, H = canvas.height;
+      const cx = W / 2, cy = H / 2;
+      const R = Math.min(W, H) / 2 - 40;
+      const dims = RADAR_DIMS;
+      const n = dims.length;
+      const colors = ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#06b6d4', '#a855f7'];
 
-      <div class="vs-table-row">
-        <div class="vs-row-label">活跃用户</div>
-        <div class="vs-row-value"><span class="vs-users">300万+</span></div>
-        <div class="vs-row-value"><span class="vs-users">200万+</span></div>
-      </div>
+      ctx.clearRect(0, 0, W, H);
 
-      <div class="vs-table-row">
-        <div class="vs-row-label">定价</div>
-        <div class="vs-row-value"><span class="vs-price price-free">免费</span><br><span class="vs-users">或 $35/月</span></div>
-        <div class="vs-row-value"><span class="vs-price price-paid">$8/月</span></div>
-      </div>
+      // 网格
+      for (let level = 1; level <= 5; level++) {
+        const r = R * level / 5;
+        ctx.beginPath();
+        for (let i = 0; i < n; i++) {
+          const angle = (i / n) * Math.PI * 2 - Math.PI / 2;
+          const x = cx + r * Math.cos(angle);
+          const y = cy + r * Math.sin(angle);
+          i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.strokeStyle = 'rgba(99,102,241,0.15)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
 
-      <div class="vs-table-row">
-        <div class="vs-row-label">视频时长</div>
-        <div class="vs-row-value"><span class="vs-partial">3-18秒</span></div>
-        <div class="vs-row-value"><span class="vs-partial">3-4秒</span></div>
-      </div>
+      // 轴线
+      for (let i = 0; i < n; i++) {
+        const angle = (i / n) * Math.PI * 2 - Math.PI / 2;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + R * Math.cos(angle), cy + R * Math.sin(angle));
+        ctx.strokeStyle = 'rgba(99,102,241,0.2)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
 
-      <div class="vs-table-row">
-        <div class="vs-row-label">分辨率</div>
-        <div class="vs-row-value"><span class="vs-check">4K支持</span></div>
-        <div class="vs-row-value"><span class="vs-partial">1080p</span></div>
-      </div>
+      // 标签
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      for (let i = 0; i < n; i++) {
+        const angle = (i / n) * Math.PI * 2 - Math.PI / 2;
+        const lx = cx + (R + 24) * Math.cos(angle);
+        const ly = cy + (R + 24) * Math.sin(angle) + 4;
+        ctx.fillText(dims[i], lx, ly);
+      }
 
-      <div class="vs-table-row">
-        <div class="vs-row-label">视频编辑</div>
-        <div class="vs-row-value"><span class="vs-check">专业剪辑</span></div>
-        <div class="vs-row-value"><span class="vs-partial">基础编辑</span></div>
-      </div>
+      // 每个工具的雷达面
+      tools.forEach((t, ti) => {
+        const scores = TOOL_SCORES[t.id] || {};
+        const color = colors[ti % colors.length];
+        ctx.beginPath();
+        for (let i = 0; i < n; i++) {
+          const score = (scores[dims[i]] || 50) / 100;
+          const angle = (i / n) * Math.PI * 2 - Math.PI / 2;
+          const px = cx + R * score * Math.cos(angle);
+          const py = cy + R * score * Math.sin(angle);
+          i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+        }
+        ctx.closePath();
+        ctx.fillStyle = color + '22';
+        ctx.fill();
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      });
 
-      <div class="vs-table-row">
-        <div class="vs-row-label">口型同步</div>
-        <div class="vs-row-value"><span class="vs-check">支持</span></div>
-        <div class="vs-row-value"><span class="vs-check">支持</span></div>
-      </div>
+      // 图例
+      const legendEl = document.getElementById('radarLegend');
+      if (legendEl) {
+        legendEl.innerHTML = tools.map((t, ti) => `
+          <div class="legend-item">
+            <div class="legend-dot" style="background:${colors[ti % colors.length]};"></div>
+            <span>${t.icon} ${t.name}</span>
+          </div>
+        `).join('') + `
+          <div style="margin-top:12px;font-size:0.75rem;color:var(--text-muted);">
+            ${dims.map((d, i) => {
+              const bestTool = tools.reduce((best, t) => {
+                const s = (TOOL_SCORES[t.id] || {})[d] || 0;
+                return s > ((TOOL_SCORES[best.id] || {})[d] || 0) ? t : best;
+              });
+              return `<div style="padding:3px 0;">${d}: <b style="color:var(--text)">${bestTool.name}</b> 最优</div>`;
+            }).join('')}
+          </div>
+        `;
+      }
+    });
+  }
 
-      <div class="vs-table-row">
-        <div class="vs-row-label">功能数量</div>
-        <div class="vs-row-value"><span class="vs-check">30+</span></div>
-        <div class="vs-row-value"><span class="vs-partial">6-8</span></div>
-      </div>
+  function parseUsersNum(str) {
+    const m = str.match(/([\d.]+)(万|亿)?/);
+    if (!m) return 0;
+    let n = parseFloat(m[1]);
+    if (m[2] === '亿') n *= 100000000;
+    else if (m[2] === '万') n *= 10000;
+    return n;
+  }
 
-      <div class="vs-table-row">
-        <div class="vs-row-label">使用场景</div>
-        <div class="vs-row-value"><span class="vs-partial">专业制作</span></div>
-        <div class="vs-row-value"><span class="vs-partial">短视频</span></div>
-      </div>
-
-      <div class="vs-table-row">
-        <div class="vs-row-label">性价比</div>
-        <div class="vs-row-value"><span class="vs-partial">中等</span></div>
-        <div class="vs-row-value"><span class="vs-check">较高</span></div>
-      </div>
-    </div>
-
-    <div class="verdict-box">
-      <div class="verdict-title">🏆 总结</div>
-      <div class="verdict-content">
-        <strong>Runway</strong>：专业的AI视频创作平台，功能丰富，支持专业视频制作，适合广告、影视等专业场景。<br><br>
-        <strong>Pika</strong>：专注于短视频生成，价格亲民，口型同步效果好，适合短视频创作者、社交媒体运营。
-      </div>
-    </div>
-  </section>
-
-</main>
+  // ============ 键盘支持 ============
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') document.getElementById('pickerOverlay').classList.remove('open');
+  });
+</script>
 
 <!-- 底部 -->
-<footer>
-  <div class="footer-grid">
-    <div class="footer-brand">
-      <div style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">🤖 AI工具导航</div>
-      <p>发现最好用的AI工具，提升你的工作效率。收录500+人工智能工具，每日更新。</p>
-      <p style="font-size:0.8rem;">© 2026 AI工具导航 · 免费使用</p>
+<footer style="background:var(--bg-card);border-top:1px solid var(--border);padding:32px 24px;margin-top:40px;">
+  <div style="max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+    <div style="font-size:0.875rem;color:var(--text-muted);">© 2026 AI工具导航 · <a href="index.html" style="color:var(--primary);text-decoration:none;">返回首页</a></div>
+    <div style="display:flex;gap:16px;font-size:0.875rem;">
+      <a href="ranking.html" style="color:var(--text-muted);text-decoration:none;">排行榜</a>
+      <a href="use-cases.html" style="color:var(--text-muted);text-decoration:none;">使用场景</a>
+      <a href="submit.html" style="color:var(--text-muted);text-decoration:none;">提交工具</a>
     </div>
-    <div class="footer-col">
-      <h4>工具分类</h4>
-      <ul>
-        <li><a href="writing.html">AI写作</a></li>
-        <li><a href="image.html">AI绘画</a></li>
-        <li><a href="video.html">AI视频</a></li>
-        <li><a href="code.html">AI编程</a></li>
-        <li><a href="audio.html">AI音乐</a></li>
-      </ul>
-    </div>
-    <div class="footer-col">
-      <h4>功能</h4>
-      <ul>
-        <li><a href="ranking.html">排行榜</a></li>
-        <li><a href="compare.html">工具对比</a></li>
-        <li><a href="news.html">AI资讯</a></li>
-        <li><a href="submit.html">提交工具</a></li>
-      </ul>
-    </div>
-    <div class="footer-col">
-      <h4>关于</h4>
-      <ul>
-        <li><a href="#">关于我们</a></li>
-        <li><a href="#">联系我们</a></li>
-        <li><a href="#">隐私政策</a></li>
-        <li><a href="#">用户协议</a></li>
-      </ul>
-    </div>
-  </div>
-  <div class="footer-bottom">
-    <span>© 2026 AI工具导航 · 专注发现最好用的AI工具</span>
-    <span>
-      <a href="sitemap.xml" style="color:var(--text-muted);text-decoration:none;margin-right:16px;">网站地图</a>
-      <a href="https://github.com/Hjouy/ai-tools-directory" target="_blank" rel="noopener" style="color:var(--text-muted);text-decoration:none;">GitHub</a>
-    </span>
   </div>
 </footer>
-
-<!-- SEO结构化数据 -->
-<script>
-(function(){
-  var ld = document.createElement('script');
-  ld.type = 'application/ld+json';
-  ld.textContent = JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": [
-      {
-        "@type": "Question",
-        "name": "ChatGPT 和 Claude 哪个更好用？",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "ChatGPT是全能型AI助手，插件生态丰富，适合日常使用；Claude长文本处理能力更强，适合处理大型文档和研究报告。"
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Midjourney 和 Stable Diffusion 怎么选择？",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Midjourney上手简单，画质顶级，适合快速创作；Stable Diffusion完全免费且高度可定制，适合技术用户和需要深度定制的专业创作者。"
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Cursor 和 GitHub Copilot 哪个更适合开发者？",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Cursor是AI原生编辑器，深度集成AI能力；GitHub Copilot是VS Code插件，适合在现有IDE中增加AI辅助。"
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Suno 和 Udio 哪个音乐质量更好？",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Suno是AI音乐生成领域的先行者，功能成熟，社区活跃；Udio是新晋挑战者，技术上各有特色，正在快速发展。两者在音乐质量上各有千秋。"
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Perplexity 和 Notion AI 怎么选择？",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Perplexity是AI搜索引擎，实时检索信息并自动引用来源，适合学术研究；Notion AI深度集成在笔记和文档工作流中，适合团队协作和内容创作。"
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Runway 和 Pika 哪个更适合视频创作？",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Runway是专业AI视频创作平台，功能丰富，支持4K分辨率，适合专业制作；Pika专注于短视频生成，价格亲民，适合短视频创作者。"
-        }
-      }
-    ]
-  });
-  document.head.appendChild(ld);
-})();
-</script>
-
-<!-- ==================== 统计代码 ==================== -->
-<!-- 百度统计：请到 https://tongji.baidu.com/ 注册并替换下面的 ID -->
-<script>
-  var _hmt = _hmt || [];
-  (function() {
-    var hm = document.createElement("script");
-    hm.src = "https://hm.baidu.com/hm.js?请替换为你的百度统计ID";
-    var s = document.getElementsByTagName("script")[0];
-    s.parentNode.insertBefore(hm, s);
-  })();
-</script>
-
-<!-- Google Analytics (GA4)：请到 https://analytics.google.com/ 注册并替换下面的 ID -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-请替换为你的GA4ID"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-请替换为你的GA4ID');
-</script>
-<!-- ==================== 统计代码结束 ==================== -->
 
 </body>
 </html>
