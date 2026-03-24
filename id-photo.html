@@ -713,8 +713,7 @@ function setProgress(pct, text, stepIdx) {
 async function startProcessing() {
     setAIStatus('loading', 'AI 处理中...');
     setProgress(10, '上传图片到AI服务...', 1);
-    await delay(200);
-    setProgress(30, '专业AI模型分析人像...', 2);
+    await delay(300);
 
     try {
         await runRemoveBgAPI();
@@ -732,88 +731,110 @@ async function startProcessing() {
     }
 }
 
-// ===== 专业 AI 抠图（Hugging Face RMBG-1.4 模型） =====
+// ===== 专业 AI 抠图（Gradio Space，支持浏览器直调，无CORS限制）=====
+// 使用 not-lain/background-removal Space（基于 RMBG-1.4 模型，完全免费）
+const GRADIO_BASE = 'https://not-lain-background-removal.hf.space';
+
 async function runRemoveBgAPI() {
     if (!originalFile) throw new Error('没有可处理的图片');
 
-    setProgress(40, 'AI模型识别人像轮廓...', 3);
+    setProgress(30, 'AI模型准备中（首次约20秒）...', 2);
 
-    // 使用 Hugging Face Inference API（免费，无需Key）
-    // RMBG-1.4 是目前最好的开源抠图模型
-    const formData = new FormData();
-    formData.append('data', originalFile);
+    // Step 1: 把图片转成 base64 data URL
+    const base64DataUrl = await fileToBase64(originalFile);
 
-    let resultBlob;
-    let apiSuccess = false;
+    setProgress(45, '上传图片到专业AI模型...', 3);
 
-    // 方案1：Hugging Face RMBG-1.4（最高质量）
-    try {
-        setProgress(50, 'AI深度学习模型处理中...', 3);
-        const resp = await fetch('https://api-inference.huggingface.co/models/briaai/RMBG-1.4', {
-            method: 'POST',
-            headers: { 'Authorization': 'Bearer hf_public' },
-            body: originalFile,
-            signal: AbortSignal.timeout(30000)
-        });
-        if (resp.ok) {
-            resultBlob = await resp.blob();
-            if (resultBlob.size > 1000 && resultBlob.type.includes('image')) {
-                apiSuccess = true;
-                setAIStatus('ready', 'RMBG-1.4');
-            }
-        }
-    } catch(e) { console.warn('RMBG-1.4 失败:', e.message); }
+    // Step 2: 调用 Gradio /gradio_api/queue/join 接口提交任务
+    // 使用 base64 url 字段直接传图（无需先上传文件）
+    const joinResp = await fetch(`${GRADIO_BASE}/gradio_api/queue/join`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            fn_index: 0,
+            data: [{ url: base64DataUrl, orig_name: originalFile.name, mime_type: originalFile.type, is_stream: false, meta: { _type: 'gradio.FileData' } }],
+            session_hash: generateSessionHash()
+        }),
+        signal: AbortSignal.timeout(15000)
+    });
 
-    // 方案2：Hugging Face BiRefNet（备用高质量模型）
-    if (!apiSuccess) {
-        try {
-            setProgress(55, '切换备用AI模型...', 3);
-            const resp2 = await fetch('https://api-inference.huggingface.co/models/ZhengPeng7/BiRefNet', {
-                method: 'POST',
-                body: originalFile,
-                signal: AbortSignal.timeout(30000)
-            });
-            if (resp2.ok) {
-                resultBlob = await resp2.blob();
-                if (resultBlob.size > 1000 && resultBlob.type.includes('image')) {
-                    apiSuccess = true;
-                    setAIStatus('ready', 'BiRefNet');
-                }
-            }
-        } catch(e) { console.warn('BiRefNet 失败:', e.message); }
-    }
+    if (!joinResp.ok) throw new Error(`提交任务失败: ${joinResp.status}`);
+    const joinData = await joinResp.json();
+    const eventId = joinData.event_id;
+    if (!eventId) throw new Error('未获取到任务ID');
 
-    // 方案3：remove.bg 免费API（50次/月，质量最高）
-    if (!apiSuccess) {
-        try {
-            setProgress(60, '尝试remove.bg服务...', 3);
-            const fd = new FormData();
-            fd.append('image_file', originalFile);
-            fd.append('size', 'auto');
-            const resp3 = await fetch('https://api.remove.bg/v1.0/removebg', {
-                method: 'POST',
-                headers: { 'X-Api-Key': 'zMm5dSVqSRNKBjpxXTmtXBpR' },
-                body: fd,
-                signal: AbortSignal.timeout(30000)
-            });
-            if (resp3.ok) {
-                resultBlob = await resp3.blob();
-                if (resultBlob.size > 1000) {
-                    apiSuccess = true;
-                    setAIStatus('ready', 'remove.bg');
-                }
-            }
-        } catch(e) { console.warn('remove.bg 失败:', e.message); }
-    }
+    setProgress(55, 'AI深度学习模型处理中...', 3);
 
-    if (!apiSuccess || !resultBlob) {
-        throw new Error('所有AI服务暂时不可用，请稍后重试');
-    }
+    // Step 3: 通过 SSE 监听结果
+    const resultUrl = await pollGradioResult(eventId);
 
     setProgress(80, '生成高清透明图层...', 4);
 
-    // 将返回的透明PNG转为 ImageData
+    // Step 4: 下载结果图片
+    const imgResp = await fetch(resultUrl.startsWith('http') ? resultUrl : `${GRADIO_BASE}${resultUrl}`, {
+        signal: AbortSignal.timeout(20000)
+    });
+    if (!imgResp.ok) throw new Error('下载结果图片失败');
+    const resultBlob = await imgResp.blob();
+
+    setAIStatus('ready', 'RMBG-1.4');
     await blobToResultImageData(resultBlob);
+}
+
+// ===== 监听 Gradio SSE 结果 =====
+async function pollGradioResult(eventId) {
+    return new Promise((resolve, reject) => {
+        const evtSource = new EventSource(`${GRADIO_BASE}/gradio_api/queue/data?session_hash=${eventId}`);
+        const timer = setTimeout(() => {
+            evtSource.close();
+            reject(new Error('AI处理超时（60秒），请重试'));
+        }, 60000);
+
+        evtSource.onmessage = (e) => {
+            try {
+                const msg = JSON.parse(e.data);
+                if (msg.msg === 'process_completed') {
+                    evtSource.close();
+                    clearTimeout(timer);
+                    const output = msg.output?.data?.[0];
+                    if (!output) { reject(new Error('AI未返回结果')); return; }
+                    // 返回结果可能是 url 或 path
+                    const url = output.url || output.path || output;
+                    if (!url) { reject(new Error('无法解析结果地址')); return; }
+                    resolve(url);
+                } else if (msg.msg === 'queue_full') {
+                    evtSource.close();
+                    clearTimeout(timer);
+                    reject(new Error('AI服务繁忙，请稍后重试'));
+                } else if (msg.msg === 'process_starts') {
+                    setProgress(65, 'AI正在识别人像边缘...', 3);
+                } else if (msg.msg === 'estimation') {
+                    const rank = msg.rank || 0;
+                    if (rank > 0) setProgress(50, `排队中（前方${rank}人）...`, 3);
+                }
+            } catch(err) { /* 忽略解析错误 */ }
+        };
+
+        evtSource.onerror = () => {
+            evtSource.close();
+            clearTimeout(timer);
+            reject(new Error('AI服务连接中断，请重试'));
+        };
+    });
+}
+
+// ===== 工具函数 =====
+function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = e => resolve(e.target.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+function generateSessionHash() {
+    return Math.random().toString(36).substring(2, 12);
 }
 
 // ===== Blob → ImageData（保留完整分辨率）=====
@@ -828,7 +849,6 @@ async function blobToResultImageData(blob) {
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0);
             resultImageData = ctx.getImageData(0, 0, img.width, img.height);
-            // 同步更新 originalImage 为返回的同尺寸图（用于裁剪比例参考）
             originalImage = img;
             URL.revokeObjectURL(url);
             resolve();
