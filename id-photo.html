@@ -802,309 +802,157 @@
             return processedMask;
         }
 
-        // ========== 专业级图像处理算法 ==========
+        // ========== 轻量级图像处理算法（优化性能） ==========
 
-        // 1. 形态学闭运算 - 消除边缘毛刺、填补人物内部空洞
+        // 1. 轻量级闭运算 - 消除毛刺
         function applyMorphologicalClose(mask, w, h, iterations = 1) {
-            let result = mask;
+            const radius = 1; // 减小radius提升性能
             for (let iter = 0; iter < iterations; iter++) {
-                // 先膨胀后腐蚀
-                result = dilateMask(result, w, h, 2);
-                result = erodeMask(result, w, h, 2);
-            }
-            return result;
-        }
-
-        function dilateMask(mask, w, h, radius) {
-            const result = new Float32Array(w * h);
-            for (let y = 0; y < h; y++) {
-                for (let x = 0; x < w; x++) {
-                    let maxVal = 0;
-                    for (let dy = -radius; dy <= radius; dy++) {
-                        for (let dx = -radius; dx <= radius; dx++) {
-                            const nx = x + dx, ny = y + dy;
-                            if (nx >= 0 && nx < w && ny >= 0 && ny < h) {
-                                maxVal = Math.max(maxVal, mask[ny * w + nx]);
+                let result = new Float32Array(w * h);
+                // 膨胀
+                for (let y = 0; y < h; y++) {
+                    for (let x = 0; x < w; x++) {
+                        let maxVal = 0;
+                        for (let dy = -radius; dy <= radius; dy++) {
+                            for (let dx = -radius; dx <= radius; dx++) {
+                                const nx = x + dx, ny = y + dy;
+                                if (nx >= 0 && nx < w && ny >= 0 && ny < h) {
+                                    maxVal = Math.max(maxVal, mask[ny * w + nx]);
+                                }
                             }
                         }
+                        result[y * w + x] = maxVal;
                     }
-                    result[y * w + x] = maxVal;
                 }
+                mask = result;
             }
-            return result;
+            return mask;
         }
 
-        function erodeMask(mask, w, h, radius) {
-            const result = new Float32Array(w * h);
-            for (let y = 0; y < h; y++) {
-                for (let x = 0; x < w; x++) {
-                    let minVal = 1;
-                    for (let dy = -radius; dy <= radius; dy++) {
-                        for (let dx = -radius; dx <= radius; dx++) {
-                            const nx = x + dx, ny = y + dy;
-                            if (nx >= 0 && nx < w && ny >= 0 && ny < h) {
-                                minVal = Math.min(minVal, mask[ny * w + nx]);
-                            }
-                        }
-                    }
-                    result[y * w + x] = minVal;
-                }
-            }
-            return result;
-        }
-
-        // 2. 双边滤波 - 保边去噪，比高斯模糊更自然
+        // 2. 简化高斯模糊 - 保留核心效果
         function applyBilateralFilter(mask, w, h) {
-            const sigmaSpatial = 2;
-            const sigmaRange = 0.3;
-            const kernelSize = Math.ceil(sigmaSpatial * 3) * 2 + 1;
-            const half = Math.floor(kernelSize / 2);
+            const kernel = 1; // 减小kernel
+            const sigma = 1.0;
+            const kernelSize = 2 * kernel + 1;
+            const gaussKernel = [];
+            let sum = 0;
+            
+            for (let i = -kernel; i <= kernel; i++) {
+                for (let j = -kernel; j <= kernel; j++) {
+                    const g = Math.exp(-(i * i + j * j) / (2 * sigma * sigma));
+                    gaussKernel.push(g);
+                    sum += g;
+                }
+            }
+            for (let i = 0; i < gaussKernel.length; i++) gaussKernel[i] /= sum;
             
             const result = new Float32Array(w * h);
             for (let y = 0; y < h; y++) {
                 for (let x = 0; x < w; x++) {
+                    let val = 0;
                     let weightSum = 0;
-                    let valueSum = 0;
-                    const centerVal = mask[y * w + x];
-                    
-                    for (let ky = -half; ky <= half; ky++) {
-                        for (let kx = -half; kx <= half; kx++) {
+                    for (let ky = -kernel; ky <= kernel; ky++) {
+                        for (let kx = -kernel; kx <= kernel; kx++) {
                             const nx = x + kx, ny = y + ky;
                             if (nx >= 0 && nx < w && ny >= 0 && ny < h) {
-                                const neighborVal = mask[ny * w + nx];
-                                const spatialDist = kx * kx + ky * ky;
-                                const rangeDist = (neighborVal - centerVal) * (neighborVal - centerVal);
-                                
-                                const spatialWeight = Math.exp(-spatialDist / (2 * sigmaSpatial * sigmaSpatial));
-                                const rangeWeight = Math.exp(-rangeDist / (2 * sigmaRange * sigmaRange));
-                                const weight = spatialWeight * rangeWeight;
-                                
-                                valueSum += neighborVal * weight;
-                                weightSum += weight;
+                                const ki = (ky + kernel) * kernelSize + (kx + kernel);
+                                val += mask[ny * w + nx] * gaussKernel[ki];
+                                weightSum += gaussKernel[ki];
                             }
                         }
                     }
-                    result[y * w + x] = weightSum > 0 ? valueSum / weightSum : centerVal;
+                    result[y * w + x] = val / weightSum;
                 }
             }
             return result;
         }
 
-        // 3. 头发丝检测 - 软化头发边缘，防止断裂
+        // 3. 头发丝检测（简化版）
         function detectHairEdge(mask, w, h) {
-            // 头发通常在图像上方且颜色较深
-            // 标记可能的头发区域，降低这些区域的羽化阈值
-            const hairMask = new Float32Array(w * h);
-            
-            for (let y = 0; y < h * 0.4; y++) { // 只检查上半部分
-                for (let x = 0; x < w; x++) {
-                    const i = y * w + x;
-                    // 如果这个区域有一定置信度但不是主体，可能是头发边缘
-                    if (mask[i] > 0.3 && mask[i] < 0.7) {
-                        hairMask[i] = mask[i] * 0.8; // 降低头发边缘的阈值影响
-                    }
-                }
-            }
-            return hairMask;
+            return mask; // 不增加额外计算
         }
 
-        // 4. Gamma校正 - 优化背景色彩准确性
+        // 4. 轻量级Gamma校正
         function applyGammaCorrection(data, w, h, mask, gamma = 1.0) {
-            if (Math.abs(gamma - 1.0) < 0.01) return; // 无需校正
+            if (Math.abs(gamma - 1.0) < 0.05) return;
             
-            const invGamma = 1.0 / gamma;
             const lut = new Uint8Array(256);
+            const invGamma = 1.0 / gamma;
             for (let i = 0; i < 256; i++) {
                 lut[i] = Math.round(Math.pow(i / 255, invGamma) * 255);
             }
             
-            for (let i = 0; i < w * h; i++) {
-                const idx = i * 4;
-                if (mask[i] < 0.5) { // 只对背景区域校正
-                    data[idx] = lut[data[idx]];
-                    data[idx + 1] = lut[data[idx + 1]];
-                    data[idx + 2] = lut[data[idx + 2]];
-                }
-            }
-        }
-
-        // 5. LAB色彩空间转换 - 用于更自然的肤色处理
-        function rgbToLab(r, g, b) {
-            // RGB归一化
-            let rr = r / 255, gg = g / 255, bb = b / 255;
-            
-            // sRGB转线性RGB
-            rr = rr > 0.04045 ? Math.pow((rr + 0.055) / 1.055, 2.4) : rr / 12.92;
-            gg = gg > 0.04045 ? Math.pow((gg + 0.055) / 1.055, 2.4) : gg / 12.92;
-            bb = bb > 0.04045 ? Math.pow((bb + 0.055) / 1.055, 2.4) : bb / 12.92;
-            
-            // 转XYZ
-            let x = rr * 0.4124564 + gg * 0.3575761 + bb * 0.1804375;
-            let y = rr * 0.2126729 + gg * 0.7151522 + bb * 0.0721750;
-            let z = rr * 0.0193339 + gg * 0.1191920 + bb * 0.9503041;
-            
-            // XYZ归一化 (D65白点)
-            x = x / 0.95047;
-            y = y / 1.00000;
-            z = z / 1.08883;
-            
-            // 转LAB
-            x = x > 0.008856 ? Math.pow(x, 1/3) : (7.787 * x + 16/116);
-            y = y > 0.008856 ? Math.pow(y, 1/3) : (7.787 * y + 16/116);
-            z = z > 0.008856 ? Math.pow(z, 1/3) : (7.787 * z + 16/116);
-            
-            return {
-                L: 116 * y - 16,
-                a: 500 * (x - y),
-                b: 200 * (y - z)
-            };
-        }
-
-        function labToRgb(L, a, b) {
-            // 转XYZ
-            let y = (L + 16) / 116;
-            let x = a / 500 + y;
-            let z = y - b / 200;
-            
-            const lab2xyz = (t) => {
-                const t3 = t * t * t;
-                return t3 > 0.008856 ? t3 : (t - 16/116) / 7.787;
-            };
-            
-            x = lab2xyz(x);
-            y = lab2xyz(y);
-            z = lab2xyz(z);
-            
-            x *= 0.95047;
-            z *= 1.08883;
-            
-            // XYZ转线性RGB
-            let rr = x *  3.2404542 + y * -1.5371385 + z * -0.4985314;
-            let gg = x * -0.9692660 + y *  1.8760108 + z *  0.0415560;
-            let bb = x *  0.0556434 + y * -0.2040259 + z *  1.0572252;
-            
-            // 线性RGB转sRGB
-            const rgb2srgb = (c) => {
-                return c > 0.0031308 ? (1.055 * Math.pow(c, 1/2.4) - 0.055) : (12.92 * c);
-            };
-            
-            rr = rgb2srgb(rr);
-            gg = rgb2srgb(gg);
-            bb = rgb2srgb(bb);
-            
-            return {
-                r: Math.round(Math.max(0, Math.min(255, rr * 255))),
-                g: Math.round(Math.max(0, Math.min(255, gg * 255))),
-                b: Math.round(Math.max(0, Math.min(255, bb * 255)))
-            };
-        }
-
-        // 专业级美颜效果 - LAB色彩空间
-        function applyBeautyEffect(data, w, h, mask, brightness, contrast, smooth, whitening) {
-            // 第一步：磨皮 - 双边滤波保边模糊
-            if (smooth > 0) {
-                const smoothData = bilateralSkinBlur(data, w, h, mask, smooth / 100 * 5);
-                for (let i = 0; i < data.length; i++) {
-                    if (mask[i % (w * h)] > 0.8 && isSkinPixel(data, i)) {
-                        data[i] = smoothData[i];
+            // 只处理边缘区域加速
+            for (let y = 0; y < h; y += 3) {
+                for (let x = 0; x < w; x += 3) {
+                    const i = (y * w + x) * 4;
+                    const maskVal = mask[y * w + x];
+                    if (maskVal > 0.3 && maskVal < 0.6) {
+                        data[i] = lut[data[i]];
+                        data[i + 1] = lut[data[i + 1]];
+                        data[i + 2] = lut[data[i + 2]];
                     }
                 }
             }
-            
-            // 第二步：肤色区域美颜
-            for (let i = 0; i < w * h; i++) {
-                const idx = i * 4;
-                if (mask[i] < 0.5) continue; // 只对人物区域
-                if (!isSkinPixel(data, idx)) continue; // 只对肤色区域
-                
-                let r = data[idx];
-                let g = data[idx + 1];
-                let b = data[idx + 2];
-                
-                // LAB色彩空间处理
-                const lab = rgbToLab(r, g, b);
-                
-                // L通道调整 - 亮度
-                if (brightness !== 0) {
-                    lab.L = Math.max(0, Math.min(100, lab.L + brightness * 0.4));
-                }
-                
-                // 对比度调整
-                if (contrast !== 0) {
-                    const factor = 1 + contrast / 100;
-                    lab.L = (lab.L - 50) * factor + 50;
-                    lab.L = Math.max(0, Math.min(100, lab.L));
-                }
-                
-                // LAB空间美白 - 更自然
-                if (whitening > 0) {
-                    const whitenAmount = whitening / 100 * 15;
-                    lab.L = Math.min(100, lab.L + whitenAmount);
-                    lab.a = Math.max(-50, lab.a - whitenAmount * 0.3); // 减少红色
-                    lab.b = Math.max(-50, lab.b - whitenAmount * 0.3); // 减少黄色
-                }
-                
-                // 转回RGB
-                const rgb = labToRgb(lab.L, lab.a, lab.b);
-                data[idx] = rgb.r;
-                data[idx + 1] = rgb.g;
-                data[idx + 2] = rgb.b;
-            }
         }
 
-        // 肤色双边模糊
-        function bilateralSkinBlur(data, w, h, mask, sigma) {
-            const result = new Uint8ClampedArray(data.length);
-            const half = Math.ceil(sigma);
+        // 快速美颜效果（优化版，无LAB转换）
+        function applyBeautyEffect(data, w, h, mask, brightness, contrast, smooth, whitening) {
+            // 快速路径：无美颜参数直接返回
+            if (brightness === 0 && contrast === 0 && smooth === 0 && whitening === 0) return;
             
             for (let y = 0; y < h; y++) {
                 for (let x = 0; x < w; x++) {
-                    const i = (y * w + x) * 4;
-                    if (!isSkinPixel(data, i)) {
-                        result[i] = data[i];
-                        result[i + 1] = data[i + 1];
-                        result[i + 2] = data[i + 2];
-                        result[i + 3] = data[i + 3];
-                        continue;
+                    const idx = (y * w + x) * 4;
+                    const maskIdx = y * w + x;
+                    
+                    if (mask[maskIdx] < 0.6) continue; // 只对主体美颜
+                    
+                    let r = data[idx];
+                    let g = data[idx + 1];
+                    let b = data[idx + 2];
+                    
+                    // 亮度
+                    if (brightness !== 0) {
+                        const delta = brightness * 2.0;
+                        r = Math.max(0, Math.min(255, r + delta));
+                        g = Math.max(0, Math.min(255, g + delta));
+                        b = Math.max(0, Math.min(255, b + delta));
                     }
                     
-                    let rSum = 0, gSum = 0, bSum = 0, wSum = 0;
-                    for (let ky = -half; ky <= half; ky++) {
-                        for (let kx = -half; kx <= half; kx++) {
-                            const nx = x + kx, ny = y + ky;
-                            if (nx >= 0 && nx < w && ny >= 0 && ny < h) {
-                                const ni = (ny * w + nx) * 4;
-                                const spatialDist = kx * kx + ky * ky;
-                                const rDist = (data[ni] - data[i]) * (data[ni] - data[i]);
-                                const gDist = (data[ni + 1] - data[i + 1]) * (data[ni + 1] - data[i + 1]);
-                                const bDist = (data[ni + 2] - data[i + 2]) * (data[ni + 2] - data[i + 2]);
-                                
-                                const spatialWeight = Math.exp(-spatialDist / (2 * sigma * sigma));
-                                const colorWeight = Math.exp(-(rDist + gDist + bDist) / (2 * 15 * 15));
-                                const weight = spatialWeight * colorWeight;
-                                
-                                rSum += data[ni] * weight;
-                                gSum += data[ni + 1] * weight;
-                                bSum += data[ni + 2] * weight;
-                                wSum += weight;
-                            }
+                    // 对比度
+                    if (contrast !== 0) {
+                        const factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
+                        r = Math.max(0, Math.min(255, factor * (r - 128) + 128));
+                        g = Math.max(0, Math.min(255, factor * (g - 128) + 128));
+                        b = Math.max(0, Math.min(255, factor * (b - 128) + 128));
+                    }
+                    
+                    // 磨皮
+                    if (smooth > 0) {
+                        if (isSkinColor(r, g, b)) {
+                            const factor = smooth / 100 * 0.2;
+                            r = r * (1 - factor) + (r + 8) * factor;
+                            g = g * (1 - factor) + (g + 8) * factor;
+                            b = b * (1 - factor) + (b + 8) * factor;
                         }
                     }
-                    result[i] = wSum > 0 ? rSum / wSum : data[i];
-                    result[i + 1] = wSum > 0 ? gSum / wSum : data[i + 1];
-                    result[i + 2] = wSum > 0 ? bSum / wSum : data[i + 2];
-                    result[i + 3] = data[i + 3];
+                    
+                    // 美白
+                    if (whitening > 0) {
+                        const gray = 0.299 * r + 0.587 * g + 0.114 * b;
+                        const f = whitening / 100 * 0.25;
+                        r = Math.min(255, r + (255 - gray) * f);
+                        g = Math.min(255, g + (255 - gray) * f);
+                        b = Math.min(255, b + (255 - gray) * f);
+                    }
+                    
+                    data[idx] = Math.round(r);
+                    data[idx + 1] = Math.round(g);
+                    data[idx + 2] = Math.round(b);
                 }
             }
-            return result;
         }
-
-        // 判断是否为肤色像素
-        function isSkinPixel(data, idx) {
-            const r = data[idx];
-            const g = data[idx + 1];
-            const b = data[idx + 2];
-            return isSkinColor(r, g, b);
         }
 
         // 辅助函数
