@@ -714,8 +714,9 @@ function setProgress(pct, text, stepIdx) {
 // 完全在浏览器本地运行，无需服务器，无限次免费
 const ORT_CDN = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.18.0/dist/ort.min.js';
 const ORT_WASM = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.18.0/dist/';
-const MODEL_URL = 'https://hf-mirror.com/briaai/RMBG-1.4/resolve/main/onnx/model_quantized.onnx';
-const MODEL_INPUT_SIZE = 1024; // RMBG-1.4 输入尺寸
+// u2netp: 4.4MB 轻量模型，存于自己 GitHub 仓库，通过 jsDelivr 托管，cors=*，国内可达
+const MODEL_URL = 'https://cdn.jsdelivr.net/gh/Hjouy/ai-tools-directory@main/models/u2netp.onnx';
+const MODEL_INPUT_SIZE = 320; // u2netp 输入尺寸为 320x320
 
 let ortSession = null;      // ONNX 推理会话（复用）
 let ortLoaded = false;
@@ -742,13 +743,13 @@ async function initOrtSession(onProgress) {
     window.ort.env.wasm.wasmPaths = ORT_WASM;
     window.ort.env.wasm.numThreads = 1;
 
-    onProgress && onProgress(20, '正在下载AI模型（42MB，仅首次）...', 2);
+    onProgress && onProgress(20, '正在加载AI模型（4MB，仅首次需下载）...', 2);
 
     // 下载模型并显示进度
     const resp = await fetch(MODEL_URL);
-    if (!resp.ok) throw new Error(`模型下载失败: ${resp.status}`);
+    if (!resp.ok) throw new Error(`模型加载失败: ${resp.status}`);
 
-    const total = parseInt(resp.headers.get('Content-Length') || '44040192');
+    const total = parseInt(resp.headers.get('Content-Length') || '4574861');
     const reader = resp.body.getReader();
     const chunks = [];
     let received = 0;
@@ -888,17 +889,17 @@ async function runLocalAI() {
 
     setProgress(80, '处理掩码，生成透明图层...', 4);
 
-    // Sigmoid（如果模型未自带）
+    // u2netp 输出已经是 0-1 之间的概率值，直接使用（无需再 sigmoid）
     const mask = new Float32Array(maskRaw.length);
     for (let i = 0; i < maskRaw.length; i++) {
-        mask[i] = 1 / (1 + Math.exp(-maskRaw[i]));
+        mask[i] = Math.max(0, Math.min(1, maskRaw[i]));
     }
 
     // 应用掩码到原图
     resultImageData = applyMask(srcImgData, mask, MODEL_INPUT_SIZE, MODEL_INPUT_SIZE);
     originalImage = { width: srcImgData.width, height: srcImgData.height };
 
-    setAIStatus('ready', 'RMBG-1.4 本地');
+    setAIStatus('ready', 'U2Net-P 本地');
 }
 
 // ===== 工具函数 =====
