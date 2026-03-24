@@ -471,43 +471,44 @@
         // 极速预览 - 上传后立即显示效果
         function showFastPreview(img) {
             const area = document.getElementById('canvasArea');
-            area.innerHTML = `
-                <div style="position:relative;">
-                    <canvas id="mainCanvas"></canvas>
-                    <p id="previewStatus" style="text-align:center;font-size:0.8em;color:#888;margin-top:10px;">极速预览中...</p>
-                </div>
-            `;
             
-            const canvas = document.getElementById('mainCanvas');
+            // 创建 canvas 元素
+            const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
             
             // 预览时自适应显示尺寸
-            const maxW = Math.min(400, area.clientWidth - 40);
+            const maxW = Math.min(400, Math.max(100, area.clientWidth - 40));
             const scale = maxW / img.width;
             canvas.width = img.width;
             canvas.height = img.height;
             canvas.style.width = maxW + 'px';
             canvas.style.height = (img.height * scale) + 'px';
+            canvas.style.borderRadius = '10px';
+            canvas.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)';
             
-            // 绘制目标背景色
+            // 第一步：绘制目标背景色
             ctx.fillStyle = currentBgColor;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            // 使用destination-in模式叠加原图，实现快速抠图预览
-            ctx.globalCompositeOperation = 'destination-in';
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            
-            // 恢复叠加模式
-            ctx.globalCompositeOperation = 'source-over';
-            
-            // 叠加原图，边缘半透明过渡
-            ctx.globalCompositeOperation = 'source-over';
-            ctx.globalAlpha = 0.7;
+            // 第二步：叠加原图（半透明预览效果，模拟抠图）
+            ctx.globalAlpha = 0.8;
             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
             ctx.globalAlpha = 1;
             
+            // 替换区域内容
+            area.innerHTML = '';
+            area.appendChild(canvas);
+            
+            // 添加提示文字
+            const hint = document.createElement('p');
+            hint.style.textAlign = 'center';
+            hint.style.fontSize = '0.8em';
+            hint.style.color = '#888';
+            hint.style.marginTop = '10px';
+            hint.textContent = '预览已生成，点击「AI换底色」获取高清效果 ✓';
+            area.appendChild(hint);
+            
             showStatus('预览已生成，点击「AI换底色」获取高清效果', 'success');
-            document.getElementById('previewStatus').textContent = '极速预览 ✓';
         }
 
         function displayPreview(img) {
