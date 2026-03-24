@@ -554,18 +554,18 @@
                 let maskData;
                 if (segmenterReady && segmenter) {
                     try {
-                        // MediaPipe SelfieSegmentation 返回 ImageData
-                        const maskImageData = await segmenter.segmentPeople(workCanvas, {
-                            multiSegmentation: false,
-                            segmentBodyParts: false
+                        // MediaPipe SelfieSegmentation 0.4 返回 { imageData: ImageData }
+                        // imageData 是可视化格式: R=G=B=分割值(0-255), A=255
+                        // 使用 R 通道作为人像概率
+                        const result = await segmenter.segment(workCanvas, {
+                            selfieMode: false
                         });
                         
-                        // maskImageData 是 ImageData，alpha通道表示人像概率
-                        // 255 = 人像, 0 = 背景
+                        const maskImageData = result.imageData;
                         maskData = new Float32Array(w * h);
                         for (let i = 0; i < w * h; i++) {
-                            // 使用 alpha 通道
-                            maskData[i] = maskImageData.data[i * 4 + 3] / 255;
+                            // R通道 (或G或B都相同) 表示人像概率
+                            maskData[i] = maskImageData.data[i * 4] / 255;
                         }
                         
                         // 检查 mask 是否有效
