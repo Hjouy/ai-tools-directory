@@ -664,8 +664,7 @@
                 const targetColor = hexToRgb(currentBgColor);
                 
                 // ========== 专业证件照处理（优化版）==========
-                // 第一步：获取原图数据
-                const workCtx = workCanvas.getContext('2d');
+                // 第一步：获取原图数据（复用已创建的workCtx）
                 const personImageData = workCtx.getImageData(0, 0, w, h);
                 const personData = personImageData.data;
                 
@@ -787,7 +786,7 @@
         }
 
         // 备用分割算法（基于颜色和边缘检测）
-        async function fallbackSegmentation(ctx, w, h) {
+        function fallbackSegmentation(ctx, w, h) {
             const imageData = ctx.getImageData(0, 0, w, h);
             const data = imageData.data;
             
