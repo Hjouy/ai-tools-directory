@@ -381,16 +381,16 @@
         let currentQualityMode = 'normal'; // normal | medium | high
         let isProcessing = false;
         
-        // MediaPipe Selfie Segmentation 实例
+        // MediaPipe Selfie Segmentation 实例（懒加载）
         let segmenter = null;
         let segmenterLoaded = false;
+        let segmenterInitializing = false;
 
-        // 初始化 MediaPipe Selfie Segmentation
-        async function initSegmenter() {
-            const statusBar = document.getElementById('statusBar');
-            statusBar.textContent = '正在加载AI模型，请稍候...';
-            statusBar.className = 'status-bar processing';
+        // 懒加载初始化 - 只在点击处理时才初始化
+        async function initSegmenterIfNeeded() {
+            if (segmenterLoaded || segmenterInitializing) return segmenterLoaded;
             
+            segmenterInitializing = true;
             try {
                 // 检查 SelfieSegmentation 是否已加载
                 if (typeof SelfieSegmentation === 'undefined') {
@@ -403,38 +403,21 @@
                     }
                 });
                 
-                // 设置模型为通用模式（更好的边缘处理）
                 segmenter.setOptions({
                     modelType: 'general',
                     selfieMode: false
                 });
                 
                 segmenterLoaded = true;
-                statusBar.textContent = '✓ AI模型加载完成，可以开始处理';
-                statusBar.className = 'status-bar success';
-                
-                // 3秒后隐藏状态栏
-                setTimeout(() => {
-                    statusBar.className = 'status-bar';
-                }, 3000);
-                
+                return true;
             } catch (err) {
                 console.error('Failed to load segmenter:', err);
-                statusBar.textContent = 'AI模型加载中（可先使用备用算法）...';
-                statusBar.className = 'status-bar processing';
-                // 不要立即标记为失败，等待一段时间后再显示
-                setTimeout(() => {
-                    if (!segmenterLoaded) {
-                        statusBar.textContent = 'AI模型加载较慢，已准备好备用算法，可直接使用';
-                        statusBar.className = 'status-bar';
-                    }
-                }, 5000);
                 segmenterLoaded = false;
+                return false;
+            } finally {
+                segmenterInitializing = false;
             }
         }
-
-        // 页面加载时初始化模型
-        initSegmenter();
 
         // 文件上传
         document.getElementById('imageInput').addEventListener('change', handleFileUpload);
@@ -571,7 +554,10 @@
                 
                 let mask;
                 
-                if (segmenterLoaded && segmenter) {
+                // 先尝试初始化/加载模型（懒加载）
+                const hasModel = await initSegmenterIfNeeded();
+                
+                if (hasModel && segmenter) {
                     // 使用 MediaPipe Selfie Segmentation
                     showStatus('AI模型分析中，请稍候...', 'processing');
                     
