@@ -51,6 +51,10 @@
             padding: 20px;
             border-radius: 15px;
         }
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+        }
         .section-title {
             font-size: 1em;
             color: #333;
@@ -366,12 +370,12 @@
         </div>
     </div>
 
-    <!-- TensorFlow.js Core -->
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.17.0/dist/tf.min.js"></script>
+    <!-- TensorFlow.js Core (defer加载，页面解析完再执行) -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.17.0/dist/tf.min.js" defer></script>
     <!-- MediaPipe Camera Utils -->
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3.1675466380/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3.1675466380/camera_utils.js" crossorigin="anonymous" defer></script>
     <!-- MediaPipe Selfie Segmentation (最新版本) -->
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.4.1646421024/selfie_segmentation.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.4.1646421024/selfie_segmentation.js" crossorigin="anonymous" defer></script>
 
     <script>
         let originalImage = null;
