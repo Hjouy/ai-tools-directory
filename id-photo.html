@@ -600,34 +600,6 @@
                 
                 let mask;
                 
-                // ========== 调试：生成mask可视化用于排查 ==========
-                function debugShowMask(maskArr, width, height, label) {
-                    const dbgCanvas = document.createElement('canvas');
-                    dbgCanvas.width = width;
-                    dbgCanvas.height = height;
-                    dbgCanvas.style.border = '2px solid red';
-                    dbgCanvas.style.imageRendering = 'pixelated';
-                    const dbgCtx = dbgCanvas.getContext('2d');
-                    const imgData = dbgCtx.createImageData(width, height);
-                    for (let i = 0; i < width * height; i++) {
-                        const v = Math.round((maskArr[i] || 0) * 255);
-                        imgData.data[i * 4] = v;
-                        imgData.data[i * 4 + 1] = v;
-                        imgData.data[i * 4 + 2] = v;
-                        imgData.data[i * 4 + 3] = 255;
-                    }
-                    dbgCtx.putImageData(imgData, 0, 0);
-                    document.getElementById('canvasArea').innerHTML = '';
-                    document.getElementById('canvasArea').appendChild(dbgCanvas);
-                    const p = document.createElement('p');
-                    p.style.textAlign = 'center';
-                    p.style.color = '#888';
-                    p.style.marginTop = '10px';
-                    p.textContent = label;
-                    document.getElementById('canvasArea').appendChild(p);
-                    console.log(label + ' - mask统计: min=' + Math.min(...maskArr) + ', max=' + Math.max(...maskArr) + ', avg=' + (maskArr.reduce((a,b)=>a+b,0)/maskArr.length).toFixed(3));
-                }
-                
                 // 先尝试初始化/加载模型（懒加载）
                 const hasModel = await initSegmenterIfNeeded();
                 
@@ -636,19 +608,46 @@
                     showStatus('AI模型分析中，请稍候...', 'processing');
                     
                     try {
+                        console.log('开始MediaPipe分割...');
                         const result = await segmenter.segment(workCanvas, { selfieMode: false });
+                        console.log('MediaPipe分割完成, result:', result);
+                        console.log('result.data类型:', result?.data?.constructor?.name);
+                        console.log('result.data长度:', result?.data?.length);
                         
                         // MediaPipe 返回分割掩码在 R 通道（0=背景, 1=人物）
-                        if (result && result.data) {
+                        if (result && result.data && result.data.length > 0) {
                             mask = new Float32Array(w * h);
-                            for (let i = 0; i < w * h; i++) {
-                                mask[i] = result.data[i * 4] / 255;  // R通道，不是Alpha
+                            // 检查数据格式：可能是Float32Array或Uint8Array
+                            const isFloat = result.data instanceof Float32Array;
+                            const isUint8 = result.data instanceof Uint8Array;
+                            console.log('数据类型:', isFloat ? 'Float32Array' : (isUint8 ? 'Uint8Array' : '其他'));
+                            
+                            if (isFloat) {
+                                // Float32Array: 值已经是0-1范围
+                                for (let i = 0; i < w * h && i < result.data.length; i++) {
+                                    mask[i] = Math.max(0, Math.min(1, result.data[i]));
+                                }
+                            } else if (isUint8) {
+                                // Uint8Array: 值是0-255，需要归一化
+                                for (let i = 0; i < w * h && i < result.data.length; i++) {
+                                    mask[i] = result.data[i * 4] / 255;  // R通道
+                                }
+                            } else {
+                                // 其他格式，尝试通用处理
+                                for (let i = 0; i < w * h && i < result.data.length / 4; i++) {
+                                    mask[i] = result.data[i * 4] / 255;
+                                }
                             }
+                            
+                            console.log('mask生成完成, min:', Math.min(...mask.slice(0, 1000)), 'max:', Math.max(...mask.slice(0, 1000)));
                         } else {
+                            console.error('分割结果无效或为空');
                             throw new Error('Invalid segmentation result');
                         }
                     } catch (segErr) {
-                        console.warn('MediaPipe segmentation failed, using fallback:', segErr);
+                        console.error('MediaPipe分割失败:', segErr);
+                        console.log('切换到备用分割算法...');
+                        showStatus('使用备用算法处理中...', 'processing');
                         mask = await fallbackSegmentation(workCtx, w, h);
                     }
                 } else {
@@ -656,9 +655,6 @@
                     showStatus('使用备用算法处理中...', 'processing');
                     mask = await fallbackSegmentation(workCtx, w, h);
                 }
-                
-                // ========== 调试：显示原始mask ==========
-                debugShowMask(mask, w, h, '原始Mask (白=人物,黑=背景)');
                 
                 // ========== 根据处理模式选择算法 ==========
                 // 普通模式：跳过所有重算法，快速处理
@@ -682,6 +678,13 @@
                         showStatus('快速处理中...', 'processing');
                         // 不执行额外算法，直接使用原始mask
                 }
+                
+                // 验证mask有效性
+                if (!mask || mask.length !== w * h) {
+                    console.error('mask无效，使用备用算法');
+                    mask = await fallbackSegmentation(workCtx, w, h);
+                }
+                console.log('开始合成, mask范围:', Math.min(...mask.slice(0, 1000)), '-', Math.max(...mask.slice(0, 1000)));
                 
                 showStatus('正在合成证件照...', 'processing');
                 
