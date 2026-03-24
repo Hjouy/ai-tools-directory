@@ -600,6 +600,34 @@
                 
                 let mask;
                 
+                // ========== 调试：生成mask可视化用于排查 ==========
+                function debugShowMask(maskArr, width, height, label) {
+                    const dbgCanvas = document.createElement('canvas');
+                    dbgCanvas.width = width;
+                    dbgCanvas.height = height;
+                    dbgCanvas.style.border = '2px solid red';
+                    dbgCanvas.style.imageRendering = 'pixelated';
+                    const dbgCtx = dbgCanvas.getContext('2d');
+                    const imgData = dbgCtx.createImageData(width, height);
+                    for (let i = 0; i < width * height; i++) {
+                        const v = Math.round((maskArr[i] || 0) * 255);
+                        imgData.data[i * 4] = v;
+                        imgData.data[i * 4 + 1] = v;
+                        imgData.data[i * 4 + 2] = v;
+                        imgData.data[i * 4 + 3] = 255;
+                    }
+                    dbgCtx.putImageData(imgData, 0, 0);
+                    document.getElementById('canvasArea').innerHTML = '';
+                    document.getElementById('canvasArea').appendChild(dbgCanvas);
+                    const p = document.createElement('p');
+                    p.style.textAlign = 'center';
+                    p.style.color = '#888';
+                    p.style.marginTop = '10px';
+                    p.textContent = label;
+                    document.getElementById('canvasArea').appendChild(p);
+                    console.log(label + ' - mask统计: min=' + Math.min(...maskArr) + ', max=' + Math.max(...maskArr) + ', avg=' + (maskArr.reduce((a,b)=>a+b,0)/maskArr.length).toFixed(3));
+                }
+                
                 // 先尝试初始化/加载模型（懒加载）
                 const hasModel = await initSegmenterIfNeeded();
                 
@@ -610,11 +638,11 @@
                     try {
                         const result = await segmenter.segment(workCanvas, { selfieMode: false });
                         
-                        // MediaPipe 0.4 返回 ImageData，提取 alpha 通道
+                        // MediaPipe 返回分割掩码在 R 通道（0=背景, 1=人物）
                         if (result && result.data) {
                             mask = new Float32Array(w * h);
                             for (let i = 0; i < w * h; i++) {
-                                mask[i] = result.data[i * 4 + 3] / 255;
+                                mask[i] = result.data[i * 4] / 255;  // R通道，不是Alpha
                             }
                         } else {
                             throw new Error('Invalid segmentation result');
@@ -628,6 +656,9 @@
                     showStatus('使用备用算法处理中...', 'processing');
                     mask = await fallbackSegmentation(workCtx, w, h);
                 }
+                
+                // ========== 调试：显示原始mask ==========
+                debugShowMask(mask, w, h, '原始Mask (白=人物,黑=背景)');
                 
                 // ========== 根据处理模式选择算法 ==========
                 // 普通模式：跳过所有重算法，快速处理
