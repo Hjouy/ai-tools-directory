@@ -202,26 +202,61 @@
                 workCtx.drawImage(originalImage, 0, 0, w, h);
                 showStatus('AI模型分析中...', 'loading');
                 let mask;
+                
                 if (segmenterReady && segmenter) {
-                    try { mask = await segmenter.segmentPeople(workCanvas, { multiSegmentation: false, segmentBodyParts: false }); }
-                    catch (segErr) { console.warn('AI分割失败，使用备用算法:', segErr); mask = await fallbackSegmentation(workCtx, w, h); }
-                } else { mask = await fallbackSegmentation(workCtx, w, h); }
+                    try { 
+                        const result = await segmenter.segment(workCanvas, { selfieMode: false });
+                        // MediaPipe 0.4 返回 ImageData，data[4*i+3] 是 alpha 值
+                        mask = new Float32Array(w * h);
+                        if (result && result.data) {
+                            for (let i = 0; i < w * h; i++) {
+                                mask[i] = result.data[i * 4 + 3] / 255; // 转换为 0-1
+                            }
+                        } else {
+                            throw new Error('Invalid mask result');
+                        }
+                    } catch (segErr) { 
+                        console.warn('AI分割失败，使用备用算法:', segErr); 
+                        mask = await fallbackSegmentation(workCtx, w, h); 
+                    }
+                } else { 
+                    mask = await fallbackSegmentation(workCtx, w, h); 
+                }
+                
                 showStatus('正在生成抠图结果...', 'loading');
+                
+                // 高斯模糊优化边缘
+                const smoothMask = applyGaussianBlur(mask, w, h);
+                
                 const outputCanvas = document.createElement('canvas');
                 const outputCtx = outputCanvas.getContext('2d');
                 outputCanvas.width = w; outputCanvas.height = h;
                 outputCtx.drawImage(workCanvas, 0, 0);
+                
                 const imageData = outputCtx.getImageData(0, 0, w, h);
                 const data = imageData.data;
+                
                 for (let y = 0; y < h; y++) {
                     for (let x = 0; x < w; x++) {
                         const i = y * w + x;
                         const pixelIdx = i * 4;
-                        const personProb = mask[i] || 0;
-                        if (personProb < 0.4) { data[pixelIdx + 3] = 0; }
-                        else if (personProb < 0.6) { const alpha = (personProb - 0.4) / 0.2; data[pixelIdx + 3] = Math.round(alpha * 255); }
+                        const personProb = smoothMask[i] || 0;
+                        
+                        // 边缘羽化处理
+                        const edgeFeather = 3;
+                        let alpha;
+                        if (personProb < 0.2) {
+                            alpha = 0;
+                        } else if (personProb > 0.8) {
+                            alpha = 255;
+                        } else {
+                            // 平滑过渡区
+                            alpha = Math.round(((personProb - 0.2) / 0.6) * 255);
+                        }
+                        data[pixelIdx + 3] = alpha;
                     }
                 }
+                
                 outputCtx.putImageData(imageData, 0, 0);
                 processedCanvas = outputCanvas;
                 applyBackground();
@@ -230,9 +265,50 @@
             finally { isProcessing = false; document.getElementById('processBtn').disabled = false; document.getElementById('downloadBtn').disabled = false; }
         }
 
+        // 高斯模糊优化边缘
+        function applyGaussianBlur(mask, w, h) {
+            const kernel = 3;
+            const sigma = 1.5;
+            const kernelSize = 2 * kernel + 1;
+            const gaussKernel = [];
+            let sum = 0;
+            
+            for (let i = -kernel; i <= kernel; i++) {
+                for (let j = -kernel; j <= kernel; j++) {
+                    const g = Math.exp(-(i * i + j * j) / (2 * sigma * sigma));
+                    gaussKernel.push(g);
+                    sum += g;
+                }
+            }
+            for (let i = 0; i < gaussKernel.length; i++) gaussKernel[i] /= sum;
+            
+            const result = new Float32Array(w * h);
+            for (let y = 0; y < h; y++) {
+                for (let x = 0; x < w; x++) {
+                    let val = 0;
+                    let weightSum = 0;
+                    for (let ky = -kernel; ky <= kernel; ky++) {
+                        for (let kx = -kernel; kx <= kernel; kx++) {
+                            const nx = x + kx, ny = y + ky;
+                            if (nx >= 0 && nx < w && ny >= 0 && ny < h) {
+                                const ki = (ky + kernel) * kernelSize + (kx + kernel);
+                                const weight = gaussKernel[ki];
+                                val += mask[ny * w + nx] * weight;
+                                weightSum += weight;
+                            }
+                        }
+                    }
+                    result[y * w + x] = val / weightSum;
+                }
+            }
+            return result;
+        }
+
         async function fallbackSegmentation(ctx, w, h) {
             const imageData = ctx.getImageData(0, 0, w, h);
             const data = imageData.data;
+            
+            // 采样边缘颜色
             const edgeSamples = [];
             const sampleStep = 5;
             for (let y = 0; y < h; y += sampleStep) {
@@ -243,32 +319,66 @@
                     }
                 }
             }
-            const bgColor = { r: Math.round(edgeSamples.reduce((s, c) => s + c.r, 0) / edgeSamples.length), g: Math.round(edgeSamples.reduce((s, c) => s + c.g, 0) / edgeSamples.length), b: Math.round(edgeSamples.reduce((s, c) => s + c.b, 0) / edgeSamples.length) };
+            
+            const bgColor = {
+                r: Math.round(edgeSamples.reduce((s, c) => s + c.r, 0) / edgeSamples.length),
+                g: Math.round(edgeSamples.reduce((s, c) => s + c.g, 0) / edgeSamples.length),
+                b: Math.round(edgeSamples.reduce((s, c) => s + c.b, 0) / edgeSamples.length)
+            };
+            
             const mask = new Float32Array(w * h);
+            
             for (let y = 0; y < h; y++) {
                 for (let x = 0; x < w; x++) {
                     const i = y * w + x;
                     const pixelIdx = i * 4;
-                    const diff = Math.sqrt(Math.pow(data[pixelIdx] - bgColor.r, 2) + Math.pow(data[pixelIdx + 1] - bgColor.g, 2) + Math.pow(data[pixelIdx + 2] - bgColor.b, 2));
+                    const diff = Math.sqrt(
+                        Math.pow(data[pixelIdx] - bgColor.r, 2) +
+                        Math.pow(data[pixelIdx + 1] - bgColor.g, 2) +
+                        Math.pow(data[pixelIdx + 2] - bgColor.b, 2)
+                    );
+                    
+                    // 边缘处阈值更宽松（防止把人脸边缘切掉）
                     const edgeDist = Math.min(x, y, w - 1 - x, h - 1 - y);
-                    const baseThreshold = edgeDist < 30 ? 50 : 70;
-                    if (diff < baseThreshold) { mask[i] = 1 - diff / baseThreshold; } else { mask[i] = 1; }
+                    const baseThreshold = 50 + edgeDist * 0.5;
+                    
+                    // 差异小 = 背景 → mask 低
+                    // 差异大 = 可能是人物 → mask 高
+                    if (diff < baseThreshold) {
+                        mask[i] = 1 - diff / baseThreshold; // 接近背景
+                    } else {
+                        mask[i] = 1; // 主体
+                    }
                 }
             }
-            const kernel = 2, smoothMask = new Float32Array(w * h);
+            
+            // 使用肤色检测辅助判断
             for (let y = 0; y < h; y++) {
                 for (let x = 0; x < w; x++) {
-                    let sum = 0, count = 0;
-                    for (let dy = -kernel; dy <= kernel; dy++) {
-                        for (let dx = -kernel; dx <= kernel; dx++) {
-                            const nx = x + dx, ny = y + dy;
-                            if (nx >= 0 && nx < w && ny >= 0 && ny < h) { sum += mask[ny * w + nx]; count++; }
-                        }
+                    const i = y * w + x;
+                    const pixelIdx = i * 4;
+                    const r = data[pixelIdx], g = data[pixelIdx + 1], b = data[pixelIdx + 2];
+                    
+                    if (isSkinTone(r, g, b)) {
+                        mask[i] = Math.max(mask[i], 0.8);
                     }
-                    smoothMask[y * w + x] = sum / count;
                 }
             }
-            return smoothMask;
+            
+            return mask;
+        }
+        
+        function isSkinTone(r, g, b) {
+            const r2 = r / 255, g2 = g / 255, b2 = b / 255;
+            const max = Math.max(r2, g2, b2);
+            const min = Math.min(r2, g2, b2);
+            if (max < 0.15 || max > 0.95) return false;
+            if (min > 0.75) return false;
+            // 排除蓝色系
+            if (b2 > r2 * 1.15 && b2 > g2 * 1.1) return false;
+            // 肤色范围
+            const h = Math.max(r2, g2, b2) - Math.min(r2, g2, b2);
+            return h > 0.1 && h < 0.6;
         }
 
         function applyBackground() {
