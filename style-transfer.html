@@ -435,6 +435,7 @@
         function applyPopArtStyle(ctx, width, height, intensity) {
             const imageData = ctx.getImageData(0, 0, width, height);
             const data = imageData.data;
+            const original = new Uint8ClampedArray(data);
 
             // 色彩量化到鲜艳颜色
             const popColors = [
@@ -474,6 +475,7 @@
         function applyVintageStyle(ctx, width, height, intensity) {
             const imageData = ctx.getImageData(0, 0, width, height);
             const data = imageData.data;
+            const original = new Uint8ClampedArray(data);
 
             for (let i = 0; i < data.length; i += 4) {
                 let r = data[i], g = data[i + 1], b = data[i + 2];

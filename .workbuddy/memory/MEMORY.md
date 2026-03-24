@@ -131,3 +131,16 @@ chatgpt, midjourney, cursor, stable-diffusion, runway, suno, claude, notion-ai
   - tutorial-cutout.html - 在线抠图教程
   - tutorial-file-convert.html - PDF转换指南
   - tutorial-chatgpt.html - ChatGPT完全指南
+
+## 网站功能升级 (2026-03-23 深夜)
+- Font Awesome 异步加载（23个页面）
+- 暗色/亮色主题切换（initTheme, toggleTheme函数）
+- 社交分享按钮（微信/微博/QQ/复制链接）
+- 图片下载自动加水印（保护版权）
+- 新增5篇教程：
+  - tutorial-super-resolution.html
+  - tutorial-face-fusion.html
+  - tutorial-video-bg-remove.html
+  - tutorial-style-transfer.html
+  - tutorial-image-compress.html
+- 关键文件：share-buttons.js, watermark.js, optimize_fa.py
