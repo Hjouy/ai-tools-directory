@@ -146,15 +146,18 @@ chatgpt, midjourney, cursor, stable-diffusion, runway, suno, claude, notion-ai
 - 关键文件：share-buttons.js, watermark.js, optimize_fa.py
 
 ## 在线工具质量优化 (2026-03-24)
-- **修复style-transfer.html BUG**：applyPopArtStyle和applyVintageStyle中original变量未定义，添加Uint8ClampedArray副本
-- **完善pdf-tools.html**：
-  - PDF转PNG：使用PDF.js实现多页PDF逐页转换为PNG图片
-  - PDF压缩：使用pdf-lib的useObjectStreams选项压缩，显示压缩前后大小对比
 - **MediaPipe依赖升级**：统一升级到最新版本
   - SelfieSegmentation@0.4.1646421024
   - FaceMesh@0.4.1707981112
   - CameraUtils@0.3.1675466380
-- **抠图算法修复**：
-  - 修复MediaPipe 0.4返回格式（从Float32Array改为ImageData提取alpha）
-  - 添加高斯模糊优化边缘
-  - 优化边缘羽化处理，提升头发丝等细节保留
+- **抠图算法全面修复**：
+  - background-remover.html：修复segment()返回格式，添加高斯模糊优化边缘
+  - id-photo.html：修复segment()返回格式，添加高斯模糊优化边缘
+  - video-bg-remove.html：修复segmentPeople→segment，提取alpha通道
+  - 修复fallbackSegmentation逻辑（之前else分支设mask=1是错的）
+- **边缘处理二次优化 (2026-03-24 11:22)**：
+  - video-bg-remove.html：修复applySegmentation中prob>=0.6时未设置alpha=255
+  - 统一三个文件的高斯模糊参数：kernel=2, sigma=1.2
+  - video-bg-remove.html：添加applyGaussianBlur函数
+- **style-transfer.html BUG**：修复applyPopArtStyle和applyVintageStyle中original变量未定义
+- **pdf-tools.html**：PDF转PNG/压缩功能完整实现
