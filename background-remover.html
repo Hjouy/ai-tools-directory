@@ -342,10 +342,11 @@
                     const edgeDist = Math.min(x, y, w - 1 - x, h - 1 - y);
                     const baseThreshold = 50 + edgeDist * 0.5;
                     
+                    // mask 语义：0=背景，1=主体
                     // 差异小 = 背景 → mask 低
                     // 差异大 = 可能是人物 → mask 高
                     if (diff < baseThreshold) {
-                        mask[i] = 1 - diff / baseThreshold; // 接近背景
+                        mask[i] = diff / baseThreshold; // 平滑过渡：背景色→0，阈值处→1
                     } else {
                         mask[i] = 1; // 主体
                     }

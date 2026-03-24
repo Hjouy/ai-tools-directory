@@ -751,11 +751,12 @@
                     const edgeDist = Math.min(x, y, w - x, h - y);
                     const threshold = edgeDist < 50 ? 40 : 55;
                     
-                    // 转换为人像概率
+                    // mask语义：0=背景，1=主体
+                    // 差异小=背景→mask低，差异大=人物→mask高
                     if (diff < threshold) {
-                        mask[i] = 1 - diff / threshold;
+                        mask[i] = diff / threshold; // 平滑过渡
                     } else {
-                        mask[i] = 0;
+                        mask[i] = 1;
                     }
                 }
             }

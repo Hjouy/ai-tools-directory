@@ -338,9 +338,10 @@
                     const diff = Math.sqrt(Math.pow(data[pixelIdx] - bgColor.r, 2) + Math.pow(data[pixelIdx + 1] - bgColor.g, 2) + Math.pow(data[pixelIdx + 2] - bgColor.b, 2)); 
                     const edgeDist = Math.min(x, y, w - 1 - x, h - 1 - y); 
                     const threshold = 45 + edgeDist * 0.3;
-                    // 差异小=背景(mask低)，差异大=主体(mask高)
+                    // mask语义：0=背景，1=主体
+                    // 差异小=背景→mask低，差异大=人物→mask高
                     if (diff < threshold) { 
-                        mask[i] = 1 - diff / threshold; 
+                        mask[i] = diff / threshold; // 平滑过渡
                     } else { 
                         mask[i] = 1; 
                     }
