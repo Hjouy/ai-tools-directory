@@ -1,3 +1,11 @@
+# 忽略开发脚本（不参与网站运行）
+*.py
+test-content.txt
+
+# 忽略备份文件
+*.backup-*.html
+id-photo.backup*.html
+
 # 忽略测试文件
 test-*.yml
 test-*.json
