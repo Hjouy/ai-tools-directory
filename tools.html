@@ -3,300 +3,771 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>在线工具大全 - 20+免费工具 | AI工具导航</title>
-  <meta name="description" content="20+免费在线工具集合，包含计算器、文本处理、文件转换、密码生成等实用工具。">
-  <meta name="keywords" content="在线工具,免费工具,实用工具,计算器,文本工具,文件转换">
+  <title>在线工具大全 - 50+免费工具 | AI工具导航</title>
+  <meta name="description" content="50+免费在线工具集合，包含计算器、文本处理、文件转换、密码生成、二维码、颜色选择器等实用工具，无需注册即用即走。">
+  <meta name="keywords" content="在线工具,免费工具,实用工具,计算器,文本工具,文件转换,二维码生成,颜色选择器,Base64,正则表达式">
   <style>
-    :root{--primary:#6366f1;--secondary:#a855f7;--bg:#0f0f1a;--bg-card:#1a1a2e;--text:#e2e8f0;--text-muted:#94a3b8;--border:#2d2d4e}
+    :root{
+      --primary:#6366f1;--secondary:#a855f7;--accent:#06b6d4;
+      --bg:#0f0f1a;--bg-card:#1a1a2e;--bg-card2:#16213e;
+      --text:#e2e8f0;--text-muted:#94a3b8;--border:#2d2d4e;
+      --success:#10b981;--warning:#f59e0b;--danger:#ef4444;
+    }
     *{margin:0;padding:0;box-sizing:border-box}
     body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
-    .navbar{position:sticky;top:0;z-index:100;background:rgba(15,15,26,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between}
+
+    /* 导航栏 */
+    .navbar{position:sticky;top:0;z-index:100;background:rgba(15,15,26,.97);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between}
     .nav-logo{font-size:1.3rem;font-weight:700;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none}
-    .nav-links{display:flex;gap:8px;list-style:none}
-    .nav-links a{color:var(--text-muted);text-decoration:none;padding:6px 12px;border-radius:6px;font-size:.9rem;transition:all .2s}
-    .nav-links a:hover,.nav-links a.active{color:var(--text);background:var(--border)}
-    .main{max-width:1200px;margin:0 auto;padding:20px 24px 80px}
-    .page-hero{text-align:center;padding:40px 24px 32px;background:radial-gradient(ellipse at top,rgba(6,182,212,.12) 0%,transparent 70%)}
-    .page-hero h1{font-size:2.2rem;font-weight:800;margin-bottom:12px}
+    .nav-links{display:flex;gap:8px;list-style:none;align-items:center}
+    .nav-links a{color:var(--text-muted);text-decoration:none;padding:6px 12px;border-radius:8px;font-size:.9rem;transition:all .2s}
+    .nav-links a:hover,.nav-links a.active{color:var(--text);background:rgba(99,102,241,.15)}
+    .nav-btn{background:linear-gradient(135deg,#6366f1,#a855f7)!important;color:white!important;border-radius:20px!important;font-weight:500;padding:7px 16px!important}
+
+    /* Hero区域 */
+    .page-hero{text-align:center;padding:52px 24px 40px;background:radial-gradient(ellipse at top,rgba(99,102,241,.15) 0%,transparent 65%);position:relative;overflow:hidden}
+    .page-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 80% 50%,rgba(168,85,247,.08) 0%,transparent 60%)}
+    .hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.3);color:#34d399;padding:5px 16px;border-radius:20px;font-size:.82rem;margin-bottom:18px;font-weight:500}
+    .page-hero h1{font-size:2.6rem;font-weight:800;margin-bottom:12px;position:relative}
     .page-hero span{background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-    .page-hero p{color:var(--text-muted);max-width:600px;margin:0 auto;font-size:1.1rem}
-    .tools-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:32px}
-    .tool-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:24px;transition:all .25s;cursor:pointer;text-decoration:none;color:inherit;display:block}
-    .tool-card:hover{border-color:var(--primary);transform:translateY(-4px);box-shadow:0 8px 24px rgba(99,102,241,.15)}
-    .tool-icon{font-size:2.5rem;margin-bottom:12px}
-    .tool-name{font-size:1.1rem;font-weight:700;margin-bottom:6px}
-    .tool-desc{font-size:.85rem;color:var(--text-muted);line-height:1.5}
-    .category-section{margin-top:48px}
-    .category-title{font-size:1.5rem;font-weight:700;margin-bottom:24px;display:flex;align-items:center;gap:10px}
-    .category-title::before{content:'';width:4px;height:24px;background:linear-gradient(135deg,var(--primary),var(--secondary));border-radius:2px}
-    .badge{display:inline-block;padding:4px 10px;border-radius:20px;font-size:.75rem;font-weight:600;margin-left:8px}
-    .badge-hot{background:rgba(239,68,68,.15);color:#ef4444;border:1px solid rgba(239,68,68,.3)}
-    .badge-new{background:rgba(16,185,129,.15);color:#10b981;border:1px solid rgba(16,185,129,.3)}
+    .page-hero p{color:var(--text-muted);max-width:560px;margin:0 auto 28px;font-size:1.05rem}
+
+    /* 统计数字 */
+    .stats-row{display:flex;justify-content:center;gap:40px;margin-bottom:0}
+    .stat-item{text-align:center}
+    .stat-num{font-size:1.8rem;font-weight:800;background:linear-gradient(135deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .stat-label{font-size:.78rem;color:var(--text-muted);margin-top:2px}
+
+    /* 搜索栏 */
+    .search-section{max-width:700px;margin:0 auto;padding:32px 24px 0}
+    .search-box{position:relative;margin-bottom:16px}
+    .search-input{width:100%;padding:14px 52px 14px 20px;border:2px solid var(--border);border-radius:14px;background:var(--bg-card);color:var(--text);font-size:1rem;transition:all .25s}
+    .search-input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 4px rgba(99,102,241,.12)}
+    .search-input::placeholder{color:var(--text-muted)}
+    .search-icon{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:1.2rem;opacity:.5;pointer-events:none}
+    .search-clear{position:absolute;right:16px;top:50%;transform:translateY(-50%);cursor:pointer;opacity:.6;font-size:1rem;background:none;border:none;color:var(--text);display:none}
+    .search-clear:hover{opacity:1}
+
+    /* 分类筛选 */
+    .filter-tabs{display:flex;gap:8px;flex-wrap:wrap;padding:0 24px 0;max-width:1200px;margin:16px auto 0}
+    .filter-tab{padding:7px 16px;border:1px solid var(--border);border-radius:20px;background:none;color:var(--text-muted);cursor:pointer;font-size:.85rem;transition:all .2s;white-space:nowrap}
+    .filter-tab:hover{border-color:var(--primary);color:var(--primary)}
+    .filter-tab.active{background:var(--primary);border-color:var(--primary);color:white;font-weight:600}
+
+    /* 主区域 */
+    .main{max-width:1200px;margin:0 auto;padding:24px 24px 80px}
+
+    /* 搜索结果提示 */
+    .search-hint{text-align:center;padding:12px;color:var(--text-muted);font-size:.9rem;display:none}
+    .search-hint span{color:var(--primary);font-weight:600}
+
+    /* 分类区块 */
+    .category-section{margin-top:40px;animation:fadeIn .3s ease}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    .category-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+    .category-title{font-size:1.4rem;font-weight:700;display:flex;align-items:center;gap:10px}
+    .category-title::before{content:'';width:4px;height:22px;background:linear-gradient(135deg,var(--primary),var(--secondary));border-radius:2px;flex-shrink:0}
+    .category-count{font-size:.8rem;color:var(--text-muted);font-weight:400;margin-left:4px}
+    .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:600;margin-left:6px}
+    .badge-hot{background:rgba(239,68,68,.12);color:#ef4444;border:1px solid rgba(239,68,68,.3)}
+    .badge-new{background:rgba(16,185,129,.12);color:#10b981;border:1px solid rgba(16,185,129,.3)}
+    .badge-ai{background:rgba(168,85,247,.12);color:#a855f7;border:1px solid rgba(168,85,247,.3)}
+
+    /* 工具网格 */
+    .tools-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+    .tool-card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:22px 20px;transition:all .25s;text-decoration:none;color:inherit;display:block;position:relative;overflow:hidden;cursor:pointer}
+    .tool-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(99,102,241,.05),transparent);opacity:0;transition:opacity .25s}
+    .tool-card:hover{border-color:var(--primary);transform:translateY(-4px);box-shadow:0 12px 32px rgba(99,102,241,.18)}
+    .tool-card:hover::before{opacity:1}
+    .tool-card.hidden{display:none}
+    .tool-icon-wrap{position:relative;display:inline-block;margin-bottom:12px}
+    .tool-icon{font-size:2.4rem}
+    .tool-fav{position:absolute;top:-6px;right:-10px;font-size:.8rem;background:none;border:none;cursor:pointer;opacity:0;transition:all .2s;color:#f59e0b;filter:grayscale(1)}
+    .tool-fav.active{opacity:1!important;filter:grayscale(0)}
+    .tool-card:hover .tool-fav{opacity:.8}
+    .tool-fav:hover{filter:grayscale(0)!important}
+    .tool-name{font-size:1rem;font-weight:700;margin-bottom:5px;display:flex;align-items:center;gap:6px}
+    .tool-desc{font-size:.82rem;color:var(--text-muted);line-height:1.55}
+    .tool-tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.7rem;margin-top:8px;font-weight:500}
+    .tool-tag-free{background:rgba(16,185,129,.1);color:#10b981;border:1px solid rgba(16,185,129,.25)}
+    .tool-tag-hot{background:rgba(239,68,68,.1);color:#ef4444;border:1px solid rgba(239,68,68,.25)}
+    .tool-tag-new{background:rgba(99,102,241,.1);color:#818cf8;border:1px solid rgba(99,102,241,.25)}
+
+    /* 收藏区块 */
+    .favorites-section{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-top:32px;display:none}
+    .favorites-section.show{display:block}
+    .fav-empty{text-align:center;color:var(--text-muted);padding:20px;font-size:.9rem}
+
+    /* 空状态 */
+    .empty-state{text-align:center;padding:60px 24px;display:none}
+    .empty-state.show{display:block}
+    .empty-icon{font-size:3rem;margin-bottom:16px}
+    .empty-title{font-size:1.2rem;font-weight:600;margin-bottom:8px}
+    .empty-desc{color:var(--text-muted);font-size:.9rem}
+
+    /* 底部 */
+    footer{background:var(--bg-card);border-top:1px solid var(--border);padding:24px;text-align:center}
+    footer a{color:var(--text-muted);text-decoration:none}
+    footer a:hover{color:var(--primary)}
+
     @media(max-width:1024px){.tools-grid{grid-template-columns:repeat(3,1fr)}}
-    @media(max-width:768px){.tools-grid{grid-template-columns:repeat(2,1fr)}.nav-links{display:none}}
-    @media(max-width:480px){.tools-grid{grid-template-columns:1fr}}
+    @media(max-width:768px){.tools-grid{grid-template-columns:repeat(2,1fr)}.nav-links{display:none}.page-hero h1{font-size:1.9rem}.stats-row{gap:24px}.stat-num{font-size:1.4rem}}
+    @media(max-width:480px){.tools-grid{grid-template-columns:1fr}.filter-tabs{gap:6px}.filter-tab{font-size:.78rem;padding:6px 12px}}
   </style>
 </head>
 <body>
+
 <nav class="navbar">
   <a href="index.html" class="nav-logo">🤖 AI工具导航</a>
   <ul class="nav-links">
     <li><a href="index.html">首页</a></li>
     <li><a href="tools.html" class="active">在线工具</a></li>
+    <li><a href="ranking.html">排行榜</a></li>
+    <li><a href="tutorials.html">教程</a></li>
     <li><a href="submit.html" class="nav-btn">提交工具</a></li>
   </ul>
 </nav>
 
 <header class="page-hero">
-  <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.3);color:#34d399;padding:4px 14px;border-radius:20px;font-size:.8rem;margin-bottom:16px;">
-    ✅ 50+ 免费在线工具 · 全部可用
-  </div>
+  <div class="hero-badge">✅ 50+ 免费在线工具 · 全部即用</div>
   <h1>在线<span>工具大全</span></h1>
-  <p>免费实用的在线工具集合，无需注册，即用即走</p>
+  <p>免费实用的在线工具集合，无需注册，即用即走，持续更新</p>
+  <div class="stats-row">
+    <div class="stat-item">
+      <div class="stat-num">50+</div>
+      <div class="stat-label">工具总数</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">8</div>
+      <div class="stat-label">工具分类</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">100%</div>
+      <div class="stat-label">免费使用</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">0</div>
+      <div class="stat-label">需要注册</div>
+    </div>
+  </div>
 </header>
 
+<!-- 搜索 -->
+<div class="search-section">
+  <div class="search-box">
+    <input type="text" class="search-input" id="searchInput" placeholder="🔍 搜索工具...  例如：计算器、二维码、颜色" oninput="handleSearch(this)">
+    <button class="search-clear" id="searchClear" onclick="clearSearch()">✕</button>
+  </div>
+</div>
+
+<!-- 分类过滤标签 -->
+<div class="filter-tabs" id="filterTabs">
+  <button class="filter-tab active" onclick="filterCategory('all', this)">🏠 全部</button>
+  <button class="filter-tab" onclick="filterCategory('basic', this)">🔢 基础工具</button>
+  <button class="filter-tab" onclick="filterCategory('text', this)">📝 文本处理</button>
+  <button class="filter-tab" onclick="filterCategory('file', this)">📄 文件转换</button>
+  <button class="filter-tab" onclick="filterCategory('dev', this)">💻 开发工具</button>
+  <button class="filter-tab" onclick="filterCategory('ai-image', this)">🎨 AI图像</button>
+  <button class="filter-tab" onclick="filterCategory('video', this)">🎬 视频工具</button>
+  <button class="filter-tab" onclick="filterCategory('ai', this)">🤖 AI工具</button>
+  <button class="filter-tab" onclick="filterCategory('fav', this)">⭐ 我的收藏</button>
+</div>
+
 <main class="main">
-  <div class="category-section">
-    <h2 class="category-title">🔢 基础工具 <span class="badge badge-hot">热门</span></h2>
+  <!-- 搜索提示 -->
+  <div class="search-hint" id="searchHint"></div>
+
+  <!-- 收藏区块 -->
+  <div class="favorites-section" id="favSection">
+    <div class="category-title" style="margin-bottom:16px">⭐ 我的收藏</div>
+    <div class="tools-grid" id="favGrid"></div>
+    <div class="fav-empty" id="favEmpty">还没有收藏任何工具，点击工具卡片右上角的 ⭐ 收藏</div>
+  </div>
+
+  <!-- 基础工具 -->
+  <div class="category-section" data-category="basic">
+    <div class="category-header">
+      <h2 class="category-title">🔢 基础工具 <span class="badge badge-hot">热门</span><span class="category-count">5个工具</span></h2>
+    </div>
     <div class="tools-grid">
-      <a href="calculator.html" class="tool-card">
-        <div class="tool-icon">🔢</div>
+      <a href="calculator.html" class="tool-card" data-name="在线计算器 科学计算 单位换算 数学" data-cat="basic">
+        <div class="tool-icon-wrap">
+          <div class="tool-icon">🔢</div>
+          <button class="tool-fav" onclick="toggleFav(event, this, '在线计算器', '🔢', 'calculator.html')">⭐</button>
+        </div>
         <div class="tool-name">在线计算器</div>
-        <div class="tool-desc">基础运算、科学计算、单位换算</div>
+        <div class="tool-desc">基础运算、科学计算、单位换算、BMI、汇率</div>
+        <span class="tool-tag tool-tag-hot">热门</span>
       </a>
-      <a href="password-generator.html" class="tool-card">
-        <div class="tool-icon">🔐</div>
+      <a href="password-generator.html" class="tool-card" data-name="密码生成器 安全密码 随机密码" data-cat="basic">
+        <div class="tool-icon-wrap">
+          <div class="tool-icon">🔐</div>
+          <button class="tool-fav" onclick="toggleFav(event, this, '密码生成器', '🔐', 'password-generator.html')">⭐</button>
+        </div>
         <div class="tool-name">密码生成器</div>
-        <div class="tool-desc">生成安全强密码，自定义长度和字符</div>
+        <div class="tool-desc">生成安全强密码，自定义长度和字符类型</div>
+        <span class="tool-tag tool-tag-free">免费</span>
       </a>
-      <a href="timestamp-converter.html" class="tool-card">
-        <div class="tool-icon">⏰</div>
+      <a href="timestamp-converter.html" class="tool-card" data-name="时间戳转换 Unix时间 日期转换" data-cat="basic">
+        <div class="tool-icon-wrap">
+          <div class="tool-icon">⏰</div>
+          <button class="tool-fav" onclick="toggleFav(event, this, '时间戳转换', '⏰', 'timestamp-converter.html')">⭐</button>
+        </div>
         <div class="tool-name">时间戳转换</div>
-        <div class="tool-desc">Unix时间戳互转、多种日期格式</div>
+        <div class="tool-desc">Unix时间戳互转、多种日期格式支持</div>
+        <span class="tool-tag tool-tag-free">免费</span>
+      </a>
+      <a href="qrcode.html" class="tool-card" data-name="二维码生成器 QR码 扫码" data-cat="basic">
+        <div class="tool-icon-wrap">
+          <div class="tool-icon">📱</div>
+          <button class="tool-fav" onclick="toggleFav(event, this, '二维码生成', '📱', 'qrcode.html')">⭐</button>
+        </div>
+        <div class="tool-name">二维码生成 <span class="badge badge-new" style="font-size:.65rem">新</span></div>
+        <div class="tool-desc">生成自定义二维码，支持链接/文本/联系人</div>
+        <span class="tool-tag tool-tag-new">新增</span>
+      </a>
+      <a href="color-picker.html" class="tool-card" data-name="颜色选择器 调色板 RGB HEX HSL 颜色代码" data-cat="basic">
+        <div class="tool-icon-wrap">
+          <div class="tool-icon">🎨</div>
+          <button class="tool-fav" onclick="toggleFav(event, this, '颜色选择器', '🎨', 'color-picker.html')">⭐</button>
+        </div>
+        <div class="tool-name">颜色选择器 <span class="badge badge-new" style="font-size:.65rem">新</span></div>
+        <div class="tool-desc">RGB/HEX/HSL互转，渐变生成，调色板</div>
+        <span class="tool-tag tool-tag-new">新增</span>
       </a>
     </div>
   </div>
 
-  <div class="category-section">
-    <h2 class="category-title">📝 文本处理</h2>
+  <!-- 文本处理 -->
+  <div class="category-section" data-category="text">
+    <div class="category-header">
+      <h2 class="category-title">📝 文本处理<span class="category-count">4个工具</span></h2>
+    </div>
     <div class="tools-grid">
-      <a href="text-tools.html" class="tool-card">
-        <div class="tool-icon">📝</div>
-        <div class="tool-name">文本工具</div>
-        <div class="tool-desc">文本统计、大小写转换、去重排序</div>
+      <a href="text-tools.html" class="tool-card" data-name="文本工具 文本统计 大小写转换 去重排序" data-cat="text">
+        <div class="tool-icon-wrap">
+          <div class="tool-icon">📝</div>
+          <button class="tool-fav" onclick="toggleFav(event, this, '文本工具', '📝', 'text-tools.html')">⭐</button>
+        </div>
+        <div class="tool-name">文本工具箱</div>
+        <div class="tool-desc">文本统计、大小写转换、去重排序、转义处理</div>
+        <span class="tool-tag tool-tag-free">免费</span>
       </a>
-      <a href="json-formatter.html" class="tool-card">
-        <div class="tool-icon">📊</div>
+      <a href="json-formatter.html" class="tool-card" data-name="JSON工具 JSON格式化 JSON压缩 JSON验证 YAML" data-cat="text">
+        <div class="tool-icon-wrap">
+          <div class="tool-icon">📊</div>
+          <button class="tool-fav" onclick="toggleFav(event, this, 'JSON工具', '📊', 'json-formatter.html')">⭐</button>
+        </div>
         <div class="tool-name">JSON工具</div>
-        <div class="tool-desc">JSON格式化/压缩/验证/转YAML</div>
+        <div class="tool-desc">JSON格式化/压缩/验证/转YAML，语法高亮</div>
+        <span class="tool-tag tool-tag-hot">热门</span>
       </a>
-      <a href="markdown-editor.html" class="tool-card">
-        <div class="tool-icon">📝</div>
+      <a href="markdown-editor.html" class="tool-card" data-name="Markdown编辑器 预览 导出" data-cat="text">
+        <div class="tool-icon-wrap">
+          <div class="tool-icon">✏️</div>
+          <button class="tool-fav" onclick="toggleFav(event, this, 'Markdown编辑器', '✏️', 'markdown-editor.html')">⭐</button>
+        </div>
         <div class="tool-name">Markdown编辑器</div>
-        <div class="tool-desc">实时预览、代码高亮、导出</div>
+        <div class="tool-desc">实时预览、代码高亮、一键导出HTML/PDF</div>
+        <span class="tool-tag tool-tag-free">免费</span>
+      </a>
+      <a href="base64.html" class="tool-card" data-name="Base64编解码 URL编码 Base64转换" data-cat="text">
+        <div class="tool-icon-wrap">
+          <div class="tool-icon">🔑</div>
+          <button class="tool-fav" onclick="toggleFav(event, this, 'Base64编解码', '🔑', 'base64.html')">⭐</button>
+        </div>
+        <div class="tool-name">Base64编解码 <span class="badge badge-new" style="font-size:.65rem">新</span></div>
+        <div class="tool-desc">Base64/URL编解码，图片转Base64</div>
+        <span class="tool-tag tool-tag-new">新增</span>
       </a>
     </div>
   </div>
 
-  <div class="category-section">
-    <h2 class="category-title">📄 文件转换 <span class="badge badge-hot">热门</span></h2>
+  <!-- 开发工具 -->
+  <div class="category-section" data-category="dev">
+    <div class="category-header">
+      <h2 class="category-title">💻 开发工具 <span class="badge badge-new">新增</span><span class="category-count">2个工具</span></h2>
+    </div>
     <div class="tools-grid">
-      <a href="converter.html" class="tool-card">
-        <div class="tool-icon">🔄</div>
+      <a href="regex-tester.html" class="tool-card" data-name="正则表达式 Regex测试 正则匹配" data-cat="dev">
+        <div class="tool-icon-wrap">
+          <div class="tool-icon">🔍</div>
+          <button class="tool-fav" onclick="toggleFav(event, this, '正则表达式测试', '🔍', 'regex-tester.html')">⭐</button>
+        </div>
+        <div class="tool-name">正则表达式测试 <span class="badge badge-new" style="font-size:.65rem">新</span></div>
+        <div class="tool-desc">在线测试正则，实时高亮匹配，常用表达式库</div>
+        <span class="tool-tag tool-tag-new">新增</span>
+      </a>
+      <a href="json-formatter.html" class="tool-card" data-name="代码格式化 JSON XML CSS格式化" data-cat="dev">
+        <div class="tool-icon-wrap">
+          <div class="tool-icon">⚙️</div>
+          <button class="tool-fav" onclick="toggleFav(event, this, '代码格式化', '⚙️', 'json-formatter.html')">⭐</button>
+        </div>
+        <div class="tool-name">代码格式化</div>
+        <div class="tool-desc">JSON/XML/CSS/HTML格式化压缩，一键美化</div>
+        <span class="tool-tag tool-tag-free">免费</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- 文件转换 -->
+  <div class="category-section" data-category="file">
+    <div class="category-header">
+      <h2 class="category-title">📄 文件转换 <span class="badge badge-hot">热门</span><span class="category-count">6个工具</span></h2>
+    </div>
+    <div class="tools-grid">
+      <a href="converter.html" class="tool-card" data-name="文件转换 PDF Word Excel 图片转换" data-cat="file">
+        <div class="tool-icon-wrap">
+          <div class="tool-icon">🔄</div>
+          <button class="tool-fav" onclick="toggleFav(event, this, '文件转换', '🔄', 'converter.html')">⭐</button>
+        </div>
         <div class="tool-name">文件转换</div>
-        <div class="tool-desc">PDF/Word/Excel/图片格式互转</div>
+        <div class="tool-desc">PDF/Word/Excel/图片格式互转，快速转换</div>
+        <span class="tool-tag tool-tag-hot">热门</span>
       </a>
-      <a href="image-editor.html" class="tool-card">
-        <div class="tool-icon">🎨</div>
-        <div class="tool-name">在线PS</div>
-        <div class="tool-desc">图片编辑、裁剪、滤镜、调整</div>
+      <a href="image-editor.html" class="tool-card" data-name="在线PS 图片编辑 裁剪 滤镜" data-cat="file">
+        <div class="tool-icon-wrap">
+          <div class="tool-icon">🖼️</div>
+          <button class="tool-fav" onclick="toggleFav(event, this, '在线图片编辑', '🖼️', 'image-editor.html')">⭐</button>
+        </div>
+        <div class="tool-name">在线图片编辑</div>
+        <div class="tool-desc">裁剪、旋转、调色、加滤镜、文字水印</div>
+        <span class="tool-tag tool-tag-free">免费</span>
       </a>
-      <a href="image-compressor.html" class="tool-card">
-        <div class="tool-icon">🗜️</div>
+      <a href="image-compressor.html" class="tool-card" data-name="图片压缩 JPG PNG WebP批量压缩" data-cat="file">
+        <div class="tool-icon-wrap">
+          <div class="tool-icon">🗜️</div>
+          <button class="tool-fav" onclick="toggleFav(event, this, '图片压缩', '🗜️', 'image-compressor.html')">⭐</button>
+        </div>
         <div class="tool-name">图片压缩</div>
-        <div class="tool-desc">JPG/PNG/WebP批量压缩</div>
+        <div class="tool-desc">JPG/PNG/WebP批量压缩，不损失质量</div>
+        <span class="tool-tag tool-tag-free">免费</span>
       </a>
-      <a href="image-compress.html" class="tool-card">
-        <div class="tool-icon">⚡</div>
+      <a href="image-compress.html" class="tool-card" data-name="智能图片压缩 WebP AVIF转换" data-cat="file">
+        <div class="tool-icon-wrap">
+          <div class="tool-icon">⚡</div>
+          <button class="tool-fav" onclick="toggleFav(event, this, '智能压缩', '⚡', 'image-compress.html')">⭐</button>
+        </div>
         <div class="tool-name">智能压缩</div>
-        <div class="tool-desc">WebP/AVIF转换、智能压缩</div>
+        <div class="tool-desc">WebP/AVIF转换、AI智能压缩，体积减小80%</div>
+        <span class="tool-tag tool-tag-free">免费</span>
       </a>
-      <a href="pdf-tools.html" class="tool-card">
-        <div class="tool-icon">📑</div>
-        <div class="tool-name">PDF工具</div>
-        <div class="tool-desc">PDF合并/拆分/转图片/压缩</div>
+      <a href="pdf-tools.html" class="tool-card" data-name="PDF工具 PDF合并 拆分 PDF转图片 压缩" data-cat="file">
+        <div class="tool-icon-wrap">
+          <div class="tool-icon">📑</div>
+          <button class="tool-fav" onclick="toggleFav(event, this, 'PDF工具', '📑', 'pdf-tools.html')">⭐</button>
+        </div>
+        <div class="tool-name">PDF工具箱</div>
+        <div class="tool-desc">PDF合并/拆分/转图片/压缩/加水印</div>
+        <span class="tool-tag tool-tag-hot">热门</span>
       </a>
-      <a href="background-remover.html" class="tool-card">
-        <div class="tool-icon">✂️</div>
+      <a href="background-remover.html" class="tool-card" data-name="在线抠图 去背景 AI抠图 背景替换" data-cat="file">
+        <div class="tool-icon-wrap">
+          <div class="tool-icon">✂️</div>
+          <button class="tool-fav" onclick="toggleFav(event, this, '在线抠图', '✂️', 'background-remover.html')">⭐</button>
+        </div>
         <div class="tool-name">在线抠图</div>
-        <div class="tool-desc">智能去背景、手动调整、背景替换</div>
+        <div class="tool-desc">AI智能去除背景、手动调整、背景替换</div>
+        <span class="tool-tag tool-tag-hot">热门</span>
       </a>
     </div>
   </div>
 
-  <div class="category-section">
-    <h2 class="category-title">🤖 AI工具</h2>
-    <div class="tools-grid">
-      <a href="writing.html" class="tool-card">
-        <div class="tool-icon">✍️</div>
-        <div class="tool-name">AI写作</div>
-        <div class="tool-desc">ChatGPT、Claude、Notion AI等</div>
-      </a>
-      <a href="image.html" class="tool-card">
-        <div class="tool-icon">🎨</div>
-        <div class="tool-name">AI绘画</div>
-        <div class="tool-desc">Midjourney、Stable Diffusion等</div>
-      </a>
-      <a href="video.html" class="tool-card">
-        <div class="tool-icon">🎬</div>
-        <div class="tool-name">AI视频</div>
-        <div class="tool-desc">Runway、剪映、Pika等</div>
-      </a>
-      <a href="audio.html" class="tool-card">
-        <div class="tool-icon">🎵</div>
-        <div class="tool-name">AI音频</div>
-        <div class="tool-desc">Suno、Udio、ElevenLabs等</div>
-      </a>
-      <a href="code.html" class="tool-card">
-        <div class="tool-icon">💻</div>
-        <div class="tool-name">AI编程</div>
-        <div class="tool-desc">Cursor、GitHub Copilot等</div>
-      </a>
+  <!-- AI图像工具 -->
+  <div class="category-section" data-category="ai-image">
+    <div class="category-header">
+      <h2 class="category-title">🎨 AI图像工具 <span class="badge badge-ai">AI驱动</span><span class="category-count">6个工具</span></h2>
     </div>
-  </div>
-
-  <div class="category-section">
-    <h2 class="category-title">📊 效率工具</h2>
     <div class="tools-grid">
-      <a href="productivity.html" class="tool-card">
-        <div class="tool-icon">⚡</div>
-        <div class="tool-name">生产力</div>
-        <div class="tool-desc">Gamma、Perplexity等效率工具</div>
-      </a>
-      <a href="compare.html" class="tool-card">
-        <div class="tool-icon">⚖️</div>
-        <div class="tool-name">工具对比</div>
-        <div class="tool-desc">AI工具横向对比分析</div>
-      </a>
-      <a href="ranking.html" class="tool-card">
-        <div class="tool-icon">🏆</div>
-        <div class="tool-name">排行榜</div>
-        <div class="tool-desc">月榜、分类榜、飙升榜</div>
-      </a>
-    </div>
-  </div>
-
-  <div class="category-section">
-    <h2 class="category-title">📚 学习资源</h2>
-    <div class="tools-grid">
-      <a href="tutorials.html" class="tool-card">
-        <div class="tool-icon">📖</div>
-        <div class="tool-name">教程专区</div>
-        <div class="tool-desc">10+个AI工具使用教程</div>
-      </a>
-      <a href="use-cases.html" class="tool-card">
-        <div class="tool-icon">💡</div>
-        <div class="tool-name">使用场景</div>
-        <div class="tool-desc">6个AI工具应用场景</div>
-      </a>
-      <a href="news.html" class="tool-card">
-        <div class="tool-icon">📰</div>
-        <div class="tool-name">AI资讯</div>
-        <div class="tool-desc">AI行业最新动态</div>
-      </a>
-    </div>
-  </div>
-
-  <div class="category-section">
-    <h2 class="category-title">🎨 AI图像工具 <span class="badge badge-new">新增</span></h2>
-    <div class="tools-grid">
-      <a href="id-photo.html" class="tool-card">
-        <div class="tool-icon">📸</div>
+      <a href="id-photo.html" class="tool-card" data-name="证件照 制作 AI抠图 换底色 美颜" data-cat="ai-image">
+        <div class="tool-icon-wrap">
+          <div class="tool-icon">📸</div>
+          <button class="tool-fav" onclick="toggleFav(event, this, '证件照制作', '📸', 'id-photo.html')">⭐</button>
+        </div>
         <div class="tool-name">证件照制作</div>
-        <div class="tool-desc">AI智能抠图、换底色、美颜优化</div>
+        <div class="tool-desc">AI智能抠图、换底色、美颜优化，一键生成</div>
+        <span class="tool-tag tool-tag-hot">热门</span>
       </a>
-      <a href="old-photo-restore.html" class="tool-card">
-        <div class="tool-icon">🖼️</div>
+      <a href="old-photo-restore.html" class="tool-card" data-name="老照片修复 去噪 修复 上色 超清增强" data-cat="ai-image">
+        <div class="tool-icon-wrap">
+          <div class="tool-icon">🖼️</div>
+          <button class="tool-fav" onclick="toggleFav(event, this, '老照片修复', '🖼️', 'old-photo-restore.html')">⭐</button>
+        </div>
         <div class="tool-name">老照片修复</div>
-        <div class="tool-desc">去噪、修复、上色、超清增强</div>
+        <div class="tool-desc">AI去噪、修复、黑白上色、超清增强</div>
+        <span class="tool-tag tool-tag-new">新增</span>
       </a>
-      <a href="face-fusion.html" class="tool-card">
-        <div class="tool-icon">👥</div>
+      <a href="face-fusion.html" class="tool-card" data-name="人脸融合 换脸 年龄变换" data-cat="ai-image">
+        <div class="tool-icon-wrap">
+          <div class="tool-icon">👥</div>
+          <button class="tool-fav" onclick="toggleFav(event, this, '人脸融合', '👥', 'face-fusion.html')">⭐</button>
+        </div>
         <div class="tool-name">人脸融合</div>
-        <div class="tool-desc">人脸融合、换脸、年龄变换</div>
+        <div class="tool-desc">AI人脸融合、换脸、年龄变换特效</div>
+        <span class="tool-tag tool-tag-new">新增</span>
       </a>
-      <a href="super-resolution.html" class="tool-card">
-        <div class="tool-icon">🔍</div>
+      <a href="super-resolution.html" class="tool-card" data-name="超分辨率 低清变高清 细节增强 图片放大" data-cat="ai-image">
+        <div class="tool-icon-wrap">
+          <div class="tool-icon">🔍</div>
+          <button class="tool-fav" onclick="toggleFav(event, this, '超分辨率', '🔍', 'super-resolution.html')">⭐</button>
+        </div>
         <div class="tool-name">超分辨率</div>
-        <div class="tool-desc">低清变高清、细节增强</div>
+        <div class="tool-desc">低清变高清、细节增强、4K图片放大</div>
+        <span class="tool-tag tool-tag-new">新增</span>
       </a>
-      <a href="style-transfer.html" class="tool-card">
-        <div class="tool-icon">🎨</div>
-        <div class="tool-name">风格转换</div>
-        <div class="tool-desc">油画、素描、水彩、动漫风格</div>
+      <a href="style-transfer.html" class="tool-card" data-name="风格转换 油画 素描 水彩 动漫风格" data-cat="ai-image">
+        <div class="tool-icon-wrap">
+          <div class="tool-icon">🎭</div>
+          <button class="tool-fav" onclick="toggleFav(event, this, '风格转换', '🎭', 'style-transfer.html')">⭐</button>
+        </div>
+        <div class="tool-name">AI风格转换</div>
+        <div class="tool-desc">油画、素描、水彩、动漫等多种艺术风格</div>
+        <span class="tool-tag tool-tag-new">新增</span>
       </a>
-      <a href="ai-image-gen.html" class="tool-card">
-        <div class="tool-icon">✨</div>
+      <a href="ai-image-gen.html" class="tool-card" data-name="AI图片生成 文生图 图生图 风格化" data-cat="ai-image">
+        <div class="tool-icon-wrap">
+          <div class="tool-icon">✨</div>
+          <button class="tool-fav" onclick="toggleFav(event, this, 'AI图片生成', '✨', 'ai-image-gen.html')">⭐</button>
+        </div>
         <div class="tool-name">AI图片生成</div>
-        <div class="tool-desc">文生图、图生图、风格化</div>
+        <div class="tool-desc">文字描述生成图片、图生图、风格化处理</div>
+        <span class="tool-tag tool-tag-hot">热门</span>
       </a>
     </div>
   </div>
 
-  <div class="category-section">
-    <h2 class="category-title">🎬 视频工具 <span class="badge badge-new">新增</span></h2>
+  <!-- 视频工具 -->
+  <div class="category-section" data-category="video">
+    <div class="category-header">
+      <h2 class="category-title">🎬 视频工具 <span class="badge badge-new">新增</span><span class="category-count">3个工具</span></h2>
+    </div>
     <div class="tools-grid">
-      <a href="gif-maker.html" class="tool-card">
-        <div class="tool-icon">🎬</div>
+      <a href="gif-maker.html" class="tool-card" data-name="GIF制作 视频转GIF 图片序列转GIF" data-cat="video">
+        <div class="tool-icon-wrap">
+          <div class="tool-icon">🎬</div>
+          <button class="tool-fav" onclick="toggleFav(event, this, 'GIF制作', '🎬', 'gif-maker.html')">⭐</button>
+        </div>
         <div class="tool-name">GIF制作</div>
-        <div class="tool-desc">视频转GIF、图片序列转GIF</div>
+        <div class="tool-desc">视频转GIF、图片序列转GIF动图</div>
+        <span class="tool-tag tool-tag-free">免费</span>
       </a>
-      <a href="video-bg-remove.html" class="tool-card">
-        <div class="tool-icon">✂️</div>
+      <a href="video-bg-remove.html" class="tool-card" data-name="视频抠像 AI抠视频背景 绿幕替换" data-cat="video">
+        <div class="tool-icon-wrap">
+          <div class="tool-icon">✂️</div>
+          <button class="tool-fav" onclick="toggleFav(event, this, '视频抠像', '✂️', 'video-bg-remove.html')">⭐</button>
+        </div>
         <div class="tool-name">视频抠像</div>
-        <div class="tool-desc">AI抠视频背景、绿幕替换</div>
+        <div class="tool-desc">AI抠除视频背景、绿幕替换、虚拟背景</div>
+        <span class="tool-tag tool-tag-new">新增</span>
       </a>
-      <a href="ai-video-editor.html" class="tool-card">
-        <div class="tool-icon">🎥</div>
+      <a href="ai-video-editor.html" class="tool-card" data-name="AI视频剪辑 自动字幕 智能剪辑 语音转文字" data-cat="video">
+        <div class="tool-icon-wrap">
+          <div class="tool-icon">🎥</div>
+          <button class="tool-fav" onclick="toggleFav(event, this, 'AI视频剪辑', '🎥', 'ai-video-editor.html')">⭐</button>
+        </div>
         <div class="tool-name">AI视频剪辑</div>
         <div class="tool-desc">自动字幕、智能剪辑、语音转文字</div>
+        <span class="tool-tag tool-tag-new">新增</span>
       </a>
     </div>
   </div>
 
-  <div class="category-section">
-    <h2 class="category-title">🔗 其他功能</h2>
+  <!-- AI工具 -->
+  <div class="category-section" data-category="ai">
+    <div class="category-header">
+      <h2 class="category-title">🤖 AI工具目录 <span class="badge badge-ai">AI驱动</span><span class="category-count">8个工具</span></h2>
+    </div>
     <div class="tools-grid">
-      <a href="tool.html" class="tool-card">
-        <div class="tool-icon">🔍</div>
-        <div class="tool-name">工具详情</div>
-        <div class="tool-desc">20+个AI工具详细介绍</div>
+      <a href="writing.html" class="tool-card" data-name="AI写作 ChatGPT Claude Notion 写作工具" data-cat="ai">
+        <div class="tool-icon-wrap">
+          <div class="tool-icon">✍️</div>
+          <button class="tool-fav" onclick="toggleFav(event, this, 'AI写作工具', '✍️', 'writing.html')">⭐</button>
+        </div>
+        <div class="tool-name">AI写作工具</div>
+        <div class="tool-desc">ChatGPT、Claude、Notion AI等写作神器</div>
+        <span class="tool-tag tool-tag-hot">热门</span>
       </a>
-      <a href="submit.html" class="tool-card">
-        <div class="tool-icon">➕</div>
-        <div class="tool-name">提交工具</div>
-        <div class="tool-desc">收录您的AI工具</div>
+      <a href="image.html" class="tool-card" data-name="AI绘画 Midjourney Stable Diffusion 图像生成" data-cat="ai">
+        <div class="tool-icon-wrap">
+          <div class="tool-icon">🎨</div>
+          <button class="tool-fav" onclick="toggleFav(event, this, 'AI绘画工具', '🎨', 'image.html')">⭐</button>
+        </div>
+        <div class="tool-name">AI绘画工具</div>
+        <div class="tool-desc">Midjourney、Stable Diffusion等绘画工具</div>
+        <span class="tool-tag tool-tag-hot">热门</span>
       </a>
-      <a href="about.html" class="tool-card">
-        <div class="tool-icon">ℹ️</div>
-        <div class="tool-name">关于我们</div>
-        <div class="tool-desc">了解AI工具导航</div>
+      <a href="video.html" class="tool-card" data-name="AI视频 Runway 剪映 Pika 视频生成" data-cat="ai">
+        <div class="tool-icon-wrap">
+          <div class="tool-icon">🎬</div>
+          <button class="tool-fav" onclick="toggleFav(event, this, 'AI视频工具', '🎬', 'video.html')">⭐</button>
+        </div>
+        <div class="tool-name">AI视频工具</div>
+        <div class="tool-desc">Runway、剪映、Pika等视频创作工具</div>
+        <span class="tool-tag tool-tag-new">新增</span>
       </a>
-      <a href="contact.html" class="tool-card">
-        <div class="tool-icon">📧</div>
-        <div class="tool-name">联系我们</div>
-        <div class="tool-desc">商务合作、问题反馈</div>
+      <a href="audio.html" class="tool-card" data-name="AI音频 Suno Udio ElevenLabs 音乐生成" data-cat="ai">
+        <div class="tool-icon-wrap">
+          <div class="tool-icon">🎵</div>
+          <button class="tool-fav" onclick="toggleFav(event, this, 'AI音频工具', '🎵', 'audio.html')">⭐</button>
+        </div>
+        <div class="tool-name">AI音频工具</div>
+        <div class="tool-desc">Suno、Udio、ElevenLabs等音乐音频工具</div>
+        <span class="tool-tag tool-tag-new">新增</span>
+      </a>
+      <a href="code.html" class="tool-card" data-name="AI编程 Cursor GitHub Copilot 代码助手" data-cat="ai">
+        <div class="tool-icon-wrap">
+          <div class="tool-icon">💻</div>
+          <button class="tool-fav" onclick="toggleFav(event, this, 'AI编程工具', '💻', 'code.html')">⭐</button>
+        </div>
+        <div class="tool-name">AI编程工具</div>
+        <div class="tool-desc">Cursor、GitHub Copilot等编程辅助工具</div>
+        <span class="tool-tag tool-tag-hot">热门</span>
+      </a>
+      <a href="productivity.html" class="tool-card" data-name="生产力工具 Gamma Perplexity 效率工具" data-cat="ai">
+        <div class="tool-icon-wrap">
+          <div class="tool-icon">⚡</div>
+          <button class="tool-fav" onclick="toggleFav(event, this, 'AI生产力工具', '⚡', 'productivity.html')">⭐</button>
+        </div>
+        <div class="tool-name">AI生产力工具</div>
+        <div class="tool-desc">Gamma、Perplexity等效率提升工具</div>
+        <span class="tool-tag tool-tag-free">免费</span>
+      </a>
+      <a href="compare.html" class="tool-card" data-name="工具对比 AI工具比较 横向对比" data-cat="ai">
+        <div class="tool-icon-wrap">
+          <div class="tool-icon">⚖️</div>
+          <button class="tool-fav" onclick="toggleFav(event, this, 'AI工具对比', '⚖️', 'compare.html')">⭐</button>
+        </div>
+        <div class="tool-name">AI工具对比</div>
+        <div class="tool-desc">多款AI工具横向对比分析，帮你选择最合适的</div>
+        <span class="tool-tag tool-tag-free">免费</span>
+      </a>
+      <a href="ranking.html" class="tool-card" data-name="AI工具排行榜 月榜 分类榜 飙升榜" data-cat="ai">
+        <div class="tool-icon-wrap">
+          <div class="tool-icon">🏆</div>
+          <button class="tool-fav" onclick="toggleFav(event, this, 'AI工具排行榜', '🏆', 'ranking.html')">⭐</button>
+        </div>
+        <div class="tool-name">AI工具排行榜</div>
+        <div class="tool-desc">月榜、分类榜、飙升榜，发现最热AI工具</div>
+        <span class="tool-tag tool-tag-hot">热门</span>
       </a>
     </div>
+  </div>
+
+  <!-- 空状态 -->
+  <div class="empty-state" id="emptyState">
+    <div class="empty-icon">🔍</div>
+    <div class="empty-title">未找到相关工具</div>
+    <div class="empty-desc">试试其他关键词，或 <a href="#" onclick="clearSearch();return false;" style="color:var(--primary)">浏览全部工具</a></div>
   </div>
 </main>
 
-<footer style="background:var(--bg-card);border-top:1px solid var(--border);padding:24px;text-align:center;">
+<footer>
   <p style="color:var(--text-muted);font-size:.875rem;">
-    <a href="index.html" style="color:var(--primary);text-decoration:none;">AI工具导航</a> ·
-    <a href="sitemap.xml" style="color:var(--text-muted);text-decoration:none;margin-left:12px;">网站地图</a> ·
-    © 2026 AI工具导航
+    <a href="index.html">AI工具导航</a> ·
+    <a href="sitemap.xml" style="margin-left:12px;">网站地图</a> ·
+    <a href="submit.html" style="margin-left:12px;">提交工具</a> ·
+    <span style="margin-left:12px;">© 2026 AI工具导航</span>
   </p>
 </footer>
+
+<script>
+// ========== 搜索功能 ==========
+function handleSearch(input) {
+  const q = input.value.trim().toLowerCase();
+  const clearBtn = document.getElementById('searchClear');
+  const searchIcon = input.parentElement.querySelector('.search-icon');
+  const hint = document.getElementById('searchHint');
+  
+  clearBtn.style.display = q ? 'block' : 'none';
+  if (searchIcon) searchIcon.style.display = q ? 'none' : 'block';
+
+  if (!q) {
+    clearSearch();
+    return;
+  }
+
+  // 重置分类过滤
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+  document.querySelector('.filter-tab').classList.add('active');
+
+  let matchCount = 0;
+  document.querySelectorAll('.tool-card').forEach(card => {
+    const name = (card.dataset.name || '').toLowerCase();
+    const match = name.includes(q);
+    card.classList.toggle('hidden', !match);
+    if (match) matchCount++;
+  });
+
+  // 隐藏空分类
+  document.querySelectorAll('.category-section').forEach(sec => {
+    const visibleCards = sec.querySelectorAll('.tool-card:not(.hidden)');
+    sec.style.display = visibleCards.length ? '' : 'none';
+  });
+
+  // 显示搜索提示
+  hint.style.display = 'block';
+  hint.innerHTML = matchCount > 0
+    ? `🔍 找到 <span>${matchCount}</span> 个相关工具`
+    : '';
+  
+  document.getElementById('emptyState').classList.toggle('show', matchCount === 0);
+  document.getElementById('favSection').style.display = 'none';
+}
+
+function clearSearch() {
+  const input = document.getElementById('searchInput');
+  input.value = '';
+  document.getElementById('searchClear').style.display = 'none';
+  document.getElementById('searchHint').style.display = 'none';
+  document.getElementById('emptyState').classList.remove('show');
+  
+  document.querySelectorAll('.tool-card').forEach(c => c.classList.remove('hidden'));
+  document.querySelectorAll('.category-section').forEach(s => s.style.display = '');
+  
+  // 恢复分类过滤状态
+  const activeTab = document.querySelector('.filter-tab.active');
+  if (activeTab) {
+    const cat = activeTab.getAttribute('onclick').match(/'([^']+)'/)?.[1];
+    if (cat && cat !== 'all') filterCategory(cat, activeTab);
+  }
+}
+
+// ========== 分类过滤 ==========
+function filterCategory(cat, btn) {
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  
+  // 清空搜索
+  const input = document.getElementById('searchInput');
+  if (input.value) {
+    input.value = '';
+    document.getElementById('searchClear').style.display = 'none';
+    document.getElementById('searchHint').style.display = 'none';
+    document.querySelectorAll('.tool-card').forEach(c => c.classList.remove('hidden'));
+  }
+
+  if (cat === 'fav') {
+    renderFavSection(true);
+    document.querySelectorAll('.category-section').forEach(s => s.style.display = 'none');
+    return;
+  }
+
+  document.getElementById('favSection').style.display = 'none';
+  document.getElementById('favSection').classList.remove('show');
+
+  if (cat === 'all') {
+    document.querySelectorAll('.category-section').forEach(s => s.style.display = '');
+  } else {
+    document.querySelectorAll('.category-section').forEach(s => {
+      s.style.display = s.dataset.category === cat ? '' : 'none';
+    });
+  }
+}
+
+// ========== 收藏功能 ==========
+function getFavs() {
+  try { return JSON.parse(localStorage.getItem('tool_favs') || '{}'); } catch(e) { return {}; }
+}
+function saveFavs(favs) {
+  localStorage.setItem('tool_favs', JSON.stringify(favs));
+}
+
+function toggleFav(e, btn, name, icon, url) {
+  e.preventDefault();
+  e.stopPropagation();
+  const favs = getFavs();
+  const key = url;
+  if (favs[key]) {
+    delete favs[key];
+    btn.classList.remove('active');
+    showToast('已取消收藏 ' + name);
+  } else {
+    favs[key] = { name, icon, url };
+    btn.classList.add('active');
+    showToast('已收藏 ' + name + ' ⭐');
+  }
+  saveFavs(favs);
+  updateFavBadge();
+}
+
+function renderFavSection(show) {
+  const favs = getFavs();
+  const grid = document.getElementById('favGrid');
+  const empty = document.getElementById('favEmpty');
+  const sec = document.getElementById('favSection');
+  
+  if (show) {
+    sec.style.display = 'block';
+    sec.classList.add('show');
+  }
+  
+  const keys = Object.keys(favs);
+  empty.style.display = keys.length ? 'none' : 'block';
+  grid.innerHTML = keys.map(k => {
+    const f = favs[k];
+    return `<a href="${f.url}" class="tool-card">
+      <div class="tool-icon">${f.icon}</div>
+      <div class="tool-name">${f.name}</div>
+      <div class="tool-desc" style="margin-top:6px;font-size:.8rem;color:var(--warning)">⭐ 已收藏</div>
+    </a>`;
+  }).join('');
+}
+
+function updateFavBadge() {
+  const count = Object.keys(getFavs()).length;
+  const favTab = document.querySelector('[onclick*="fav"]');
+  if (favTab) {
+    favTab.textContent = count > 0 ? `⭐ 我的收藏 (${count})` : '⭐ 我的收藏';
+  }
+}
+
+// 初始化收藏状态
+function initFavs() {
+  const favs = getFavs();
+  document.querySelectorAll('.tool-fav').forEach(btn => {
+    const onclick = btn.getAttribute('onclick');
+    const urlMatch = onclick.match(/'([^']+\.html)'\)/);
+    if (urlMatch && favs[urlMatch[1]]) {
+      btn.classList.add('active');
+    }
+  });
+  updateFavBadge();
+}
+
+// ========== Toast提示 ==========
+function showToast(msg) {
+  let toast = document.getElementById('toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'toast';
+    toast.style.cssText = 'position:fixed;bottom:32px;left:50%;transform:translateX(-50%);background:#1a1a2e;border:1px solid #6366f1;color:#e2e8f0;padding:10px 24px;border-radius:30px;font-size:.9rem;z-index:9999;transition:all .3s;box-shadow:0 4px 20px rgba(0,0,0,.3)';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.style.opacity = '1';
+  toast.style.display = 'block';
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.style.display='none', 300); }, 2200);
+}
+
+// 键盘快捷键：Ctrl+K 聚焦搜索
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+    e.preventDefault();
+    document.getElementById('searchInput').focus();
+    document.getElementById('searchInput').select();
+  }
+  if (e.key === 'Escape') {
+    const input = document.getElementById('searchInput');
+    if (document.activeElement === input) {
+      clearSearch();
+      input.blur();
+    }
+  }
+});
+
+// 初始化
+initFavs();
+</script>
 </body>
 </html>

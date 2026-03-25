@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>颜色选择器/调色板 - RGB HEX HSL互转 | AI工具导航</title>
+  <meta name="description" content="免费在线颜色选择器，支持RGB/HEX/HSL/CMYK互转，渐变色生成，配色方案，调色板，设计师必备工具。">
+  <meta name="keywords" content="颜色选择器,调色板,RGB转HEX,颜色代码,渐变色生成,配色方案,HSL颜色">
+  <style>
+    :root{
+      --primary:#6366f1;--secondary:#a855f7;--accent:#06b6d4;
+      --bg:#0f0f1a;--bg-card:#1a1a2e;--bg-card2:#16213e;
+      --text:#e2e8f0;--text-muted:#94a3b8;--border:#2d2d4e;
+      --success:#10b981;--warning:#f59e0b;
+    }
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+
+    .navbar{position:sticky;top:0;z-index:100;background:rgba(15,15,26,.97);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between}
+    .nav-logo{font-size:1.3rem;font-weight:700;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none}
+    .nav-links{display:flex;gap:8px;list-style:none;align-items:center}
+    .nav-links a{color:var(--text-muted);text-decoration:none;padding:6px 12px;border-radius:8px;font-size:.9rem;transition:all .2s}
+    .nav-links a:hover,.nav-links a.active{color:var(--text);background:rgba(99,102,241,.15)}
+    .nav-btn{background:linear-gradient(135deg,#6366f1,#a855f7)!important;color:white!important;border-radius:20px!important;font-weight:500;padding:7px 16px!important}
+
+    .page-hero{text-align:center;padding:40px 24px 28px;background:radial-gradient(ellipse at top,rgba(168,85,247,.12) 0%,transparent 65%)}
+    .page-hero h1{font-size:2.2rem;font-weight:800;margin-bottom:10px}
+    .page-hero span{background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .page-hero p{color:var(--text-muted);font-size:1rem}
+
+    .main{max-width:1100px;margin:0 auto;padding:24px 24px 80px;display:grid;grid-template-columns:1fr 1fr;gap:20px}
+    .main-full{grid-column:1/-1}
+
+    .card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:28px}
+    .card-title{font-size:.82rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:18px;display:flex;align-items:center;gap:8px}
+
+    /* 颜色选择器核心 */
+    .color-preview-big{width:100%;height:130px;border-radius:12px;margin-bottom:16px;transition:background .1s;border:1px solid var(--border);cursor:pointer;position:relative;overflow:hidden}
+    .color-preview-big::after{content:'点击复制';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:.85rem;opacity:0;transition:opacity .2s;background:rgba(0,0,0,.3);font-weight:600}
+    .color-preview-big:hover::after{opacity:1}
+
+    input[type="color"]{width:100%;height:52px;border:none;border-radius:10px;cursor:pointer;background:none;padding:2px;margin-bottom:16px}
+    input[type="color"]::-webkit-color-swatch-wrapper{padding:0;border-radius:8px}
+    input[type="color"]::-webkit-color-swatch{border:none;border-radius:8px}
+
+    .color-inputs{display:flex;flex-direction:column;gap:10px}
+    .color-input-row{display:flex;align-items:center;gap:10px}
+    .color-label{font-size:.75rem;font-weight:700;color:var(--text-muted);width:52px;text-align:center;background:var(--bg);padding:4px 6px;border-radius:6px;text-transform:uppercase;letter-spacing:.05em}
+    .color-input{flex:1;padding:8px 12px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);font-size:.9rem;font-family:'Courier New',monospace;outline:none;transition:border-color .2s}
+    .color-input:focus{border-color:var(--primary)}
+    .copy-btn{padding:7px 12px;border:1px solid var(--border);border-radius:8px;background:none;color:var(--text-muted);cursor:pointer;font-size:.8rem;transition:all .2s;white-space:nowrap}
+    .copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+    /* 色相/饱和/亮度滑块 */
+    .sliders{display:flex;flex-direction:column;gap:12px;margin-top:4px}
+    .slider-row{display:flex;align-items:center;gap:12px}
+    .slider-label{font-size:.78rem;color:var(--text-muted);width:20px;text-align:center}
+    input[type="range"]{flex:1;height:8px;border-radius:4px;outline:none;cursor:pointer;-webkit-appearance:none;appearance:none}
+    input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:white;border:2px solid var(--primary);cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.3)}
+    .slider-val{font-size:.82rem;font-family:'Courier New',monospace;color:var(--text);width:40px;text-align:right}
+
+    /* 色谱条 */
+    #sliderH{background:linear-gradient(to right,#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00)}
+
+    /* 颜色历史 */
+    .color-history{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+    .history-dot{width:36px;height:36px;border-radius:8px;cursor:pointer;border:2px solid transparent;transition:all .2s;flex-shrink:0}
+    .history-dot:hover{transform:scale(1.15);border-color:white}
+
+    /* 配色方案 */
+    .scheme-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+    .scheme-tab{padding:6px 14px;border:1px solid var(--border);border-radius:16px;background:none;color:var(--text-muted);cursor:pointer;font-size:.82rem;transition:all .2s}
+    .scheme-tab:hover{border-color:var(--primary);color:var(--primary)}
+    .scheme-tab.active{background:var(--primary);border-color:var(--primary);color:white}
+    .scheme-grid{display:flex;gap:8px;flex-wrap:wrap}
+    .scheme-color{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer}
+    .scheme-swatch{width:52px;height:52px;border-radius:10px;border:1px solid rgba(255,255,255,.1);transition:all .2s}
+    .scheme-swatch:hover{transform:scale(1.1)}
+    .scheme-hex{font-size:.7rem;font-family:'Courier New',monospace;color:var(--text-muted)}
+
+    /* 渐变生成器 */
+    .gradient-preview{width:100%;height:100px;border-radius:12px;margin-bottom:16px;border:1px solid var(--border)}
+    .gradient-stops{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+    .stop-item{display:flex;align-items:center;gap:6px;background:var(--bg);padding:6px 12px;border-radius:8px;border:1px solid var(--border)}
+    .stop-color-input{width:36px;height:28px;border-radius:6px;border:none;cursor:pointer;padding:0;background:none}
+    .stop-label{font-size:.8rem;color:var(--text-muted)}
+    .gradient-code{padding:12px 16px;background:var(--bg);border-radius:10px;font-family:'Courier New',monospace;font-size:.82rem;color:var(--accent);word-break:break-all;border:1px solid var(--border);margin-bottom:10px}
+    .direction-select{padding:8px 12px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);font-size:.85rem;outline:none;cursor:pointer}
+
+    /* 调色板 */
+    .palette-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;margin-top:8px}
+    .palette-cell{aspect-ratio:1;border-radius:6px;cursor:pointer;transition:transform .15s;border:1px solid rgba(255,255,255,.05)}
+    .palette-cell:hover{transform:scale(1.2);z-index:2;position:relative}
+
+    .btn{padding:8px 18px;border:none;border-radius:8px;cursor:pointer;font-size:.85rem;font-weight:600;transition:all .2s}
+    .btn-primary{background:linear-gradient(135deg,var(--primary),var(--secondary));color:white}
+    .btn-primary:hover{opacity:.9}
+    .btn-secondary{background:rgba(99,102,241,.1);border:1px solid var(--primary);color:var(--primary)}
+    .btn-sm{padding:5px 12px;font-size:.78rem}
+    .btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+
+    @media(max-width:768px){.main{grid-template-columns:1fr}.nav-links{display:none}.palette-grid{grid-template-columns:repeat(6,1fr)}}
+  </style>
+</head>
+<body>
+<nav class="navbar">
+  <a href="index.html" class="nav-logo">🤖 AI工具导航</a>
+  <ul class="nav-links">
+    <li><a href="index.html">首页</a></li>
+    <li><a href="tools.html">在线工具</a></li>
+    <li><a href="color-picker.html" class="active">颜色选择器</a></li>
+    <li><a href="submit.html" class="nav-btn">提交工具</a></li>
+  </ul>
+</nav>
+
+<header class="page-hero">
+  <h1>🎨 颜色选择器 &amp; <span>调色板</span></h1>
+  <p>RGB · HEX · HSL · CMYK 互转 · 渐变生成 · 配色方案 · 调色板</p>
+</header>
+
+<main class="main">
+  <!-- 左：颜色选择器 -->
+  <div class="card">
+    <div class="card-title">🎨 颜色选择器</div>
+    <div class="color-preview-big" id="bigPreview" onclick="copyHex()" title="点击复制HEX"></div>
+    <input type="color" id="colorPicker" oninput="onPickerChange(this.value)" value="#6366f1">
+    
+    <!-- HSL滑块 -->
+    <div class="sliders">
+      <div class="slider-row">
+        <span class="slider-label" title="色相">H</span>
+        <input type="range" id="sliderH" min="0" max="360" value="238" oninput="onHSLSlider()">
+        <span class="slider-val" id="valH">238°</span>
+      </div>
+      <div class="slider-row">
+        <span class="slider-label" title="饱和度">S</span>
+        <input type="range" id="sliderS" min="0" max="100" value="84" oninput="onHSLSlider()" style="background:linear-gradient(to right,gray,currentColor)">
+        <span class="slider-val" id="valS">84%</span>
+      </div>
+      <div class="slider-row">
+        <span class="slider-label" title="明度">L</span>
+        <input type="range" id="sliderL" min="0" max="100" value="63" oninput="onHSLSlider()">
+        <span class="slider-val" id="valL">63%</span>
+      </div>
+      <div class="slider-row">
+        <span class="slider-label" title="透明度">A</span>
+        <input type="range" id="sliderA" min="0" max="100" value="100" oninput="onAlphaSlider()">
+        <span class="slider-val" id="valA">100%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 右：颜色值 -->
+  <div class="card">
+    <div class="card-title">📋 颜色值</div>
+    <div class="color-inputs">
+      <div class="color-input-row">
+        <span class="color-label">HEX</span>
+        <input type="text" class="color-input" id="hexInput" value="#6366f1" oninput="onHexInput(this.value)" placeholder="#RRGGBB" spellcheck="false">
+        <button class="copy-btn" onclick="copyVal('hexInput')">复制</button>
+      </div>
+      <div class="color-input-row">
+        <span class="color-label">RGB</span>
+        <input type="text" class="color-input" id="rgbInput" value="rgb(99, 102, 241)" readonly>
+        <button class="copy-btn" onclick="copyVal('rgbInput')">复制</button>
+      </div>
+      <div class="color-input-row">
+        <span class="color-label">RGBA</span>
+        <input type="text" class="color-input" id="rgbaInput" value="rgba(99, 102, 241, 1)" readonly>
+        <button class="copy-btn" onclick="copyVal('rgbaInput')">复制</button>
+      </div>
+      <div class="color-input-row">
+        <span class="color-label">HSL</span>
+        <input type="text" class="color-input" id="hslInput" value="hsl(238, 84%, 63%)" readonly>
+        <button class="copy-btn" onclick="copyVal('hslInput')">复制</button>
+      </div>
+      <div class="color-input-row">
+        <span class="color-label">HSLA</span>
+        <input type="text" class="color-input" id="hslaInput" value="hsla(238, 84%, 63%, 1)" readonly>
+        <button class="copy-btn" onclick="copyVal('hslaInput')">复制</button>
+      </div>
+      <div class="color-input-row">
+        <span class="color-label">CMYK</span>
+        <input type="text" class="color-input" id="cmykInput" value="cmyk(59%, 58%, 0%, 5%)" readonly>
+        <button class="copy-btn" onclick="copyVal('cmykInput')">复制</button>
+      </div>
+    </div>
+
+    <!-- 颜色历史 -->
+    <div class="card-title" style="margin-top:20px;margin-bottom:10px">🕐 最近使用</div>
+    <div class="color-history" id="colorHistory"></div>
+  </div>
+
+  <!-- 配色方案 -->
+  <div class="card">
+    <div class="card-title">🌈 配色方案</div>
+    <div class="scheme-tabs">
+      <button class="scheme-tab active" onclick="genScheme('complementary', this)">互补色</button>
+      <button class="scheme-tab" onclick="genScheme('analogous', this)">类似色</button>
+      <button class="scheme-tab" onclick="genScheme('triadic', this)">三角色</button>
+      <button class="scheme-tab" onclick="genScheme('tetradic', this)">四角色</button>
+      <button class="scheme-tab" onclick="genScheme('splitComp', this)">分裂补</button>
+      <button class="scheme-tab" onclick="genScheme('shades', this)">明暗变化</button>
+    </div>
+    <div class="scheme-grid" id="schemeGrid"></div>
+  </div>
+
+  <!-- 渐变生成器 -->
+  <div class="card">
+    <div class="card-title">🌅 渐变色生成器</div>
+    <div class="gradient-preview" id="gradientPreview"></div>
+    
+    <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px;flex-wrap:wrap">
+      <select class="direction-select" id="gradientType" onchange="updateGradient()">
+        <option value="linear">线性渐变</option>
+        <option value="radial">径向渐变</option>
+        <option value="conic">锥形渐变</option>
+      </select>
+      <select class="direction-select" id="gradientDir" onchange="updateGradient()">
+        <option value="to right">→ 向右</option>
+        <option value="to left">← 向左</option>
+        <option value="to bottom">↓ 向下</option>
+        <option value="to top">↑ 向上</option>
+        <option value="to bottom right">↘ 右下</option>
+        <option value="135deg">↘ 135°</option>
+        <option value="45deg">↗ 45°</option>
+      </select>
+      <button class="btn btn-secondary btn-sm" onclick="randomGradient()">🎲 随机</button>
+    </div>
+
+    <div class="gradient-stops" id="gradientStops">
+      <div class="stop-item">
+        <input type="color" class="stop-color-input" value="#6366f1" oninput="updateGradient()">
+        <span class="stop-label">0%</span>
+      </div>
+      <div class="stop-item">
+        <input type="color" class="stop-color-input" value="#a855f7" oninput="updateGradient()">
+        <span class="stop-label">100%</span>
+      </div>
+    </div>
+    <div class="btn-row" style="margin-bottom:12px">
+      <button class="btn btn-secondary btn-sm" onclick="addStop()">+ 添加色标</button>
+      <button class="btn btn-secondary btn-sm" onclick="removeStop()">- 移除色标</button>
+    </div>
+    <div class="gradient-code" id="gradientCode"></div>
+    <button class="btn btn-primary btn-sm" onclick="copyGradient()">📋 复制CSS代码</button>
+  </div>
+
+  <!-- 调色板 full width -->
+  <div class="card main-full">
+    <div class="card-title">🎨 Material Design 调色板</div>
+    <div class="palette-grid" id="paletteGrid"></div>
+    <p style="color:var(--text-muted);font-size:.78rem;margin-top:12px">点击色块复制颜色值</p>
+  </div>
+</main>
+
+<footer style="background:var(--bg-card);border-top:1px solid var(--border);padding:20px;text-align:center">
+  <p style="color:var(--text-muted);font-size:.875rem">
+    <a href="index.html" style="color:var(--primary);text-decoration:none">AI工具导航</a> ·
+    <a href="tools.html" style="color:var(--text-muted);text-decoration:none;margin:0 12px">在线工具</a> ·
+    © 2026 AI工具导航
+  </p>
+</footer>
+
+<script>
+// ========== 状态变量 ==========
+let currentH = 238, currentS = 84, currentL = 63, currentA = 1.0;
+let colorHistory = [];
+
+// ========== 颜色转换函数 ==========
+function hslToRgb(h, s, l) {
+  s /= 100; l /= 100;
+  const k = n => (n + h / 30) % 12;
+  const a = s * Math.min(l, 1 - l);
+  const f = n => l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+  return [Math.round(f(0)*255), Math.round(f(8)*255), Math.round(f(4)*255)];
+}
+
+function rgbToHsl(r, g, b) {
+  r /= 255; g /= 255; b /= 255;
+  const max = Math.max(r,g,b), min = Math.min(r,g,b);
+  let h, s, l = (max + min) / 2;
+  if (max === min) { h = s = 0; }
+  else {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    switch(max) {
+      case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+      case g: h = ((b - r) / d + 2) / 6; break;
+      case b: h = ((r - g) / d + 4) / 6; break;
+    }
+  }
+  return [Math.round(h*360), Math.round(s*100), Math.round(l*100)];
+}
+
+function hexToRgb(hex) {
+  hex = hex.replace('#','');
+  if (hex.length === 3) hex = hex.split('').map(c=>c+c).join('');
+  if (hex.length !== 6) return null;
+  const n = parseInt(hex, 16);
+  return [(n>>16)&255, (n>>8)&255, n&255];
+}
+
+function rgbToHex(r, g, b) {
+  return '#' + [r,g,b].map(v => v.toString(16).padStart(2,'0')).join('').toUpperCase();
+}
+
+function rgbToCmyk(r, g, b) {
+  r /= 255; g /= 255; b /= 255;
+  const k = 1 - Math.max(r, g, b);
+  if (k === 1) return [0, 0, 0, 100];
+  return [
+    Math.round((1-r-k)/(1-k)*100),
+    Math.round((1-g-k)/(1-k)*100),
+    Math.round((1-b-k)/(1-k)*100),
+    Math.round(k*100)
+  ];
+}
+
+function hslToHex(h, s, l) {
+  const [r, g, b] = hslToRgb(h, s, l);
+  return rgbToHex(r, g, b);
+}
+
+// ========== UI更新 ==========
+function updateAll(h, s, l, a=1) {
+  currentH = h; currentS = s; currentL = l; currentA = a;
+  
+  const [r, g, b] = hslToRgb(h, s, l);
+  const hex = rgbToHex(r, g, b);
+  
+  // 预览
+  document.getElementById('bigPreview').style.background = `hsla(${h},${s}%,${l}%,${a})`;
+  
+  // picker
+  document.getElementById('colorPicker').value = hex;
+  
+  // 滑块
+  document.getElementById('sliderH').value = h;
+  document.getElementById('sliderS').value = s;
+  document.getElementById('sliderL').value = l;
+  document.getElementById('sliderA').value = Math.round(a * 100);
+  document.getElementById('valH').textContent = h + '°';
+  document.getElementById('valS').textContent = s + '%';
+  document.getElementById('valL').textContent = l + '%';
+  document.getElementById('valA').textContent = Math.round(a*100) + '%';
+  
+  // S滑块背景
+  document.getElementById('sliderS').style.background =
+    `linear-gradient(to right, hsl(${h},0%,${l}%), hsl(${h},100%,${l}%))`;
+  // L滑块背景
+  document.getElementById('sliderL').style.background =
+    `linear-gradient(to right, hsl(${h},${s}%,0%), hsl(${h},${s}%,50%), hsl(${h},${s}%,100%))`;
+  // A滑块背景
+  document.getElementById('sliderA').style.background =
+    `linear-gradient(to right, transparent, hsl(${h},${s}%,${l}%))`;
+  
+  // 颜色值输出
+  document.getElementById('hexInput').value = hex;
+  document.getElementById('rgbInput').value = `rgb(${r}, ${g}, ${b})`;
+  document.getElementById('rgbaInput').value = `rgba(${r}, ${g}, ${b}, ${a.toFixed(2)})`;
+  document.getElementById('hslInput').value = `hsl(${h}, ${s}%, ${l}%)`;
+  document.getElementById('hslaInput').value = `hsla(${h}, ${s}%, ${l}%, ${a.toFixed(2)})`;
+  const [c, m, y, k] = rgbToCmyk(r, g, b);
+  document.getElementById('cmykInput').value = `cmyk(${c}%, ${m}%, ${y}%, ${k}%)`;
+
+  // 配色方案
+  const activeSchemeTab = document.querySelector('.scheme-tab.active');
+  if (activeSchemeTab) genScheme(activeSchemeTab.dataset.scheme || 'complementary', activeSchemeTab);
+  
+  // 渐变更新
+  updateGradient();
+}
+
+function onPickerChange(val) {
+  const rgb = hexToRgb(val);
+  if (!rgb) return;
+  const [h, s, l] = rgbToHsl(...rgb);
+  updateAll(h, s, l, currentA);
+  addHistory(val.toUpperCase());
+}
+
+function onHexInput(val) {
+  val = val.trim();
+  if (!val.startsWith('#')) val = '#' + val;
+  const rgb = hexToRgb(val);
+  if (!rgb) return;
+  const [h, s, l] = rgbToHsl(...rgb);
+  updateAll(h, s, l, currentA);
+  addHistory(rgbToHex(...rgb));
+}
+
+function onHSLSlider() {
+  const h = +document.getElementById('sliderH').value;
+  const s = +document.getElementById('sliderS').value;
+  const l = +document.getElementById('sliderL').value;
+  updateAll(h, s, l, currentA);
+}
+
+function onAlphaSlider() {
+  currentA = document.getElementById('sliderA').value / 100;
+  updateAll(currentH, currentS, currentL, currentA);
+}
+
+// ========== 颜色历史 ==========
+function addHistory(hex) {
+  colorHistory = colorHistory.filter(c => c !== hex);
+  colorHistory.unshift(hex);
+  colorHistory = colorHistory.slice(0, 14);
+  renderHistory();
+}
+
+function renderHistory() {
+  const el = document.getElementById('colorHistory');
+  el.innerHTML = colorHistory.map(c =>
+    `<div class="history-dot" style="background:${c}" title="${c}" onclick="onHexInput('${c}')"></div>`
+  ).join('');
+}
+
+// ========== 配色方案 ==========
+function genScheme(type, btn) {
+  document.querySelectorAll('.scheme-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  btn.dataset.scheme = type;
+  
+  const h = currentH, s = currentS, l = currentL;
+  let colors = [];
+  
+  switch(type) {
+    case 'complementary':
+      colors = [[h,s,l], [(h+180)%360,s,l]]; break;
+    case 'analogous':
+      colors = [[h,s,l], [(h+30)%360,s,l], [(h+60)%360,s,l], [(h+330)%360,s,l], [(h+300)%360,s,l]]; break;
+    case 'triadic':
+      colors = [[h,s,l], [(h+120)%360,s,l], [(h+240)%360,s,l]]; break;
+    case 'tetradic':
+      colors = [[h,s,l], [(h+90)%360,s,l], [(h+180)%360,s,l], [(h+270)%360,s,l]]; break;
+    case 'splitComp':
+      colors = [[h,s,l], [(h+150)%360,s,l], [(h+210)%360,s,l]]; break;
+    case 'shades':
+      colors = [10,25,40,55,70,85].map(light => [h, s, light]); break;
+  }
+  
+  const grid = document.getElementById('schemeGrid');
+  grid.innerHTML = colors.map(([ch, cs, cl]) => {
+    const hex = hslToHex(ch, cs, cl);
+    return `<div class="scheme-color" onclick="useSchemeColor('${hex}')">
+      <div class="scheme-swatch" style="background:${hex}" title="${hex}"></div>
+      <span class="scheme-hex">${hex}</span>
+    </div>`;
+  }).join('');
+}
+
+function useSchemeColor(hex) {
+  onHexInput(hex);
+  addHistory(hex.toUpperCase());
+  showToast('已选择颜色 ' + hex);
+}
+
+// ========== 渐变生成器 ==========
+function updateGradient() {
+  const type = document.getElementById('gradientType').value;
+  const dir = document.getElementById('gradientDir').value;
+  const stops = [...document.querySelectorAll('#gradientStops .stop-color-input')];
+  const colors = stops.map((c, i) => {
+    const pct = Math.round(i / (stops.length - 1) * 100);
+    return `${c.value} ${pct}%`;
+  });
+  
+  let css = '';
+  if (type === 'linear') css = `linear-gradient(${dir}, ${colors.join(', ')})`;
+  else if (type === 'radial') css = `radial-gradient(circle, ${colors.join(', ')})`;
+  else css = `conic-gradient(${colors.join(', ')})`;
+  
+  document.getElementById('gradientPreview').style.background = css;
+  document.getElementById('gradientCode').textContent = `background: ${css};`;
+}
+
+function addStop() {
+  const stops = document.getElementById('gradientStops');
+  const div = document.createElement('div');
+  div.className = 'stop-item';
+  const count = stops.children.length;
+  const colors = ['#ff6b6b','#ffd93d','#6bcb77','#4d96ff','#845ec2'];
+  div.innerHTML = `<input type="color" class="stop-color-input" value="${colors[count % colors.length]}" oninput="updateGradient()"><span class="stop-label">${count}</span><button onclick="this.parentElement.remove();updateGradient()" style="border:none;background:none;color:#94a3b8;cursor:pointer;font-size:1rem">✕</button>`;
+  stops.appendChild(div);
+  updateGradient();
+}
+
+function removeStop() {
+  const stops = document.getElementById('gradientStops');
+  if (stops.children.length > 2) stops.removeChild(stops.lastChild);
+  updateGradient();
+}
+
+function randomGradient() {
+  const stops = document.querySelectorAll('#gradientStops .stop-color-input');
+  stops.forEach(s => {
+    const h = Math.random() * 360;
+    s.value = hslToHex(h, 70 + Math.random()*20, 50 + Math.random()*20);
+  });
+  updateGradient();
+  showToast('已生成随机渐变 🎲');
+}
+
+function copyGradient() {
+  const code = document.getElementById('gradientCode').textContent;
+  navigator.clipboard.writeText(code).then(() => showToast('已复制CSS代码 ✓'));
+}
+
+// ========== Material Design 调色板 ==========
+const materialColors = [
+  // Red
+  '#FFEBEE','#FFCDD2','#EF9A9A','#E57373','#EF5350','#F44336','#E53935','#D32F2F','#C62828','#B71C1C',
+  // Pink
+  '#FCE4EC','#F8BBD0','#F48FB1','#F06292','#EC407A','#E91E63','#D81B60','#C2185B','#AD1457','#880E4F',
+  // Purple
+  '#F3E5F5','#E1BEE7','#CE93D8','#BA68C8','#AB47BC','#9C27B0','#8E24AA','#7B1FA2','#6A1B9A','#4A148C',
+  // Deep Purple
+  '#EDE7F6','#D1C4E9','#B39DDB','#9575CD','#7E57C2','#673AB7','#5E35B1','#512DA8','#4527A0','#311B92',
+  // Indigo
+  '#E8EAF6','#C5CAE9','#9FA8DA','#7986CB','#5C6BC0','#3F51B5','#3949AB','#303F9F','#283593','#1A237E',
+  // Blue
+  '#E3F2FD','#BBDEFB','#90CAF9','#64B5F6','#42A5F5','#2196F3','#1E88E5','#1976D2','#1565C0','#0D47A1',
+  // Cyan
+  '#E0F7FA','#B2EBF2','#80DEEA','#4DD0E1','#26C6DA','#00BCD4','#00ACC1','#0097A7','#00838F','#006064',
+  // Teal
+  '#E0F2F1','#B2DFDB','#80CBC4','#4DB6AC','#26A69A','#009688','#00897B','#00796B','#00695C','#004D40',
+  // Green
+  '#E8F5E9','#C8E6C9','#A5D6A7','#81C784','#66BB6A','#4CAF50','#43A047','#388E3C','#2E7D32','#1B5E20',
+  // Yellow
+  '#FFFDE7','#FFF9C4','#FFF59D','#FFF176','#FFEE58','#FFEB3B','#FDD835','#F9A825','#F57F17','#FF6F00',
+];
+
+function renderPalette() {
+  const grid = document.getElementById('paletteGrid');
+  grid.innerHTML = materialColors.map(c =>
+    `<div class="palette-cell" style="background:${c}" title="${c}" onclick="onHexInput('${c}');addHistory('${c}');showToast('已选择 ${c}')"></div>`
+  ).join('');
+}
+
+// ========== 复制功能 ==========
+function copyHex() {
+  const hex = document.getElementById('hexInput').value;
+  navigator.clipboard.writeText(hex).then(() => showToast('已复制：' + hex));
+}
+
+function copyVal(id) {
+  const val = document.getElementById(id).value;
+  navigator.clipboard.writeText(val).then(() => showToast('已复制：' + val));
+}
+
+function showToast(msg) {
+  let t = document.getElementById('toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'toast';
+    t.style.cssText = 'position:fixed;bottom:32px;left:50%;transform:translateX(-50%);background:#1a1a2e;border:1px solid #6366f1;color:#e2e8f0;padding:10px 24px;border-radius:30px;font-size:.9rem;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.3);transition:opacity .3s';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  clearTimeout(t._t);
+  t._t = setTimeout(() => { t.style.opacity = '0'; }, 2000);
+}
+
+// ========== 初始化 ==========
+renderPalette();
+updateAll(currentH, currentS, currentL, currentA);
+addHistory('#6366F1');
+genScheme('complementary', document.querySelector('.scheme-tab.active'));
+document.querySelector('.scheme-tab.active').dataset.scheme = 'complementary';
+updateGradient();
+</script>
+</body>
+</html>

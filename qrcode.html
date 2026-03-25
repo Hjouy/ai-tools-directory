@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>二维码生成器 - 免费在线QR码生成 | AI工具导航</title>
+  <meta name="description" content="免费在线二维码生成器，支持URL、文本、联系人、WiFi等内容生成二维码，可自定义颜色、尺寸、样式，一键下载。">
+  <meta name="keywords" content="二维码生成器,QR码,在线二维码,二维码制作,WiFi二维码,名片二维码">
+  <!-- qrcode.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    :root{
+      --primary:#6366f1;--secondary:#a855f7;--accent:#06b6d4;
+      --bg:#0f0f1a;--bg-card:#1a1a2e;--bg-card2:#16213e;
+      --text:#e2e8f0;--text-muted:#94a3b8;--border:#2d2d4e;
+      --success:#10b981;--warning:#f59e0b;
+    }
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+
+    .navbar{position:sticky;top:0;z-index:100;background:rgba(15,15,26,.97);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between}
+    .nav-logo{font-size:1.3rem;font-weight:700;background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none}
+    .nav-links{display:flex;gap:8px;list-style:none;align-items:center}
+    .nav-links a{color:var(--text-muted);text-decoration:none;padding:6px 12px;border-radius:8px;font-size:.9rem;transition:all .2s}
+    .nav-links a:hover,.nav-links a.active{color:var(--text);background:rgba(99,102,241,.15)}
+    .nav-btn{background:linear-gradient(135deg,#6366f1,#a855f7)!important;color:white!important;border-radius:20px!important;font-weight:500;padding:7px 16px!important}
+
+    .page-hero{text-align:center;padding:40px 24px 28px;background:radial-gradient(ellipse at top,rgba(99,102,241,.12) 0%,transparent 65%)}
+    .page-hero h1{font-size:2.2rem;font-weight:800;margin-bottom:10px}
+    .page-hero span{background:linear-gradient(135deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .page-hero p{color:var(--text-muted);font-size:1rem}
+
+    .main{max-width:1100px;margin:0 auto;padding:24px 24px 80px;display:grid;grid-template-columns:1fr 360px;gap:24px;align-items:start}
+
+    .card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:20px}
+    .card-title{font-size:.82rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+
+    /* 类型选择 */
+    .type-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px}
+    .type-tab{padding:8px 16px;border:1px solid var(--border);border-radius:20px;background:none;color:var(--text-muted);cursor:pointer;font-size:.85rem;transition:all .2s}
+    .type-tab:hover{border-color:var(--primary);color:var(--primary)}
+    .type-tab.active{background:var(--primary);border-color:var(--primary);color:white;font-weight:600}
+
+    /* 输入表单 */
+    .form-group{margin-bottom:16px}
+    .form-label{font-size:.85rem;font-weight:600;color:var(--text);margin-bottom:6px;display:block}
+    .form-input{width:100%;padding:11px 14px;border:2px solid var(--border);border-radius:10px;background:var(--bg);color:var(--text);font-size:.9rem;outline:none;transition:border-color .2s}
+    .form-input:focus{border-color:var(--primary)}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    textarea.form-input{min-height:100px;resize:vertical;font-family:inherit}
+
+    /* QR预览区 */
+    .qr-panel{position:sticky;top:84px}
+    .qr-preview-wrap{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:24px;text-align:center}
+    .qr-box{display:inline-flex;padding:20px;border-radius:12px;margin-bottom:16px;transition:background .2s}
+    #qrcode canvas, #qrcode img{border-radius:4px!important}
+    .qr-size-label{color:var(--text-muted);font-size:.8rem;margin-bottom:16px}
+    
+    /* 按钮 */
+    .btn{padding:10px 22px;border:none;border-radius:10px;cursor:pointer;font-size:.9rem;font-weight:600;transition:all .2s}
+    .btn-primary{background:linear-gradient(135deg,var(--primary),var(--secondary));color:white;width:100%;margin-bottom:8px}
+    .btn-primary:hover{opacity:.9;transform:translateY(-1px)}
+    .btn-secondary{background:rgba(99,102,241,.1);border:1px solid var(--primary);color:var(--primary);width:100%;margin-bottom:8px}
+    .btn-secondary:hover{background:rgba(99,102,241,.2)}
+    .btn-copy{background:rgba(6,182,212,.1);border:1px solid var(--accent);color:var(--accent);width:100%}
+    .btn-copy:hover{background:rgba(6,182,212,.2)}
+    .btn-row{display:flex;gap:8px}
+
+    /* 样式选项 */
+    .style-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .style-item{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .style-label{font-size:.85rem;color:var(--text);white-space:nowrap}
+    input[type="color"]{width:44px;height:32px;border-radius:8px;border:1px solid var(--border);cursor:pointer;padding:2px;background:var(--bg)}
+    input[type="color"]::-webkit-color-swatch{border-radius:6px;border:none}
+    input[type="range"]{flex:1;height:6px;border-radius:3px;accent-color:var(--primary);cursor:pointer}
+    .range-val{font-size:.8rem;font-family:'Courier New',monospace;color:var(--text-muted);width:40px;text-align:right}
+
+    /* 纠错级别 */
+    .ec-tabs{display:flex;gap:6px}
+    .ec-tab{flex:1;padding:6px;border:1px solid var(--border);border-radius:8px;background:none;color:var(--text-muted);cursor:pointer;font-size:.8rem;text-align:center;transition:all .2s}
+    .ec-tab.active{background:rgba(99,102,241,.15);border-color:var(--primary);color:var(--primary);font-weight:700}
+    .ec-tab:hover{border-color:var(--primary)}
+
+    /* 历史记录 */
+    .history-list{display:flex;flex-direction:column;gap:6px;max-height:180px;overflow-y:auto}
+    .history-item{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--bg);border-radius:8px;border:1px solid var(--border);cursor:pointer;transition:all .2s;font-size:.82rem}
+    .history-item:hover{border-color:var(--primary)}
+    .history-icon{font-size:1rem;flex-shrink:0}
+    .history-text{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-muted)}
+    .history-del{color:var(--text-muted);font-size:.8rem;background:none;border:none;cursor:pointer;opacity:0;transition:opacity .2s}
+    .history-item:hover .history-del{opacity:1}
+
+    /* 预设模板 */
+    .preset-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+    .preset-item{padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:all .2s;text-align:center}
+    .preset-item:hover{border-color:var(--primary);background:rgba(99,102,241,.05)}
+    .preset-icon{font-size:1.5rem;margin-bottom:4px}
+    .preset-name{font-size:.78rem;color:var(--text-muted)}
+
+    @media(max-width:900px){.main{grid-template-columns:1fr}.qr-panel{position:static}}
+    @media(max-width:480px){.nav-links{display:none}.style-grid{grid-template-columns:1fr}.form-row{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<nav class="navbar">
+  <a href="index.html" class="nav-logo">🤖 AI工具导航</a>
+  <ul class="nav-links">
+    <li><a href="index.html">首页</a></li>
+    <li><a href="tools.html">在线工具</a></li>
+    <li><a href="qrcode.html" class="active">二维码生成</a></li>
+    <li><a href="submit.html" class="nav-btn">提交工具</a></li>
+  </ul>
+</nav>
+
+<header class="page-hero">
+  <h1>📱 二维码<span>生成器</span></h1>
+  <p>支持URL · 文本 · 联系人 · WiFi · 邮件 · 自定义样式 · 一键下载</p>
+</header>
+
+<main class="main">
+  <!-- 左侧输入区 -->
+  <div>
+    <!-- 类型选择 -->
+    <div class="card">
+      <div class="card-title">📋 内容类型</div>
+      <div class="type-tabs">
+        <button class="type-tab active" onclick="switchType('url', this)">🌐 网址</button>
+        <button class="type-tab" onclick="switchType('text', this)">📝 文本</button>
+        <button class="type-tab" onclick="switchType('contact', this)">👤 联系人</button>
+        <button class="type-tab" onclick="switchType('wifi', this)">📶 WiFi</button>
+        <button class="type-tab" onclick="switchType('email', this)">📧 邮件</button>
+        <button class="type-tab" onclick="switchType('phone', this)">📞 电话</button>
+        <button class="type-tab" onclick="switchType('sms', this)">💬 短信</button>
+      </div>
+
+      <!-- URL -->
+      <div id="form-url">
+        <div class="form-group">
+          <label class="form-label">网址 URL</label>
+          <input type="url" class="form-input" id="urlInput" placeholder="https://www.example.com" oninput="debouncedGenerate()">
+        </div>
+      </div>
+
+      <!-- 文本 -->
+      <div id="form-text" style="display:none">
+        <div class="form-group">
+          <label class="form-label">文本内容</label>
+          <textarea class="form-input" id="textInput" placeholder="输入任意文本..." oninput="debouncedGenerate()"></textarea>
+        </div>
+      </div>
+
+      <!-- 联系人 vCard -->
+      <div id="form-contact" style="display:none">
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">姓名 *</label><input type="text" class="form-input" id="contactName" placeholder="张三" oninput="debouncedGenerate()"></div>
+          <div class="form-group"><label class="form-label">手机</label><input type="tel" class="form-input" id="contactPhone" placeholder="13800138000" oninput="debouncedGenerate()"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">邮箱</label><input type="email" class="form-input" id="contactEmail" placeholder="user@example.com" oninput="debouncedGenerate()"></div>
+          <div class="form-group"><label class="form-label">公司</label><input type="text" class="form-input" id="contactOrg" placeholder="公司名称" oninput="debouncedGenerate()"></div>
+        </div>
+        <div class="form-group"><label class="form-label">网站</label><input type="url" class="form-input" id="contactUrl" placeholder="https://" oninput="debouncedGenerate()"></div>
+        <div class="form-group"><label class="form-label">地址</label><input type="text" class="form-input" id="contactAddr" placeholder="城市/地址" oninput="debouncedGenerate()"></div>
+      </div>
+
+      <!-- WiFi -->
+      <div id="form-wifi" style="display:none">
+        <div class="form-group"><label class="form-label">WiFi名称 (SSID) *</label><input type="text" class="form-input" id="wifiSsid" placeholder="MyNetwork" oninput="debouncedGenerate()"></div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">安全类型</label>
+            <select class="form-input" id="wifiSecurity" onchange="debouncedGenerate()">
+              <option value="WPA">WPA/WPA2</option>
+              <option value="WEP">WEP</option>
+              <option value="">无密码</option>
+            </select>
+          </div>
+          <div class="form-group"><label class="form-label">密码</label><input type="text" class="form-input" id="wifiPass" placeholder="WiFi密码" oninput="debouncedGenerate()"></div>
+        </div>
+        <div class="form-group">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.9rem">
+            <input type="checkbox" id="wifiHidden" style="accent-color:var(--primary)" onchange="debouncedGenerate()"> 隐藏网络
+          </label>
+        </div>
+      </div>
+
+      <!-- 邮件 -->
+      <div id="form-email" style="display:none">
+        <div class="form-group"><label class="form-label">收件人邮箱 *</label><input type="email" class="form-input" id="emailTo" placeholder="receiver@example.com" oninput="debouncedGenerate()"></div>
+        <div class="form-group"><label class="form-label">邮件主题</label><input type="text" class="form-input" id="emailSubject" placeholder="主题" oninput="debouncedGenerate()"></div>
+        <div class="form-group"><label class="form-label">邮件正文</label><textarea class="form-input" id="emailBody" placeholder="邮件内容..." oninput="debouncedGenerate()" style="min-height:80px"></textarea></div>
+      </div>
+
+      <!-- 电话 -->
+      <div id="form-phone" style="display:none">
+        <div class="form-group"><label class="form-label">电话号码 *</label><input type="tel" class="form-input" id="phoneNum" placeholder="13800138000" oninput="debouncedGenerate()"></div>
+      </div>
+
+      <!-- 短信 -->
+      <div id="form-sms" style="display:none">
+        <div class="form-group"><label class="form-label">手机号码 *</label><input type="tel" class="form-input" id="smsPhone" placeholder="13800138000" oninput="debouncedGenerate()"></div>
+        <div class="form-group"><label class="form-label">短信内容</label><textarea class="form-input" id="smsBody" placeholder="短信内容..." oninput="debouncedGenerate()" style="min-height:80px"></textarea></div>
+      </div>
+    </div>
+
+    <!-- 样式定制 -->
+    <div class="card">
+      <div class="card-title">🎨 样式定制</div>
+      <div class="style-grid">
+        <div class="style-item">
+          <span class="style-label">前景色</span>
+          <input type="color" id="fgColor" value="#000000" onchange="generateQR()">
+        </div>
+        <div class="style-item">
+          <span class="style-label">背景色</span>
+          <input type="color" id="bgColor" value="#ffffff" onchange="generateQR()">
+        </div>
+      </div>
+      <div style="margin-top:14px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+          <span class="style-label" style="font-size:.85rem">尺寸</span>
+          <span class="range-val" id="sizeVal">256px</span>
+        </div>
+        <input type="range" id="qrSize" min="128" max="512" step="32" value="256" oninput="document.getElementById('sizeVal').textContent=this.value+'px';generateQR()">
+      </div>
+      <div style="margin-top:14px">
+        <div class="form-label" style="margin-bottom:8px">纠错级别</div>
+        <div class="ec-tabs">
+          <button class="ec-tab" onclick="setEC('L', this)" title="7%容错">L<br><span style="font-size:.65rem;font-weight:400">低</span></button>
+          <button class="ec-tab active" onclick="setEC('M', this)" title="15%容错">M<br><span style="font-size:.65rem;font-weight:400">中</span></button>
+          <button class="ec-tab" onclick="setEC('Q', this)" title="25%容错">Q<br><span style="font-size:.65rem;font-weight:400">较高</span></button>
+          <button class="ec-tab" onclick="setEC('H', this)" title="30%容错">H<br><span style="font-size:.65rem;font-weight:400">高</span></button>
+        </div>
+        <p style="color:var(--text-muted);font-size:.75rem;margin-top:6px">纠错级别越高，二维码密度越大，但容忍损坏程度越高（Logo嵌入推荐H级）</p>
+      </div>
+    </div>
+
+    <!-- 生成历史 -->
+    <div class="card">
+      <div class="card-title" style="justify-content:space-between">
+        🕐 生成历史
+        <button onclick="clearHistory()" style="font-size:.75rem;color:var(--text-muted);background:none;border:none;cursor:pointer">清空</button>
+      </div>
+      <div class="history-list" id="historyList">
+        <div style="text-align:center;color:var(--text-muted);font-size:.85rem;padding:12px">暂无历史记录</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 右侧预览区 -->
+  <div class="qr-panel">
+    <div class="qr-preview-wrap">
+      <div class="card-title" style="justify-content:center;margin-bottom:16px">📱 二维码预览</div>
+      <div id="qrBgWrap" style="display:inline-flex;padding:20px;border-radius:12px;background:#fff;margin-bottom:12px">
+        <div id="qrcode"></div>
+      </div>
+      <div class="qr-size-label" id="qrSizeLabel">点击生成按钮生成二维码</div>
+      <button class="btn btn-primary" onclick="generateQR()">⚡ 立即生成</button>
+      <div class="btn-row">
+        <button class="btn btn-secondary" style="flex:1" onclick="downloadQR('png')">⬇️ 下载PNG</button>
+        <button class="btn btn-copy" style="flex:1" onclick="copyQRToClipboard()">📋 复制图片</button>
+      </div>
+      <div style="color:var(--text-muted);font-size:.75rem;margin-top:10px;text-align:center">
+        💡 右键点击二维码可另存为图片
+      </div>
+    </div>
+
+    <!-- 快速模板 -->
+    <div class="card" style="margin-top:16px">
+      <div class="card-title">⚡ 快速模板</div>
+      <div class="preset-grid">
+        <div class="preset-item" onclick="loadPreset('website')">
+          <div class="preset-icon">🌐</div>
+          <div class="preset-name">我的网站</div>
+        </div>
+        <div class="preset-item" onclick="loadPreset('wechat')">
+          <div class="preset-icon">💬</div>
+          <div class="preset-name">微信号</div>
+        </div>
+        <div class="preset-item" onclick="loadPreset('bilibili')">
+          <div class="preset-icon">📺</div>
+          <div class="preset-name">B站主页</div>
+        </div>
+        <div class="preset-item" onclick="loadPreset('github')">
+          <div class="preset-icon">💻</div>
+          <div class="preset-name">GitHub</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer style="background:var(--bg-card);border-top:1px solid var(--border);padding:20px;text-align:center">
+  <p style="color:var(--text-muted);font-size:.875rem">
+    <a href="index.html" style="color:var(--primary);text-decoration:none">AI工具导航</a> ·
+    <a href="tools.html" style="color:var(--text-muted);text-decoration:none;margin:0 12px">在线工具</a> ·
+    © 2026 AI工具导航
+  </p>
+</footer>
+
+<script>
+// ============ 状态 ============
+let currentType = 'url';
+let currentEC = 'M';
+let debounceTimer = null;
+let qrGenerated = false;
+
+// ============ 类型切换 ============
+function switchType(type, btn) {
+  currentType = type;
+  document.querySelectorAll('.type-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('[id^="form-"]').forEach(f => f.style.display = 'none');
+  document.getElementById('form-' + type).style.display = 'block';
+  debouncedGenerate();
+}
+
+function setEC(level, btn) {
+  currentEC = level;
+  document.querySelectorAll('.ec-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  if (qrGenerated) generateQR();
+}
+
+// ============ 内容生成 ============
+function getContent() {
+  switch(currentType) {
+    case 'url': return document.getElementById('urlInput').value.trim() || 'https://example.com';
+    case 'text': return document.getElementById('textInput').value.trim() || '请输入文本';
+    case 'contact': {
+      const n = document.getElementById('contactName').value.trim();
+      const p = document.getElementById('contactPhone').value.trim();
+      const e = document.getElementById('contactEmail').value.trim();
+      const o = document.getElementById('contactOrg').value.trim();
+      const u = document.getElementById('contactUrl').value.trim();
+      const a = document.getElementById('contactAddr').value.trim();
+      if (!n) return null;
+      return `BEGIN:VCARD\nVERSION:3.0\nFN:${n}${p?'\nTEL:'+p:''}${e?'\nEMAIL:'+e:''}${o?'\nORG:'+o:''}${u?'\nURL:'+u:''}${a?'\nADR:;;'+a+';;;;':''}
+\nEND:VCARD`;
+    }
+    case 'wifi': {
+      const ssid = document.getElementById('wifiSsid').value.trim();
+      if (!ssid) return null;
+      const sec = document.getElementById('wifiSecurity').value;
+      const pass = document.getElementById('wifiPass').value;
+      const hidden = document.getElementById('wifiHidden').checked;
+      return `WIFI:T:${sec};S:${ssid};P:${pass};H:${hidden};;`;
+    }
+    case 'email': {
+      const to = document.getElementById('emailTo').value.trim();
+      if (!to) return null;
+      const sub = encodeURIComponent(document.getElementById('emailSubject').value.trim());
+      const body = encodeURIComponent(document.getElementById('emailBody').value.trim());
+      return `mailto:${to}${sub || body ? '?' : ''}${sub ? 'subject='+sub : ''}${sub && body ? '&' : ''}${body ? 'body='+body : ''}`;
+    }
+    case 'phone': {
+      const p = document.getElementById('phoneNum').value.trim();
+      return p ? 'tel:' + p : null;
+    }
+    case 'sms': {
+      const p = document.getElementById('smsPhone').value.trim();
+      if (!p) return null;
+      const b = encodeURIComponent(document.getElementById('smsBody').value.trim());
+      return `smsto:${p}${b ? ':' + document.getElementById('smsBody').value.trim() : ''}`;
+    }
+    default: return '';
+  }
+}
+
+// ============ 二维码生成 ============
+const ecLevelMap = { 'L': QRCode.CorrectLevel.L, 'M': QRCode.CorrectLevel.M, 'Q': QRCode.CorrectLevel.Q, 'H': QRCode.CorrectLevel.H };
+
+function generateQR() {
+  const content = getContent();
+  if (!content) {
+    showToast('请填写必要内容');
+    return;
+  }
+  
+  const size = parseInt(document.getElementById('qrSize').value);
+  const fg = document.getElementById('fgColor').value;
+  const bg = document.getElementById('bgColor').value;
+  
+  const container = document.getElementById('qrcode');
+  container.innerHTML = '';
+  
+  document.getElementById('qrBgWrap').style.background = bg;
+
+  try {
+    new QRCode(container, {
+      text: content,
+      width: size,
+      height: size,
+      colorDark: fg,
+      colorLight: bg,
+      correctLevel: ecLevelMap[currentEC] || QRCode.CorrectLevel.M
+    });
+    
+    document.getElementById('qrSizeLabel').textContent = `${size}×${size}px · ${currentType.toUpperCase()} · 纠错 ${currentEC}`;
+    qrGenerated = true;
+    
+    // 添加历史
+    addHistory(content);
+  } catch(e) {
+    container.innerHTML = `<div style="color:#ef4444;padding:20px;font-size:.85rem">生成失败：${e.message}</div>`;
+  }
+}
+
+function debouncedGenerate() {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(generateQR, 600);
+}
+
+// ============ 下载 ============
+function downloadQR(format) {
+  const canvas = document.querySelector('#qrcode canvas');
+  const img = document.querySelector('#qrcode img');
+  
+  if (!canvas && !img) { showToast('请先生成二维码'); return; }
+  
+  const a = document.createElement('a');
+  if (canvas) {
+    a.href = canvas.toDataURL('image/png');
+  } else {
+    a.href = img.src;
+  }
+  a.download = `qrcode_${Date.now()}.png`;
+  a.click();
+  showToast('下载成功 ✓');
+}
+
+function copyQRToClipboard() {
+  const canvas = document.querySelector('#qrcode canvas');
+  if (!canvas) { showToast('请先生成二维码'); return; }
+  canvas.toBlob(blob => {
+    navigator.clipboard.write([new ClipboardItem({'image/png': blob})]).then(() => {
+      showToast('已复制到剪贴板 ✓');
+    }).catch(() => showToast('复制失败，请使用下载功能'));
+  });
+}
+
+// ============ 历史记录 ============
+let history = JSON.parse(localStorage.getItem('qr_history') || '[]');
+
+function addHistory(content) {
+  const icons = {url:'🌐',text:'📝',contact:'👤',wifi:'📶',email:'📧',phone:'📞',sms:'💬'};
+  history = history.filter(h => h.content !== content);
+  history.unshift({ content, type: currentType, icon: icons[currentType] || '📱', time: Date.now() });
+  history = history.slice(0, 10);
+  localStorage.setItem('qr_history', JSON.stringify(history));
+  renderHistory();
+}
+
+function renderHistory() {
+  const list = document.getElementById('historyList');
+  if (history.length === 0) {
+    list.innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:.85rem;padding:12px">暂无历史记录</div>';
+    return;
+  }
+  list.innerHTML = history.map((h, i) => `
+    <div class="history-item" onclick="loadHistory(${i})">
+      <span class="history-icon">${h.icon}</span>
+      <span class="history-text">${h.content}</span>
+      <button class="history-del" onclick="event.stopPropagation();deleteHistory(${i})">✕</button>
+    </div>
+  `).join('');
+}
+
+function loadHistory(idx) {
+  const h = history[idx];
+  if (!h) return;
+  const typeBtn = document.querySelector(`.type-tab[onclick*="'${h.type}'"]`);
+  if (typeBtn) switchType(h.type, typeBtn);
+  
+  if (h.type === 'url') document.getElementById('urlInput').value = h.content;
+  else if (h.type === 'text') document.getElementById('textInput').value = h.content;
+  generateQR();
+}
+
+function deleteHistory(idx) {
+  history.splice(idx, 1);
+  localStorage.setItem('qr_history', JSON.stringify(history));
+  renderHistory();
+}
+
+function clearHistory() {
+  history = [];
+  localStorage.removeItem('qr_history');
+  renderHistory();
+}
+
+// ============ 预设模板 ============
+function loadPreset(preset) {
+  const presets = {
+    website: { type: 'url', data: { urlInput: 'https://www.example.com' } },
+    wechat: { type: 'text', data: { textInput: 'weixin://addfriend/微信号' } },
+    bilibili: { type: 'url', data: { urlInput: 'https://space.bilibili.com/你的UID' } },
+    github: { type: 'url', data: { urlInput: 'https://github.com/你的用户名' } }
+  };
+  
+  const p = presets[preset];
+  if (!p) return;
+  
+  const typeBtn = document.querySelector(`.type-tab[onclick*="'${p.type}'"]`);
+  if (typeBtn) switchType(p.type, typeBtn);
+  
+  Object.entries(p.data).forEach(([id, val]) => {
+    const el = document.getElementById(id);
+    if (el) el.value = val;
+  });
+  
+  generateQR();
+  showToast('已加载模板：' + preset);
+}
+
+// ============ Toast ============
+function showToast(msg) {
+  let t = document.getElementById('toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'toast';
+    t.style.cssText = 'position:fixed;bottom:32px;left:50%;transform:translateX(-50%);background:#1a1a2e;border:1px solid #6366f1;color:#e2e8f0;padding:10px 24px;border-radius:30px;font-size:.9rem;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.3);transition:opacity .3s';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  clearTimeout(t._t);
+  t._t = setTimeout(() => { t.style.opacity = '0'; }, 2000);
+}
+
+// ============ 初始化 ============
+renderHistory();
+// 默认URL输入框有默认值则自动生成
+document.getElementById('urlInput').value = 'https://www.example.com';
+generateQR();
+</script>
+</body>
+</html>
