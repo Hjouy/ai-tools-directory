@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -11,8 +11,8 @@
     <meta property="og:type" content="website">
     <link rel="canonical" href="https://hjouy.github.io/ai-tools-directory/old-photo-restore.html">
     <!-- Font Awesome 异步加载，不阻塞页面渲染 -->
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"></noscript>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); min-height: 100vh; padding: 20px; }
@@ -502,9 +502,10 @@
 
         function downloadResult() {
             if (!processedCanvas) return;
+            const url = processedCanvas.toDataURL('image/png');
             const link = document.createElement('a');
             link.download = '修复照片_' + Date.now() + '.png';
-            link.href = processedCanvas.toDataURL('image/png');
+            link.href = url;
             link.click();
         }
 

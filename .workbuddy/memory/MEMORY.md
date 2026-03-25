@@ -145,7 +145,25 @@ chatgpt, midjourney, cursor, stable-diffusion, runway, suno, claude, notion-ai
   - tutorial-image-compress.html
 - 关键文件：share-buttons.js, watermark.js, optimize_fa.py
 
-## 在线工具质量优化 (2026-03-24)
+## 在线工具全面升级 (2026-03-25)
+### 升级内容
+- **tools.html**：重大升级，添加：
+  - 实时搜索（Ctrl+K快捷键）
+  - 工具收藏功能（localStorage持久化）
+  - 分类筛选标签（基础/文本/文件/开发/AI图像/视频/AI工具/收藏）
+  - 统计数字展示（50+工具 8类 100%免费）
+  - 新增"开发工具"分类
+- **新增工具页面**（4个全新工具）：
+  - `regex-tester.html`：正则表达式测试工具（实时高亮、常用正则库23条、替换功能）
+  - `color-picker.html`：颜色选择器（RGB/HEX/HSL/CMYK互转、配色方案、渐变生成器、Material调色板）
+  - `base64.html`：Base64编解码（Base64/URL编码/图片转Base64/Unicode编解码4合一）
+  - `qrcode.html`：二维码生成器（7种内容类型、自定义样式、历史记录、快速模板）
+- **calculator.html**：新增3个计算器模块：
+  - BMI健康计算（含理想体重范围、基础代谢率、健康建议）
+  - 汇率换算（20种货币离线汇率）
+  - 贷款计算器（等额还款/等额本金双模式）
+
+
 - **MediaPipe依赖升级**：统一升级到最新版本
   - SelfieSegmentation@0.4.1646421024
   - FaceMesh@0.4.1707981112

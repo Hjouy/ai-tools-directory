@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -7,8 +7,8 @@
     <meta name="description" content="免费在线GIF制作工具，支持视频转GIF、图片序列转GIF、GIF优化压缩、添加文字贴纸">
     <meta name="keywords" content="GIF制作,视频转GIF,图片转GIF,GIF压缩,GIF编辑">
     <!-- Font Awesome 异步加载，不阻塞页面渲染 -->
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"></noscript>
     <script src="https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.min.js"></script>
     <script>
         // 配置 gif.js 的 worker 路径
@@ -183,12 +183,12 @@
             
             Array.from(files).forEach(file => {
                 if (file.size > maxSize) { 
-                    alert(`文件 ${file.name} 超过50MB限制`); 
+                    showToast(`文件 ${file.name} 超过50MB限制`); 
                     return; 
                 }
                 const validTypes = ['video/mp4', 'video/webm', 'video/ogg', 'image/jpeg', 'image/png', 'image/gif'];
                 if (!validTypes.includes(file.type)) { 
-                    alert(`文件 ${file.name} 格式不支持`); 
+                    showToast(`文件 ${file.name} 格式不支持`); 
                     return; 
                 }
                 
@@ -230,7 +230,7 @@
         });
         
         async function generateGIF() {
-            if (mediaFiles.length === 0) { alert('请先上传素材'); return; }
+            if (mediaFiles.length === 0) { showToast('请先上传素材'); return; }
             
             document.getElementById('processingIndicator').classList.add('show');
             document.getElementById('generateBtn').disabled = true;
@@ -248,7 +248,7 @@
                 }
             } catch (error) {
                 console.error('GIF生成失败:', error);
-                alert('GIF生成失败: ' + error.message);
+                showToast('GIF生成失败: ' + error.message);
                 resetProcessingUI();
             }
         }
@@ -429,11 +429,13 @@
         }
         
         function downloadGIF() {
-            if (!gifBlob) { alert('请先生成GIF'); return; }
+            if (!gifBlob) { showToast('请先生成GIF'); return; }
+            const url = URL.createObjectURL(gifBlob);
             const link = document.createElement('a');
             link.download = 'GIF_' + Date.now() + '.gif';
-            link.href = URL.createObjectURL(gifBlob);
+            link.href = url;
             link.click();
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
         }
         
         function resetAll() {
@@ -460,6 +462,19 @@
             document.getElementById('processingIndicator').classList.remove('show');
             document.getElementById('progressFill').style.width = '0%';
             document.getElementById('progressText').textContent = '准备中...';
+        }
+        function showToast(msg) {
+            let t = document.getElementById('_toast');
+            if (!t) {
+                t = document.createElement('div');
+                t.id = '_toast';
+                t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 22px;border-radius:8px;font-size:14px;z-index:9999;pointer-events:none;transition:opacity .3s';
+                document.body.appendChild(t);
+            }
+            t.textContent = msg;
+            t.style.opacity = '1';
+            clearTimeout(t._timer);
+            t._timer = setTimeout(() => { t.style.opacity = '0'; }, 2500);
         }
     </script>
 </body>

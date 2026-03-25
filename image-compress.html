@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -7,8 +7,8 @@
     <meta name="description" content="免费在线智能图片压缩优化工具，支持WebP/AVIF转换、智能压缩、批量处理">
     <meta name="keywords" content="图片压缩,WebP转换,AVIF转换,图片优化,批量压缩">
     <!-- Font Awesome 异步加载，不阻塞页面渲染 -->
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"></noscript>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); min-height: 100vh; padding: 20px; }
@@ -142,8 +142,8 @@
         function handleFiles(files) {
             Array.from(files).forEach(file => {
                 const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
-                if (!validTypes.includes(file.type)) { alert(`文件 ${file.name} 格式不支持`); return; }
-                if (file.size > 50 * 1024 * 1024) { alert(`文件 ${file.name} 超过50MB`); return; }
+                if (!validTypes.includes(file.type)) { showToast(`文件 ${file.name} 格式不支持`); return; }
+                if (file.size > 50 * 1024 * 1024) { showToast(`文件 ${file.name} 超过50MB`); return; }
                 const reader = new FileReader();
                 reader.onload = e => {
                     const img = new Image();
@@ -199,7 +199,7 @@
             document.getElementById('maxWidthValue').textContent = value === 0 ? '不限制' : value + 'px';
         });
         function compressImages() {
-            if (uploadedImages.length === 0) { alert('请先上传图片'); return; }
+            if (uploadedImages.length === 0) { showToast('请先上传图片'); return; }
             const quality = parseInt(document.getElementById('quality').value) / 100;
             const maxWidth = parseInt(document.getElementById('maxWidth').value);
             document.getElementById('processingIndicator').classList.add('show');
@@ -221,7 +221,9 @@
                     ctx.drawImage(img.image, 0, 0, width, height);
                     const mimeType = outputFormat === 'jpeg' ? 'image/jpeg' : outputFormat === 'webp' ? 'image/webp' : 'image/png';
                     const compressedDataUrl = canvas.toDataURL(mimeType, quality);
-                    const compressedSize = Math.round((compressedDataUrl.length - 'data:image/jpeg;base64,'.length) * 0.75);
+                    // 精确计算：base64 去除头部后 decode 得实际字节数
+                    const base64Data = compressedDataUrl.split(',')[1];
+                    const compressedSize = Math.round(base64Data.length * 0.75) - (base64Data.endsWith('==') ? 2 : base64Data.endsWith('=') ? 1 : 0);
                     compressedImages.push({
                         original: img,
                         compressed: {
@@ -269,7 +271,7 @@
                 ${compressedImages.length > 1 ? `<p style="text-align: center; color: #666; margin-top: 20px;">共 ${compressedImages.length} 张图片已压缩，点击"下载全部"获取所有文件</p>` : ''}`;
         }
         function downloadAll() {
-            if (compressedImages.length === 0) { alert('请先压缩图片'); return; }
+            if (compressedImages.length === 0) { showToast('请先压缩图片'); return; }
             compressedImages.forEach((img, index) => {
                 setTimeout(() => {
                     const link = document.createElement('a');
@@ -292,6 +294,19 @@
             document.getElementById('qualityValue').textContent = '75%';
             document.getElementById('maxWidth').value = 0;
             document.getElementById('maxWidthValue').textContent = '不限制';
+        }
+        function showToast(msg) {
+            let t = document.getElementById('_toast');
+            if (!t) {
+                t = document.createElement('div');
+                t.id = '_toast';
+                t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 22px;border-radius:8px;font-size:14px;z-index:9999;pointer-events:none;transition:opacity .3s';
+                document.body.appendChild(t);
+            }
+            t.textContent = msg;
+            t.style.opacity = '1';
+            clearTimeout(t._timer);
+            t._timer = setTimeout(() => { t.style.opacity = '0'; }, 2500);
         }
     </script>
 </body>
