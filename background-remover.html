@@ -53,6 +53,31 @@
         .upload-zone i { font-size:2.4em; color:var(--primary); display:block; margin-bottom:9px; }
         .upload-zone p { font-size:.83rem; color:var(--muted); }
         .upload-zone input { position:absolute; inset:0; opacity:0; cursor:pointer; }
+
+        /* 批量结果区 */
+        .batch-bar { display:none; align-items:center; justify-content:space-between; padding:10px 14px; background:rgba(0,212,255,.07); border:1px solid rgba(0,212,255,.2); border-radius:10px; margin-bottom:10px; }
+        .batch-bar.show { display:flex; }
+        .batch-bar span { font-size:.86rem; color:var(--primary); font-weight:700; }
+        .batch-dl-all { padding:6px 16px; border:none; border-radius:8px; background:linear-gradient(135deg,var(--primary),var(--p2)); color:#fff; font-size:.82rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:6px; transition:all .2s; }
+        .batch-dl-all:hover { transform:translateY(-1px); box-shadow:0 4px 12px rgba(0,212,255,.35); }
+        .batch-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:12px; }
+        .batch-card { background:rgba(255,255,255,.04); border:1px solid var(--border); border-radius:12px; padding:10px; position:relative; transition:all .2s; }
+        .batch-card:hover { border-color:rgba(0,212,255,.4); background:rgba(0,212,255,.04); }
+        .batch-img-wrap { position:relative; width:100%; padding-bottom:100%; background:repeating-conic-gradient(#1e1e32 0% 25%,#13132a 0% 50%) 0 0/14px 14px; border-radius:8px; overflow:hidden; margin-bottom:8px; }
+        .batch-img-wrap img { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; }
+        /* 加载中遮罩 */
+        .batch-loading-mask { position:absolute; inset:0; background:rgba(0,0,0,.55); display:flex; align-items:center; justify-content:center; border-radius:8px; }
+        .batch-svg-ring { transform:rotate(-90deg); }
+        .batch-pct { position:absolute; font-size:.75rem; font-weight:700; color:#fff; }
+        /* 完成操作栏 */
+        .batch-actions { position:absolute; bottom:8px; left:0; right:0; display:flex; justify-content:space-between; padding:0 6px; opacity:0; transition:opacity .2s; }
+        .batch-card:hover .batch-actions { opacity:1; }
+        .batch-act-btn { padding:3px 8px; border-radius:6px; border:none; font-size:.68rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:3px; }
+        .batch-act-dl { background:rgba(67,233,123,.9); color:#000; }
+        .batch-act-copy { background:rgba(79,172,254,.9); color:#000; }
+        .batch-act-del { background:rgba(255,80,80,.85); color:#fff; position:absolute; top:-34px; right:6px; border-radius:50%; width:22px; height:22px; padding:0; display:flex; align-items:center; justify-content:center; font-size:.7rem; }
+        .batch-name { font-size:.7rem; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .batch-dim { font-size:.66rem; color:#555; margin-top:1px; }
         #fileInfo { display:none; margin-top:8px; padding:8px 11px; background:rgba(0,0,0,.35); border-radius:8px; font-size:.78rem; color:var(--muted); }
         .fi-row { display:flex; align-items:center; gap:10px; }
         .fi-thumb { width:44px; height:44px; border-radius:6px; object-fit:cover; border:1px solid var(--border); flex-shrink:0; }
@@ -224,8 +249,8 @@
                 <div class="upload-zone" id="uploadZone">
                     <i class="fas fa-cloud-upload-alt"></i>
                     <p>点击或拖拽上传图片</p>
-                    <p style="font-size:.73rem;color:#555;margin-top:4px;">JPG · PNG · WEBP · 最大15MB</p>
-                    <input type="file" id="fileInput" accept="image/*">
+                    <p style="font-size:.73rem;color:#555;margin-top:4px;">支持多图批量 · JPG/PNG/WEBP · 单张≤15MB</p>
+                    <input type="file" id="fileInput" accept="image/*" multiple>
                 </div>
                 <div id="fileInfo"></div>
             </div>
@@ -267,14 +292,22 @@
                 <!-- 预设色块 -->
                 <div class="bg-presets" id="bgPresets">
                     <div class="bg-swatch transparent active swatch-label" data-bg="transparent" title="透明">透明</div>
-                    <div class="bg-swatch" style="background:#ffffff;" data-bg="#ffffff" title="白色"></div>
+                    <div class="bg-swatch" style="background:#ffffff;border:1px solid #444;" data-bg="#ffffff" title="白色"></div>
                     <div class="bg-swatch" style="background:#1a1a1a;" data-bg="#1a1a1a" title="黑色"></div>
                     <div class="bg-swatch" style="background:#e8f4fd;" data-bg="#e8f4fd" title="淡蓝白"></div>
                     <div class="bg-swatch" style="background:#e53935;" data-bg="#e53935" title="证件红"></div>
                     <div class="bg-swatch" style="background:#1976d2;" data-bg="#1976d2" title="证件蓝"></div>
                     <div class="bg-swatch" style="background:#388e3c;" data-bg="#388e3c" title="绿色"></div>
-                    <div class="bg-swatch" style="background:#f57c00;" data-bg="#f57c00" title="橙色"></div>
-                    <div class="bg-swatch" style="background:#7b1fa2;" data-bg="#7b1fa2" title="紫色"></div>
+                    <div class="bg-swatch" style="background:#6F6F6F;" data-bg="#6F6F6F" title="灰色"></div>
+                    <!-- Pngtree渐变色板 -->
+                    <div class="bg-swatch" style="background:linear-gradient(90deg,#FF9F0F,#FF7D04);" data-bg="linear-gradient(90deg,#FF9F0F,#FF7D04)" title="橙金渐变"></div>
+                    <div class="bg-swatch" style="background:linear-gradient(180deg,#BDD6FF,#D0C7FF);" data-bg="linear-gradient(180deg,#BDD6FF,#D0C7FF)" title="蓝紫渐变"></div>
+                    <div class="bg-swatch" style="background:linear-gradient(180deg,#71FFBB,#3DD6D6);" data-bg="linear-gradient(180deg,#71FFBB,#3DD6D6)" title="青绿渐变"></div>
+                    <div class="bg-swatch" style="background:linear-gradient(135deg,#CAF8ED,#E6DAA1,#FF8557);" data-bg="linear-gradient(135deg,#CAF8ED,#E6DAA1,#FF8557)" title="日落三色"></div>
+                    <div class="bg-swatch" style="background:linear-gradient(90deg,#30FF8F,#0CF1B2);" data-bg="linear-gradient(90deg,#30FF8F,#0CF1B2)" title="薄荷渐变"></div>
+                    <div class="bg-swatch" style="background:linear-gradient(135deg,#FFF8CA,#FF005B);" data-bg="linear-gradient(135deg,#FFF8CA,#FF005B)" title="玫瑰渐变"></div>
+                    <div class="bg-swatch" style="background:linear-gradient(315deg,#D595CF,#9D9BDF);" data-bg="linear-gradient(315deg,#D595CF,#9D9BDF)" title="紫粉渐变"></div>
+                    <div class="bg-swatch" style="background:linear-gradient(315deg,#ACEB8E,#9CF2D5);" data-bg="linear-gradient(315deg,#ACEB8E,#9CF2D5)" title="草绿渐变"></div>
                     <div class="bg-swatch" style="background:linear-gradient(135deg,#667eea,#764ba2);" data-bg="custom" title="自定义" id="customSwatch"></div>
                 </div>
 
@@ -382,6 +415,13 @@
                 </div>
             </div>
 
+            <!-- 批量结果区 -->
+            <div class="batch-bar" id="batchBar">
+                <span id="batchCount">共 0 张</span>
+                <button class="batch-dl-all" onclick="downloadAll()"><i class="fas fa-download"></i> 下载全部</button>
+            </div>
+            <div class="batch-grid" id="batchGrid"></div>
+
             <!-- 预览面板 -->
             <div class="panel">
                 <div class="panel-hd">
@@ -474,13 +514,17 @@ let currentBg = 'transparent', currentPat = 'none', currentMode = 'onnx';
 let featherVal = 2, threshVal = 0.5;
 let isProcessing = false;
 let currentView = 'result';
-let downloadFmt = 'transparent'; // 'transparent' | 'withbg' | 'jpg'
+let downloadFmt = 'transparent';
 
-// ===== Mask 缓存（避免调参重跑推理）=====
-// cachedMask: { type:'onnx'|'hq', floatMask, mw, mh, lb, srcData } 或 { type:'hq', srcData, mask }
+// ===== Mask 缓存 =====
 let cachedMask = null;
 
-// ===== reapplyMask：用缓存的原始 mask 重新后处理，不重跑推理 =====
+// ===== 批量处理队列 =====
+// previewList: [{ id, file, origImg, status:'pending'|'processing'|'done'|'error', resultCanvas, dashoffset, pct }]
+let previewList = [];
+let batchRunning = false;
+
+// ===== reapplyMask =====
 function reapplyMask() {
     if (!cachedMask) return;
     if (cachedMask.type === 'onnx') {
@@ -548,12 +592,8 @@ function showToast(msg) {
 window.updateAdj = (type, val) => {
     if (type === 'feather') { featherVal = +val; document.getElementById('featherV').textContent = val; }
     else { threshVal = +val; document.getElementById('threshV').textContent = (+val).toFixed(2); }
-    if (cachedMask) {
-        // 有缓存时直接重应用 mask，无需重推理
-        reapplyMask();
-    } else if (resultCanvas) {
-        applyBg();
-    }
+    if (cachedMask) reapplyMask();
+    else if (resultCanvas) applyBg();
 };
 
 window.setMode = (radio) => {
@@ -572,24 +612,46 @@ document.querySelectorAll('.res-btn').forEach(btn => {
     });
 });
 
-// ===== 上传 =====
+// ===== 上传（多图批量）=====
 const zone = document.getElementById('uploadZone');
 zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('over'); });
 zone.addEventListener('dragleave', () => zone.classList.remove('over'));
-zone.addEventListener('drop', e => { e.preventDefault(); zone.classList.remove('over'); const f = e.dataTransfer.files[0]; if (f && f.type.startsWith('image/')) loadFile(f); });
-document.getElementById('fileInput').addEventListener('change', e => { if (e.target.files[0]) loadFile(e.target.files[0]); });
+zone.addEventListener('drop', e => {
+    e.preventDefault(); zone.classList.remove('over');
+    const files = [...e.dataTransfer.files].filter(f => f.type.startsWith('image/'));
+    if (files.length) loadFiles(files);
+});
+document.getElementById('fileInput').addEventListener('change', e => {
+    const files = [...e.target.files];
+    if (files.length) loadFiles(files);
+});
+
+function loadFiles(files) {
+    // 过滤超大文件
+    const valid = files.filter(f => {
+        if (f.size > 15*1024*1024) { showToast(`${f.name} 超过15MB，已跳过`); return false; }
+        return true;
+    });
+    if (!valid.length) return;
+
+    if (valid.length === 1) {
+        // 单图：保持原来单图体验
+        loadFile(valid[0]);
+    } else {
+        // 多图：批量模式
+        loadBatch(valid);
+    }
+}
 
 function loadFile(file) {
-    if (file.size > 15 * 1024 * 1024) { showToast('图片超过15MB，请压缩后上传'); return; }
     const reader = new FileReader();
     reader.onload = e => {
         const img = new Image();
         img.onload = () => {
             origImg = img;
-            cachedMask = null; // 清除旧 mask 缓存
+            cachedMask = null;
             resultCanvas = null;
             document.getElementById('dimTxt').textContent = `${img.width} × ${img.height}`;
-            // 缩略图 + 文件信息展示
             const fi = document.getElementById('fileInfo');
             fi.style.display = 'block';
             fi.innerHTML = `<div class="fi-row">
@@ -607,6 +669,262 @@ function loadFile(file) {
     };
     reader.readAsDataURL(file);
 }
+
+// ===== 批量模式 =====
+function loadBatch(files) {
+    // 隐藏单图区，显示批量区
+    document.getElementById('fileInfo').style.display = 'none';
+    document.getElementById('processBtn').disabled = true;
+    document.getElementById('dlBtn').disabled = true;
+    document.getElementById('copyBtn').disabled = true;
+    document.getElementById('dlOpts').style.display = 'none';
+
+    // 清空旧列表
+    previewList = [];
+    const grid = document.getElementById('batchGrid');
+    grid.innerHTML = '';
+    document.getElementById('batchBar').classList.add('show');
+
+    // 为每个文件创建 item
+    files.forEach((file, idx) => {
+        const id = 'batch_' + Date.now() + '_' + idx;
+        const item = { id, file, origImg: null, status: 'pending', resultCanvas: null, dashoffset: 565.48, pct: 0 };
+        previewList.push(item);
+
+        const card = document.createElement('div');
+        card.className = 'batch-card';
+        card.id = 'card_' + id;
+        card.innerHTML = `
+            <div class="batch-img-wrap" id="imgwrap_${id}">
+                <div class="batch-loading-mask" id="mask_${id}">
+                    <svg class="batch-svg-ring" width="60" height="60" viewBox="-25 -25 250 250">
+                        <circle r="90" cx="100" cy="100" fill="transparent" stroke="rgba(255,255,255,.2)" stroke-width="8"/>
+                        <circle id="ring_${id}" r="90" cx="100" cy="100" fill="transparent" stroke="#00d4ff"
+                            stroke-width="16" stroke-linecap="round"
+                            stroke-dasharray="565.48" stroke-dashoffset="565.48"/>
+                    </svg>
+                    <span class="batch-pct" id="pct_${id}">0%</span>
+                </div>
+            </div>
+            <div class="batch-name" id="name_${id}">${file.name.replace(/\.[^.]+$/, '')}</div>
+            <div class="batch-dim" id="dim_${id}">加载中…</div>
+            <div class="batch-actions" id="acts_${id}" style="display:none;">
+                <button class="batch-act-btn batch-act-dl" onclick="downloadItem('${id}')"><i class="fas fa-download"></i> 下载</button>
+                <button class="batch-act-btn batch-act-copy" onclick="copyItem('${id}')"><i class="fas fa-copy"></i> 拷贝</button>
+            </div>
+            <button class="batch-act-btn batch-act-del" id="del_${id}" onclick="removeItem('${id}')" title="删除"><i class="fas fa-times"></i></button>
+        `;
+        grid.appendChild(card);
+
+        // 读取图片
+        const reader = new FileReader();
+        reader.onload = ev => {
+            const img = new Image();
+            img.onload = () => {
+                item.origImg = img;
+                document.getElementById('dim_' + id).textContent = `${img.width}×${img.height}`;
+                // 显示原图缩略图（在加载mask之上）
+                const wrap = document.getElementById('imgwrap_' + id);
+                const thumb = document.createElement('img');
+                thumb.src = ev.target.result;
+                thumb.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:contain;';
+                wrap.insertBefore(thumb, wrap.firstChild);
+                item._thumbEl = thumb;
+            };
+            img.src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+
+    updateBatchCount();
+
+    // 延迟启动处理（等图片加载完）
+    setTimeout(() => runBatch(), 600);
+}
+
+async function runBatch() {
+    if (batchRunning) return;
+    batchRunning = true;
+    showStatus('批量处理中，请稍候...', 'loading', true);
+
+    // 确保 ONNX 模型就绪
+    try {
+        await loadORT();
+        await initOrtSession();
+    } catch(e) {
+        showStatus('模型加载失败: ' + e.message, 'err');
+        batchRunning = false;
+        return;
+    }
+
+    for (const item of previewList) {
+        if (item.status !== 'pending') continue;
+        if (!item.origImg) {
+            // 等图片加载
+            await new Promise(r => { const t = setInterval(() => { if (item.origImg || item.status==='error') { clearInterval(t); r(); } }, 100); });
+        }
+        if (!item.origImg) continue;
+        await processBatchItem(item);
+    }
+
+    batchRunning = false;
+    const done = previewList.filter(i => i.status === 'done').length;
+    showStatus(`✅ 批量完成！共处理 ${done}/${previewList.length} 张`, 'ok');
+    setTimeout(hideStatus, 4000);
+    updateBatchCount();
+}
+
+async function processBatchItem(item) {
+    item.status = 'processing';
+    updateRing(item, 0);
+
+    try {
+        const maxDim = inferSize;
+        const wc = makeCanvas(item.origImg, maxDim);
+        const ctx = wc.getContext('2d');
+        const imgData = ctx.getImageData(0, 0, wc.width, wc.height);
+        updateRing(item, 30);
+
+        const { tensor, lb } = preprocessImg(imgData, MODEL_INPUT_SIZE);
+        const inputTensor = new ort.Tensor('float32', tensor, [1, 3, MODEL_INPUT_SIZE, MODEL_INPUT_SIZE]);
+        const feeds = {};
+        feeds[ortSession.inputNames[0]] = inputTensor;
+        const output = await ortSession.run(feeds);
+        updateRing(item, 70);
+
+        const maskTensor = output[ortSession.outputNames[0]];
+        const maskData = maskTensor.data;
+        const mh = maskTensor.dims[2], mw = maskTensor.dims[3];
+        const floatMask = new Float32Array(mw * mh);
+        for (let i = 0; i < mw * mh; i++) floatMask[i] = 1 / (1 + Math.exp(-maskData[i]));
+        const blurred = featherVal > 0 ? gaussBlur(floatMask, mw, mh, featherVal) : floatMask;
+        const rc = applyMaskWithLetterbox(imgData, blurred, mw, mh, lb, threshVal);
+        item.resultCanvas = rc;
+        item.status = 'done';
+        updateRing(item, 100);
+
+        // 显示结果图替换缩略图
+        const wrap = document.getElementById('imgwrap_' + item.id);
+        if (wrap) {
+            // 隐藏加载遮罩
+            const mask = document.getElementById('mask_' + item.id);
+            if (mask) mask.style.display = 'none';
+            // 替换为结果图
+            const bg = getBgFillCanvas(rc);
+            const blobUrl = await canvasToBlobUrl(bg);
+            if (item._thumbEl) item._thumbEl.src = blobUrl;
+            item._blobUrl = blobUrl;
+        }
+        // 显示操作按钮
+        const acts = document.getElementById('acts_' + item.id);
+        if (acts) acts.style.display = 'flex';
+        const del = document.getElementById('del_' + item.id);
+        if (del) del.style.display = 'flex';
+
+    } catch(e) {
+        item.status = 'error';
+        const mask = document.getElementById('mask_' + item.id);
+        if (mask) mask.innerHTML = '<span style="color:#ff6060;font-size:.75rem;text-align:center;padding:8px;">失败<br>'+e.message.slice(0,20)+'</span>';
+    }
+}
+
+function updateRing(item, pct) {
+    item.pct = pct;
+    const circumference = 565.48;
+    item.dashoffset = circumference * (1 - pct / 100);
+    const ring = document.getElementById('ring_' + item.id);
+    const pctEl = document.getElementById('pct_' + item.id);
+    if (ring) ring.setAttribute('stroke-dashoffset', item.dashoffset);
+    if (pctEl) pctEl.textContent = pct + '%';
+}
+
+function updateBatchCount() {
+    const done = previewList.filter(i => i.status === 'done').length;
+    document.getElementById('batchCount').textContent = `共 ${previewList.length} 张${done ? '（'+done+' 张完成）' : ''}`;
+}
+
+async function canvasToBlobUrl(canvas) {
+    return new Promise(r => canvas.toBlob(blob => r(URL.createObjectURL(blob)), 'image/png'));
+}
+
+function getBgFillCanvas(rc) {
+    if (currentBg === 'transparent' && currentPat === 'none') return rc;
+    const fc = document.createElement('canvas');
+    fc.width = rc.width; fc.height = rc.height;
+    const ctx = fc.getContext('2d');
+    if (currentPat !== 'none') {
+        drawPattern(ctx, currentPat, fc.width, fc.height);
+    } else if (currentBg !== 'transparent') {
+        applyBgFill(ctx, currentBg, fc.width, fc.height);
+    }
+    ctx.drawImage(rc, 0, 0);
+    return fc;
+}
+
+// 下载单张
+window.downloadItem = (id) => {
+    const item = previewList.find(i => i.id === id);
+    if (!item || !item.resultCanvas) return;
+    const bg = getBgFillCanvas(item.resultCanvas);
+    bg.toBlob(blob => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.download = `抠图_${item.file.name.replace(/\.[^.]+$/, '')}.png`;
+        a.href = url; a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }, 'image/png');
+};
+
+// 拷贝单张
+window.copyItem = async (id) => {
+    const item = previewList.find(i => i.id === id);
+    if (!item || !item.resultCanvas) return;
+    const bg = getBgFillCanvas(item.resultCanvas);
+    try {
+        const blob = await new Promise(r => bg.toBlob(r, 'image/png'));
+        await navigator.clipboard.write([new ClipboardItem({'image/png': blob})]);
+        showToast('✅ 已复制到剪贴板！');
+    } catch(e) {
+        const url = await canvasToBlobUrl(bg);
+        window.open(url, '_blank');
+        setTimeout(() => URL.revokeObjectURL(url), 5000);
+        showToast('已在新标签页打开，请手动复制');
+    }
+};
+
+// 删除单张
+window.removeItem = (id) => {
+    const idx = previewList.findIndex(i => i.id === id);
+    if (idx === -1) return;
+    previewList.splice(idx, 1);
+    const card = document.getElementById('card_' + id);
+    if (card) card.remove();
+    updateBatchCount();
+    if (!previewList.length) {
+        document.getElementById('batchBar').classList.remove('show');
+    }
+};
+
+// 下载全部
+window.downloadAll = async () => {
+    const done = previewList.filter(i => i.status === 'done');
+    if (!done.length) { showToast('暂无完成的图片'); return; }
+    showToast(`开始下载 ${done.length} 张图片...`);
+    for (let i = 0; i < done.length; i++) {
+        const item = done[i];
+        const bg = getBgFillCanvas(item.resultCanvas);
+        await new Promise(resolve => {
+            bg.toBlob(blob => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.download = `抠图_${item.file.name.replace(/\.[^.]+$/, '')}.png`;
+                a.href = url; a.click();
+                setTimeout(() => { URL.revokeObjectURL(url); resolve(); }, 300);
+            }, 'image/png');
+        });
+        await new Promise(r => setTimeout(r, 200)); // 避免浏览器阻止连续下载
+    }
+};
 
 function showOriginalPreview(img) {
     const mainBox = document.getElementById('mainBox');
@@ -948,8 +1266,8 @@ function getBgFill(canvas) {
     const ctx = fc.getContext('2d');
     if (currentPat !== 'none') {
         drawPattern(ctx, currentPat, fc.width, fc.height);
-    } else if (currentBg !== 'transparent') {
-        ctx.fillStyle = currentBg; ctx.fillRect(0,0,fc.width,fc.height);
+    } else {
+        applyBgFill(ctx, currentBg, fc.width, fc.height);
     }
     ctx.drawImage(canvas, 0, 0);
     return fc;
@@ -957,7 +1275,7 @@ function getBgFill(canvas) {
 
 function drawPattern(ctx, pat, w, h) {
     // 先填色作底
-    if (currentBg !== 'transparent') { ctx.fillStyle = currentBg; ctx.fillRect(0,0,w,h); }
+    if (currentBg !== 'transparent') { applyBgFill(ctx, currentBg, w, h); }
     const pc = document.createElement('canvas'); pc.width=20; pc.height=20;
     const pCtx = pc.getContext('2d');
     if (pat === 'checker') {
@@ -985,6 +1303,69 @@ function drawPattern(ctx, pat, w, h) {
     }
     const pattern = ctx.createPattern(pc,'repeat');
     ctx.fillStyle = pattern; ctx.fillRect(0,0,w,h);
+}
+
+// ===== 统一背景填充（支持纯色 + CSS linear-gradient）=====
+function applyBgFill(ctx, bg, w, h) {
+    if (!bg || bg === 'transparent') return;
+    if (!bg.startsWith('linear-gradient')) {
+        // 纯色
+        ctx.fillStyle = bg;
+        ctx.fillRect(0, 0, w, h);
+        return;
+    }
+    // 解析 linear-gradient(angle, stop1, stop2, ...)
+    // 例：linear-gradient(135deg, #CAF8ED, #E6DAA1, #FF8557)
+    const inner = bg.slice(bg.indexOf('(') + 1, bg.lastIndexOf(')'));
+    const parts = inner.split(',').map(s => s.trim());
+
+    // 解析方向/角度
+    let angle = 180; // 默认 to bottom = 180deg
+    let stopStart = 0;
+    const firstPart = parts[0];
+    if (firstPart.endsWith('deg')) {
+        angle = parseFloat(firstPart);
+        stopStart = 1;
+    } else if (firstPart.startsWith('to ')) {
+        const dir = firstPart.slice(3);
+        if (dir === 'right') angle = 90;
+        else if (dir === 'left') angle = 270;
+        else if (dir === 'top') angle = 0;
+        else if (dir === 'bottom') angle = 180;
+        else if (dir === 'bottom right') angle = 135;
+        else if (dir === 'bottom left') angle = 225;
+        else if (dir === 'top right') angle = 45;
+        else if (dir === 'top left') angle = 315;
+        stopStart = 1;
+    }
+
+    // 角度 → 起止坐标（CSS角度：0deg=向上，顺时针）
+    const rad = (angle - 90) * Math.PI / 180;
+    const cx = w / 2, cy = h / 2;
+    // 计算渐变线长度（覆盖整个矩形的对角线投影）
+    const len = Math.abs(w * Math.cos(rad)) + Math.abs(h * Math.sin(rad));
+    const x0 = cx - Math.cos(rad) * len / 2;
+    const y0 = cy - Math.sin(rad) * len / 2;
+    const x1 = cx + Math.cos(rad) * len / 2;
+    const y1 = cy + Math.sin(rad) * len / 2;
+
+    const grad = ctx.createLinearGradient(x0, y0, x1, y1);
+
+    // 收集色标（后面部分可能带 % 偏移）
+    const stops = parts.slice(stopStart);
+    stops.forEach((s, i) => {
+        // 可能是 "#RRGGBB 50%" 或者仅 "#RRGGBB"
+        const tokens = s.trim().split(/\s+/);
+        const color = tokens[0];
+        if (tokens[1]) {
+            grad.addColorStop(parseFloat(tokens[1]) / 100, color);
+        } else {
+            grad.addColorStop(i / Math.max(stops.length - 1, 1), color);
+        }
+    });
+
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, w, h);
 }
 
 function renderToView() {
@@ -1120,16 +1501,15 @@ window.doDownload = () => {
         const ctx = fc.getContext('2d');
         if (downloadFmt === 'jpg') {
             // JPG 不支持透明，先填白底
-            ctx.fillStyle = currentBg === 'transparent' ? '#ffffff' : currentBg;
-            ctx.fillRect(0, 0, fc.width, fc.height);
+            const baseBg = currentBg === 'transparent' ? '#ffffff' : currentBg;
+            applyBgFill(ctx, baseBg, fc.width, fc.height);
             mimeType = 'image/jpeg';
             ext = 'jpg';
         }
         if (currentPat !== 'none') {
             drawPattern(ctx, currentPat, fc.width, fc.height);
-        } else if (currentBg !== 'transparent') {
-            ctx.fillStyle = currentBg;
-            ctx.fillRect(0, 0, fc.width, fc.height);
+        } else {
+            applyBgFill(ctx, currentBg, fc.width, fc.height);
         }
         ctx.drawImage(resultCanvas, 0, 0);
         exportCanvas = fc;
@@ -1157,8 +1537,8 @@ window.doCopy = async () => {
             const ctx = fc.getContext('2d');
             if (currentPat !== 'none') {
                 drawPattern(ctx, currentPat, fc.width, fc.height);
-            } else if (currentBg !== 'transparent') {
-                ctx.fillStyle = currentBg; ctx.fillRect(0, 0, fc.width, fc.height);
+            } else {
+                applyBgFill(ctx, currentBg, fc.width, fc.height);
             }
             ctx.drawImage(resultCanvas, 0, 0);
             return fc;
@@ -1207,6 +1587,11 @@ window.doReset = () => {
     // 重置下载格式
     downloadFmt = 'transparent';
     document.querySelectorAll('.dl-opt').forEach((x,i) => x.classList.toggle('active', i===0));
+    // 清空批量区
+    previewList = [];
+    batchRunning = false;
+    document.getElementById('batchGrid').innerHTML = '';
+    document.getElementById('batchBar').classList.remove('show');
 };
 
 // ===== 背景预设点击 =====
@@ -1219,7 +1604,8 @@ document.querySelectorAll('.bg-swatch').forEach(s => {
             currentBg = 'transparent';
         } else if (bg !== 'custom') {
             currentBg = bg;
-            cpSetColor(bg); // 同步颜色选择器
+            // 只有纯色 HEX 才同步颜色选择器
+            if (bg.startsWith('#')) cpSetColor(bg);
         }
         if (resultCanvas) applyBg();
     });

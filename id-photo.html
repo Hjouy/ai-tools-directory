@@ -235,6 +235,44 @@
         .mode-check { position: absolute; top: 12px; right: 12px; width: 20px; height: 20px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity .2s; }
         .mode-card.active .mode-check { opacity: 1; }
         .mode-check i { font-size: 10px; color: #fff; }
+        /* ===== BATCH MODE ===== */
+        .batch-section { display: none; }
+        .batch-section.active { display: block; }
+        .batch-ctrl-bar { background: #fff; border-radius: var(--radius); padding: 18px 24px; margin-bottom: 20px; box-shadow: var(--shadow); display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+        .batch-ctrl-bar .batch-count { font-size: 15px; font-weight: 700; color: var(--text); }
+        .batch-ctrl-bar .batch-count span { color: var(--primary); }
+        .batch-dl-all-btn { display: flex; align-items: center; gap: 7px; background: linear-gradient(135deg,#3b82f6,#6366f1); color: #fff; border: none; border-radius: 100px; padding: 10px 22px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all .2s; box-shadow: 0 3px 10px rgba(59,130,246,.35); margin-left: auto; }
+        .batch-dl-all-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(59,130,246,.45); }
+        .batch-reset-btn { display: flex; align-items: center; gap: 6px; background: #fff; color: var(--text2); border: 1.5px solid var(--border); border-radius: 100px; padding: 9px 18px; font-size: 14px; cursor: pointer; transition: all .2s; }
+        .batch-reset-btn:hover { border-color: var(--primary); color: var(--primary); }
+        /* 底色快选（批量模式顶部） */
+        .batch-color-bar { background: #fff; border-radius: var(--radius); padding: 14px 24px; margin-bottom: 20px; box-shadow: var(--shadow); display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .batch-color-bar .bc-label { font-size: 13px; font-weight: 600; color: var(--text2); flex-shrink: 0; }
+        .batch-color-swatch { width: 32px; height: 32px; border-radius: 8px; cursor: pointer; border: 2.5px solid transparent; transition: all .2s; box-shadow: 0 2px 6px rgba(0,0,0,.12); }
+        .batch-color-swatch:hover { transform: scale(1.12); }
+        .batch-color-swatch.active { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59,130,246,.25); }
+        .batch-color-custom { display: flex; align-items: center; gap: 6px; }
+        .batch-color-custom label { font-size: 12px; color: var(--text2); }
+        .batch-color-custom input[type=color] { width: 32px; height: 32px; border-radius: 8px; border: 1.5px solid var(--border); cursor: pointer; padding: 2px; }
+        /* 批量网格 */
+        .batch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+        @media(max-width:680px) { .batch-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; } }
+        .batch-photo-card { background: #fff; border-radius: 14px; overflow: hidden; box-shadow: 0 3px 14px rgba(0,0,0,.07); transition: transform .2s, box-shadow .2s; }
+        .batch-photo-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,.1); }
+        .batch-photo-preview { position: relative; width: 100%; padding-bottom: 140%; overflow: hidden; background: #f8fafc; }
+        .batch-photo-preview canvas, .batch-photo-preview img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+        /* SVG 进度圆 */
+        .batch-photo-loading { position: absolute; inset: 0; background: rgba(0,0,0,.5); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+        .batch-photo-loading svg { transform: rotate(-90deg); }
+        .batch-pct-txt { font-size: 12px; font-weight: 700; color: #fff; position: absolute; }
+        .batch-photo-error { position: absolute; inset: 0; background: rgba(239,68,68,.1); display: flex; align-items: center; justify-content: center; font-size: 12px; color: #ef4444; text-align: center; padding: 8px; }
+        /* 卡片底部信息+操作 */
+        .batch-photo-info { padding: 10px 12px; }
+        .batch-photo-name { font-size: 12px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 6px; }
+        .batch-photo-acts { display: flex; gap: 6px; }
+        .batch-photo-dl { flex: 1; display: flex; align-items: center; justify-content: center; gap: 4px; background: linear-gradient(135deg,#3b82f6,#6366f1); color: #fff; border: none; border-radius: 8px; padding: 7px 4px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all .15s; }
+        .batch-photo-dl:hover { filter: brightness(1.1); }
+        .batch-photo-dl:disabled { opacity: .4; cursor: not-allowed; }
     </style>
 </head>
 <body>
@@ -317,14 +355,14 @@
             <div class="upload-icon">
                 <i class="fas fa-user-circle"></i>
             </div>
-            <div class="upload-title">上传您的照片</div>
-            <div class="upload-sub">支持 JPG、PNG、WebP 格式，建议使用正面免冠照，文件不超过 20MB</div>
+            <div class="upload-title">上传证件照</div>
+            <div class="upload-sub">支持单张或批量上传 · JPG、PNG、WebP 格式 · 单张不超过 20MB</div>
             <button class="upload-btn" onclick="event.stopPropagation(); document.getElementById('fileInput').click()">
-                <i class="fas fa-plus"></i> 选择照片
+                <i class="fas fa-plus"></i> 选择照片（可多选）
             </button>
-            <div class="upload-formats">支持格式：JPG · PNG · WebP · BMP</div>
+            <div class="upload-formats">支持格式：JPG · PNG · WebP · BMP · 最多20张批量处理</div>
         </div>
-        <input type="file" id="fileInput" accept="image/*">
+        <input type="file" id="fileInput" accept="image/*" multiple>
     </div>
 
     <!-- PROCESS AREA -->
@@ -448,6 +486,45 @@
                 </button>
             </div>
         </div>
+    </div>
+
+    <!-- BATCH SECTION -->
+    <div class="batch-section" id="batchSection">
+        <!-- 控制栏 -->
+        <div class="batch-ctrl-bar">
+            <div class="batch-count">批量处理：<span id="batchDoneCount">0</span> / <span id="batchTotalCount">0</span> 张完成</div>
+            <button class="batch-dl-all-btn" id="batchDlAllBtn" onclick="batchDownloadAll()"><i class="fas fa-download"></i> 全部下载</button>
+            <button class="batch-reset-btn" onclick="resetUpload()"><i class="fas fa-redo"></i> 重新上传</button>
+        </div>
+        <!-- 批量底色选择 -->
+        <div class="batch-color-bar">
+            <span class="bc-label"><i class="fas fa-palette"></i> 底色：</span>
+            <div class="batch-color-swatch active" data-color="#ef4444" style="background:#ef4444;" title="标准红" onclick="batchSwitchColor('#ef4444',this)"></div>
+            <div class="batch-color-swatch" data-color="#3b82f6" style="background:#3b82f6;" title="标准蓝" onclick="batchSwitchColor('#3b82f6',this)"></div>
+            <div class="batch-color-swatch" data-color="#ffffff" style="background:#fff;border:1.5px solid #e2e8f0;" title="白底" onclick="batchSwitchColor('#ffffff',this)"></div>
+            <div class="batch-color-swatch" data-color="#5a8fd4" style="background:#5a8fd4;" title="浅蓝" onclick="batchSwitchColor('#5a8fd4',this)"></div>
+            <div class="batch-color-swatch" data-color="#c8382e" style="background:#c8382e;" title="深红" onclick="batchSwitchColor('#c8382e',this)"></div>
+            <div class="batch-color-swatch" data-color="#888888" style="background:#888;" title="灰底" onclick="batchSwitchColor('#888888',this)"></div>
+            <div class="batch-color-swatch" data-color="#1e3a5f" style="background:#1e3a5f;" title="深蓝" onclick="batchSwitchColor('#1e3a5f',this)"></div>
+            <div class="batch-color-custom">
+                <label>自定义</label>
+                <input type="color" id="batchCustomColor" value="#ef4444" oninput="batchSwitchColor(this.value,null)">
+            </div>
+        </div>
+        <!-- 批量规格选择 -->
+        <div style="background:#fff;border-radius:var(--radius);padding:14px 24px;margin-bottom:20px;box-shadow:var(--shadow);">
+            <div style="font-size:13px;font-weight:600;color:var(--text2);margin-bottom:10px;"><i class="fas fa-crop-alt"></i> 规格（所有照片统一裁剪）</div>
+            <div style="display:flex;gap:7px;flex-wrap:wrap;" id="batchSpecTabs">
+                <div class="spec-tab active" data-w="295" data-h="413" onclick="batchSelectSpec(this)">1寸</div>
+                <div class="spec-tab" data-w="413" data-h="579" onclick="batchSelectSpec(this)">2寸</div>
+                <div class="spec-tab" data-w="390" data-h="567" onclick="batchSelectSpec(this)">护照</div>
+                <div class="spec-tab" data-w="354" data-h="472" onclick="batchSelectSpec(this)">签证</div>
+                <div class="spec-tab" data-w="480" data-h="640" onclick="batchSelectSpec(this)">驾照</div>
+                <div class="spec-tab" data-w="0" data-h="0" onclick="batchSelectSpec(this)">原始</div>
+            </div>
+        </div>
+        <!-- 批量网格 -->
+        <div class="batch-grid" id="batchGrid"></div>
     </div>
 
     <!-- SPEC TABLE -->
@@ -689,6 +766,12 @@ let currentBg = '#ef4444';
 let currentSpec = { w: 295, h: 413 };
 let currentMode = 'fast'; // 'fast' | 'hq'
 
+// ===== 批量状态 =====
+let batchList = []; // [{ id, file, resultImageData, status:'pending'|'processing'|'done'|'error' }]
+let batchBg = '#ef4444';
+let batchSpec = { w: 295, h: 413 };
+let batchRunning = false;
+
 // ===== MODE SELECTOR =====
 function selectMode(mode) {
     currentMode = mode;
@@ -701,7 +784,9 @@ const fileInput = document.getElementById('fileInput');
 const uploadZone = document.getElementById('uploadZone');
 
 fileInput.addEventListener('change', e => {
-    if (e.target.files[0]) handleFile(e.target.files[0]);
+    const files = [...e.target.files].filter(f => f.type.startsWith('image/'));
+    if (files.length === 1) handleFile(files[0]);
+    else if (files.length > 1) handleBatch(files);
 });
 
 uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('dragover'); });
@@ -709,7 +794,9 @@ uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag
 uploadZone.addEventListener('drop', e => {
     e.preventDefault();
     uploadZone.classList.remove('dragover');
-    if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+    const files = [...e.dataTransfer.files].filter(f => f.type.startsWith('image/'));
+    if (files.length === 1) handleFile(files[0]);
+    else if (files.length > 1) handleBatch(files);
 });
 
 // ===== HANDLE FILE =====
@@ -751,10 +838,15 @@ function resetUpload() {
     document.getElementById('uploadSection').style.display = 'block';
     document.getElementById('processArea').classList.remove('active');
     document.getElementById('resultWrap').classList.remove('active');
+    document.getElementById('batchSection').classList.remove('active');
     fileInput.value = '';
     originalImage = null;
     resultImageData = null;
     currentBg = '#ef4444';
+    // 清空批量
+    batchList = [];
+    batchRunning = false;
+    document.getElementById('batchGrid').innerHTML = '';
 }
 
 // ===== SPEC SELECTOR =====
@@ -1567,6 +1659,351 @@ function showToast(msg, type = '') {
 
 // ===== UTILS =====
 function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ===== 批量处理 =====
+async function handleBatch(files) {
+    // 过滤并限制数量
+    const valid = files.filter(f => {
+        if (f.size > 20 * 1024 * 1024) { showToast(`${f.name} 超过20MB，已跳过`, 'error'); return false; }
+        return true;
+    }).slice(0, 20);
+    if (!valid.length) return;
+
+    // 隐藏上传区，显示批量区
+    document.getElementById('uploadSection').style.display = 'none';
+    document.getElementById('processArea').classList.remove('active');
+    document.getElementById('batchSection').classList.add('active');
+
+    batchList = [];
+    const grid = document.getElementById('batchGrid');
+    grid.innerHTML = '';
+    document.getElementById('batchTotalCount').textContent = valid.length;
+    document.getElementById('batchDoneCount').textContent = '0';
+
+    // 创建卡片
+    valid.forEach((file, idx) => {
+        const id = 'bp_' + Date.now() + '_' + idx;
+        const item = { id, file, resultImageData: null, status: 'pending' };
+        batchList.push(item);
+
+        const card = document.createElement('div');
+        card.className = 'batch-photo-card';
+        card.id = 'bpcard_' + id;
+        card.innerHTML = `
+            <div class="batch-photo-preview" id="bppreview_${id}">
+                <!-- 缩略图占位 -->
+                <div class="batch-photo-loading" id="bploading_${id}">
+                    <svg width="56" height="56" viewBox="-10 -10 220 220">
+                        <circle r="90" cx="100" cy="100" fill="transparent" stroke="rgba(255,255,255,.25)" stroke-width="10"/>
+                        <circle id="bpring_${id}" r="90" cx="100" cy="100" fill="transparent" stroke="#3b82f6"
+                            stroke-width="18" stroke-linecap="round"
+                            stroke-dasharray="565.48" stroke-dashoffset="565.48"/>
+                    </svg>
+                    <span class="batch-pct-txt" id="bppct_${id}">0%</span>
+                </div>
+            </div>
+            <div class="batch-photo-info">
+                <div class="batch-photo-name" title="${file.name}">${file.name.replace(/\.[^.]+$/, '')}</div>
+                <div class="batch-photo-acts">
+                    <button class="batch-photo-dl" id="bpdl_${id}" onclick="batchDownloadOne('${id}')" disabled>
+                        <i class="fas fa-download"></i> 下载
+                    </button>
+                </div>
+            </div>
+        `;
+        grid.appendChild(card);
+
+        // 加载缩略图
+        const reader = new FileReader();
+        reader.onload = ev => {
+            const thumb = document.createElement('img');
+            thumb.src = ev.target.result;
+            const preview = document.getElementById('bppreview_' + id);
+            if (preview) preview.insertBefore(thumb, preview.firstChild);
+        };
+        reader.readAsDataURL(file);
+    });
+
+    // 开始批量处理
+    await runBatchProcess();
+}
+
+async function runBatchProcess() {
+    if (batchRunning) return;
+    batchRunning = true;
+
+    // 先确保 AI 模型就绪（快速模式）
+    try {
+        if (currentMode === 'fast') {
+            await loadTFBodySeg();
+        }
+    } catch(e) {
+        showToast('❌ AI模型加载失败：' + e.message, 'error');
+        batchRunning = false;
+        return;
+    }
+
+    let doneCount = 0;
+    for (const item of batchList) {
+        if (item.status !== 'pending') continue;
+        await processBatchPhoto(item);
+        if (item.status === 'done') {
+            doneCount++;
+            document.getElementById('batchDoneCount').textContent = doneCount;
+        }
+    }
+
+    batchRunning = false;
+    showToast(`✅ 批量完成！成功 ${doneCount}/${batchList.length} 张`, 'success');
+}
+
+async function processBatchPhoto(item) {
+    item.status = 'processing';
+    setBatchRing(item.id, 0);
+
+    try {
+        setBatchRing(item.id, 20);
+        const srcImgData = await fileToImageData(item.file);
+        setBatchRing(item.id, 40);
+
+        let imgData;
+        if (currentMode === 'fast') {
+            imgData = await runFastSegForBatch(srcImgData, item.file, item.id);
+        } else {
+            // HQ 模式：批量时也用快速模式（避免每张下载90MB）
+            imgData = await runFastSegForBatch(srcImgData, item.file, item.id);
+        }
+        setBatchRing(item.id, 80);
+
+        item.resultImageData = imgData;
+        item.status = 'done';
+        setBatchRing(item.id, 100);
+
+        // 渲染结果到卡片
+        renderBatchCard(item);
+
+    } catch(e) {
+        item.status = 'error';
+        const loading = document.getElementById('bploading_' + item.id);
+        if (loading) {
+            loading.innerHTML = `<div class="batch-photo-error">❌ 处理失败<br>${e.message.slice(0, 30)}</div>`;
+        }
+    }
+}
+
+async function runFastSegForBatch(srcImgData, file, itemId) {
+    const sw = srcImgData.width, sh = srcImgData.height;
+    const maxDim = 1024;
+    let rw = sw, rh = sh;
+    if (rw > maxDim || rh > maxDim) {
+        const ratio = Math.min(maxDim / rw, maxDim / rh);
+        rw = Math.round(rw * ratio); rh = Math.round(rh * ratio);
+    }
+    const workCanvas = document.createElement('canvas');
+    workCanvas.width = rw; workCanvas.height = rh;
+    const wCtx = workCanvas.getContext('2d');
+    const tmpImg = new Image();
+    const url = URL.createObjectURL(file);
+    await new Promise(res => { tmpImg.onload = res; tmpImg.src = url; });
+    wCtx.drawImage(tmpImg, 0, 0, rw, rh);
+    URL.revokeObjectURL(url);
+
+    setBatchRing(itemId, 60);
+
+    const segs = await tfSegmenter.segmentPeople(workCanvas, { multiSegmentation: false, segmentBodyParts: false });
+    if (!segs || segs.length === 0) throw new Error('未检测到人像');
+
+    const rawMask = segs[0].mask;
+    let maskData = new Float32Array(rw * rh);
+    if (rawMask && rawMask.data) {
+        const ch = rawMask.data.length / (rw * rh);
+        for (let i = 0; i < rw * rh; i++) maskData[i] = rawMask.data[i * ch] / 255;
+    } else {
+        const md = await rawMask.toImageData();
+        for (let i = 0; i < rw * rh; i++) maskData[i] = md.data[i * 4] / 255;
+    }
+
+    // 如果缩放过，还原到原图尺寸
+    if (rw !== sw || rh !== sh) {
+        const mc = document.createElement('canvas'); mc.width = rw; mc.height = rh;
+        const mCtx = mc.getContext('2d');
+        const mImg = mCtx.createImageData(rw, rh);
+        for (let i = 0; i < rw * rh; i++) {
+            const v = Math.round(maskData[i] * 255);
+            mImg.data[i*4] = mImg.data[i*4+1] = mImg.data[i*4+2] = v; mImg.data[i*4+3] = 255;
+        }
+        mCtx.putImageData(mImg, 0, 0);
+        const uc = document.createElement('canvas'); uc.width = sw; uc.height = sh;
+        const uCtx = uc.getContext('2d');
+        uCtx.imageSmoothingEnabled = true; uCtx.imageSmoothingQuality = 'high';
+        uCtx.drawImage(mc, 0, 0, sw, sh);
+        const ud = uCtx.getImageData(0, 0, sw, sh).data;
+        maskData = new Float32Array(sw * sh);
+        for (let i = 0; i < sw * sh; i++) maskData[i] = ud[i * 4] / 255;
+    }
+
+    return applyMaskDirect(srcImgData, maskData);
+}
+
+function setBatchRing(id, pct) {
+    const ring = document.getElementById('bpring_' + id);
+    const pctEl = document.getElementById('bppct_' + id);
+    if (ring) ring.setAttribute('stroke-dashoffset', 565.48 * (1 - pct / 100));
+    if (pctEl) pctEl.textContent = pct + '%';
+}
+
+function renderBatchCard(item) {
+    const preview = document.getElementById('bppreview_' + item.id);
+    const loading = document.getElementById('bploading_' + item.id);
+    if (!preview) return;
+
+    // 生成带底色的 canvas
+    const resultCanvas = buildBatchResultCanvas(item.resultImageData, batchBg, batchSpec);
+    if (loading) loading.style.display = 'none';
+
+    // 清除旧 img 缩略图，改为 canvas
+    const oldImg = preview.querySelector('img');
+    if (oldImg) oldImg.remove();
+
+    // 调整容器高度比例（根据 spec）
+    if (batchSpec.w > 0) {
+        const ratio = batchSpec.h / batchSpec.w;
+        preview.style.paddingBottom = (ratio * 100) + '%';
+    }
+
+    preview.appendChild(resultCanvas);
+    item._canvas = resultCanvas;
+
+    // 启用下载按钮
+    const dlBtn = document.getElementById('bpdl_' + item.id);
+    if (dlBtn) dlBtn.disabled = false;
+}
+
+function buildBatchResultCanvas(imgData, bg, spec) {
+    if (!imgData) return document.createElement('canvas');
+    const srcW = imgData.width, srcH = imgData.height;
+    const src = imgData.data;
+
+    let outW, outH;
+    if (spec.w === 0) {
+        outW = srcW; outH = srcH;
+    } else {
+        const specRatio = spec.w / spec.h;
+        const imgRatio = srcW / srcH;
+        if (imgRatio > specRatio) { outH = srcH; outW = Math.round(srcH * specRatio); }
+        else { outW = srcW; outH = Math.round(srcW / specRatio); }
+    }
+
+    const canvas = document.createElement('canvas');
+    canvas.width = outW; canvas.height = outH;
+    const ctx = canvas.getContext('2d');
+    canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:contain;';
+
+    // 解析背景色
+    let hex = bg.replace('#', '');
+    if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+    const bgR = parseInt(hex.slice(0,2),16)||0, bgG = parseInt(hex.slice(2,4),16)||0, bgB = parseInt(hex.slice(4,6),16)||0;
+
+    const sx = Math.floor((srcW - outW) / 2);
+    const sy = Math.floor((srcH - outH) / 2);
+
+    // 检测原始背景色（四角采样）
+    let oldBgR = 255, oldBgG = 255, oldBgB = 255;
+    const corners = [[0,0],[srcW-1,0],[0,srcH-1],[srcW-1,srcH-1]];
+    let sumR=0,sumG=0,sumB=0,cnt=0;
+    for (const [cx,cy] of corners) {
+        const ci = (cy*srcW+cx)*4;
+        if (src[ci+3]<30) { sumR+=src[ci]; sumG+=src[ci+1]; sumB+=src[ci+2]; cnt++; }
+    }
+    if (cnt>0) { oldBgR=Math.round(sumR/cnt); oldBgG=Math.round(sumG/cnt); oldBgB=Math.round(sumB/cnt); }
+
+    const outData = ctx.createImageData(outW, outH);
+    const out = outData.data;
+    for (let y=0;y<outH;y++) {
+        for (let x=0;x<outW;x++) {
+            const si = ((sy+y)*srcW+(sx+x))*4;
+            const di = (y*outW+x)*4;
+            const a = src[si+3];
+            if (a===0) { out[di]=bgR; out[di+1]=bgG; out[di+2]=bgB; out[di+3]=255; }
+            else if (a===255) { out[di]=src[si]; out[di+1]=src[si+1]; out[di+2]=src[si+2]; out[di+3]=255; }
+            else {
+                const ab = 1-a/255;
+                out[di]=Math.min(255,Math.max(0,Math.round(src[si]+(bgR-oldBgR)*ab)));
+                out[di+1]=Math.min(255,Math.max(0,Math.round(src[si+1]+(bgG-oldBgG)*ab)));
+                out[di+2]=Math.min(255,Math.max(0,Math.round(src[si+2]+(bgB-oldBgB)*ab)));
+                out[di+3]=255;
+            }
+        }
+    }
+    ctx.putImageData(outData,0,0);
+    return canvas;
+}
+
+function batchSwitchColor(color, btn) {
+    batchBg = color;
+    document.querySelectorAll('.batch-color-swatch').forEach(s => s.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    // 重新渲染所有完成的卡片
+    batchList.filter(i=>i.status==='done').forEach(item => {
+        const preview = document.getElementById('bppreview_' + item.id);
+        if (!preview) return;
+        const oldCanvas = preview.querySelector('canvas');
+        if (oldCanvas) oldCanvas.remove();
+        const newCanvas = buildBatchResultCanvas(item.resultImageData, batchBg, batchSpec);
+        preview.appendChild(newCanvas);
+        item._canvas = newCanvas;
+    });
+}
+
+function batchSelectSpec(el) {
+    document.querySelectorAll('#batchSpecTabs .spec-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    batchSpec = { w: parseInt(el.dataset.w), h: parseInt(el.dataset.h) };
+    // 重新渲染所有完成的卡片
+    batchList.filter(i=>i.status==='done').forEach(item => {
+        const preview = document.getElementById('bppreview_' + item.id);
+        if (!preview) return;
+        const oldCanvas = preview.querySelector('canvas');
+        if (oldCanvas) oldCanvas.remove();
+        // 更新容器比例
+        if (batchSpec.w > 0) preview.style.paddingBottom = (batchSpec.h / batchSpec.w * 100) + '%';
+        const newCanvas = buildBatchResultCanvas(item.resultImageData, batchBg, batchSpec);
+        preview.appendChild(newCanvas);
+        item._canvas = newCanvas;
+    });
+}
+
+function batchDownloadOne(id) {
+    const item = batchList.find(i => i.id === id);
+    if (!item || item.status !== 'done') return;
+    const canvas = buildBatchResultCanvas(item.resultImageData, batchBg, batchSpec);
+    canvas.toBlob(blob => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.download = `证件照_${item.file.name.replace(/\.[^.]+$/,'')}` + '.png';
+        a.href = url; a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }, 'image/png');
+}
+
+async function batchDownloadAll() {
+    const done = batchList.filter(i => i.status === 'done');
+    if (!done.length) { showToast('暂无完成的证件照', 'error'); return; }
+    showToast(`开始下载 ${done.length} 张证件照...`);
+    for (const item of done) {
+        const canvas = buildBatchResultCanvas(item.resultImageData, batchBg, batchSpec);
+        await new Promise(resolve => {
+            canvas.toBlob(blob => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.download = `证件照_${item.file.name.replace(/\.[^.]+$/,'')}` + '.png';
+                a.href = url; a.click();
+                setTimeout(() => { URL.revokeObjectURL(url); resolve(); }, 300);
+            }, 'image/png');
+        });
+        await delay(200);
+    }
+}
 </script>
 </body>
 </html>
