@@ -479,8 +479,6 @@ async function startConvert() {
   btn.style.display = 'none';
   wrap.style.display = 'block';
   
-  console.log('开始转换:', currentType, selectedFile.name);
-  
   try {
     // 检查必要的库是否加载
     if (currentType === 'img2pdf' && !window.jspdf) {
@@ -511,7 +509,6 @@ async function startConvert() {
         break;
     }
     
-    console.log('转换成功，生成文件大小:', convertedBlob ? convertedBlob.size : 0);
   } catch (error) {
     console.error('转换失败:', error);
     showToast('转换失败：' + error.message + '\n\n请查看浏览器控制台获取详细错误信息（按F12打开）');

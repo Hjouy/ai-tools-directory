@@ -583,7 +583,8 @@
         function onFaceMeshResults(results) {
             // 存储人脸关键点用于后续处理
             if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0) {
-                console.log('检测到人脸:', results.multiFaceLandmarks.length);
+
+
             }
         }
 
@@ -721,7 +722,6 @@
         // 使用AI检测人脸关键点
         async function detectFaces(imageData) {
             if (!aiModelLoaded || !faceMesh) {
-                console.log('AI模型未加载，使用简化模式');
                 return null;
             }
 

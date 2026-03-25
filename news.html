@@ -1045,7 +1045,6 @@ async function loadNewsData() {
     const resp = await fetch('news-data.json?t=' + Date.now(), { cache: 'no-store' });
     if (!resp.ok) throw new Error('HTTP ' + resp.status);
     const data = await resp.json();
-    console.log('✅ 新闻数据加载成功，更新时间：', data.updatedAt);
 
     // 更新页面显示的更新时间
     const updateEl = document.getElementById('lastRefreshTime');

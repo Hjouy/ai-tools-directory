@@ -241,10 +241,9 @@
 
         if (githubTime > 5000) {
           // GitHub 超过5秒，推荐其他镜像
-          console.log('GitHub 访问较慢，建议使用其他镜像');
         }
       } catch (error) {
-        console.log('GitHub 访问失败，建议使用其他镜像');
+        // GitHub 访问失败，静默处理
       }
     }
 
