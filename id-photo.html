@@ -111,7 +111,7 @@
         .img-preview { max-width: 100%; max-height: 340px; object-fit: contain; display: block; margin: 0 auto; }
 
         /* ID Photo preview: show in passport portrait aspect ratio by default */
-        #resultCanvas { max-width: 100%; max-height: 340px; display: block; margin: 0 auto; object-fit: contain; }
+        #resultCanvas { max-width: 100%; max-height: 340px; display: block; margin: 0 auto; }
 
         /* Color switcher */
         .color-switcher { padding: 16px 18px; border-top: 1px solid var(--border); }
@@ -1351,31 +1351,57 @@ function renderResultCanvas(bg) {
     const outData = ctx.createImageData(outW, outH);
     const out = outData.data;
 
+    // ---- 自动检测原始背景色（从四角 alpha≈0 区域采样）----
+    // applyMask 输出的 RGBA 里，RGB 仍保留原图颜色（含原始背景色污染）
+    // 必须先还原出纯前景色，再与新背景合成
+    let oldBgR = 255, oldBgG = 255, oldBgB = 255; // 默认白色
+    {
+        const corners = [
+            [0, 0], [srcW - 1, 0], [0, srcH - 1], [srcW - 1, srcH - 1]
+        ];
+        let sumR = 0, sumG = 0, sumB = 0, cnt = 0;
+        for (const [cx, cy] of corners) {
+            const ci = (cy * srcW + cx) * 4;
+            if (src[ci + 3] < 30) { // 几乎透明的角点 = 背景
+                sumR += src[ci]; sumG += src[ci + 1]; sumB += src[ci + 2];
+                cnt++;
+            }
+        }
+        if (cnt > 0) {
+            oldBgR = Math.round(sumR / cnt);
+            oldBgG = Math.round(sumG / cnt);
+            oldBgB = Math.round(sumB / cnt);
+        }
+        // 如果四角都不透明（人物充满全图），保持白色默认
+    }
+
+    // 逐像素合成：半透明边缘先 matting 去除原始背景色污染，再合成新背景
+    // 公式：result = src_rgb + (bg_new - bg_old) * (1 - alpha)
+    // 等价于：先反推纯前景 fg = (src - bg_old*(1-a)) / a，再 fg*a + bg_new*(1-a)
     for (let y = 0; y < outH; y++) {
         for (let x = 0; x < outW; x++) {
             const srcIdx = ((sy + y) * srcW + (sx + x)) * 4;
             const dstIdx = (y * outW + x) * 4;
-            const a = src[srcIdx + 3];           // alpha 0-255
+            const a = src[srcIdx + 3];  // alpha 0-255
 
             if (a === 0) {
-                // 完全透明 → 纯背景色
+                // 完全透明 → 纯新背景色
                 out[dstIdx]     = bgR;
                 out[dstIdx + 1] = bgG;
                 out[dstIdx + 2] = bgB;
                 out[dstIdx + 3] = 255;
             } else if (a === 255) {
-                // 完全不透明 → 保留前景
+                // 完全不透明 → 原图前景，无背景污染
                 out[dstIdx]     = src[srcIdx];
                 out[dstIdx + 1] = src[srcIdx + 1];
                 out[dstIdx + 2] = src[srcIdx + 2];
                 out[dstIdx + 3] = 255;
             } else {
-                // 半透明边缘：精确 alpha 混合（前景 over 背景）
-                const af = a / 255;
-                const ab = 1 - af;
-                out[dstIdx]     = Math.round(src[srcIdx]     * af + bgR * ab);
-                out[dstIdx + 1] = Math.round(src[srcIdx + 1] * af + bgG * ab);
-                out[dstIdx + 2] = Math.round(src[srcIdx + 2] * af + bgB * ab);
+                // 半透明边缘：matting 换底
+                const ab = 1 - a / 255;
+                out[dstIdx]     = Math.min(255, Math.max(0, Math.round(src[srcIdx]     + (bgR - oldBgR) * ab)));
+                out[dstIdx + 1] = Math.min(255, Math.max(0, Math.round(src[srcIdx + 1] + (bgG - oldBgG) * ab)));
+                out[dstIdx + 2] = Math.min(255, Math.max(0, Math.round(src[srcIdx + 2] + (bgB - oldBgB) * ab)));
                 out[dstIdx + 3] = 255;
             }
         }
@@ -1383,7 +1409,7 @@ function renderResultCanvas(bg) {
 
     ctx.putImageData(outData, 0, 0);
 
-    // 容器背景与 canvas 保持一致（canvas 已铺满，这里仅备用）
+    // 容器背景设为与 canvas 相同的背景色，消除 canvas 两侧空白区域的色差
     const wrap = document.getElementById('resultPreviewWrap');
     wrap.style.background = bg;
     wrap.className = 'img-preview-wrap';
