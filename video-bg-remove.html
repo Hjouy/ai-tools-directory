@@ -427,7 +427,7 @@
 
         function updateProgress(percent, text) { document.getElementById('progressFill').style.width = percent + '%'; document.getElementById('progressText').textContent = text; document.getElementById('processingText').textContent = text; }
         function resetProcessingUI() { document.getElementById('processingIndicator').classList.remove('show'); document.getElementById('processBtn').disabled = false; document.getElementById('downloadBtn').disabled = !!processedBlob; }
-        function downloadVideo() { if (!processedBlob) { showStatus('请先处理视频', 'error'); return; } const link = document.createElement('a'); link.download = '视频抠图_' + Date.now() + '.webm'; link.href = URL.createObjectURL(processedBlob); link.click(); }
+        function downloadVideo() { if (!processedBlob) { showStatus('请先处理视频', 'error'); return; } const url = URL.createObjectURL(processedBlob); const link = document.createElement('a'); link.download = '视频抠图_' + Date.now() + '.webm'; link.href = url; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000); }
         function showStatus(text, type) { const bar = document.getElementById('statusBar'); document.getElementById('statusText').textContent = text; bar.className = 'status-bar show ' + type; }
         function hideStatus() { document.getElementById('statusBar').className = 'status-bar'; }
         function resetAll() {

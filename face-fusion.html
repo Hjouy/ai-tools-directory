@@ -625,7 +625,7 @@
             const remainingSlots = maxFiles - uploadedImages.length;
             
             if (remainingSlots === 0) {
-                alert('最多只能上传 5 张照片');
+                showToast('最多只能上传 5 张照片');
                 return;
             }
 
@@ -636,13 +636,13 @@
                 // 验证文件类型
                 const validTypes = ['image/jpeg', 'image/png'];
                 if (!validTypes.includes(file.type)) {
-                    alert(`文件 ${file.name} 格式不支持，请上传 JPG 或 PNG`);
+                    showToast(`文件 ${file.name} 格式不支持，请上传 JPG 或 PNG`);
                     return;
                 }
 
                 // 验证文件大小
                 if (file.size > 10 * 1024 * 1024) {
-                    alert(`文件 ${file.name} 大小超过 10MB`);
+                    showToast(`文件 ${file.name} 大小超过 10MB`);
                     return;
                 }
 
@@ -739,7 +739,7 @@
         // 处理图片
         async function processImage() {
             if (uploadedImages.length === 0) {
-                alert('请先上传照片');
+                showToast('请先上传照片');
                 return;
             }
 
@@ -790,7 +790,7 @@
         // AI人脸融合 - 基于FaceMesh关键点
         async function applyFaceFusion(ctx, canvas, blendRatio) {
             if (uploadedImages.length < 2) {
-                alert('人脸融合需要至少 2 张照片');
+                showToast('人脸融合需要至少 2 张照片');
                 return;
             }
 
@@ -961,7 +961,7 @@
         // 智能换脸
         async function applyFaceSwap(ctx, canvas) {
             if (uploadedImages.length < 2) {
-                alert('换脸需要至少 2 张照片');
+                showToast('换脸需要至少 2 张照片');
                 return;
             }
 
@@ -1161,7 +1161,7 @@
         function downloadImage() {
             const canvas = document.getElementById('resultCanvas');
             if (!canvas) {
-                alert('请先处理照片');
+                showToast('请先处理照片');
                 return;
             }
 
@@ -1186,6 +1186,19 @@
             document.getElementById('downloadBtn').disabled = true;
             document.getElementById('blendRatio').value = 50;
             document.getElementById('blendRatioValue').textContent = '50%';
+        }
+        function showToast(msg) {
+            let t = document.getElementById('_toast');
+            if (!t) {
+                t = document.createElement('div');
+                t.id = '_toast';
+                t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 22px;border-radius:8px;font-size:14px;z-index:9999;pointer-events:none;transition:opacity .3s';
+                document.body.appendChild(t);
+            }
+            t.textContent = msg;
+            t.style.opacity = '1';
+            clearTimeout(t._timer);
+            t._timer = setTimeout(() => { t.style.opacity = '0'; }, 2500);
         }
     </script>
 </body>

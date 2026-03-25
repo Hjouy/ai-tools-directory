@@ -388,6 +388,10 @@
                 gifObject.on('finished', function(blob) {
                     gifBlob = blob;
                     
+                    // revoke 上一次预览的 ObjectURL，避免内存泄漏
+                    const prevSrc = document.getElementById('gifPreview').src;
+                    if (prevSrc && prevSrc.startsWith('blob:')) URL.revokeObjectURL(prevSrc);
+                    
                     const url = URL.createObjectURL(blob);
                     document.getElementById('placeholderPreview').style.display = 'none';
                     document.getElementById('gifPreview').src = url;
