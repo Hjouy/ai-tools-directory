@@ -1,8 +1,18 @@
 {
   "version": "1.0",
-  "updatedAt": "2026-03-24T08:45:00",
-  "updatedDate": "2026-03-24",
-  "updatedTime": "08:45:00",
+  "updatedAt": "2026-03-25T10:00:00",
+  "updatedDate": "2026-03-25",
+  "updatedTime": "10:00:00",
+  "articles": [
+    { "id": "a1", "title": "GPT-5技术报告发布：推理能力对标博士水平，多模态理解大幅跃升", "category": "AI", "link": "https://openai.com", "pubDate": "2026-03-25 08:00", "hot": true },
+    { "id": "a2", "title": "国产大模型DeepSeek-V3再获性能突破，数学推理超越GPT-4o", "category": "AI", "link": "https://deepseek.com", "pubDate": "2026-03-25 10:15", "hot": true },
+    { "id": "a3", "title": "A股三大指数集体上涨，沪指站上3200点，北向资金净流入超50亿", "category": "经济", "link": "", "pubDate": "2026-03-25 15:30", "hot": true },
+    { "id": "a4", "title": "Google Gemini 2.0全量推送完成，实时多模态对话正式开放给所有用户", "category": "AI", "link": "", "pubDate": "2026-03-25 07:00" },
+    { "id": "a5", "title": "黄金价格突破3150美元/盎司历史高位，避险情绪推动需求持续走强", "category": "经济", "link": "", "pubDate": "2026-03-25 08:45", "hot": true },
+    { "id": "a6", "title": "微信小店正式商业化，个人商家手续费降至0.3%，支持AI客服接入", "category": "科技", "link": "", "pubDate": "2026-03-25 11:00" },
+    { "id": "a7", "title": "字节跳动宣布豆包APP月活突破1.2亿，AI功能使用时长占比达40%", "category": "科技", "link": "", "pubDate": "2026-03-25 09:00" },
+    { "id": "a8", "title": "国务院印发《促进民营经济发展壮大若干措施》，含16项具体支持政策", "category": "政策", "link": "http://www.gov.cn/", "pubDate": "2026-03-25 10:00", "hot": true }
+  ],
   "categories": [
     {
       "label": "军事",

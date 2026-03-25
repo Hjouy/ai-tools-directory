@@ -23,6 +23,12 @@
   <link rel="canonical" href="https://hjouy.github.io/ai-tools-directory/">
   <!-- Sitemap -->
   <link rel="sitemap" type="application/xml" href="/ai-tools-directory/sitemap.xml">
+  <!-- PWA -->
+  <link rel="manifest" href="/ai-tools-directory/manifest.json">
+  <meta name="theme-color" content="#6366f1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="AI工具导航">
 
   <!-- 性能优化：DNS 预加载 -->
   <link rel="dns-prefetch" href="//github.com">
@@ -2253,5 +2259,15 @@
   </script>
 <!-- ==================== 统计代码结束 ==================== -->
 
+<!-- PWA Service Worker 注册 -->
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/ai-tools-directory/sw.js')
+      .then(reg => console.log('[PWA] SW注册成功, scope:', reg.scope))
+      .catch(err => console.warn('[PWA] SW注册失败:', err));
+  });
+}
+</script>
 </body>
 </html>

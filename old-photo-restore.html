@@ -70,6 +70,15 @@
     </style>
 </head>
 <body>
+    <!-- 全站统一顶部导航 -->
+    <div style="position:fixed;top:0;left:0;right:0;z-index:9990;background:rgba(15,15,26,0.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.08);padding:0 20px;height:44px;display:flex;align-items:center;justify-content:space-between;font-family:'Segoe UI',sans-serif;">
+      <a href="index.html" style="color:#a5b4fc;text-decoration:none;font-size:13px;display:flex;align-items:center;gap:6px;opacity:.85;transition:opacity .2s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.85">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>返回主页
+      </a>
+      <a href="index.html" style="color:#e2e8f0;text-decoration:none;font-size:13px;font-weight:600;letter-spacing:.5px;">⚡ AI工具导航</a>
+      <a href="tools.html" style="color:#a5b4fc;text-decoration:none;font-size:13px;opacity:.85;transition:opacity .2s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.85">在线工具箱</a>
+    </div>
+    <div style="height:44px;"></div>
     <div class="container">
         <div class="header">
             <h1><i class="fas fa-magic"></i> AI老照片修复 <span class="ai-badge">智能算法</span></h1>
@@ -357,57 +366,86 @@
             ctx.putImageData(imageData, 0, 0);
         }
 
-        // 黑白上色 - 基于灰度分析和颜色推断
+        // 黑白上色 - 语义感知上色：基于位置+灰度+纹理分析
         function applyColorization(ctx, width, height) {
             const imageData = ctx.getImageData(0, 0, width, height);
             const data = imageData.data;
+            const original = new Uint8ClampedArray(data);
 
-            for (let i = 0; i < data.length; i += 4) {
-                const r = data[i];
-                const g = data[i + 1];
-                const b = data[i + 2];
+            // 第一遍：计算每像素的纹理方差和位置特征
+            const texVar = new Float32Array(width * height);
+            for (let y = 1; y < height - 1; y++) {
+                for (let x = 1; x < width - 1; x++) {
+                    const pi = (y * width + x) * 4;
+                    const gray = 0.299 * original[pi] + 0.587 * original[pi+1] + 0.114 * original[pi+2];
+                    let sum = 0, sqSum = 0, cnt = 0;
+                    for (let dy = -1; dy <= 1; dy++) {
+                        for (let dx = -1; dx <= 1; dx++) {
+                            const ni = ((y+dy) * width + (x+dx)) * 4;
+                            const ng = 0.299 * original[ni] + 0.587 * original[ni+1] + 0.114 * original[ni+2];
+                            sum += ng; sqSum += ng * ng; cnt++;
+                        }
+                    }
+                    const mean = sum / cnt;
+                    texVar[y * width + x] = sqSum / cnt - mean * mean;
+                }
+            }
 
-                // 计算灰度
-                const gray = 0.299 * r + 0.587 * g + 0.114 * b;
+            // 第二遍：语义着色
+            for (let y = 0; y < height; y++) {
+                const yRatio = y / height; // 0=顶部 1=底部
+                for (let x = 0; x < width; x++) {
+                    const i = (y * width + x) * 4;
+                    const r = original[i], g = original[i+1], b = original[i+2];
+                    const gray = 0.299 * r + 0.587 * g + 0.114 * b;
+                    const isGray = Math.abs(r - g) < 25 && Math.abs(g - b) < 25 && Math.abs(r - b) < 25;
+                    if (!isGray || gray <= 10 || gray >= 245) continue;
 
-                // 检测是否为黑白照片（RGB接近）
-                const isGrayscale = Math.abs(r - g) < 30 && Math.abs(g - b) < 30 && Math.abs(r - b) < 30;
+                    const tv = texVar[y * width + x] || 0;
+                    const isHighTex = tv > 120;   // 纹理丰富 = 植被/衣物
+                    const isSmoothHigh = gray > 170 && tv < 60; // 平滑高亮 = 天空/皮肤
+                    let nr, ng2, nb, alpha;
 
-                if (isGrayscale && gray > 20 && gray < 240) {
-                    // 根据灰度值推断颜色
-                    let newR, newG, newB;
-
-                    if (gray > 200) {
-                        // 高亮区域 - 可能是天空、皮肤
-                        newR = Math.min(255, 220 + Math.random() * 20);
-                        newG = Math.min(255, 210 + Math.random() * 20);
-                        newB = Math.min(255, 190 + Math.random() * 20);
-                    } else if (gray > 150) {
-                        // 中高亮 - 可能是肤色、浅色物体
-                        newR = Math.min(255, 180 + Math.random() * 30);
-                        newG = Math.min(255, 150 + Math.random() * 30);
-                        newB = Math.min(255, 120 + Math.random() * 30);
-                    } else if (gray > 80) {
-                        // 中间调 - 可能是草地、树木
-                        newR = Math.min(255, 80 + Math.random() * 60);
-                        newG = Math.min(255, 100 + Math.random() * 50);
-                        newB = Math.min(255, 50 + Math.random() * 40);
-                    } else if (gray > 40) {
-                        // 中暗调 - 可能是深色物体
-                        newR = Math.min(255, 60 + Math.random() * 40);
-                        newG = Math.min(255, 50 + Math.random() * 40);
-                        newB = Math.min(255, 40 + Math.random() * 40);
+                    if (isSmoothHigh && yRatio < 0.45) {
+                        // 上方平滑高亮 → 天空蓝
+                        const t = (gray - 170) / 85;
+                        nr = Math.round(135 + t * 80);
+                        ng2 = Math.round(176 + t * 60);
+                        nb = Math.round(240 - t * 20);
+                        alpha = 0.55;
+                    } else if (gray > 150 && !isHighTex && yRatio > 0.3) {
+                        // 中下方平滑中亮 → 暖肤色
+                        nr = Math.round(210 - (215 - gray) * 0.6);
+                        ng2 = Math.round(170 - (215 - gray) * 0.55);
+                        nb = Math.round(130 - (215 - gray) * 0.5);
+                        alpha = 0.50;
+                    } else if (isHighTex && gray > 60 && gray < 175) {
+                        // 纹理丰富中灰 → 自然绿（植被/草地）
+                        const t = (gray - 60) / 115;
+                        nr = Math.round(50 + t * 60);
+                        ng2 = Math.round(90 + t * 65);
+                        nb = Math.round(30 + t * 25);
+                        alpha = 0.50;
+                    } else if (gray < 80) {
+                        // 暗部 → 深棕/深青（保持低饱和）
+                        nr = Math.round(gray * 0.9 + 15);
+                        ng2 = Math.round(gray * 0.85 + 10);
+                        nb = Math.round(gray * 0.8 + 8);
+                        alpha = 0.35;
                     } else {
-                        // 暗部 - 保持深色
-                        newR = Math.random() * 40;
-                        newG = Math.random() * 30;
-                        newB = Math.random() * 30;
+                        // 其余中间调 → 暖黄棕（怀旧感）
+                        nr = Math.round(gray * 1.05 + 5);
+                        ng2 = Math.round(gray * 0.95);
+                        nb = Math.round(gray * 0.78 - 5);
+                        alpha = 0.40;
                     }
 
-                    // 添加一些变化使颜色更自然
-                    data[i] = Math.round(newR + (Math.random() - 0.5) * 20);
-                    data[i + 1] = Math.round(newG + (Math.random() - 0.5) * 20);
-                    data[i + 2] = Math.round(newB + (Math.random() - 0.5) * 20);
+                    // 双线性混合：保留原始亮度结构
+                    const luma = gray / 255;
+                    const blend = alpha * (0.5 + 0.5 * Math.sin(luma * Math.PI)); // 中间调混合最强
+                    data[i]   = Math.min(255, Math.max(0, Math.round(r * (1 - blend) + nr * blend)));
+                    data[i+1] = Math.min(255, Math.max(0, Math.round(g * (1 - blend) + ng2 * blend)));
+                    data[i+2] = Math.min(255, Math.max(0, Math.round(b * (1 - blend) + nb * blend)));
                 }
             }
 

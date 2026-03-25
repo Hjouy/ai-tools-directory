@@ -259,6 +259,9 @@
 <script>
 // 设置PDF.js worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+// 中文字体映射配置：解决中文PDF乱码/空白提取问题
+const PDFJS_CMAP_URL = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/cmaps/';
+const PDFJS_CMAP_PACKED = true;
 
 const typeConfig = {
   pdf2word: { 
@@ -619,7 +622,11 @@ async function convertPDFToWord(fill, pct, text) {
   updateProgress(fill, pct, text, 30, '正在提取文本...');
 
   // 使用PDF.js提取文本
-  const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+  const pdf = await pdfjsLib.getDocument({
+    data: arrayBuffer,
+    cMapUrl: PDFJS_CMAP_URL,
+    cMapPacked: PDFJS_CMAP_PACKED,
+  }).promise;
   const paragraphs = [];
 
   for (let i = 1; i <= pdf.numPages; i++) {
@@ -1001,7 +1008,11 @@ async function convertPDFToExcel(fill, pct, text) {
   updateProgress(fill, pct, text, 30, '正在提取表格数据...');
 
   // 使用PDF.js提取文本
-  const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+  const pdf = await pdfjsLib.getDocument({
+    data: arrayBuffer,
+    cMapUrl: PDFJS_CMAP_URL,
+    cMapPacked: PDFJS_CMAP_PACKED,
+  }).promise;
   let allTables = [];
 
   for (let i = 1; i <= pdf.numPages; i++) {
