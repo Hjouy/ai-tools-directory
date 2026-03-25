@@ -212,8 +212,8 @@
             const file = e.target.files[0];
             if (!file) return;
             const validTypes = ['image/jpeg', 'image/png'];
-            if (!validTypes.includes(file.type)) { alert('请上传 JPG 或 PNG 格式的图片'); return; }
-            if (file.size > 10 * 1024 * 1024) { alert('文件大小不能超过 10MB'); return; }
+            if (!validTypes.includes(file.type)) { showToast('请上传 JPG 或 PNG 格式的图片'); return; }
+            if (file.size > 10 * 1024 * 1024) { showToast('文件大小不能超过 10MB'); return; }
             const reader = new FileReader();
             reader.onload = e => {
                 const img = new Image();
@@ -231,9 +231,9 @@
             const prompt = document.getElementById('prompt').value.trim();
             const useRealAPI = document.getElementById('useRealAPI').checked;
             
-            if (!prompt && currentMode === 'text') { alert('请输入提示词'); return; }
-            if (currentMode !== 'text' && !referenceImage) { alert('请上传参考图片'); return; }
-            if (useRealAPI && !document.getElementById('apiKey').value) { alert('请输入API密钥'); return; }
+            if (!prompt && currentMode === 'text') { showToast('请输入提示词'); return; }
+            if (currentMode !== 'text' && !referenceImage) { showToast('请上传参考图片'); return; }
+            if (useRealAPI && !document.getElementById('apiKey').value) { showToast('请输入API密钥'); return; }
             
             document.getElementById('processingIndicator').classList.add('show');
             document.getElementById('generateBtn').disabled = true;
@@ -246,7 +246,7 @@
                 }
             } catch (error) {
                 console.error('生成失败:', error);
-                alert('生成失败: ' + error.message);
+                showToast('生成失败: ' + error.message);
                 resetProcessingUI();
             }
         }
@@ -293,6 +293,8 @@
                 updateProgress(70, '生成图片...');
                 
                 const blob = await response.blob();
+                // revoke 上次生成的 URL，防止内存泄漏
+                if (generatedImageData && generatedImageData.startsWith('blob:')) URL.revokeObjectURL(generatedImageData);
                 generatedImageData = URL.createObjectURL(blob);
                 
                 updateProgress(100, '完成');
@@ -828,7 +830,7 @@
         }
         
         function downloadImage() {
-            if (!generatedImageData) { alert('请先生成图片'); return; }
+            if (!generatedImageData) { showToast('请先生成图片'); return; }
             
             const link = document.createElement('a');
             link.download = `AI生成_${currentStyle}_${Date.now()}.png`;
@@ -839,6 +841,7 @@
         function resetAll() {
             currentMode = 'text';
             referenceImage = null;
+            if (generatedImageData && generatedImageData.startsWith('blob:')) URL.revokeObjectURL(generatedImageData);
             generatedImageData = null;
             
             document.getElementById('prompt').value = '';
@@ -866,6 +869,20 @@
             document.getElementById('processingIndicator').classList.remove('show');
             document.getElementById('progressFill').style.width = '0%';
             document.getElementById('progressText').textContent = '准备中...';
+        }
+    
+        function showToast(msg) {
+            let t = document.getElementById('_toast');
+            if (!t) {
+                t = document.createElement('div');
+                t.id = '_toast';
+                t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 22px;border-radius:8px;font-size:14px;z-index:9999;pointer-events:none;transition:opacity .3s';
+                document.body.appendChild(t);
+            }
+            t.textContent = msg;
+            t.style.opacity = '1';
+            clearTimeout(t._timer);
+            t._timer = setTimeout(() => { t.style.opacity = '0'; }, 2500);
         }
     </script>
 </body>

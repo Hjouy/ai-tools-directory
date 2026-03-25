@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
@@ -489,20 +489,34 @@ document.querySelectorAll('.category-tab').forEach(tab => {
 
 // 打开文章（目前显示提示，后续可扩展为完整文章页面）
 function openArticle(id) {
-  alert('文章详情页开发中，敬请期待！\n\n你可以在 AI资讯 页面查看更多内容。');
+  showToast('文章详情页开发中，敬请期待！\n\n你可以在 AI资讯 页面查看更多内容。');
 }
 
 // 订阅处理
 function handleSubscribe(e) {
   e.preventDefault();
   const email = e.target.querySelector('input').value;
-  alert('订阅成功！我们会不定期发送最新资讯到你的邮箱。');
+  showToast('订阅成功！我们会不定期发送最新资讯到你的邮箱。');
   e.target.reset();
 }
 
 // 初始化
 renderArticles();
-</script>
+
+    function showToast(msg) {
+        let t = document.getElementById('_toast');
+        if (!t) {
+            t = document.createElement('div');
+            t.id = '_toast';
+            t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 22px;border-radius:8px;font-size:14px;z-index:9999;pointer-events:none;transition:opacity .3s';
+            document.body.appendChild(t);
+        }
+        t.textContent = msg;
+        t.style.opacity = '1';
+        clearTimeout(t._timer);
+        t._timer = setTimeout(() => { t.style.opacity = '0'; }, 2500);
+    }
+  </script>
 
 </body>
 </html>

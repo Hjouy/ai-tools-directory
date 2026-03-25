@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
@@ -1557,7 +1557,7 @@ function submitReview(event) {
   const text = document.getElementById('reviewText').value.trim();
 
   if (!text) {
-    alert('请输入评价内容');
+    showToast('请输入评价内容');
     return;
   }
 
@@ -1581,7 +1581,7 @@ function submitReview(event) {
   loadUserReviews(currentToolId);
 
   // 显示成功提示
-  alert('评价提交成功！');
+  showToast('评价提交成功！');
 }
 
 // 初始化
@@ -1618,7 +1618,7 @@ function shareTo(platform) {
   
   switch(platform) {
     case 'weixin':
-      alert('请使用微信扫一扫功能分享本页面');
+      showToast('请使用微信扫一扫功能分享本页面');
       return;
     case 'weibo':
       shareLink = `https://service.weibo.com/share/share.php?url=${url}&title=${title}`;
@@ -1645,11 +1645,11 @@ function copyShareLink() {
   
   try {
     navigator.clipboard.writeText(shareUrlInput.value).then(() => {
-      alert('链接已复制到剪贴板！');
+      showToast('链接已复制到剪贴板！');
     });
   } catch (err) {
     document.execCommand('copy');
-    alert('链接已复制到剪贴板！');
+    showToast('链接已复制到剪贴板！');
   }
   
   document.getElementById('shareModal').classList.remove('open');
@@ -1681,7 +1681,21 @@ function toggleMenu() {
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
   gtag('config', 'G-请替换为你的GA4ID');
-</script>
+
+        function showToast(msg) {
+            let t = document.getElementById('_toast');
+            if (!t) {
+                t = document.createElement('div');
+                t.id = '_toast';
+                t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 22px;border-radius:8px;font-size:14px;z-index:9999;pointer-events:none;transition:opacity .3s';
+                document.body.appendChild(t);
+            }
+            t.textContent = msg;
+            t.style.opacity = '1';
+            clearTimeout(t._timer);
+            t._timer = setTimeout(() => { t.style.opacity = '0'; }, 2500);
+        }
+    </script>
 <!-- ==================== 统计代码结束 ==================== -->
 
 </body>

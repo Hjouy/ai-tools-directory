@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
@@ -1278,7 +1278,7 @@ function openNews(id, title) {
   markReadById(id);
   // 实际生产可跳转到详情页，这里用弹窗展示
   const msg = `📰 ${title}\n\n（正式版本将跳转完整新闻正文页面）`;
-  alert(msg);
+  showToast(msg);
 }
 
 // ============================
@@ -1426,13 +1426,27 @@ function loadMore(btn, subId) {
 // 搜索热词
 // ============================
 function searchWord(word) {
-  alert('搜索"' + word + '"的相关新闻（正式版接入新闻搜索引擎）');
+  showToast('搜索"' + word + '"的相关新闻（正式版接入新闻搜索引擎）');
 }
 
 // ============================
 // 启动
 // ============================
 init();
-</script>
+
+    function showToast(msg) {
+        let t = document.getElementById('_toast');
+        if (!t) {
+            t = document.createElement('div');
+            t.id = '_toast';
+            t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 22px;border-radius:8px;font-size:14px;z-index:9999;pointer-events:none;transition:opacity .3s';
+            document.body.appendChild(t);
+        }
+        t.textContent = msg;
+        t.style.opacity = '1';
+        clearTimeout(t._timer);
+        t._timer = setTimeout(() => { t.style.opacity = '0'; }, 2500);
+    }
+  </script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
@@ -356,7 +356,7 @@ function handleFile(e) {
 function processFile(file) {
   // 检查文件大小 (10MB)
   if (file.size > 10 * 1024 * 1024) {
-    alert('文件大小超过10MB限制，请选择较小的文件');
+    showToast('文件大小超过10MB限制，请选择较小的文件');
     return;
   }
 
@@ -366,7 +366,7 @@ function processFile(file) {
   const fileExt = '.' + file.name.split('.').pop().toLowerCase();
 
   if (!acceptTypes.includes(fileExt)) {
-    alert(`当前功能"${cfg.title}"只支持 ${cfg.accept} 格式的文件，您上传的是 ${fileExt} 文件。请切换到正确的转换类型。`);
+    showToast(`当前功能"${cfg.title}"只支持 ${cfg.accept} 格式的文件，您上传的是 ${fileExt} 文件。请切换到正确的转换类型。`);
     return;
   }
 
@@ -392,14 +392,14 @@ function processMultipleFiles(files) {
   for (const file of files) {
     // 检查文件大小
     if (file.size > 10 * 1024 * 1024) {
-      alert(`文件 "${file.name}" 超过10MB限制，已跳过`);
+      showToast(`文件 "${file.name}" 超过10MB限制，已跳过`);
       continue;
     }
 
     // 验证文件类型
     const fileExt = '.' + file.name.split('.').pop().toLowerCase();
     if (!acceptTypes.includes(fileExt)) {
-      alert(`文件 "${file.name}" 格式不支持，已跳过`);
+      showToast(`文件 "${file.name}" 格式不支持，已跳过`);
       continue;
     }
 
@@ -407,7 +407,7 @@ function processMultipleFiles(files) {
   }
 
   if (validFiles.length === 0) {
-    alert('没有有效的文件，请重新选择');
+    showToast('没有有效的文件，请重新选择');
     return;
   }
 
@@ -468,7 +468,7 @@ function updateProgress(fill, pct, text, percent, label) {
 }
 
 async function startConvert() {
-  if (!selectedFile) { alert('请先上传文件'); return; }
+  if (!selectedFile) { showToast('请先上传文件'); return; }
   
   const btn = document.getElementById('convertBtn');
   const wrap = document.getElementById('progressWrap');
@@ -514,7 +514,7 @@ async function startConvert() {
     console.log('转换成功，生成文件大小:', convertedBlob ? convertedBlob.size : 0);
   } catch (error) {
     console.error('转换失败:', error);
-    alert('转换失败：' + error.message + '\n\n请查看浏览器控制台获取详细错误信息（按F12打开）');
+    showToast('转换失败：' + error.message + '\n\n请查看浏览器控制台获取详细错误信息（按F12打开）');
     wrap.style.display = 'none';
     btn.style.display = 'flex';
   }
@@ -1154,7 +1154,7 @@ function download() {
   URL.revokeObjectURL(url);
   
   setTimeout(() => {
-    alert('✅ 转换成功！\n\n文件已保存到您的下载文件夹。');
+    showToast('✅ 转换成功！\n\n文件已保存到您的下载文件夹。');
   }, 500);
 }
 
@@ -1179,7 +1179,21 @@ selectType(document.querySelector('.type-card.active'), 'pdf2word');
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
   gtag('config', 'G-请替换为你的GA4ID');
-</script>
+
+        function showToast(msg) {
+            let t = document.getElementById('_toast');
+            if (!t) {
+                t = document.createElement('div');
+                t.id = '_toast';
+                t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 22px;border-radius:8px;font-size:14px;z-index:9999;pointer-events:none;transition:opacity .3s';
+                document.body.appendChild(t);
+            }
+            t.textContent = msg;
+            t.style.opacity = '1';
+            clearTimeout(t._timer);
+            t._timer = setTimeout(() => { t.style.opacity = '0'; }, 2500);
+        }
+    </script>
 <!-- ==================== 统计代码结束 ==================== -->
 
 </body>

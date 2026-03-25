@@ -511,9 +511,11 @@
         }
 
         function clearAll() {
-            if (editor.value.trim() && confirm('确定要清空所有内容吗？')) {
-                editor.value = '';
-                updatePreview();
+            if (editor.value.trim()) {
+                showConfirm('确定要清空所有内容吗？', () => {
+                    editor.value = '';
+                    updatePreview();
+                });
             }
         }
 
@@ -594,7 +596,7 @@ greet('World');
         function exportHTML() {
             const markdown = editor.value;
             if (!markdown.trim()) {
-                alert('没有内容可导出');
+                showToast('没有内容可导出');
                 return;
             }
 
@@ -643,11 +645,11 @@ ${htmlContent}
         function exportPDF() {
             const markdown = editor.value;
             if (!markdown.trim()) {
-                alert('没有内容可导出');
+                showToast('没有内容可导出');
                 return;
             }
 
-            alert('PDF导出功能需要使用jsPDF或html2canvas库，当前为演示版本。\n\n请使用"导出HTML"功能，然后在浏览器中打印为PDF。');
+            showToast('PDF导出功能需要使用jsPDF或html2canvas库，当前为演示版本。\n\n请使用"导出HTML"功能，然后在浏览器中打印为PDF。');
         }
 
         // 自动保存到localStorage
@@ -667,6 +669,35 @@ ${htmlContent}
                 updatePreview();
             }
         };
+    
+        function showToast(msg) {
+            let t = document.getElementById('_toast');
+            if (!t) {
+                t = document.createElement('div');
+                t.id = '_toast';
+                t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 22px;border-radius:8px;font-size:14px;z-index:9999;pointer-events:none;transition:opacity .3s';
+                document.body.appendChild(t);
+            }
+            t.textContent = msg;
+            t.style.opacity = '1';
+            clearTimeout(t._timer);
+            t._timer = setTimeout(() => { t.style.opacity = '0'; }, 2500);
+        }
+    
+    function showConfirm(msg, onOk) {
+        let overlay = document.getElementById('_confirm_overlay');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.id = '_confirm_overlay';
+            overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:10000;display:flex;align-items:center;justify-content:center';
+            overlay.innerHTML = `<div style="background:#fff;border-radius:12px;padding:28px 32px;min-width:280px;box-shadow:0 8px 32px rgba(0,0,0,.2);text-align:center"><div id="_confirm_msg" style="font-size:15px;color:#333;margin-bottom:20px;line-height:1.5"></div><div style="display:flex;gap:12px;justify-content:center"><button id="_confirm_cancel" style="padding:8px 22px;border:1px solid #ddd;border-radius:6px;background:#f5f5f5;cursor:pointer;font-size:14px">取消</button><button id="_confirm_ok" style="padding:8px 22px;border:none;border-radius:6px;background:#e53e3e;color:#fff;cursor:pointer;font-size:14px">确定</button></div></div>`;
+            document.body.appendChild(overlay);
+        }
+        document.getElementById('_confirm_msg').textContent = msg;
+        overlay.style.display = 'flex';
+        document.getElementById('_confirm_cancel').onclick = () => { overlay.style.display = 'none'; };
+        document.getElementById('_confirm_ok').onclick = () => { overlay.style.display = 'none'; onOk(); };
+    }
     </script>
 </body>
 </html>

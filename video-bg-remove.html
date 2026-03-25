@@ -202,6 +202,9 @@
             if (file.size > 100 * 1024 * 1024) { showStatus('视频大小不能超过100MB', 'error'); return; }
             document.getElementById('fileInfo').style.display = 'block';
             document.getElementById('fileInfo').innerHTML = `<div>文件: ${file.name}</div><div style="margin-top:5px;">大小: ${(file.size / 1024 / 1024).toFixed(1)} MB</div>`;
+            // revoke 上一次预览 URL
+            const prevUrl = document.getElementById('outputVideo').src;
+            if (prevUrl && prevUrl.startsWith('blob:')) URL.revokeObjectURL(prevUrl);
             const url = URL.createObjectURL(file);
             const video = document.createElement('video');
             video.src = url;
@@ -270,7 +273,15 @@
             const mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9', videoBitsPerSecond: 5000000 });
             const chunks = [];
             mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
-            mediaRecorder.onstop = () => { processedBlob = new Blob(chunks, { type: 'video/webm' }); document.getElementById('outputVideo').src = URL.createObjectURL(processedBlob); resetProcessingUI(); showStatus('视频处理完成！可以下载结果', 'success'); };
+            mediaRecorder.onstop = () => {
+                processedBlob = new Blob(chunks, { type: 'video/webm' });
+                const outVideo = document.getElementById('outputVideo');
+                // revoke 上次处理结果的 URL
+                if (outVideo.src && outVideo.src.startsWith('blob:')) URL.revokeObjectURL(outVideo.src);
+                outVideo.src = URL.createObjectURL(processedBlob);
+                resetProcessingUI();
+                showStatus('视频处理完成！可以下载结果', 'success');
+            };
             mediaRecorder.start();
             originalVideo.pause();
             originalVideo.currentTime = 0;

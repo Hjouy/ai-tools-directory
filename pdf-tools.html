@@ -588,7 +588,7 @@
                 const blob = new Blob([pdfBytes], { type: 'application/pdf' });
                 showResult('mergeResult', '合并成功', '合并后的PDF文件大小：' + formatSize(blob.size), blob, 'merged.pdf');
             } catch (e) {
-                alert('合并失败: ' + e.message);
+                showToast('合并失败: ' + e.message);
             }
 
             document.getElementById('mergeLoading').classList.remove('active');
@@ -672,7 +672,7 @@
                     showResult('splitResult', '提取成功', `已提取 ${pageIndices.length} 页`, blob, 'extracted.pdf');
                 }
             } catch (e) {
-                alert('拆分失败: ' + e.message);
+                showToast('拆分失败: ' + e.message);
             }
 
             document.getElementById('splitLoading').classList.remove('active');
@@ -779,7 +779,7 @@
                 downloadMultipleImages(downloadedFiles);
                 showResult('toImageResult', '转换成功', '已将PDF的 ' + totalPages + ' 页转换为PNG图片', null, null);
             } catch (e) {
-                alert('转换失败: ' + e.message);
+                showToast('转换失败: ' + e.message);
             }
 
             document.getElementById('toImageLoading').classList.remove('active');
@@ -845,7 +845,7 @@
 
                 showResult('compressResult', '压缩成功', message, blob, 'compressed_' + compressFile.name);
             } catch (e) {
-                alert('压缩失败: ' + e.message);
+                showToast('压缩失败: ' + e.message);
             }
 
             document.getElementById('compressLoading').classList.remove('active');
@@ -903,6 +903,20 @@
                     URL.revokeObjectURL(url);
                 }, index * 500);
             });
+        }
+    
+        function showToast(msg) {
+            let t = document.getElementById('_toast');
+            if (!t) {
+                t = document.createElement('div');
+                t.id = '_toast';
+                t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 22px;border-radius:8px;font-size:14px;z-index:9999;pointer-events:none;transition:opacity .3s';
+                document.body.appendChild(t);
+            }
+            t.textContent = msg;
+            t.style.opacity = '1';
+            clearTimeout(t._timer);
+            t._timer = setTimeout(() => { t.style.opacity = '0'; }, 2500);
         }
     </script>
 </body>

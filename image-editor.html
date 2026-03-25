@@ -1451,7 +1451,7 @@
         }
 
         function deleteLayer(layerId) {
-            if (confirm('确定要删除这个图层吗？')) {
+            showConfirm('确定要删除这个图层吗？', () => {
                 layers = layers.filter(l => l.id !== layerId);
                 if (activeLayerId === layerId) {
                     activeLayerId = layers.length > 0 ? layers[layers.length - 1].id : null;
@@ -1459,7 +1459,7 @@
                 renderLayers();
                 updateLayerUI();
                 saveState('删除图层');
-            }
+            });
         }
 
         // ==================== 图片上传 ====================
@@ -1919,7 +1919,7 @@
 
         function applyCrop() {
             if (!cropStart || !cropEnd || !originalImage) {
-                alert('请先在图片上选择裁剪区域');
+                showToast('请先在图片上选择裁剪区域');
                 return;
             }
 
@@ -1929,7 +1929,7 @@
             const height = Math.abs(cropEnd.y - cropStart.y);
 
             if (width < 10 || height < 10) {
-                alert('裁剪区域太小');
+                showToast('裁剪区域太小');
                 return;
             }
 
@@ -2103,7 +2103,7 @@
 
         function downloadImage() {
             if (!originalImage) {
-                alert('请先上传图片');
+                showToast('请先上传图片');
                 return;
             }
 
@@ -2176,6 +2176,41 @@
             if (saveHistory) {
                 saveState('重置所有');
             }
+        }
+    
+        function showToast(msg) {
+            let t = document.getElementById('_toast');
+            if (!t) {
+                t = document.createElement('div');
+                t.id = '_toast';
+                t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 22px;border-radius:8px;font-size:14px;z-index:9999;pointer-events:none;transition:opacity .3s';
+                document.body.appendChild(t);
+            }
+            t.textContent = msg;
+            t.style.opacity = '1';
+            clearTimeout(t._timer);
+            t._timer = setTimeout(() => { t.style.opacity = '0'; }, 2500);
+        }
+    
+        function showConfirm(msg, onOk) {
+            let overlay = document.getElementById('_confirm_overlay');
+            if (!overlay) {
+                overlay = document.createElement('div');
+                overlay.id = '_confirm_overlay';
+                overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:10000;display:flex;align-items:center;justify-content:center';
+                overlay.innerHTML = `<div style="background:#fff;border-radius:12px;padding:28px 32px;min-width:280px;box-shadow:0 8px 32px rgba(0,0,0,.2);text-align:center">
+                    <div id="_confirm_msg" style="font-size:15px;color:#333;margin-bottom:20px;line-height:1.5"></div>
+                    <div style="display:flex;gap:12px;justify-content:center">
+                        <button id="_confirm_cancel" style="padding:8px 22px;border:1px solid #ddd;border-radius:6px;background:#f5f5f5;cursor:pointer;font-size:14px">取消</button>
+                        <button id="_confirm_ok" style="padding:8px 22px;border:none;border-radius:6px;background:#e53e3e;color:#fff;cursor:pointer;font-size:14px">确定</button>
+                    </div>
+                </div>`;
+                document.body.appendChild(overlay);
+            }
+            document.getElementById('_confirm_msg').textContent = msg;
+            overlay.style.display = 'flex';
+            document.getElementById('_confirm_cancel').onclick = () => { overlay.style.display = 'none'; };
+            document.getElementById('_confirm_ok').onclick = () => { overlay.style.display = 'none'; onOk(); };
         }
     </script>
 </body>

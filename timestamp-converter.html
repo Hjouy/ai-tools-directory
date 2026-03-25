@@ -324,7 +324,7 @@
         function timestampToDate() {
             const timestamp = document.getElementById('timestampInput').value;
             if (!timestamp) {
-                alert('请输入时间戳');
+                showToast('请输入时间戳');
                 return;
             }
 
@@ -347,7 +347,7 @@
         function dateToTimestamp() {
             const dateInput = document.getElementById('dateInput').value;
             if (!dateInput) {
-                alert('请选择日期时间');
+                showToast('请选择日期时间');
                 return;
             }
 
@@ -452,6 +452,20 @@
         document.getElementById('dateInput').addEventListener('change', function() {
             dateToTimestamp();
         });
+    
+        function showToast(msg) {
+            let t = document.getElementById('_toast');
+            if (!t) {
+                t = document.createElement('div');
+                t.id = '_toast';
+                t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 22px;border-radius:8px;font-size:14px;z-index:9999;pointer-events:none;transition:opacity .3s';
+                document.body.appendChild(t);
+            }
+            t.textContent = msg;
+            t.style.opacity = '1';
+            clearTimeout(t._timer);
+            t._timer = setTimeout(() => { t.style.opacity = '0'; }, 2500);
+        }
     </script>
 </body>
 </html>
