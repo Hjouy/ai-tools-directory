@@ -289,11 +289,11 @@
                         <div class="mode-card-name">快速模式</div>
                         <span class="mode-card-badge fast-badge">推荐</span>
                     </div>
-                    <div class="mode-card-desc">RMBG-1.4 模型，适合大多数证件照场景，处理速度更快。</div>
+                    <div class="mode-card-desc">MediaPipe 模型，适合大多数证件照场景，处理速度更快。</div>
                     <div class="mode-card-stats">
                         <span class="mode-stat"><i class="fas fa-tachometer-alt"></i> 3-8 秒处理</span>
-                        <span class="mode-stat"><i class="fas fa-weight-hanging"></i> 42 MB 模型</span>
-                        <span class="mode-stat"><i class="fas fa-star"></i> 精度 73%</span>
+                    <span class="mode-stat"><i class="fas fa-weight-hanging"></i> ~4 MB 模型</span>
+                    <span class="mode-stat"><i class="fas fa-star"></i> 精度 80%</span>
                     </div>
                 </div>
                 <div class="mode-card" id="modeHQ" onclick="selectMode('hq')">
@@ -1216,46 +1216,133 @@ async function runBiRefNet() {
     }
 }
 
-// ===== 核心：本地 ONNX 推理抠图 =====
+// ===== 快速模式：TF.js Body Segmentation（MediaPipe SelfieSegmentation，~4MB）=====
+// 比 RMBG-1.4 ONNX（42MB）小10倍，CDN 直加载，不需要 GitHub 分块下载
+let tfSegmenter = null;
+let tfReady = false;
+
+async function loadTFBodySeg() {
+    if (tfReady) return;
+    // 动态加载 TF.js + body-segmentation（懒加载，不影响首屏）
+    const loadScript = (src) => new Promise((res, rej) => {
+        const s = document.createElement('script');
+        s.src = src;
+        s.onload = res;
+        s.onerror = () => rej(new Error('脚本加载失败: ' + src));
+        document.head.appendChild(s);
+    });
+    if (!window.tf) {
+        await loadScript('https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js');
+    }
+    if (!window.bodySegmentation) {
+        await loadScript('https://cdn.jsdelivr.net/npm/@tensorflow-models/body-segmentation@1.0.1/dist/body-segmentation.umd.min.js');
+    }
+    await tf.setBackend('webgl');
+    await tf.ready();
+
+    const model = bodySegmentation.SupportedModels.MediaPipeSelfieSegmentation;
+    tfSegmenter = await bodySegmentation.createSegmenter(model, {
+        runtime: 'tfjs',
+        modelType: 'general',
+        solutionOptions: { selfieMode: false }
+    });
+    tfReady = true;
+}
+
+// ===== 核心：快速模式 TF.js 推理抠图 =====
 async function runLocalAI() {
     if (!originalFile) throw new Error('没有可处理的图片');
 
-    // 读取原图为 ImageData
+    setProgress(10, '加载 AI 模型（~4MB）...', 1);
+    await loadTFBodySeg();
+
+    setProgress(50, 'AI 推理中，识别人像轮廓...', 2);
+
+    // 将原图画到 canvas（限制最大边长 1024 避免内存溢出）
     const srcImgData = await fileToImageData(originalFile);
-    setProgress(15, '图片读取完成，准备AI模型...', 1);
+    const sw = srcImgData.width, sh = srcImgData.height;
+    const maxDim = 1024;
+    let rw = sw, rh = sh;
+    if (rw > maxDim || rh > maxDim) {
+        const ratio = Math.min(maxDim / rw, maxDim / rh);
+        rw = Math.round(rw * ratio); rh = Math.round(rh * ratio);
+    }
+    const workCanvas = document.createElement('canvas');
+    workCanvas.width = rw; workCanvas.height = rh;
+    const workCtx = workCanvas.getContext('2d');
+    const tmpImg = new Image();
+    await new Promise(res => { tmpImg.onload = res; tmpImg.src = URL.createObjectURL(originalFile); });
+    workCtx.drawImage(tmpImg, 0, 0, rw, rh);
+    URL.revokeObjectURL(tmpImg.src);
 
-    // 加载模型（带进度回调）
-    const session = await initOrtSession((pct, txt, step) => {
-        setProgress(pct, txt, step);
-    });
+    // TF.js segmentPeople
+    const segs = await tfSegmenter.segmentPeople(workCanvas, { multiSegmentation: false, segmentBodyParts: false });
+    if (!segs || segs.length === 0) throw new Error('未检测到人像，请使用正面照片');
 
-    setProgress(65, 'AI推理中，识别人像轮廓...', 3);
-    await delay(50); // 让UI刷新
+    setProgress(75, '处理掩码，生成透明图层...', 3);
 
-    // 预处理
-    const inputTensor = preprocessImage(srcImgData, MODEL_INPUT_SIZE);
-    // 动态读取输入节点名（兼容不同模型，RMBG-1.4 为 "input"）
-    const feeds = {};
-    feeds[session.inputNames[0]] = new window.ort.Tensor('float32', inputTensor, [1, 3, MODEL_INPUT_SIZE, MODEL_INPUT_SIZE]);
-
-    // 推理
-    const results = await session.run(feeds);
-    const outputKey = Object.keys(results)[0];
-    const maskRaw = results[outputKey].data; // Float32Array
-
-    setProgress(80, '处理掩码，生成透明图层...', 4);
-
-    // RMBG-1.4 输出为原始 logits，需要 sigmoid 激活到 0-1
-    const mask = new Float32Array(maskRaw.length);
-    for (let i = 0; i < maskRaw.length; i++) {
-        mask[i] = 1 / (1 + Math.exp(-maskRaw[i]));
+    // 将 mask 转换为 Float32Array（1 = 人物, 0 = 背景）
+    const rawMask = segs[0].mask;
+    let maskData = new Float32Array(rw * rh);
+    if (rawMask && rawMask.data) {
+        // body-segmentation 返回的 mask 可能是单通道或多通道
+        const ch = rawMask.data.length / (rw * rh);
+        for (let i = 0; i < rw * rh; i++) {
+            maskData[i] = rawMask.data[i * ch] / 255;
+        }
+    } else {
+        // 尝试 toImageData 方式
+        const maskImgData = await rawMask.toImageData();
+        for (let i = 0; i < rw * rh; i++) {
+            maskData[i] = maskImgData.data[i * 4] / 255;
+        }
     }
 
-    // 应用掩码到原图
-    resultImageData = applyMask(srcImgData, mask, MODEL_INPUT_SIZE, MODEL_INPUT_SIZE);
-    originalImage = { width: srcImgData.width, height: srcImgData.height };
+    // 如果缩放过，把 maskData 还原到原图尺寸
+    let finalSrcData = srcImgData;
+    if (rw !== sw || rh !== sh) {
+        // 用双线性插值将 mask 放大回原图尺寸
+        const maskCanvas = document.createElement('canvas');
+        maskCanvas.width = rw; maskCanvas.height = rh;
+        const mCtx = maskCanvas.getContext('2d');
+        const mImg = mCtx.createImageData(rw, rh);
+        for (let i = 0; i < rw * rh; i++) {
+            const v = Math.round(maskData[i] * 255);
+            mImg.data[i*4] = mImg.data[i*4+1] = mImg.data[i*4+2] = v;
+            mImg.data[i*4+3] = 255;
+        }
+        mCtx.putImageData(mImg, 0, 0);
+        const upCanvas = document.createElement('canvas');
+        upCanvas.width = sw; upCanvas.height = sh;
+        const uCtx = upCanvas.getContext('2d');
+        uCtx.imageSmoothingEnabled = true;
+        uCtx.imageSmoothingQuality = 'high';
+        uCtx.drawImage(maskCanvas, 0, 0, sw, sh);
+        const upData = uCtx.getImageData(0, 0, sw, sh).data;
+        maskData = new Float32Array(sw * sh);
+        for (let i = 0; i < sw * sh; i++) maskData[i] = upData[i * 4] / 255;
+    }
 
-    setAIStatus('ready', 'RMBG-1.4 ⚡');
+    // 应用掩码（使用现有的 applyMask，包含 smoothstep 羽化）
+    // 注意：此处 maskW/H 等于 srcData 的 w/h（已插值到原图尺寸）
+    resultImageData = applyMaskDirect(srcImgData, maskData);
+    originalImage = { width: sw, height: sh };
+    setAIStatus('ready', 'MediaPipe ⚡');
+}
+
+// applyMaskDirect：mask 已与 srcData 等尺寸，直接应用
+function applyMaskDirect(srcData, maskData) {
+    const { width: sw, height: sh, data: src } = srcData;
+    const out = new ImageData(sw, sh);
+    for (let i = 0; i < sw * sh; i++) {
+        const t = Math.max(0, Math.min(1, maskData[i]));
+        const smooth = t * t * (3 - 2 * t); // smoothstep 羽化
+        out.data[i*4]   = src[i*4];
+        out.data[i*4+1] = src[i*4+1];
+        out.data[i*4+2] = src[i*4+2];
+        out.data[i*4+3] = Math.round(smooth * 255);
+    }
+    return out;
 }
 
 // ===== 工具函数 =====
