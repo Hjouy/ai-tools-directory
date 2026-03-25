@@ -111,7 +111,7 @@
         .img-preview { max-width: 100%; max-height: 340px; object-fit: contain; display: block; margin: 0 auto; }
 
         /* ID Photo preview: show in passport portrait aspect ratio by default */
-        #resultCanvas { max-width: 100%; max-height: 340px; display: block; margin: 0 auto; }
+        #resultCanvas { max-width: 100%; max-height: 340px; display: block; margin: 0 auto; object-fit: contain; }
 
         /* Color switcher */
         .color-switcher { padding: 16px 18px; border-top: 1px solid var(--border); }
@@ -1314,22 +1314,19 @@ function renderResultCanvas(bg) {
 
     const srcW = resultImageData.width;
     const srcH = resultImageData.height;
+    const src = resultImageData.data;
 
     // Determine output dimensions
     let outW, outH;
     if (currentSpec.w === 0) {
-        // Original ratio
         outW = srcW; outH = srcH;
     } else {
-        // Crop to spec aspect ratio, maintain best coverage
         const specRatio = currentSpec.w / currentSpec.h;
         const imgRatio = srcW / srcH;
         if (imgRatio > specRatio) {
-            // Image is wider — crop sides
             outH = srcH;
             outW = Math.round(srcH * specRatio);
         } else {
-            // Image is taller — crop top/bottom
             outW = srcW;
             outH = Math.round(srcW / specRatio);
         }
@@ -1338,22 +1335,55 @@ function renderResultCanvas(bg) {
     canvas.width = outW;
     canvas.height = outH;
 
-    // Fill background
-    ctx.fillStyle = bg;
-    ctx.fillRect(0, 0, outW, outH);
+    // 解析背景色 hex → RGB（支持 #rgb / #rrggbb）
+    let hex = bg.replace('#', '');
+    if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+    const bgR = parseInt(hex.slice(0, 2), 16) || 0;
+    const bgG = parseInt(hex.slice(2, 4), 16) || 0;
+    const bgB = parseInt(hex.slice(4, 6), 16) || 0;
 
-    // Draw person (transparent cutout) — center crop
+    // 中心裁剪偏移（保证人物居中）
     const sx = Math.floor((srcW - outW) / 2);
     const sy = Math.floor((srcH - outH) / 2);
 
-    // Create temp canvas from resultImageData
-    const tempCanvas = document.createElement('canvas');
-    tempCanvas.width = srcW; tempCanvas.height = srcH;
-    tempCanvas.getContext('2d').putImageData(resultImageData, 0, 0);
+    // 逐像素 Porter-Duff "over" 合成：
+    // 彻底消除半透明边缘的原始颜色残留（避免白底→粉边、各色→杂边）
+    const outData = ctx.createImageData(outW, outH);
+    const out = outData.data;
 
-    ctx.drawImage(tempCanvas, sx, sy, outW, outH, 0, 0, outW, outH);
+    for (let y = 0; y < outH; y++) {
+        for (let x = 0; x < outW; x++) {
+            const srcIdx = ((sy + y) * srcW + (sx + x)) * 4;
+            const dstIdx = (y * outW + x) * 4;
+            const a = src[srcIdx + 3];           // alpha 0-255
 
-    // Update preview background
+            if (a === 0) {
+                // 完全透明 → 纯背景色
+                out[dstIdx]     = bgR;
+                out[dstIdx + 1] = bgG;
+                out[dstIdx + 2] = bgB;
+                out[dstIdx + 3] = 255;
+            } else if (a === 255) {
+                // 完全不透明 → 保留前景
+                out[dstIdx]     = src[srcIdx];
+                out[dstIdx + 1] = src[srcIdx + 1];
+                out[dstIdx + 2] = src[srcIdx + 2];
+                out[dstIdx + 3] = 255;
+            } else {
+                // 半透明边缘：精确 alpha 混合（前景 over 背景）
+                const af = a / 255;
+                const ab = 1 - af;
+                out[dstIdx]     = Math.round(src[srcIdx]     * af + bgR * ab);
+                out[dstIdx + 1] = Math.round(src[srcIdx + 1] * af + bgG * ab);
+                out[dstIdx + 2] = Math.round(src[srcIdx + 2] * af + bgB * ab);
+                out[dstIdx + 3] = 255;
+            }
+        }
+    }
+
+    ctx.putImageData(outData, 0, 0);
+
+    // 容器背景与 canvas 保持一致（canvas 已铺满，这里仅备用）
     const wrap = document.getElementById('resultPreviewWrap');
     wrap.style.background = bg;
     wrap.className = 'img-preview-wrap';
