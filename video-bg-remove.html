@@ -70,6 +70,7 @@
         .status-bar.loading { background: rgba(102, 126, 234, 0.1); border: 1px solid rgba(102, 126, 234, 0.3); color: #667eea; }
         .status-bar.success { background: rgba(76, 175, 80, 0.1); border: 1px solid rgba(76, 175, 80, 0.3); color: #4caf50; }
         .status-bar.error { background: rgba(244, 67, 54, 0.1); border: 1px solid rgba(244, 67, 54, 0.3); color: #f44336; }
+        .status-bar.warn { background: rgba(255, 193, 7, 0.1); border: 1px solid rgba(255, 193, 7, 0.3); color: #ffc107; }
         @media (max-width: 1024px) { .main-content { grid-template-columns: 1fr; } .video-compare { grid-template-columns: 1fr; } }
     </style>
 </head>
@@ -127,7 +128,7 @@
                 </button>
             </div>
             <div class="right-panel">
-                <div id="statusBar" class="status-bar"><span id="statusText">加载中...</span></div>
+                <div id="statusBar" class="status-bar loading"><span id="statusText">AI模型初始化中，请稍候...</span></div>
                 <div class="video-area" id="videoArea">
                     <div id="uploadHint" style="text-align: center; color: #888;">
                         <i class="fas fa-film" style="font-size: 4em; margin-bottom: 20px; display: block; color: #ddd;"></i>
@@ -175,23 +176,33 @@
         let videoWidth = 0;
         let videoHeight = 0;
 
+        // MediaPipe SelfieSegmentation 正确初始化（new + onResults 回调方式）
         async function initSegmenter() {
             try {
-                showStatus('正在加载AI模型...', 'loading');
-                segmenter = await SelfieSegmentation.create({
+                showStatus('正在加载 MediaPipe AI 模型...', 'loading');
+                segmenter = new SelfieSegmentation({
                     locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.4.1646421024/${file}`
                 });
                 segmenter.setOptions({ modelType: 'general', selfieMode: false });
-                segmenterReady = true;
-                showStatus('AI模型加载完成，可以开始处理', 'success');
-                setTimeout(() => hideStatus(), 3000);
+                // 预热：用空白 canvas 触发一次，等模型真正就绪
+                await new Promise((resolve, reject) => {
+                    const warmup = document.createElement('canvas');
+                    warmup.width = 64; warmup.height = 64;
+                    const done = () => { segmenterReady = true; resolve(); };
+                    segmenter.onResults(done);
+                    segmenter.send({ image: warmup }).catch(reject);
+                    setTimeout(reject, 15000); // 15s 超时
+                });
+                showStatus('AI 模型加载完成，可以开始处理', 'success');
+                setTimeout(() => hideStatus(), 2500);
             } catch (err) {
-                console.error('模型加载失败:', err);
-                showStatus('AI模型加载失败，将使用备用算法', 'error');
+                console.warn('MediaPipe 模型加载失败，使用备用算法:', err);
+                showStatus('AI 模型加载失败，将使用边缘检测算法处理', 'warn');
                 segmenterReady = false;
             }
         }
-        initSegmenter();
+        // 懒加载：页面就绪后再初始化，避免阻塞首屏
+        window.addEventListener('load', () => { setTimeout(initSegmenter, 500); });
 
         document.getElementById('videoInput').addEventListener('change', handleVideoUpload);
         const uploadArea = document.getElementById('uploadArea');
@@ -305,15 +316,30 @@
                     if (frameCount % sampleInterval === 0 || !lastMask) {
                         if (segmenterReady && segmenter) {
                             try {
-                                const result = await segmenter.segment(tempCanvas, { selfieMode: false });
-                                if (result && result.data) {
-                                    lastMask = new Float32Array(outWidth * outHeight);
-                                    for (let i = 0; i < outWidth * outHeight; i++) {
-                                        lastMask[i] = result.data[i * 4 + 3] / 255;
-                                    }
-                                } else {
-                                    throw new Error('Invalid mask');
-                                }
+                                // MediaPipe 正确调用：onResults 回调 + Promise 包装
+                                lastMask = await new Promise((res, rej) => {
+                                    segmenter.onResults((results) => {
+                                        try {
+                                            if (results && results.segmentationMask) {
+                                                // segmentationMask 是 ImageBitmap/OffscreenCanvas
+                                                const maskCtx = document.createElement('canvas');
+                                                maskCtx.width = outWidth; maskCtx.height = outHeight;
+                                                const mc = maskCtx.getContext('2d');
+                                                mc.drawImage(results.segmentationMask, 0, 0, outWidth, outHeight);
+                                                const pd = mc.getImageData(0, 0, outWidth, outHeight).data;
+                                                const m = new Float32Array(outWidth * outHeight);
+                                                for (let i = 0; i < outWidth * outHeight; i++) {
+                                                    m[i] = pd[i * 4] / 255; // R 通道 = 置信度
+                                                }
+                                                res(m);
+                                            } else {
+                                                rej(new Error('no mask'));
+                                            }
+                                        } catch(e2) { rej(e2); }
+                                    });
+                                    segmenter.send({ image: tempCanvas }).catch(rej);
+                                    setTimeout(() => rej(new Error('timeout')), 5000);
+                                });
                             } catch (e) { 
                                 lastMask = await fallbackSegmentation(tempCtx, outWidth, outHeight); 
                             }
