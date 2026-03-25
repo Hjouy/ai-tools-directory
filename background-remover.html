@@ -96,6 +96,12 @@
         .bp-btn.active { border-color:var(--primary); background:rgba(0,212,255,.1); color:var(--primary); }
         .bp-thumb { height:28px; border-radius:4px; margin-bottom:4px; }
 
+        /* 下载选项 */
+        .dl-opts { display:flex; gap:6px; margin-top:7px; }
+        .dl-opt { flex:1; padding:8px 4px; border:1.5px solid var(--border); border-radius:8px; text-align:center; cursor:pointer; transition:all .2s; font-size:.75rem; color:var(--muted); }
+        .dl-opt:hover { border-color:var(--primary); color:var(--text); }
+        .dl-opt.active { border-color:var(--primary); background:rgba(0,212,255,.1); color:var(--primary); font-weight:700; }
+
         /* 调节 */
         .adj-row { display:flex; align-items:center; gap:8px; margin-bottom:7px; }
         .adj-row label { font-size:.78rem; color:var(--muted); width:56px; flex-shrink:0; }
@@ -126,8 +132,9 @@
         .status.err { background:rgba(255,80,80,.07); border:1px solid rgba(255,80,80,.25); color:#ff6060; }
         .spin { width:17px; height:17px; border:2px solid rgba(0,212,255,.25); border-top-color:var(--primary); border-radius:50%; animation:spin 1s linear infinite; flex-shrink:0; }
         @keyframes spin { to { transform:rotate(360deg); } }
-        .prog-wrap { width:100%; background:rgba(255,255,255,.08); border-radius:4px; height:4px; margin-top:6px; overflow:hidden; }
-        .prog-bar { height:100%; background:linear-gradient(90deg,var(--primary),var(--p2)); border-radius:4px; transition:width .4s; }
+        .prog-wrap { width:100%; background:rgba(255,255,255,.08); border-radius:4px; height:5px; margin-top:6px; overflow:hidden; }
+        .prog-bar { height:100%; background:linear-gradient(90deg,var(--primary),var(--p2),var(--primary)); background-size:200% 100%; border-radius:4px; transition:width .4s ease; animation:progAnim 1.5s linear infinite; }
+        @keyframes progAnim { 0%{background-position:100% 0} 100%{background-position:-100% 0} }
 
         /* 视图切换 */
         .view-tabs { display:flex; gap:6px; }
@@ -139,14 +146,16 @@
         .canvas-box { background:repeating-conic-gradient(#1e1e32 0% 25%,#13132a 0% 50%) 0 0/22px 22px; border-radius:10px; display:flex; align-items:center; justify-content:center; min-height:420px; overflow:hidden; position:relative; }
         .canvas-box canvas { max-width:100%; max-height:520px; display:block; }
         .hint { text-align:center; padding:60px 20px; }
-        .hint i { font-size:3.5em; color:#2a2a4e; display:block; margin-bottom:14px; }
+        .hint i { font-size:3.5em; color:#2a2a4e; display:block; margin-bottom:14px; animation:float 3s ease-in-out infinite; }
+        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
         .hint p { color:#4a4a6a; font-size:.9rem; }
+        .hint .hint-tips { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:14px; }
+        .hint .hint-tip { font-size:.72rem; color:#3a3a5a; background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06); padding:3px 10px; border-radius:20px; }
 
         /* 拖拽对比滑块 */
-        .compare-wrap { position:relative; border-radius:10px; overflow:hidden; display:none; user-select:none; background:repeating-conic-gradient(#1e1e32 0% 25%,#13132a 0% 50%) 0 0/22px 22px; }
-        .compare-wrap canvas { display:block; max-width:100%; }
-        .compare-clip { position:absolute; inset:0; overflow:hidden; pointer-events:none; }
-        .compare-clip canvas { display:block; }
+        .compare-wrap { position:relative; border-radius:10px; overflow:hidden; display:none; user-select:none; background:repeating-conic-gradient(#1e1e32 0% 25%,#13132a 0% 50%) 0 0/22px 22px; margin:0 auto; }
+        .compare-wrap canvas { display:block; }
+        .compare-clip { position:absolute; top:0; bottom:0; overflow:hidden; pointer-events:none; }
         .compare-line { position:absolute; top:0; bottom:0; width:3px; background:#fff; box-shadow:0 0 8px rgba(0,0,0,.6); cursor:ew-resize; z-index:10; transform:translateX(-50%); }
         .compare-handle { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:40px; height:40px; background:#fff; border-radius:50%; box-shadow:0 2px 12px rgba(0,0,0,.5); display:flex; align-items:center; justify-content:center; }
         .compare-handle i { color:#333; font-size:14px; }
@@ -272,7 +281,7 @@
                 <div style="margin-top:10px;">
                     <div style="font-size:.78rem;color:var(--muted);margin-bottom:7px;display:flex;align-items:center;gap:5px;"><i class="fas fa-th"></i> 背景图案</div>
                     <div class="bg-patterns" id="bgPatterns">
-                        <div class="bp-btn" data-pat="none" style="border-color:rgba(0,212,255,.4);color:var(--primary);">
+                        <div class="bp-btn active" data-pat="none">
                             <div class="bp-thumb" style="background:rgba(0,212,255,.1);display:flex;align-items:center;justify-content:center;font-size:1.2em;">🚫</div>
                             无图案
                         </div>
@@ -319,8 +328,14 @@
             <button class="btn btn-main" id="processBtn" disabled onclick="doProcess()">
                 <i class="fas fa-magic"></i> AI 智能抠图
             </button>
+            <!-- 下载格式 -->
+            <div class="dl-opts" id="dlOpts" style="display:none;">
+                <div class="dl-opt active" data-fmt="transparent" title="透明背景PNG">🎭 透明PNG</div>
+                <div class="dl-opt" data-fmt="withbg" title="含当前背景">🖼️ 带背景</div>
+                <div class="dl-opt" data-fmt="jpg" title="JPG格式（含背景）">📷 JPG</div>
+            </div>
             <button class="btn btn-dl" id="dlBtn" disabled onclick="doDownload()">
-                <i class="fas fa-download"></i> 下载 PNG
+                <i class="fas fa-download"></i> 下载图片
             </button>
             <button class="btn btn-reset" onclick="doReset()">
                 <i class="fas fa-redo"></i> 重置
@@ -358,10 +373,16 @@
                 <!-- 结果视图 -->
                 <div id="viewResult">
                     <div class="canvas-box" id="mainBox">
-                        <div class="hint" id="hint">
+                        <div class="hint" id="hint" style="display:block;">
                             <i class="fas fa-image"></i>
                             <p>上传图片，AI自动识别主体并去除背景</p>
                             <p style="margin-top:7px;font-size:.8rem;color:#3a3a5a;">支持人像 · 商品 · 动物 · 任意物体</p>
+                            <div class="hint-tips">
+                                <span class="hint-tip">JPG</span>
+                                <span class="hint-tip">PNG</span>
+                                <span class="hint-tip">WEBP</span>
+                                <span class="hint-tip">最大 15MB</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -427,6 +448,7 @@ let currentBg = 'transparent', currentPat = 'none', currentMode = 'onnx';
 let featherVal = 2, threshVal = 0.5;
 let isProcessing = false;
 let currentView = 'result';
+let downloadFmt = 'transparent'; // 'transparent' | 'withbg' | 'jpg'
 
 // ===== Toast =====
 function showToast(msg) {
@@ -478,10 +500,14 @@ function loadFile(file) {
 }
 
 function showOriginalPreview(img) {
-    document.getElementById('hint').style.display = 'none';
-    const c = makeCanvas(img, 600);
     const mainBox = document.getElementById('mainBox');
+    // 清除旧预览，但保留 hint 节点
+    const hint = document.getElementById('hint');
     mainBox.innerHTML = '';
+    hint.style.display = 'none';
+    mainBox.appendChild(hint);
+    const c = makeCanvas(img, 600);
+    c.style.maxWidth='100%'; c.style.maxHeight='520px';
     mainBox.appendChild(c);
 }
 
@@ -536,6 +562,7 @@ async function processONNX() {
     resultCanvas = applyMaskWithLetterbox(imgData, blurred, mw, mh, lb, threshVal);
     applyBg();
     document.getElementById('dlBtn').disabled = false;
+    document.getElementById('dlOpts').style.display = 'flex';
     showStatus('✅ 抠图完成！', 'ok');
     setProgress(100);
     setTimeout(hideStatus, 3500);
@@ -720,6 +747,7 @@ async function processHQ() {
     resultCanvas = applyMaskHQ(srcData, seg.mask, sw, sh);
     applyBg();
     document.getElementById('dlBtn').disabled=false;
+    document.getElementById('dlOpts').style.display = 'flex';
     showStatus('✅ 抠图完成！', 'ok');
     setProgress(100);
     setTimeout(hideStatus, 3500);
@@ -882,55 +910,116 @@ function setupCompare() {
     const origC = document.getElementById('compareOrigCanvas');
     const resC = document.getElementById('compareResultCanvas');
     origC.width = resC.width = w; origC.height = resC.height = h;
+    wrap.style.width = w + 'px';
     wrap.style.height = h + 'px';
 
-    // 绘制原图
+    // 绘制原图（底层，铺满）
+    origC.style.cssText = 'position:absolute;left:0;top:0;display:block;';
     const oCtx = origC.getContext('2d'); oCtx.drawImage(origImg, 0, 0, w, h);
-    // 绘制结果（含背景）
+
+    // 绘制结果（覆盖右半部分，通过 clip 裁切）
     const bg = getBgFill(resultCanvas);
+    resC.style.cssText = 'position:absolute;left:0;top:0;display:block;';
     const rCtx = resC.getContext('2d'); rCtx.drawImage(bg, 0, 0, w, h);
+
+    // clip 容器遮住右侧
+    const clip = document.getElementById('compareClip');
+    clip.style.cssText = 'position:absolute;top:0;bottom:0;overflow:hidden;pointer-events:none;';
 
     // 初始化滑块位置
     const line = document.getElementById('compareLine');
-    const clip = document.getElementById('compareClip');
     let ratio = 0.5;
     const updateSlider = (r) => {
         ratio = Math.max(0.02, Math.min(0.98, r));
         const px = Math.round(ratio * w);
         line.style.left = px + 'px';
+        // clip 从 px 开始展示到右侧
         clip.style.left = px + 'px';
         clip.style.right = '0';
-        resC.style.marginLeft = '-' + px + 'px';
+        clip.style.width = (w - px) + 'px';
+        // resC 要往左偏移 px，使得正确部分显示在 clip 内
+        resC.style.left = -px + 'px';
     };
     updateSlider(0.5);
+
+    // 清旧事件（防多次 setup 叠加）
+    const newLine = line.cloneNode(true);
+    line.parentNode.replaceChild(newLine, line);
 
     // 拖拽事件
     const onMove = (clientX) => {
         const rect = wrap.getBoundingClientRect();
-        updateSlider((clientX - rect.left) / w);
+        updateSlider((clientX - rect.left) / rect.width);
     };
-    line.onmousedown = (e) => {
+    newLine.addEventListener('mousedown', (e) => {
         e.preventDefault();
         const onMM = (e) => onMove(e.clientX);
         const onMU = () => { document.removeEventListener('mousemove',onMM); document.removeEventListener('mouseup',onMU); };
         document.addEventListener('mousemove',onMM);
         document.addEventListener('mouseup',onMU);
-    };
-    line.ontouchstart = (e) => {
+    });
+    newLine.addEventListener('touchstart', (e) => {
         const onTM = (e) => { e.preventDefault(); onMove(e.touches[0].clientX); };
         const onTE = () => { document.removeEventListener('touchmove',onTM); document.removeEventListener('touchend',onTE); };
         document.addEventListener('touchmove',onTM,{passive:false});
         document.addEventListener('touchend',onTE);
-    };
+    });
+    // 点击 wrap 也可定位
+    wrap.addEventListener('click', (e) => {
+        const rect = wrap.getBoundingClientRect();
+        updateSlider((e.clientX - rect.left) / rect.width);
+    });
 }
+
+// ===== 下载格式切换 =====
+document.querySelectorAll('.dl-opt').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.dl-opt').forEach(x => x.classList.remove('active'));
+        btn.classList.add('active');
+        downloadFmt = btn.dataset.fmt;
+    });
+});
 
 // ===== 下载 =====
 window.doDownload = () => {
     if (!resultCanvas) return;
-    const a = document.createElement('a');
-    a.download = '抠图_' + Date.now() + '.png';
-    a.href = resultCanvas.toDataURL('image/png');
-    a.click();
+    let exportCanvas;
+    let mimeType = 'image/png';
+    let ext = 'png';
+
+    if (downloadFmt === 'transparent') {
+        // 纯透明 PNG
+        exportCanvas = resultCanvas;
+    } else {
+        // 带背景（PNG 或 JPG）
+        const fc = document.createElement('canvas');
+        fc.width = resultCanvas.width; fc.height = resultCanvas.height;
+        const ctx = fc.getContext('2d');
+        if (downloadFmt === 'jpg') {
+            // JPG 不支持透明，先填白底
+            ctx.fillStyle = currentBg === 'transparent' ? '#ffffff' : currentBg;
+            ctx.fillRect(0, 0, fc.width, fc.height);
+            mimeType = 'image/jpeg';
+            ext = 'jpg';
+        }
+        if (currentPat !== 'none') {
+            drawPattern(ctx, currentPat, fc.width, fc.height);
+        } else if (currentBg !== 'transparent') {
+            ctx.fillStyle = currentBg;
+            ctx.fillRect(0, 0, fc.width, fc.height);
+        }
+        ctx.drawImage(resultCanvas, 0, 0);
+        exportCanvas = fc;
+    }
+
+    exportCanvas.toBlob(blob => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.download = `抠图_${Date.now()}.${ext}`;
+        a.href = url;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }, mimeType, 0.95);
 };
 
 // ===== 重置 =====
@@ -938,16 +1027,23 @@ window.doReset = () => {
     origImg = null; origCanvas = null; resultCanvas = null;
     document.getElementById('fileInput').value = '';
     const fi = document.getElementById('fileInfo'); fi.style.display = 'none'; fi.innerHTML = '';
-    document.getElementById('hint').style.display = 'block';
     document.getElementById('processBtn').disabled = true;
     document.getElementById('dlBtn').disabled = true;
+    document.getElementById('dlOpts').style.display = 'none';
     document.getElementById('dimTxt').textContent = '';
+    // 清理主预览区，只保留 hint
     const mainBox = document.getElementById('mainBox');
-    mainBox.innerHTML = ''; mainBox.appendChild(document.getElementById('hint'));
+    const hint = document.getElementById('hint');
+    mainBox.innerHTML = '';
+    hint.style.display = 'block';
+    mainBox.appendChild(hint);
     document.getElementById('compareWrap').style.display = 'none';
     document.getElementById('origBox').innerHTML = '';
     document.getElementById('resultBox').innerHTML = '';
     hideStatus(); setProgress(0);
+    // 重置下载格式
+    downloadFmt = 'transparent';
+    document.querySelectorAll('.dl-opt').forEach((x,i) => x.classList.toggle('active', i===0));
 };
 
 // ===== 背景预设点击 =====
@@ -956,9 +1052,11 @@ document.querySelectorAll('.bg-swatch').forEach(s => {
         document.querySelectorAll('.bg-swatch').forEach(x => x.classList.remove('active'));
         s.classList.add('active');
         const bg = s.dataset.bg;
-        if (bg !== 'custom') {
+        if (bg === 'transparent') {
+            currentBg = 'transparent';
+        } else if (bg !== 'custom') {
             currentBg = bg;
-            if (bg !== 'transparent') cpSetColor(bg);
+            cpSetColor(bg); // 同步颜色选择器
         }
         if (resultCanvas) applyBg();
     });
@@ -1121,6 +1219,9 @@ document.getElementById('cpEyedrop').addEventListener('click', async () => {
         const res = await eye.open();
         cpSetColor(res.sRGBHex);
         currentBg = res.sRGBHex;
+        // 激活自定义色块
+        document.querySelectorAll('.bg-swatch').forEach(x => x.classList.remove('active'));
+        document.getElementById('customSwatch').classList.add('active');
         if (resultCanvas) applyBg();
     } catch(e) {}
 });
