@@ -215,6 +215,33 @@
 
         @media(max-width:1060px) { .layout { grid-template-columns:1fr; } .feat-row { grid-template-columns:repeat(2,1fr); } }
         @media(max-width:600px) { .cmp-grid { grid-template-columns:1fr; } .hero h1 { font-size:1.8em; } .feat-row { grid-template-columns:1fr 1fr; } }
+
+        /* ===== 背景图片上传 ===== */
+        .bg-img-upload { border:1.5px dashed rgba(0,212,255,.3); border-radius:9px; padding:10px; text-align:center; cursor:pointer; transition:all .2s; margin-top:8px; font-size:.76rem; color:var(--muted); background:rgba(0,212,255,.03); position:relative; overflow:hidden; }
+        .bg-img-upload:hover { border-color:var(--primary); color:var(--text); background:rgba(0,212,255,.06); }
+        .bg-img-upload input { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
+        .bg-img-thumb { width:100%; height:60px; object-fit:cover; border-radius:6px; margin-top:5px; display:none; }
+        .bg-img-clear { display:none; font-size:.7rem; padding:3px 9px; border:none; border-radius:6px; background:rgba(255,80,80,.2); color:#ff8888; cursor:pointer; margin-top:5px; transition:all .2s; }
+        .bg-img-clear:hover { background:rgba(255,80,80,.35); }
+
+        /* ===== FAQ 手风琴 ===== */
+        .faq-section { margin-top:28px; }
+        .faq-section h2 { font-size:1.4em; text-align:center; margin-bottom:20px; background:linear-gradient(90deg,var(--primary),var(--p2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+        .faq-list { max-width:860px; margin:0 auto; display:flex; flex-direction:column; gap:10px; }
+        .faq-item { background:var(--card); border:1px solid var(--border); border-radius:12px; overflow:hidden; transition:border-color .2s; }
+        .faq-item:hover { border-color:rgba(0,212,255,.3); }
+        .faq-item.open { border-color:rgba(0,212,255,.4); }
+        .faq-q { display:flex; justify-content:space-between; align-items:center; padding:15px 18px; cursor:pointer; font-size:.93rem; font-weight:600; color:var(--text); user-select:none; }
+        .faq-q:hover { color:var(--primary); }
+        .faq-item.open .faq-q { color:var(--primary); }
+        .faq-ico { width:22px; height:22px; border:1.5px solid rgba(0,212,255,.4); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.7rem; color:var(--primary); flex-shrink:0; transition:transform .3s; }
+        .faq-item.open .faq-ico { transform:rotate(45deg); background:rgba(0,212,255,.12); }
+        .faq-a { max-height:0; overflow:hidden; transition:max-height .35s ease, padding .25s ease; padding:0 18px; }
+        .faq-item.open .faq-a { max-height:300px; padding:0 18px 15px; }
+        .faq-a p { font-size:.88rem; color:var(--muted); line-height:1.7; }
+
+        /* ===== 粘贴提示 ===== */
+        .paste-hint { display:inline-flex; align-items:center; gap:5px; font-size:.73rem; color:#3a3a5a; background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06); padding:3px 10px; border-radius:20px; }
     </style>
 </head>
 <body>
@@ -363,6 +390,18 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- 背景图片上传 -->
+                <div style="margin-top:10px;">
+                    <div style="font-size:.78rem;color:var(--muted);margin-bottom:7px;display:flex;align-items:center;gap:5px;"><i class="fas fa-image"></i> 自定义背景图片</div>
+                    <div class="bg-img-upload" id="bgImgUpload" title="上传图片作为背景">
+                        <i class="fas fa-upload" style="font-size:1.2em;display:block;margin-bottom:4px;color:rgba(0,212,255,.5);"></i>
+                        点击上传背景图
+                        <input type="file" id="bgImgInput" accept="image/*">
+                        <img id="bgImgThumb" class="bg-img-thumb" alt="背景预览">
+                    </div>
+                    <button class="bg-img-clear" id="bgImgClear" onclick="clearBgImg()"><i class="fas fa-times"></i> 移除背景图</button>
+                </div>
             </div>
 
             <!-- 精细调节 -->
@@ -448,6 +487,7 @@
                                 <span class="hint-tip">PNG</span>
                                 <span class="hint-tip">WEBP</span>
                                 <span class="hint-tip">最大 15MB</span>
+                                <span class="hint-tip paste-hint"><i class="fas fa-paste"></i> Ctrl+V 粘贴</span>
                             </div>
                         </div>
                     </div>
@@ -492,6 +532,62 @@
         <div class="feat"><div class="feat-ico">🔒</div><div class="feat-t">完全隐私</div><div class="feat-d">所有运算本地完成，图片不上传任何服务器</div></div>
         <div class="feat"><div class="feat-ico">🖼️</div><div class="feat-t">任意主体</div><div class="feat-d">人像、商品、动物、植物、车辆均可识别</div></div>
         <div class="feat"><div class="feat-ico">⚡</div><div class="feat-t">GPU加速</div><div class="feat-d">自动检测WebGPU，有则启用高速推理</div></div>
+    </div>
+
+    <!-- FAQ 手风琴 -->
+    <div class="faq-section">
+        <h2><i class="fas fa-question-circle"></i> 常见问题解答</h2>
+        <div class="faq-list">
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q">
+                    <span>1. 支持哪些图片格式？</span>
+                    <div class="faq-ico"><i class="fas fa-plus"></i></div>
+                </div>
+                <div class="faq-a"><p>支持 JPG、JPEG、PNG、WEBP 等主流图片格式，单张不超过 15MB。处理完成后默认生成透明背景 PNG，如添加了新背景也可选择导出为 JPG 格式。</p></div>
+            </div>
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q">
+                    <span>2. 能处理精细的发丝和毛发吗？</span>
+                    <div class="faq-ico"><i class="fas fa-plus"></i></div>
+                </div>
+                <div class="faq-a"><p>可以！RMBG-1.4 模型经过专门训练，能出色地处理包含发丝、动物皮毛、半透明边缘等复杂细节，确保边缘部分完整自然。高精度模式（BiRefNet）效果更佳。</p></div>
+            </div>
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q">
+                    <span>3. 图片会上传到服务器吗？</span>
+                    <div class="faq-ico"><i class="fas fa-plus"></i></div>
+                </div>
+                <div class="faq-a"><p>不会！所有推理运算均在您的本地浏览器完成（通过 WebAssembly/WebGPU），图片数据从不离开您的设备，完全保护隐私安全。AI 模型首次使用时会缓存到本地，此后完全离线可用。</p></div>
+            </div>
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q">
+                    <span>4. 支持批量抠图吗？</span>
+                    <div class="faq-ico"><i class="fas fa-plus"></i></div>
+                </div>
+                <div class="faq-a"><p>支持！点击上传或拖拽时可以多选图片（最多20张），系统会自动进入批量模式，每张图片独立显示进度圆圈，全部完成后可以一键批量下载。</p></div>
+            </div>
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q">
+                    <span>5. 如何更换抠图后的背景颜色？</span>
+                    <div class="faq-ico"><i class="fas fa-plus"></i></div>
+                </div>
+                <div class="faq-a"><p>抠图完成后，左侧面板提供丰富的背景选项：透明背景、16种预设纯色/渐变色、专业 HSB 颜色选择器（支持吸管取色、随机色）、6种背景图案，以及自定义背景图片上传。实时预览，即改即见。</p></div>
+            </div>
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q">
+                    <span>6. RMBG-1.4 和 BiRefNet 高精度模式有何区别？</span>
+                    <div class="faq-ico"><i class="fas fa-plus"></i></div>
+                </div>
+                <div class="faq-a"><p>RMBG-1.4 本地模式：模型约 42MB，首次加载后离线可用，速度快，适合日常使用。BiRefNet 高精度模式：模型约 90MB，精度更高，适合处理复杂边缘（如蓬松毛发、细密网格）。两种模式均支持边缘柔化和前景阈值精细调节。</p></div>
+            </div>
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q">
+                    <span>7. 可以用 Ctrl+V 粘贴图片吗？</span>
+                    <div class="faq-ico"><i class="fas fa-plus"></i></div>
+                </div>
+                <div class="faq-a"><p>可以！直接按 Ctrl+V（Mac 用 Cmd+V）将剪贴板中的图片粘贴到页面，工具会自动识别并开始处理，无需手动选择文件，比拖拽更便捷。也可以从截图软件截图后直接粘贴。</p></div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -848,7 +944,7 @@ async function canvasToBlobUrl(canvas) {
 }
 
 function getBgFillCanvas(rc) {
-    if (currentBg === 'transparent' && currentPat === 'none') return rc;
+    if (currentBg === 'transparent' && currentPat === 'none' && !bgImage) return rc;
     const fc = document.createElement('canvas');
     fc.width = rc.width; fc.height = rc.height;
     const ctx = fc.getContext('2d');
@@ -1305,9 +1401,20 @@ function drawPattern(ctx, pat, w, h) {
     ctx.fillStyle = pattern; ctx.fillRect(0,0,w,h);
 }
 
-// ===== 统一背景填充（支持纯色 + CSS linear-gradient）=====
+// ===== 统一背景填充（支持纯色 + CSS linear-gradient + 背景图片）=====
 function applyBgFill(ctx, bg, w, h) {
     if (!bg || bg === 'transparent') return;
+    // 背景图片模式
+    if (bg === '__bgimg__') {
+        if (!bgImage) return;
+        // cover 模式绘制背景图
+        const iw = bgImage.naturalWidth, ih = bgImage.naturalHeight;
+        const scale = Math.max(w / iw, h / ih);
+        const sw = iw * scale, sh = ih * scale;
+        const ox = (w - sw) / 2, oy = (h - sh) / 2;
+        ctx.drawImage(bgImage, ox, oy, sw, sh);
+        return;
+    }
     if (!bg.startsWith('linear-gradient')) {
         // 纯色
         ctx.fillStyle = bg;
@@ -1592,6 +1699,12 @@ window.doReset = () => {
     batchRunning = false;
     document.getElementById('batchGrid').innerHTML = '';
     document.getElementById('batchBar').classList.remove('show');
+    // 清空背景图片
+    if (bgImage && bgImage._url) URL.revokeObjectURL(bgImage._url);
+    bgImage = null;
+    document.getElementById('bgImgInput').value = '';
+    document.getElementById('bgImgThumb').style.display = 'none';
+    document.getElementById('bgImgClear').style.display = 'none';
 };
 
 // ===== 背景预设点击 =====
@@ -1812,6 +1925,82 @@ function showStatus(txt, type, spin=false, prog=null) {
 }
 function hideStatus() { document.getElementById('statusBar').className='status'; }
 function setProgress(v) { document.getElementById('progBar').style.width=v+'%'; }
+
+// ===== 粘贴上传 Ctrl+V =====
+document.addEventListener('paste', e => {
+    const items = e.clipboardData && e.clipboardData.items;
+    if (!items) return;
+    for (const item of items) {
+        if (item.type.startsWith('image/')) {
+            const file = item.getAsFile();
+            if (file) {
+                e.preventDefault();
+                showToast('📋 检测到粘贴图片，开始处理...');
+                loadFiles([file]);
+            }
+            break;
+        }
+    }
+});
+
+// ===== 背景图片上传 =====
+let bgImage = null; // 当前背景图片（HTMLImageElement）
+
+document.getElementById('bgImgInput').addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 10 * 1024 * 1024) { showToast('背景图片不超过 10MB', 'error'); return; }
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+        // 回收旧URL
+        if (bgImage && bgImage._url) URL.revokeObjectURL(bgImage._url);
+        bgImage = img;
+        bgImage._url = url;
+
+        // 更新缩略图
+        const thumb = document.getElementById('bgImgThumb');
+        thumb.src = url;
+        thumb.style.display = 'block';
+        document.getElementById('bgImgClear').style.display = 'inline-block';
+        document.getElementById('bgImgUpload').querySelector('i').style.display = 'none';
+        document.getElementById('bgImgUpload').childNodes[1].textContent = '';
+
+        // 切换到"无图案"并应用背景图
+        currentPat = 'none';
+        currentBg = '__bgimg__';
+        document.querySelectorAll('.bp-btn').forEach((x,i) => x.classList.toggle('active', i===0));
+        document.querySelectorAll('.bg-swatch').forEach(x => x.classList.remove('active'));
+
+        if (resultCanvas) applyBg();
+        showToast('✅ 背景图片已设置，实时预览中');
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); showToast('❌ 图片加载失败', 'error'); };
+    img.src = url;
+});
+
+function clearBgImg() {
+    if (bgImage && bgImage._url) URL.revokeObjectURL(bgImage._url);
+    bgImage = null;
+    document.getElementById('bgImgInput').value = '';
+    document.getElementById('bgImgThumb').style.display = 'none';
+    document.getElementById('bgImgClear').style.display = 'none';
+    document.getElementById('bgImgUpload').querySelector('i').style.display = '';
+    currentBg = 'transparent';
+    document.querySelectorAll('.bg-swatch').forEach((x,i) => x.classList.toggle('active', i===0));
+    if (resultCanvas) applyBg();
+    showToast('背景图片已移除');
+}
+
+// ===== FAQ 手风琴 =====
+function toggleFaq(el) {
+    const isOpen = el.classList.contains('open');
+    // 关闭所有
+    document.querySelectorAll('.faq-item.open').forEach(x => x.classList.remove('open'));
+    // 切换当前
+    if (!isOpen) el.classList.add('open');
+}
+
 </script>
 </body>
 </html>
