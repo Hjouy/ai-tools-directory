@@ -11,6 +11,24 @@
     <title>AI智能抠图 - 发丝级精度 | AI工具导航站</title>
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"></noscript>
+    <script>
+    // CDN 可用性检测
+    (function() {
+        const cdnTests = [
+            'https://cdn.jsdelivr.net',
+            'https://huggingface.co',
+            'https://cdnjs.cloudflare.com'
+        ];
+        window.cdnStatus = { all: true, failed: [] };
+        cdnTests.forEach(url => {
+            fetch(url + '/favicon.ico', { mode: 'no-cors', cache: 'no-cache' })
+                .catch(() => {
+                    window.cdnStatus.all = false;
+                    window.cdnStatus.failed.push(url);
+                });
+        });
+    })();
+    </script>
     <style>
         :root {
             --primary: #00d4ff; --p2: #9b59b6;
@@ -1339,10 +1357,11 @@ async function loadTF() {
             window.__hfPipeline=pipeline; window.__transformersLoaded=true;
             window.dispatchEvent(new Event('tf-ready'));
         `;
-        s.onerror=()=>rej(new Error('transformers.js加载失败'));
+        s.onerror=()=>rej(new Error('transformers.js加载失败，请检查网络连接或刷新重试'));
         document.head.appendChild(s);
         window.addEventListener('tf-ready',res,{once:true});
-        setTimeout(()=>rej(new Error('transformers.js加载超时')),20000);
+        // 增加超时时间并改进错误提示
+        setTimeout(()=>rej(new Error('transformers.js加载超时，请检查网络连接（需要访问Hugging Face）')),30000);
     });
 }
 
@@ -2000,6 +2019,27 @@ function toggleFaq(el) {
     // 切换当前
     if (!isOpen) el.classList.add('open');
 }
+
+// 页面加载完成后检查 CDN 状态
+window.addEventListener('load', () => {
+    if (!window.cdnStatus.all || window.cdnStatus.failed.length > 0) {
+        setTimeout(() => {
+            const statusDiv = document.createElement('div');
+            statusDiv.style.cssText = 'position:fixed;top:20px;right:20px;background:rgba(255,100,100,0.9);color:#fff;padding:12px 18px;border-radius:8px;z-index:9999;font-size:13px;box-shadow:0 4px 12px rgba(0,0,0,0.3);max-width:350px;';
+            statusDiv.innerHTML = `
+                <strong>⚠️ 网络问题提示</strong><br>
+                部分CDN无法访问，可能导致AI模型加载失败。<br>
+                <small>如果抠图失败，请检查网络或更换网络环境。</small>
+                <button onclick="this.parentElement.remove()" style="margin-top:8px;background:#fff;border:none;padding:4px 12px;border-radius:4px;cursor:pointer;color:#d32f2f;font-weight:600;">关闭</button>
+            `;
+            document.body.appendChild(statusDiv);
+            // 10秒后自动消失
+            setTimeout(() => {
+                if (statusDiv.parentElement) statusDiv.remove();
+            }, 10000);
+        }, 2000);
+    }
+});
 
 </script>
 </body>
