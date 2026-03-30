@@ -9,51 +9,36 @@
     <meta property="og:description" content="RMBG-1.4 SOTA级AI模型，支持人像/商品/动物，发丝级边缘处理，完全本地运行隐私安全">
     <link rel="canonical" href="https://hjouy.github.io/ai-tools-directory/background-remover.html">
     <title>AI智能抠图 - 发丝级精度 | AI工具导航站</title>
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"></noscript>
+    <style>
+        /* 内联 Font Awesome 核心（简化版，仅使用图标） */
+        @font-face {
+            font-family: 'FontAwesome';
+            src: local('FontAwesome'), local('Font Awesome 6 Free');
+        }
+        /* 使用系统字体模拟常用图标 */
+        .fa-scissors:before { content: '✂️'; }
+        .fa-cloud-upload-alt:before { content: '📤'; }
+        .fa-image:before { content: '🖼️'; }
+        .fa-robot:before { content: '🤖'; }
+        .fa-palette:before { content: '🎨'; }
+        .fa-expand-arrows-alt:before { content: '⛶'; }
+        .fa-arrow-circle-down:before { content: '⬇️'; }
+        .fa-redo:before { content: '🔄'; }
+        .fa-exchange-alt:before { content: '⇄'; }
+        .fa-hand-pointer:before { content: '👆'; }
+        .fa-info-circle:before { content: 'ℹ️'; }
+        .fa-check-circle:before { content: '✅'; }
+        .fa-times-circle:before { content: '❌'; }
+        .fa-paste:before { content: '📋'; }
+        .fa-search:before { content: '🔍'; }
+        .fa-cog:before { content: '⚙️'; }
+        .fa-question-circle:before { content: '❓'; }
+        .fa-magic:before { content: '✨'; }
+        .fa-bolt:before { content: '⚡'; }
+    </style>
     <script>
-    // CDN 可用性检测（优化版，延迟检测避免阻塞首屏）
-    setTimeout(() => {
-        const cdnTests = [
-            'https://cdn.jsdelivr.net',
-            'https://huggingface.co',
-            'https://cdnjs.cloudflare.com'
-        ];
-        window.cdnStatus = { all: true, failed: [] };
-        cdnTests.forEach(url => {
-            fetch(url + '/favicon.ico', { mode: 'no-cors', cache: 'no-cache', timeout: 3000 })
-                .catch(() => {
-                    window.cdnStatus.all = false;
-                    window.cdnStatus.failed.push(url);
-                });
-        });
-    }, 2000);
-
-    // 页面加载后提示用户（如果模型未缓存）
-    window.addEventListener('load', () => {
-        caches.open(MODEL_CACHE_KEY).then(cache => {
-            return cache.match('model_complete');
-        }).then(existing => {
-            if (!existing) {
-                // 模型未缓存，显示提示
-                setTimeout(() => {
-                    const tip = document.createElement('div');
-                    tip.style.cssText = 'position:fixed;top:20px;right:20px;background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.3);color:#fff;padding:12px 16px;border-radius:10px;font-size:13px;z-index:100;max-width:300px;box-shadow:0 4px 20px rgba(0,0,0,0.3);';
-                    tip.innerHTML = `
-                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-                            <i class="fas fa-info-circle" style="color:#00d4ff;"></i>
-                            <strong>首次使用提示</strong>
-                        </div>
-                        <div style="font-size:12px;color:#ccc;line-height:1.5;">
-                            首次上传图片时需要下载模型（约 42MB），请耐心等待。下载后会自动缓存，下次使用无需再下载。
-                        </div>
-                    `;
-                    document.body.appendChild(tip);
-                    setTimeout(() => tip.remove(), 8000);
-                }, 1000);
-            }
-        });
-    });
+    // 模型已内嵌，无需下载
+    console.log('✓ 模型已内嵌，无需 CDN');
     </script>
     <style>
         :root {
@@ -638,37 +623,12 @@
 <!-- Toast -->
 <div id="_toast" style="display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:10px 22px;border-radius:8px;font-size:14px;z-index:9999;pointer-events:none;transition:opacity .3s;white-space:nowrap;"></div>
 
+<script src="model-embedded.js"></script>
 <script>
 // ===== 常量 =====
-// CDN 备用列表：主 CDN → 国内镜像 1 → 国内镜像 2
-const CDN_LIST = {
-    jsdelivr: 'https://cdn.jsdelivr.net',
-    unpkg: 'https://unpkg.com',
-    staticfile: 'https://cdn.staticfile.net',  // 国内镜像
-    bootcdn: 'https://cdn.bootcdn.net'          // 国内镜像
-};
-
-// ONNX Runtime CDN（带自动切换）
-const ORT_CDN = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.22.0/dist/ort.min.js';
-const ORT_CDN_BACKUP = [
-    'https://unpkg.com/onnxruntime-web@1.22.0/dist/ort.min.js',
-    'https://cdn.staticfile.net/onnxruntime-web/1.22.0/ort.min.js'
-];
-
-// 模型分块 CDN（带自动切换）
-const MODEL_CDN = {
-    primary: 'https://cdn.jsdelivr.net/gh/Hjouy/ai-tools-directory@main/models/chunks/',
-    backup: [
-        'https://unpkg.com/@ai-tools-directory/models@latest/chunks/',
-        'https://cdn.staticfile.net/rmbg-models@1.0/chunks/'  // 国内镜像（需手动同步）
-    ]
-};
-
-const ORT_WASM = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.22.0/dist/';
 const MODEL_CACHE_KEY = 'rmbg14q-v1';
 const MODEL_TOTAL_SIZE = 44403226;
 const MODEL_INPUT_SIZE = 1024;
-const CHUNK_NAMES = ['rmbg14q.part00','rmbg14q.part01','rmbg14q.part02','rmbg14q.part03','rmbg14q.part04'];
 
 // ===== 状态 =====
 let origImg = null, resultCanvas = null, ortSession = null;
@@ -748,81 +708,6 @@ function showToast(msg) {
     t.textContent = msg; t.style.display = 'block'; t.style.opacity = '1';
     clearTimeout(t._timer);
     t._timer = setTimeout(() => { t.style.opacity='0'; setTimeout(()=>t.style.display='none',300); }, 2500);
-}
-
-// ===== 增强 CDN 加载失败处理 =====
-async function loadWithFallback(urls, timeoutMs = 15000) {
-    for (let i = 0; i < urls.length; i++) {
-        try {
-            const response = await Promise.race([
-                fetch(urls[i], { mode: 'cors', cache: 'no-cache' }),
-                new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), timeoutMs))
-            ]);
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            return response;
-        } catch(e) {
-            console.warn(`CDN ${i+1} 失败: ${urls[i]}`, e);
-            if (i === urls.length - 1) {
-                // 所有 CDN 都失败了
-                throw new Error(`所有 CDN 都无法访问。请检查网络连接，或使用 VPN 访问。`);
-            }
-            // 尝试下一个 CDN
-        }
-    }
-}
-
-// ===== 加载模型分块（带自动切换 CDN）=====
-async function downloadModelWithRetry() {
-    const cache = await caches.open(MODEL_CACHE_KEY);
-    const existing = await cache.match('model_complete');
-
-    if (existing) {
-        const data = await existing.arrayBuffer();
-        if (data.byteLength === MODEL_TOTAL_SIZE) return data;
-    }
-
-    // 尝试主 CDN
-    let modelData = null;
-    const cdnUrls = [MODEL_CDN.primary, ...MODEL_CDN.backup];
-
-    for (const cdnBase of cdnUrls) {
-        try {
-            console.log('尝试 CDN:', cdnBase);
-            const chunks = await Promise.all(CHUNK_NAMES.map(name => {
-                return fetch(cdnBase + name).then(res => {
-                    if (!res.ok) throw new Error(`${name} 下载失败`);
-                    return res.arrayBuffer();
-                });
-            }));
-
-            modelData = new Uint8Array(MODEL_TOTAL_SIZE);
-            let offset = 0;
-            for (const chunk of chunks) {
-                modelData.set(new Uint8Array(chunk), offset);
-                offset += chunk.byteLength;
-            }
-
-            // 缓存成功
-            await cache.put('model_complete', new Response(modelData));
-            console.log('模型下载成功，已缓存');
-            return modelData;
-        } catch(e) {
-            console.warn(`CDN ${cdnBase} 下载失败:`, e);
-            if (modelData === null && cdnBase === cdnUrls[cdnUrls.length - 1]) {
-                // 所有 CDN 都失败
-                throw new Error(
-                    '模型下载失败！\n\n可能原因：\n' +
-                    '1. 国内网络访问 jsDelivr 不稳定\n' +
-                    '2. CDN 被墙或限速\n' +
-                    '3. 浏览器阻止了跨域请求\n\n' +
-                    '建议：\n' +
-                    '- 稍后重试\n' +
-                    '- 使用 VPN 访问\n' +
-                    '- 或尝试其他网络环境'
-                );
-            }
-        }
-    }
 }
 
 // ===== 调节 =====
@@ -1296,7 +1181,7 @@ async function saveToCache(buffer) {
 }
 
 async function downloadModel() {
-    return await downloadModelWithRetry();
+    return await downloadModelEmbedded();
 }
 
 // ===== 预处理 =====
