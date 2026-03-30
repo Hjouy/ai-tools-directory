@@ -1,0 +1,2006 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="免费在线AI抠图工具 - RMBG-1.4 SOTA模型，发丝级精度去除背景，支持人像/商品/动物任意物体，完全本地运行，隐私安全">
+    <meta name="keywords" content="AI抠图,去背景,智能抠图,RMBG-1.4,remove.bg替代,发丝级抠图,图片去背景,在线抠图免费">
+    <meta property="og:title" content="AI智能抠图 - 发丝级精度一键去除背景">
+    <meta property="og:description" content="RMBG-1.4 SOTA级AI模型，支持人像/商品/动物，发丝级边缘处理，完全本地运行隐私安全">
+    <link rel="canonical" href="https://hjouy.github.io/ai-tools-directory/background-remover.html">
+    <title>AI智能抠图 - 发丝级精度 | AI工具导航站</title>
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"></noscript>
+    <style>
+        :root {
+            --primary: #00d4ff; --p2: #9b59b6;
+            --bg: #0f0f1a; --bg2: #13132a; --card: rgba(255,255,255,.05);
+            --border: rgba(255,255,255,.1); --text: #f0f0ff; --muted: #888;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Segoe UI',sans-serif; background:linear-gradient(135deg,var(--bg),var(--bg2)); color:var(--text); min-height:100vh; padding:20px; }
+        .wrap { max-width:1380px; margin:0 auto; }
+
+        /* 顶部导航 */
+        .top-nav { display:flex; align-items:center; gap:10px; margin-bottom:20px; padding:10px 16px; background:rgba(255,255,255,.04); border:1px solid var(--border); border-radius:12px; flex-wrap:wrap; }
+        .top-nav a { color:var(--muted); text-decoration:none; font-size:.85rem; display:flex; align-items:center; gap:5px; transition:color .2s; }
+        .top-nav a:hover { color:var(--primary); }
+        .top-nav .sep { color:#333; font-size:.85rem; }
+        .top-nav .cur { color:var(--text); font-size:.85rem; }
+
+        /* 标题 */
+        .hero { text-align:center; margin-bottom:28px; }
+        .hero h1 { font-size:2.4em; background:linear-gradient(90deg,var(--primary),var(--p2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:10px; }
+        .hero p { color:var(--muted); font-size:1.02em; }
+        .tag-row { display:flex; gap:8px; justify-content:center; margin-top:12px; flex-wrap:wrap; }
+        .tag { padding:4px 12px; border-radius:20px; font-size:.76rem; font-weight:700; }
+        .t1 { background:linear-gradient(135deg,#00d4ff,#9b59b6); }
+        .t2 { background:linear-gradient(135deg,#f5576c,#f093fb); }
+        .t3 { background:linear-gradient(135deg,#43e97b,#38f9d7); color:#000; }
+        .t4 { background:linear-gradient(135deg,#fa709a,#fee140); color:#000; }
+
+        /* 布局 */
+        .layout { display:grid; grid-template-columns:280px 1fr; gap:18px; margin-bottom:22px; }
+
+        /* 侧边栏 */
+        .sidebar { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:16px; display:flex; flex-direction:column; gap:0; }
+        .sec { margin-bottom:14px; }
+        .sec-title { font-size:.86rem; font-weight:700; color:var(--text); margin-bottom:9px; display:flex; align-items:center; gap:6px; border-bottom:1px solid var(--border); padding-bottom:7px; }
+
+        /* 上传区 */
+        .upload-zone { border:2px dashed rgba(0,212,255,.35); border-radius:12px; padding:24px 12px; text-align:center; cursor:pointer; transition:all .3s; background:rgba(0,212,255,.03); position:relative; }
+        .upload-zone:hover, .upload-zone.over { border-color:var(--primary); background:rgba(0,212,255,.08); transform:scale(1.01); }
+        .upload-zone i { font-size:2.4em; color:var(--primary); display:block; margin-bottom:9px; }
+        .upload-zone p { font-size:.83rem; color:var(--muted); }
+        .upload-zone input { position:absolute; inset:0; opacity:0; cursor:pointer; }
+
+        /* 批量结果区 */
+        .batch-bar { display:none; align-items:center; justify-content:space-between; padding:10px 14px; background:rgba(0,212,255,.07); border:1px solid rgba(0,212,255,.2); border-radius:10px; margin-bottom:10px; }
+        .batch-bar.show { display:flex; }
+        .batch-bar span { font-size:.86rem; color:var(--primary); font-weight:700; }
+        .batch-dl-all { padding:6px 16px; border:none; border-radius:8px; background:linear-gradient(135deg,var(--primary),var(--p2)); color:#fff; font-size:.82rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:6px; transition:all .2s; }
+        .batch-dl-all:hover { transform:translateY(-1px); box-shadow:0 4px 12px rgba(0,212,255,.35); }
+        .batch-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:12px; }
+        .batch-card { background:rgba(255,255,255,.04); border:1px solid var(--border); border-radius:12px; padding:10px; position:relative; transition:all .2s; }
+        .batch-card:hover { border-color:rgba(0,212,255,.4); background:rgba(0,212,255,.04); }
+        .batch-img-wrap { position:relative; width:100%; padding-bottom:100%; background:repeating-conic-gradient(#1e1e32 0% 25%,#13132a 0% 50%) 0 0/14px 14px; border-radius:8px; overflow:hidden; margin-bottom:8px; }
+        .batch-img-wrap img { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; }
+        /* 加载中遮罩 */
+        .batch-loading-mask { position:absolute; inset:0; background:rgba(0,0,0,.55); display:flex; align-items:center; justify-content:center; border-radius:8px; }
+        .batch-svg-ring { transform:rotate(-90deg); }
+        .batch-pct { position:absolute; font-size:.75rem; font-weight:700; color:#fff; }
+        /* 完成操作栏 */
+        .batch-actions { position:absolute; bottom:8px; left:0; right:0; display:flex; justify-content:space-between; padding:0 6px; opacity:0; transition:opacity .2s; }
+        .batch-card:hover .batch-actions { opacity:1; }
+        .batch-act-btn { padding:3px 8px; border-radius:6px; border:none; font-size:.68rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:3px; }
+        .batch-act-dl { background:rgba(67,233,123,.9); color:#000; }
+        .batch-act-copy { background:rgba(79,172,254,.9); color:#000; }
+        .batch-act-del { background:rgba(255,80,80,.85); color:#fff; position:absolute; top:-34px; right:6px; border-radius:50%; width:22px; height:22px; padding:0; display:flex; align-items:center; justify-content:center; font-size:.7rem; }
+        .batch-name { font-size:.7rem; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .batch-dim { font-size:.66rem; color:#555; margin-top:1px; }
+        #fileInfo { display:none; margin-top:8px; padding:8px 11px; background:rgba(0,0,0,.35); border-radius:8px; font-size:.78rem; color:var(--muted); }
+        .fi-row { display:flex; align-items:center; gap:10px; }
+        .fi-thumb { width:44px; height:44px; border-radius:6px; object-fit:cover; border:1px solid var(--border); flex-shrink:0; }
+        .fi-info { flex:1; min-width:0; }
+        .fi-name { font-weight:700; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-size:.8rem; }
+        .fi-meta { font-size:.72rem; color:var(--muted); margin-top:2px; }
+
+        /* 推理分辨率 */
+        .res-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:5px; }
+        .res-btn { padding:6px 2px; border:1.5px solid var(--border); border-radius:7px; text-align:center; cursor:pointer; transition:all .2s; font-size:.68rem; color:var(--muted); line-height:1.3; }
+        .res-btn:hover { border-color:var(--primary); color:var(--text); }
+        .res-btn.active { border-color:var(--primary); background:rgba(0,212,255,.1); color:var(--primary); font-weight:700; }
+        .res-btn small { font-size:.62rem; opacity:.8; }
+
+        /* 模式 */
+        .mode-grid { display:flex; flex-direction:column; gap:7px; }
+        .mode-btn { display:flex; align-items:flex-start; gap:9px; padding:9px 11px; border:1.5px solid var(--border); border-radius:10px; cursor:pointer; transition:all .2s; }
+        .mode-btn:hover { border-color:var(--primary); background:rgba(0,212,255,.04); }
+        .mode-btn.active { border-color:var(--primary); background:rgba(0,212,255,.1); }
+        .mode-btn input { accent-color:var(--primary); margin-top:3px; flex-shrink:0; }
+        .mode-info { flex:1; }
+        .mode-name { font-size:.84rem; font-weight:700; display:flex; align-items:center; gap:6px; }
+        .mode-desc { font-size:.72rem; color:var(--muted); margin-top:2px; }
+        .rec-badge { font-size:.65rem; padding:1px 6px; border-radius:8px; background:linear-gradient(135deg,var(--primary),var(--p2)); }
+
+        /* 背景 - 颜色预设 */
+        .bg-presets { display:grid; grid-template-columns:repeat(5,1fr); gap:6px; margin-bottom:10px; }
+        .bg-swatch { width:100%; aspect-ratio:1; border-radius:7px; cursor:pointer; border:2px solid transparent; transition:all .2s; position:relative; overflow:hidden; }
+        .bg-swatch:hover { transform:scale(1.1); }
+        .bg-swatch.active { border-color:var(--primary); box-shadow:0 0 0 2px rgba(0,212,255,.3); }
+        .bg-swatch.transparent { background:repeating-conic-gradient(#2a2a3e 0% 25%,#1a1a2e 0% 50%) 0 0/10px 10px; }
+        .bg-swatch.swatch-label { font-size:.6rem; display:flex; align-items:center; justify-content:center; color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.6); }
+
+        /* 专业颜色选择器 */
+        .color-picker-wrap { background:rgba(0,0,0,.3); border:1px solid var(--border); border-radius:10px; padding:10px; }
+        .cp-sat { width:100%; height:130px; border-radius:7px; position:relative; cursor:crosshair; overflow:hidden; margin-bottom:8px; }
+        .cp-sat-bg { position:absolute; inset:0; }
+        .cp-cursor { width:12px; height:12px; border-radius:50%; border:2px solid #fff; box-shadow:0 0 0 1px rgba(0,0,0,.5); position:absolute; transform:translate(-50%,-50%); pointer-events:none; z-index:2; }
+        .cp-hue { width:100%; height:12px; border-radius:6px; cursor:pointer; position:relative; margin-bottom:8px;
+            background:linear-gradient(to right,#f00 0%,#ff0 17%,#0f0 33%,#0ff 50%,#00f 67%,#f0f 83%,#f00 100%); }
+        .cp-hue-thumb { width:14px; height:14px; border-radius:50%; background:#fff; border:2px solid #fff; box-shadow:0 0 0 1px rgba(0,0,0,.5),0 2px 4px rgba(0,0,0,.4); position:absolute; top:-1px; transform:translateX(-50%); cursor:grab; }
+        .cp-bottom { display:flex; gap:7px; align-items:center; }
+        .cp-preview { width:32px; height:32px; border-radius:6px; flex-shrink:0; border:1px solid var(--border); }
+        .cp-hex { flex:1; background:rgba(255,255,255,.07); border:1px solid var(--border); border-radius:6px; color:#fff; font-size:.82rem; padding:5px 8px; font-family:monospace; }
+        .cp-btns { display:flex; gap:5px; }
+        .cp-btn { width:28px; height:28px; border:1px solid var(--border); border-radius:6px; background:rgba(255,255,255,.05); color:var(--muted); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:.75rem; transition:all .2s; }
+        .cp-btn:hover { border-color:var(--primary); color:var(--primary); background:rgba(0,212,255,.08); }
+
+        /* 背景图案 */
+        .bg-patterns { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-top:8px; }
+        .bp-btn { padding:7px 4px; border:1.5px solid var(--border); border-radius:7px; text-align:center; cursor:pointer; transition:all .2s; font-size:.7rem; color:var(--muted); }
+        .bp-btn:hover { border-color:var(--primary); color:var(--text); }
+        .bp-btn.active { border-color:var(--primary); background:rgba(0,212,255,.1); color:var(--primary); }
+        .bp-thumb { height:28px; border-radius:4px; margin-bottom:4px; }
+
+        /* 下载选项 */
+        .dl-opts { display:flex; gap:6px; margin-top:7px; }
+        .dl-opt { flex:1; padding:8px 4px; border:1.5px solid var(--border); border-radius:8px; text-align:center; cursor:pointer; transition:all .2s; font-size:.75rem; color:var(--muted); }
+        .dl-opt:hover { border-color:var(--primary); color:var(--text); }
+        .dl-opt.active { border-color:var(--primary); background:rgba(0,212,255,.1); color:var(--primary); font-weight:700; }
+
+        /* 调节 */
+        .adj-row { display:flex; align-items:center; gap:8px; margin-bottom:7px; }
+        .adj-row label { font-size:.78rem; color:var(--muted); width:56px; flex-shrink:0; }
+        .adj-row input[type=range] { flex:1; accent-color:var(--primary); height:4px; }
+        .adj-val { font-size:.78rem; color:var(--primary); width:30px; text-align:right; flex-shrink:0; }
+
+        /* 按钮 */
+        .btn { width:100%; padding:11px; border:none; border-radius:10px; font-size:.9rem; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:7px; font-weight:700; transition:all .3s; margin-top:7px; }
+        .btn-main { background:linear-gradient(135deg,var(--primary),var(--p2)); color:#fff; }
+        .btn-main:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 6px 20px rgba(0,212,255,.3); }
+        .btn-dl { background:linear-gradient(135deg,#43e97b,#38f9d7); color:#000; }
+        .btn-dl:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 5px 16px rgba(67,233,123,.3); }
+        .btn-copy { background:linear-gradient(135deg,#4facfe,#00f2fe); color:#000; }
+        .btn-copy:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 5px 16px rgba(79,172,254,.3); }
+        .btn-reset { background:rgba(255,255,255,.07); color:#fff; border:1px solid var(--border); }
+        .btn-reset:hover:not(:disabled) { background:rgba(255,255,255,.12); }
+        .btn:disabled { opacity:.4; cursor:not-allowed; transform:none!important; }
+
+        /* 右侧主区 */
+        .main-area { display:flex; flex-direction:column; gap:14px; }
+        .panel { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:16px; }
+        .panel-hd { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding-bottom:10px; border-bottom:1px solid var(--border); }
+        .panel-hd h3 { color:var(--primary); font-size:.93rem; display:flex; align-items:center; gap:6px; }
+
+        /* 状态栏 */
+        .status { padding:10px 14px; border-radius:10px; display:none; align-items:center; gap:10px; font-size:.86rem; }
+        .status.show { display:flex; }
+        .status.loading { background:rgba(0,212,255,.07); border:1px solid rgba(0,212,255,.25); color:var(--primary); }
+        .status.ok { background:rgba(67,233,123,.07); border:1px solid rgba(67,233,123,.25); color:#43e97b; }
+        .status.err { background:rgba(255,80,80,.07); border:1px solid rgba(255,80,80,.25); color:#ff6060; }
+        .spin { width:17px; height:17px; border:2px solid rgba(0,212,255,.25); border-top-color:var(--primary); border-radius:50%; animation:spin 1s linear infinite; flex-shrink:0; }
+        @keyframes spin { to { transform:rotate(360deg); } }
+        .prog-wrap { width:100%; background:rgba(255,255,255,.08); border-radius:4px; height:5px; margin-top:6px; overflow:hidden; }
+        .prog-bar { height:100%; background:linear-gradient(90deg,var(--primary),var(--p2),var(--primary)); background-size:200% 100%; border-radius:4px; transition:width .4s ease; animation:progAnim 1.5s linear infinite; }
+        @keyframes progAnim { 0%{background-position:100% 0} 100%{background-position:-100% 0} }
+
+        /* 视图切换 */
+        .view-tabs { display:flex; gap:6px; }
+        .vtab { padding:5px 13px; border:1px solid var(--border); border-radius:20px; font-size:.78rem; cursor:pointer; transition:all .2s; color:var(--muted); }
+        .vtab:hover { border-color:var(--primary); color:var(--text); }
+        .vtab.active { border-color:var(--primary); background:rgba(0,212,255,.12); color:var(--primary); }
+
+        /* 主预览 canvas box */
+        .canvas-box { background:repeating-conic-gradient(#1e1e32 0% 25%,#13132a 0% 50%) 0 0/22px 22px; border-radius:10px; display:flex; align-items:center; justify-content:center; min-height:420px; overflow:hidden; position:relative; }
+        .canvas-box canvas { max-width:100%; max-height:520px; display:block; }
+        .hint { text-align:center; padding:60px 20px; }
+        .hint i { font-size:3.5em; color:#2a2a4e; display:block; margin-bottom:14px; animation:float 3s ease-in-out infinite; }
+        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+        .hint p { color:#4a4a6a; font-size:.9rem; }
+        .hint .hint-tips { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:14px; }
+        .hint .hint-tip { font-size:.72rem; color:#3a3a5a; background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06); padding:3px 10px; border-radius:20px; }
+
+        /* 拖拽对比滑块 */
+        .compare-wrap { position:relative; border-radius:10px; overflow:hidden; display:none; user-select:none; background:repeating-conic-gradient(#1e1e32 0% 25%,#13132a 0% 50%) 0 0/22px 22px; margin:0 auto; }
+        .compare-wrap canvas { display:block; }
+        .compare-clip { position:absolute; top:0; bottom:0; overflow:hidden; pointer-events:none; }
+        .compare-line { position:absolute; top:0; bottom:0; width:3px; background:#fff; box-shadow:0 0 8px rgba(0,0,0,.6); cursor:ew-resize; z-index:10; transform:translateX(-50%); }
+        .compare-handle { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:40px; height:40px; background:#fff; border-radius:50%; box-shadow:0 2px 12px rgba(0,0,0,.5); display:flex; align-items:center; justify-content:center; }
+        .compare-handle i { color:#333; font-size:14px; }
+        .compare-label { position:absolute; top:12px; font-size:.72rem; font-weight:700; padding:3px 9px; border-radius:10px; background:rgba(0,0,0,.6); color:#fff; pointer-events:none; }
+        .compare-label.left { left:12px; }
+        .compare-label.right { right:12px; }
+
+        /* 底部对比网格 */
+        .cmp-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+        .cmp-item h4 { color:var(--muted); font-size:.81rem; margin-bottom:7px; text-align:center; display:flex; align-items:center; justify-content:center; gap:5px; }
+
+        /* 特性栏 */
+        .feat-row { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-top:20px; }
+        .feat { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:15px; text-align:center; }
+        .feat-ico { font-size:1.7em; margin-bottom:7px; }
+        .feat-t { font-size:.84rem; font-weight:700; margin-bottom:4px; }
+        .feat-d { font-size:.76rem; color:var(--muted); }
+
+        @media(max-width:1060px) { .layout { grid-template-columns:1fr; } .feat-row { grid-template-columns:repeat(2,1fr); } }
+        @media(max-width:600px) { .cmp-grid { grid-template-columns:1fr; } .hero h1 { font-size:1.8em; } .feat-row { grid-template-columns:1fr 1fr; } }
+
+        /* ===== 背景图片上传 ===== */
+        .bg-img-upload { border:1.5px dashed rgba(0,212,255,.3); border-radius:9px; padding:10px; text-align:center; cursor:pointer; transition:all .2s; margin-top:8px; font-size:.76rem; color:var(--muted); background:rgba(0,212,255,.03); position:relative; overflow:hidden; }
+        .bg-img-upload:hover { border-color:var(--primary); color:var(--text); background:rgba(0,212,255,.06); }
+        .bg-img-upload input { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
+        .bg-img-thumb { width:100%; height:60px; object-fit:cover; border-radius:6px; margin-top:5px; display:none; }
+        .bg-img-clear { display:none; font-size:.7rem; padding:3px 9px; border:none; border-radius:6px; background:rgba(255,80,80,.2); color:#ff8888; cursor:pointer; margin-top:5px; transition:all .2s; }
+        .bg-img-clear:hover { background:rgba(255,80,80,.35); }
+
+        /* ===== FAQ 手风琴 ===== */
+        .faq-section { margin-top:28px; }
+        .faq-section h2 { font-size:1.4em; text-align:center; margin-bottom:20px; background:linear-gradient(90deg,var(--primary),var(--p2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+        .faq-list { max-width:860px; margin:0 auto; display:flex; flex-direction:column; gap:10px; }
+        .faq-item { background:var(--card); border:1px solid var(--border); border-radius:12px; overflow:hidden; transition:border-color .2s; }
+        .faq-item:hover { border-color:rgba(0,212,255,.3); }
+        .faq-item.open { border-color:rgba(0,212,255,.4); }
+        .faq-q { display:flex; justify-content:space-between; align-items:center; padding:15px 18px; cursor:pointer; font-size:.93rem; font-weight:600; color:var(--text); user-select:none; }
+        .faq-q:hover { color:var(--primary); }
+        .faq-item.open .faq-q { color:var(--primary); }
+        .faq-ico { width:22px; height:22px; border:1.5px solid rgba(0,212,255,.4); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.7rem; color:var(--primary); flex-shrink:0; transition:transform .3s; }
+        .faq-item.open .faq-ico { transform:rotate(45deg); background:rgba(0,212,255,.12); }
+        .faq-a { max-height:0; overflow:hidden; transition:max-height .35s ease, padding .25s ease; padding:0 18px; }
+        .faq-item.open .faq-a { max-height:300px; padding:0 18px 15px; }
+        .faq-a p { font-size:.88rem; color:var(--muted); line-height:1.7; }
+
+        /* ===== 粘贴提示 ===== */
+        .paste-hint { display:inline-flex; align-items:center; gap:5px; font-size:.73rem; color:#3a3a5a; background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06); padding:3px 10px; border-radius:20px; }
+    </style>
+</head>
+<body>
+<div class="wrap">
+
+    <!-- 顶部导航 -->
+    <div class="top-nav">
+        <a href="index.html"><i class="fas fa-home"></i> 首页</a>
+        <span class="sep">/</span>
+        <a href="tools.html"><i class="fas fa-tools"></i> 在线工具</a>
+        <span class="sep">/</span>
+        <span class="cur">AI智能抠图</span>
+    </div>
+
+    <div class="hero">
+        <h1><i class="fas fa-scissors"></i> AI 智能抠图</h1>
+        <p>RMBG-1.4 SOTA 模型 · 发丝级边缘 · 支持人像 / 商品 / 动物 / 任意物体</p>
+        <div class="tag-row">
+            <span class="tag t1">🤖 RMBG-1.4</span>
+            <span class="tag t2">✨ 发丝级精度</span>
+            <span class="tag t3">🆓 完全免费</span>
+            <span class="tag t4">🔒 本地运行</span>
+        </div>
+    </div>
+
+    <div class="layout">
+        <!-- 左侧侧边栏 -->
+        <div class="sidebar">
+
+            <!-- 上传 -->
+            <div class="sec">
+                <div class="upload-zone" id="uploadZone">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>点击或拖拽上传图片</p>
+                    <p style="font-size:.73rem;color:#555;margin-top:4px;">支持多图批量 · JPG/PNG/WEBP · 单张≤15MB</p>
+                    <input type="file" id="fileInput" accept="image/*" multiple>
+                </div>
+                <div id="fileInfo"></div>
+            </div>
+
+            <!-- AI模式 -->
+            <div class="sec">
+                <div class="sec-title"><i class="fas fa-robot"></i> AI 模式</div>
+                <div class="mode-grid">
+                    <label class="mode-btn active" id="modeOpt1">
+                        <input type="radio" name="mode" value="onnx" checked onchange="setMode(this)">
+                        <div class="mode-info">
+                            <div class="mode-name">RMBG-1.4 本地 <span class="rec-badge">推荐</span></div>
+                            <div class="mode-desc">ONNX · 42MB缓存 · 稳定离线</div>
+                        </div>
+                    </label>
+                    <label class="mode-btn" id="modeOpt2">
+                        <input type="radio" name="mode" value="hq" onchange="setMode(this)">
+                        <div class="mode-info">
+                            <div class="mode-name">BiRefNet 高精度</div>
+                            <div class="mode-desc">transformers.js · 首次约90MB</div>
+                        </div>
+                    </label>
+                </div>
+                <!-- 推理分辨率 -->
+                <div style="margin-top:10px;">
+                    <div style="font-size:.78rem;color:var(--muted);margin-bottom:6px;display:flex;align-items:center;gap:5px;"><i class="fas fa-expand-arrows-alt"></i> 推理分辨率</div>
+                    <div class="res-grid" id="resGrid">
+                        <div class="res-btn" data-res="512">⚡ 快速<br><small>512px</small></div>
+                        <div class="res-btn active" data-res="1024">🎯 标准<br><small>1024px</small></div>
+                        <div class="res-btn" data-res="1536">✨ 高清<br><small>1536px</small></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 背景换色 -->
+            <div class="sec">
+                <div class="sec-title"><i class="fas fa-palette"></i> 背景颜色</div>
+
+                <!-- 预设色块 -->
+                <div class="bg-presets" id="bgPresets">
+                    <div class="bg-swatch transparent active swatch-label" data-bg="transparent" title="透明">透明</div>
+                    <div class="bg-swatch" style="background:#ffffff;border:1px solid #444;" data-bg="#ffffff" title="白色"></div>
+                    <div class="bg-swatch" style="background:#1a1a1a;" data-bg="#1a1a1a" title="黑色"></div>
+                    <div class="bg-swatch" style="background:#e8f4fd;" data-bg="#e8f4fd" title="淡蓝白"></div>
+                    <div class="bg-swatch" style="background:#e53935;" data-bg="#e53935" title="证件红"></div>
+                    <div class="bg-swatch" style="background:#1976d2;" data-bg="#1976d2" title="证件蓝"></div>
+                    <div class="bg-swatch" style="background:#388e3c;" data-bg="#388e3c" title="绿色"></div>
+                    <div class="bg-swatch" style="background:#6F6F6F;" data-bg="#6F6F6F" title="灰色"></div>
+                    <!-- Pngtree渐变色板 -->
+                    <div class="bg-swatch" style="background:linear-gradient(90deg,#FF9F0F,#FF7D04);" data-bg="linear-gradient(90deg,#FF9F0F,#FF7D04)" title="橙金渐变"></div>
+                    <div class="bg-swatch" style="background:linear-gradient(180deg,#BDD6FF,#D0C7FF);" data-bg="linear-gradient(180deg,#BDD6FF,#D0C7FF)" title="蓝紫渐变"></div>
+                    <div class="bg-swatch" style="background:linear-gradient(180deg,#71FFBB,#3DD6D6);" data-bg="linear-gradient(180deg,#71FFBB,#3DD6D6)" title="青绿渐变"></div>
+                    <div class="bg-swatch" style="background:linear-gradient(135deg,#CAF8ED,#E6DAA1,#FF8557);" data-bg="linear-gradient(135deg,#CAF8ED,#E6DAA1,#FF8557)" title="日落三色"></div>
+                    <div class="bg-swatch" style="background:linear-gradient(90deg,#30FF8F,#0CF1B2);" data-bg="linear-gradient(90deg,#30FF8F,#0CF1B2)" title="薄荷渐变"></div>
+                    <div class="bg-swatch" style="background:linear-gradient(135deg,#FFF8CA,#FF005B);" data-bg="linear-gradient(135deg,#FFF8CA,#FF005B)" title="玫瑰渐变"></div>
+                    <div class="bg-swatch" style="background:linear-gradient(315deg,#D595CF,#9D9BDF);" data-bg="linear-gradient(315deg,#D595CF,#9D9BDF)" title="紫粉渐变"></div>
+                    <div class="bg-swatch" style="background:linear-gradient(315deg,#ACEB8E,#9CF2D5);" data-bg="linear-gradient(315deg,#ACEB8E,#9CF2D5)" title="草绿渐变"></div>
+                    <div class="bg-swatch" style="background:linear-gradient(135deg,#667eea,#764ba2);" data-bg="custom" title="自定义" id="customSwatch"></div>
+                </div>
+
+                <!-- 专业颜色选择器 -->
+                <div class="color-picker-wrap" id="colorPickerWrap">
+                    <!-- 饱和度/亮度面板 -->
+                    <div class="cp-sat" id="cpSat">
+                        <canvas class="cp-sat-bg" id="cpSatCanvas"></canvas>
+                        <div class="cp-cursor" id="cpCursor"></div>
+                    </div>
+                    <!-- 色相滑条 -->
+                    <div class="cp-hue" id="cpHue">
+                        <div class="cp-hue-thumb" id="cpHueThumb"></div>
+                    </div>
+                    <!-- 底部：预览 + HEX输入 + 功能按钮 -->
+                    <div class="cp-bottom">
+                        <div class="cp-preview" id="cpPreview"></div>
+                        <input type="text" class="cp-hex" id="cpHex" value="#667eea" maxlength="7" placeholder="#RRGGBB">
+                        <div class="cp-btns">
+                            <button class="cp-btn" id="cpEyedrop" title="吸管取色（从屏幕取色）"><i class="fas fa-eye-dropper"></i></button>
+                            <button class="cp-btn" id="cpRandom" title="随机颜色"><i class="fas fa-random"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 背景图案 -->
+                <div style="margin-top:10px;">
+                    <div style="font-size:.78rem;color:var(--muted);margin-bottom:7px;display:flex;align-items:center;gap:5px;"><i class="fas fa-th"></i> 背景图案</div>
+                    <div class="bg-patterns" id="bgPatterns">
+                        <div class="bp-btn active" data-pat="none">
+                            <div class="bp-thumb" style="background:rgba(0,212,255,.1);display:flex;align-items:center;justify-content:center;font-size:1.2em;">🚫</div>
+                            无图案
+                        </div>
+                        <div class="bp-btn" data-pat="checker">
+                            <div class="bp-thumb" style="background:repeating-conic-gradient(#ccc 0% 25%,#fff 0% 50%) 0 0/14px 14px;"></div>
+                            棋盘
+                        </div>
+                        <div class="bp-btn" data-pat="grid">
+                            <div class="bp-thumb" style="background:#fff;background-image:linear-gradient(#ddd 1px,transparent 1px),linear-gradient(90deg,#ddd 1px,transparent 1px);background-size:12px 12px;"></div>
+                            方格
+                        </div>
+                        <div class="bp-btn" data-pat="dots">
+                            <div class="bp-thumb" style="background:#f0f0f0;background-image:radial-gradient(#bbb 1px,transparent 1px);background-size:8px 8px;background-position:4px 4px;"></div>
+                            圆点
+                        </div>
+                        <div class="bp-btn" data-pat="stripe">
+                            <div class="bp-thumb" style="background:repeating-linear-gradient(45deg,#e0e0e0,#e0e0e0 4px,#fff 4px,#fff 10px);"></div>
+                            斜纹
+                        </div>
+                        <div class="bp-btn" data-pat="gradient">
+                            <div class="bp-thumb" style="background:linear-gradient(135deg,#667eea,#764ba2,#f093fb);"></div>
+                            渐变
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 背景图片上传 -->
+                <div style="margin-top:10px;">
+                    <div style="font-size:.78rem;color:var(--muted);margin-bottom:7px;display:flex;align-items:center;gap:5px;"><i class="fas fa-image"></i> 自定义背景图片</div>
+                    <div class="bg-img-upload" id="bgImgUpload" title="上传图片作为背景">
+                        <i class="fas fa-upload" style="font-size:1.2em;display:block;margin-bottom:4px;color:rgba(0,212,255,.5);"></i>
+                        点击上传背景图
+                        <input type="file" id="bgImgInput" accept="image/*">
+                        <img id="bgImgThumb" class="bg-img-thumb" alt="背景预览">
+                    </div>
+                    <button class="bg-img-clear" id="bgImgClear" onclick="clearBgImg()"><i class="fas fa-times"></i> 移除背景图</button>
+                </div>
+            </div>
+
+            <!-- 精细调节 -->
+            <div class="sec">
+                <div class="sec-title"><i class="fas fa-sliders-h"></i> 精细调节</div>
+                <div class="adj-row">
+                    <label>边缘柔化</label>
+                    <input type="range" id="feather" min="0" max="5" value="2" step="1" oninput="updateAdj('feather',this.value)">
+                    <span class="adj-val" id="featherV">2</span>
+                </div>
+                <div class="adj-row">
+                    <label>前景阈值</label>
+                    <input type="range" id="thresh" min="0.1" max="0.9" value="0.5" step="0.05" oninput="updateAdj('thresh',this.value)">
+                    <span class="adj-val" id="threshV">0.50</span>
+                </div>
+            </div>
+
+            <!-- 操作按钮 -->
+            <button class="btn btn-main" id="processBtn" disabled onclick="doProcess()">
+                <i class="fas fa-magic"></i> AI 智能抠图
+            </button>
+            <!-- 下载格式 -->
+            <div class="dl-opts" id="dlOpts" style="display:none;">
+                <div class="dl-opt active" data-fmt="transparent" title="透明背景PNG">🎭 透明PNG</div>
+                <div class="dl-opt" data-fmt="withbg" title="含当前背景">🖼️ 带背景</div>
+                <div class="dl-opt" data-fmt="jpg" title="JPG格式（含背景）">📷 JPG</div>
+            </div>
+            <button class="btn btn-dl" id="dlBtn" disabled onclick="doDownload()">
+                <i class="fas fa-download"></i> 下载图片
+            </button>
+            <button class="btn btn-copy" id="copyBtn" disabled onclick="doCopy()">
+                <i class="fas fa-copy"></i> 复制到剪贴板
+            </button>
+            <button class="btn btn-reset" onclick="doReset()">
+                <i class="fas fa-redo"></i> 重置
+            </button>
+        </div>
+
+        <!-- 右侧主区 -->
+        <div class="main-area">
+
+            <!-- 状态条 -->
+            <div id="statusBar" class="status">
+                <div class="spin" id="spin"></div>
+                <div style="flex:1">
+                    <div id="statusTxt"></div>
+                    <div class="prog-wrap" id="progWrap" style="display:none">
+                        <div class="prog-bar" id="progBar" style="width:0"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 批量结果区 -->
+            <div class="batch-bar" id="batchBar">
+                <span id="batchCount">共 0 张</span>
+                <button class="batch-dl-all" onclick="downloadAll()"><i class="fas fa-download"></i> 下载全部</button>
+            </div>
+            <div class="batch-grid" id="batchGrid"></div>
+
+            <!-- 预览面板 -->
+            <div class="panel">
+                <div class="panel-hd">
+                    <h3><i class="fas fa-eye"></i> 预览</h3>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <span id="dimTxt" style="font-size:.76rem;color:var(--muted)"></span>
+                        <div class="view-tabs" id="viewTabs">
+                            <div class="vtab active" data-view="result" onclick="switchView('result')">结果</div>
+                            <div class="vtab" data-view="compare" onclick="switchView('compare')">对比滑块</div>
+                            <div class="vtab" data-view="grid" onclick="switchView('grid')">并排对比</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 结果视图 -->
+                <div id="viewResult">
+                    <div class="canvas-box" id="mainBox">
+                        <div class="hint" id="hint" style="display:block;">
+                            <i class="fas fa-image"></i>
+                            <p>上传图片，AI自动识别主体并去除背景</p>
+                            <p style="margin-top:7px;font-size:.8rem;color:#3a3a5a;">支持人像 · 商品 · 动物 · 任意物体</p>
+                            <div class="hint-tips">
+                                <span class="hint-tip">JPG</span>
+                                <span class="hint-tip">PNG</span>
+                                <span class="hint-tip">WEBP</span>
+                                <span class="hint-tip">最大 15MB</span>
+                                <span class="hint-tip paste-hint"><i class="fas fa-paste"></i> Ctrl+V 粘贴</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 对比滑块视图 -->
+                <div id="viewCompare" style="display:none;">
+                    <div class="compare-wrap" id="compareWrap">
+                        <canvas id="compareOrigCanvas"></canvas>
+                        <div class="compare-clip" id="compareClip">
+                            <canvas id="compareResultCanvas"></canvas>
+                        </div>
+                        <div class="compare-line" id="compareLine">
+                            <div class="compare-handle"><i class="fas fa-arrows-alt-h"></i></div>
+                        </div>
+                        <div class="compare-label left">原图</div>
+                        <div class="compare-label right">抠图结果</div>
+                    </div>
+                    <p style="text-align:center;color:var(--muted);font-size:.78rem;margin-top:8px;"><i class="fas fa-hand-pointer"></i> 拖动中间滑块对比原图和抠图效果</p>
+                </div>
+
+                <!-- 并排对比视图 -->
+                <div id="viewGrid" style="display:none;">
+                    <div class="cmp-grid">
+                        <div class="cmp-item">
+                            <h4><i class="fas fa-image"></i> 原图</h4>
+                            <div class="canvas-box" id="origBox"></div>
+                        </div>
+                        <div class="cmp-item">
+                            <h4><i class="fas fa-cut"></i> 抠图结果</h4>
+                            <div class="canvas-box" id="resultBox"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 特性 -->
+    <div class="feat-row">
+        <div class="feat"><div class="feat-ico">🎯</div><div class="feat-t">发丝级精度</div><div class="feat-d">RMBG-1.4 SOTA，毛发/透明/复杂边缘完美处理</div></div>
+        <div class="feat"><div class="feat-ico">🔒</div><div class="feat-t">完全隐私</div><div class="feat-d">所有运算本地完成，图片不上传任何服务器</div></div>
+        <div class="feat"><div class="feat-ico">🖼️</div><div class="feat-t">任意主体</div><div class="feat-d">人像、商品、动物、植物、车辆均可识别</div></div>
+        <div class="feat"><div class="feat-ico">⚡</div><div class="feat-t">GPU加速</div><div class="feat-d">自动检测WebGPU，有则启用高速推理</div></div>
+    </div>
+
+    <!-- FAQ 手风琴 -->
+    <div class="faq-section">
+        <h2><i class="fas fa-question-circle"></i> 常见问题解答</h2>
+        <div class="faq-list">
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q">
+                    <span>1. 支持哪些图片格式？</span>
+                    <div class="faq-ico"><i class="fas fa-plus"></i></div>
+                </div>
+                <div class="faq-a"><p>支持 JPG、JPEG、PNG、WEBP 等主流图片格式，单张不超过 15MB。处理完成后默认生成透明背景 PNG，如添加了新背景也可选择导出为 JPG 格式。</p></div>
+            </div>
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q">
+                    <span>2. 能处理精细的发丝和毛发吗？</span>
+                    <div class="faq-ico"><i class="fas fa-plus"></i></div>
+                </div>
+                <div class="faq-a"><p>可以！RMBG-1.4 模型经过专门训练，能出色地处理包含发丝、动物皮毛、半透明边缘等复杂细节，确保边缘部分完整自然。高精度模式（BiRefNet）效果更佳。</p></div>
+            </div>
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q">
+                    <span>3. 图片会上传到服务器吗？</span>
+                    <div class="faq-ico"><i class="fas fa-plus"></i></div>
+                </div>
+                <div class="faq-a"><p>不会！所有推理运算均在您的本地浏览器完成（通过 WebAssembly/WebGPU），图片数据从不离开您的设备，完全保护隐私安全。AI 模型首次使用时会缓存到本地，此后完全离线可用。</p></div>
+            </div>
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q">
+                    <span>4. 支持批量抠图吗？</span>
+                    <div class="faq-ico"><i class="fas fa-plus"></i></div>
+                </div>
+                <div class="faq-a"><p>支持！点击上传或拖拽时可以多选图片（最多20张），系统会自动进入批量模式，每张图片独立显示进度圆圈，全部完成后可以一键批量下载。</p></div>
+            </div>
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q">
+                    <span>5. 如何更换抠图后的背景颜色？</span>
+                    <div class="faq-ico"><i class="fas fa-plus"></i></div>
+                </div>
+                <div class="faq-a"><p>抠图完成后，左侧面板提供丰富的背景选项：透明背景、16种预设纯色/渐变色、专业 HSB 颜色选择器（支持吸管取色、随机色）、6种背景图案，以及自定义背景图片上传。实时预览，即改即见。</p></div>
+            </div>
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q">
+                    <span>6. RMBG-1.4 和 BiRefNet 高精度模式有何区别？</span>
+                    <div class="faq-ico"><i class="fas fa-plus"></i></div>
+                </div>
+                <div class="faq-a"><p>RMBG-1.4 本地模式：模型约 42MB，首次加载后离线可用，速度快，适合日常使用。BiRefNet 高精度模式：模型约 90MB，精度更高，适合处理复杂边缘（如蓬松毛发、细密网格）。两种模式均支持边缘柔化和前景阈值精细调节。</p></div>
+            </div>
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q">
+                    <span>7. 可以用 Ctrl+V 粘贴图片吗？</span>
+                    <div class="faq-ico"><i class="fas fa-plus"></i></div>
+                </div>
+                <div class="faq-a"><p>可以！直接按 Ctrl+V（Mac 用 Cmd+V）将剪贴板中的图片粘贴到页面，工具会自动识别并开始处理，无需手动选择文件，比拖拽更便捷。也可以从截图软件截图后直接粘贴。</p></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div id="_toast" style="display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:10px 22px;border-radius:8px;font-size:14px;z-index:9999;pointer-events:none;transition:opacity .3s;white-space:nowrap;"></div>
+
+<script>
+// ===== 常量 =====
+const ORT_CDN = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.22.0/dist/ort.min.js';
+const ORT_WASM = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.22.0/dist/';
+const MODEL_CACHE_KEY = 'rmbg14q-v1';
+const MODEL_TOTAL_SIZE = 44403226;
+const MODEL_INPUT_SIZE = 1024;
+const CHUNK_BASE = 'https://cdn.jsdelivr.net/gh/Hjouy/ai-tools-directory@main/models/chunks/';
+const CHUNK_NAMES = ['rmbg14q.part00','rmbg14q.part01','rmbg14q.part02','rmbg14q.part03','rmbg14q.part04'];
+
+// ===== 状态 =====
+let origImg = null, resultCanvas = null, ortSession = null;
+let currentBg = 'transparent', currentPat = 'none', currentMode = 'onnx';
+let featherVal = 2, threshVal = 0.5;
+let isProcessing = false;
+let currentView = 'result';
+let downloadFmt = 'transparent';
+
+// ===== Mask 缓存 =====
+let cachedMask = null;
+
+// ===== 批量处理队列 =====
+// previewList: [{ id, file, origImg, status:'pending'|'processing'|'done'|'error', resultCanvas, dashoffset, pct }]
+let previewList = [];
+let batchRunning = false;
+
+// ===== reapplyMask =====
+function reapplyMask() {
+    if (!cachedMask) return;
+    if (cachedMask.type === 'onnx') {
+        const { floatMask, mw, mh, lb, srcData } = cachedMask;
+        const blurred = featherVal > 0 ? gaussBlur(floatMask, mw, mh, featherVal) : floatMask;
+        resultCanvas = applyMaskWithLetterbox(srcData, blurred, mw, mh, lb, threshVal);
+    } else {
+        const { srcData, mask, sw, sh } = cachedMask;
+        const mw = mask.width, mh = mask.height;
+        const maskPixels = mask.data;
+        const channels = mask.channels || (maskPixels.length / (mw * mh));
+        const mc = document.createElement('canvas'); mc.width = mw; mc.height = mh;
+        const mCtx = mc.getContext('2d');
+        const mImg = mCtx.createImageData(mw, mh);
+        for (let i = 0; i < mw * mh; i++) {
+            const v = channels === 1 ? maskPixels[i] : maskPixels[i * channels];
+            mImg.data[i*4] = mImg.data[i*4+1] = mImg.data[i*4+2] = v; mImg.data[i*4+3] = 255;
+        }
+        mCtx.putImageData(mImg, 0, 0);
+        const sc = document.createElement('canvas'); sc.width = sw; sc.height = sh;
+        const sCtx = sc.getContext('2d');
+        sCtx.imageSmoothingEnabled = true; sCtx.imageSmoothingQuality = 'high';
+        sCtx.drawImage(mc, 0, 0, sw, sh);
+        const sm = sCtx.getImageData(0, 0, sw, sh).data;
+        const floatMask = new Float32Array(sw * sh);
+        for (let i = 0; i < sw * sh; i++) floatMask[i] = sm[i*4] / 255;
+        const blurred = featherVal > 0 ? gaussBlur(floatMask, sw, sh, featherVal) : floatMask;
+        const srcCanvas = document.createElement('canvas'); srcCanvas.width = sw; srcCanvas.height = sh;
+        srcCanvas.getContext('2d').putImageData(srcData, 0, 0);
+        const out = document.createElement('canvas'); out.width = sw; out.height = sh;
+        const oCtx = out.getContext('2d');
+        oCtx.drawImage(srcCanvas, 0, 0);
+        const od = oCtx.getImageData(0, 0, sw, sh);
+        const src = srcData.data;
+        for (let i = 0; i < sw * sh; i++) {
+            const t = blurred[i];
+            const s1 = t*t*(3-2*t);
+            const smooth = s1*s1*(3-2*s1);
+            let r = src[i*4], g = src[i*4+1], b = src[i*4+2];
+            if (t > 0.05 && t < 0.9) {
+                const boost = (1-t)*0.5;
+                const lum = 0.299*r + 0.587*g + 0.114*b;
+                r = Math.min(255, Math.round(r + (r-lum)*boost));
+                g = Math.min(255, Math.round(g + (g-lum)*boost));
+                b = Math.min(255, Math.round(b + (b-lum)*boost));
+            }
+            od.data[i*4] = r; od.data[i*4+1] = g; od.data[i*4+2] = b;
+            od.data[i*4+3] = Math.round(smooth * 255);
+        }
+        oCtx.putImageData(od, 0, 0);
+        resultCanvas = out;
+    }
+    applyBg();
+}
+
+// ===== Toast =====
+function showToast(msg) {
+    const t = document.getElementById('_toast');
+    t.textContent = msg; t.style.display = 'block'; t.style.opacity = '1';
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => { t.style.opacity='0'; setTimeout(()=>t.style.display='none',300); }, 2500);
+}
+
+// ===== 调节 =====
+window.updateAdj = (type, val) => {
+    if (type === 'feather') { featherVal = +val; document.getElementById('featherV').textContent = val; }
+    else { threshVal = +val; document.getElementById('threshV').textContent = (+val).toFixed(2); }
+    if (cachedMask) reapplyMask();
+    else if (resultCanvas) applyBg();
+};
+
+window.setMode = (radio) => {
+    currentMode = radio.value;
+    document.getElementById('modeOpt1').classList.toggle('active', currentMode === 'onnx');
+    document.getElementById('modeOpt2').classList.toggle('active', currentMode === 'hq');
+};
+
+// ===== 推理分辨率切换 =====
+let inferSize = 1024;
+document.querySelectorAll('.res-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.res-btn').forEach(x => x.classList.remove('active'));
+        btn.classList.add('active');
+        inferSize = parseInt(btn.dataset.res);
+    });
+});
+
+// ===== 上传（多图批量）=====
+const zone = document.getElementById('uploadZone');
+zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('over'); });
+zone.addEventListener('dragleave', () => zone.classList.remove('over'));
+zone.addEventListener('drop', e => {
+    e.preventDefault(); zone.classList.remove('over');
+    const files = [...e.dataTransfer.files].filter(f => f.type.startsWith('image/'));
+    if (files.length) loadFiles(files);
+});
+document.getElementById('fileInput').addEventListener('change', e => {
+    const files = [...e.target.files];
+    if (files.length) loadFiles(files);
+});
+
+function loadFiles(files) {
+    // 过滤超大文件
+    const valid = files.filter(f => {
+        if (f.size > 15*1024*1024) { showToast(`${f.name} 超过15MB，已跳过`); return false; }
+        return true;
+    });
+    if (!valid.length) return;
+
+    if (valid.length === 1) {
+        // 单图：保持原来单图体验
+        loadFile(valid[0]);
+    } else {
+        // 多图：批量模式
+        loadBatch(valid);
+    }
+}
+
+function loadFile(file) {
+    const reader = new FileReader();
+    reader.onload = e => {
+        const img = new Image();
+        img.onload = () => {
+            origImg = img;
+            cachedMask = null;
+            resultCanvas = null;
+            document.getElementById('dimTxt').textContent = `${img.width} × ${img.height}`;
+            const fi = document.getElementById('fileInfo');
+            fi.style.display = 'block';
+            fi.innerHTML = `<div class="fi-row">
+                <img class="fi-thumb" src="${e.target.result}">
+                <div class="fi-info">
+                    <div class="fi-name">${file.name}</div>
+                    <div class="fi-meta">${(file.size/1024).toFixed(0)} KB · ${img.width}×${img.height}</div>
+                </div>
+            </div>`;
+            showOriginalPreview(img);
+            document.getElementById('processBtn').disabled = false;
+            showStatus('图片已加载，点击「AI智能抠图」开始', 'ok');
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+// ===== 批量模式 =====
+function loadBatch(files) {
+    // 隐藏单图区，显示批量区
+    document.getElementById('fileInfo').style.display = 'none';
+    document.getElementById('processBtn').disabled = true;
+    document.getElementById('dlBtn').disabled = true;
+    document.getElementById('copyBtn').disabled = true;
+    document.getElementById('dlOpts').style.display = 'none';
+
+    // 清空旧列表
+    previewList = [];
+    const grid = document.getElementById('batchGrid');
+    grid.innerHTML = '';
+    document.getElementById('batchBar').classList.add('show');
+
+    // 为每个文件创建 item
+    files.forEach((file, idx) => {
+        const id = 'batch_' + Date.now() + '_' + idx;
+        const item = { id, file, origImg: null, status: 'pending', resultCanvas: null, dashoffset: 565.48, pct: 0 };
+        previewList.push(item);
+
+        const card = document.createElement('div');
+        card.className = 'batch-card';
+        card.id = 'card_' + id;
+        card.innerHTML = `
+            <div class="batch-img-wrap" id="imgwrap_${id}">
+                <div class="batch-loading-mask" id="mask_${id}">
+                    <svg class="batch-svg-ring" width="60" height="60" viewBox="-25 -25 250 250">
+                        <circle r="90" cx="100" cy="100" fill="transparent" stroke="rgba(255,255,255,.2)" stroke-width="8"/>
+                        <circle id="ring_${id}" r="90" cx="100" cy="100" fill="transparent" stroke="#00d4ff"
+                            stroke-width="16" stroke-linecap="round"
+                            stroke-dasharray="565.48" stroke-dashoffset="565.48"/>
+                    </svg>
+                    <span class="batch-pct" id="pct_${id}">0%</span>
+                </div>
+            </div>
+            <div class="batch-name" id="name_${id}">${file.name.replace(/\.[^.]+$/, '')}</div>
+            <div class="batch-dim" id="dim_${id}">加载中…</div>
+            <div class="batch-actions" id="acts_${id}" style="display:none;">
+                <button class="batch-act-btn batch-act-dl" onclick="downloadItem('${id}')"><i class="fas fa-download"></i> 下载</button>
+                <button class="batch-act-btn batch-act-copy" onclick="copyItem('${id}')"><i class="fas fa-copy"></i> 拷贝</button>
+            </div>
+            <button class="batch-act-btn batch-act-del" id="del_${id}" onclick="removeItem('${id}')" title="删除"><i class="fas fa-times"></i></button>
+        `;
+        grid.appendChild(card);
+
+        // 读取图片
+        const reader = new FileReader();
+        reader.onload = ev => {
+            const img = new Image();
+            img.onload = () => {
+                item.origImg = img;
+                document.getElementById('dim_' + id).textContent = `${img.width}×${img.height}`;
+                // 显示原图缩略图（在加载mask之上）
+                const wrap = document.getElementById('imgwrap_' + id);
+                const thumb = document.createElement('img');
+                thumb.src = ev.target.result;
+                thumb.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:contain;';
+                wrap.insertBefore(thumb, wrap.firstChild);
+                item._thumbEl = thumb;
+            };
+            img.src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+
+    updateBatchCount();
+
+    // 延迟启动处理（等图片加载完）
+    setTimeout(() => runBatch(), 600);
+}
+
+async function runBatch() {
+    if (batchRunning) return;
+    batchRunning = true;
+    showStatus('批量处理中，请稍候...', 'loading', true);
+
+    // 确保 ONNX 模型就绪
+    try {
+        await loadORT();
+        await initOrtSession();
+    } catch(e) {
+        showStatus('模型加载失败: ' + e.message, 'err');
+        batchRunning = false;
+        return;
+    }
+
+    for (const item of previewList) {
+        if (item.status !== 'pending') continue;
+        if (!item.origImg) {
+            // 等图片加载
+            await new Promise(r => { const t = setInterval(() => { if (item.origImg || item.status==='error') { clearInterval(t); r(); } }, 100); });
+        }
+        if (!item.origImg) continue;
+        await processBatchItem(item);
+    }
+
+    batchRunning = false;
+    const done = previewList.filter(i => i.status === 'done').length;
+    showStatus(`✅ 批量完成！共处理 ${done}/${previewList.length} 张`, 'ok');
+    setTimeout(hideStatus, 4000);
+    updateBatchCount();
+}
+
+async function processBatchItem(item) {
+    item.status = 'processing';
+    updateRing(item, 0);
+
+    try {
+        const maxDim = inferSize;
+        const wc = makeCanvas(item.origImg, maxDim);
+        const ctx = wc.getContext('2d');
+        const imgData = ctx.getImageData(0, 0, wc.width, wc.height);
+        updateRing(item, 30);
+
+        const { tensor, lb } = preprocessImg(imgData, MODEL_INPUT_SIZE);
+        const inputTensor = new ort.Tensor('float32', tensor, [1, 3, MODEL_INPUT_SIZE, MODEL_INPUT_SIZE]);
+        const feeds = {};
+        feeds[ortSession.inputNames[0]] = inputTensor;
+        const output = await ortSession.run(feeds);
+        updateRing(item, 70);
+
+        const maskTensor = output[ortSession.outputNames[0]];
+        const maskData = maskTensor.data;
+        const mh = maskTensor.dims[2], mw = maskTensor.dims[3];
+        const floatMask = new Float32Array(mw * mh);
+        for (let i = 0; i < mw * mh; i++) floatMask[i] = 1 / (1 + Math.exp(-maskData[i]));
+        const blurred = featherVal > 0 ? gaussBlur(floatMask, mw, mh, featherVal) : floatMask;
+        const rc = applyMaskWithLetterbox(imgData, blurred, mw, mh, lb, threshVal);
+        item.resultCanvas = rc;
+        item.status = 'done';
+        updateRing(item, 100);
+
+        // 显示结果图替换缩略图
+        const wrap = document.getElementById('imgwrap_' + item.id);
+        if (wrap) {
+            // 隐藏加载遮罩
+            const mask = document.getElementById('mask_' + item.id);
+            if (mask) mask.style.display = 'none';
+            // 替换为结果图
+            const bg = getBgFillCanvas(rc);
+            const blobUrl = await canvasToBlobUrl(bg);
+            if (item._thumbEl) item._thumbEl.src = blobUrl;
+            item._blobUrl = blobUrl;
+        }
+        // 显示操作按钮
+        const acts = document.getElementById('acts_' + item.id);
+        if (acts) acts.style.display = 'flex';
+        const del = document.getElementById('del_' + item.id);
+        if (del) del.style.display = 'flex';
+
+    } catch(e) {
+        item.status = 'error';
+        const mask = document.getElementById('mask_' + item.id);
+        if (mask) mask.innerHTML = '<span style="color:#ff6060;font-size:.75rem;text-align:center;padding:8px;">失败<br>'+e.message.slice(0,20)+'</span>';
+    }
+}
+
+function updateRing(item, pct) {
+    item.pct = pct;
+    const circumference = 565.48;
+    item.dashoffset = circumference * (1 - pct / 100);
+    const ring = document.getElementById('ring_' + item.id);
+    const pctEl = document.getElementById('pct_' + item.id);
+    if (ring) ring.setAttribute('stroke-dashoffset', item.dashoffset);
+    if (pctEl) pctEl.textContent = pct + '%';
+}
+
+function updateBatchCount() {
+    const done = previewList.filter(i => i.status === 'done').length;
+    document.getElementById('batchCount').textContent = `共 ${previewList.length} 张${done ? '（'+done+' 张完成）' : ''}`;
+}
+
+async function canvasToBlobUrl(canvas) {
+    return new Promise(r => canvas.toBlob(blob => r(URL.createObjectURL(blob)), 'image/png'));
+}
+
+function getBgFillCanvas(rc) {
+    if (currentBg === 'transparent' && currentPat === 'none' && !bgImage) return rc;
+    const fc = document.createElement('canvas');
+    fc.width = rc.width; fc.height = rc.height;
+    const ctx = fc.getContext('2d');
+    if (currentPat !== 'none') {
+        drawPattern(ctx, currentPat, fc.width, fc.height);
+    } else if (currentBg !== 'transparent') {
+        applyBgFill(ctx, currentBg, fc.width, fc.height);
+    }
+    ctx.drawImage(rc, 0, 0);
+    return fc;
+}
+
+// 下载单张
+window.downloadItem = (id) => {
+    const item = previewList.find(i => i.id === id);
+    if (!item || !item.resultCanvas) return;
+    const bg = getBgFillCanvas(item.resultCanvas);
+    bg.toBlob(blob => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.download = `抠图_${item.file.name.replace(/\.[^.]+$/, '')}.png`;
+        a.href = url; a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }, 'image/png');
+};
+
+// 拷贝单张
+window.copyItem = async (id) => {
+    const item = previewList.find(i => i.id === id);
+    if (!item || !item.resultCanvas) return;
+    const bg = getBgFillCanvas(item.resultCanvas);
+    try {
+        const blob = await new Promise(r => bg.toBlob(r, 'image/png'));
+        await navigator.clipboard.write([new ClipboardItem({'image/png': blob})]);
+        showToast('✅ 已复制到剪贴板！');
+    } catch(e) {
+        const url = await canvasToBlobUrl(bg);
+        window.open(url, '_blank');
+        setTimeout(() => URL.revokeObjectURL(url), 5000);
+        showToast('已在新标签页打开，请手动复制');
+    }
+};
+
+// 删除单张
+window.removeItem = (id) => {
+    const idx = previewList.findIndex(i => i.id === id);
+    if (idx === -1) return;
+    previewList.splice(idx, 1);
+    const card = document.getElementById('card_' + id);
+    if (card) card.remove();
+    updateBatchCount();
+    if (!previewList.length) {
+        document.getElementById('batchBar').classList.remove('show');
+    }
+};
+
+// 下载全部
+window.downloadAll = async () => {
+    const done = previewList.filter(i => i.status === 'done');
+    if (!done.length) { showToast('暂无完成的图片'); return; }
+    showToast(`开始下载 ${done.length} 张图片...`);
+    for (let i = 0; i < done.length; i++) {
+        const item = done[i];
+        const bg = getBgFillCanvas(item.resultCanvas);
+        await new Promise(resolve => {
+            bg.toBlob(blob => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.download = `抠图_${item.file.name.replace(/\.[^.]+$/, '')}.png`;
+                a.href = url; a.click();
+                setTimeout(() => { URL.revokeObjectURL(url); resolve(); }, 300);
+            }, 'image/png');
+        });
+        await new Promise(r => setTimeout(r, 200)); // 避免浏览器阻止连续下载
+    }
+};
+
+function showOriginalPreview(img) {
+    const mainBox = document.getElementById('mainBox');
+    // 清除旧预览，但保留 hint 节点
+    const hint = document.getElementById('hint');
+    mainBox.innerHTML = '';
+    hint.style.display = 'none';
+    mainBox.appendChild(hint);
+    const c = makeCanvas(img, 600);
+    c.style.maxWidth='100%'; c.style.maxHeight='520px';
+    mainBox.appendChild(c);
+}
+
+// ===== 视图切换 =====
+window.switchView = (view) => {
+    currentView = view;
+    document.querySelectorAll('.vtab').forEach(t => t.classList.toggle('active', t.dataset.view === view));
+    document.getElementById('viewResult').style.display = view === 'result' ? 'block' : 'none';
+    document.getElementById('viewCompare').style.display = view === 'compare' ? 'block' : 'none';
+    document.getElementById('viewGrid').style.display = view === 'grid' ? 'block' : 'none';
+    if (resultCanvas) applyBg();
+};
+
+// ===== 主处理 =====
+window.doProcess = async () => {
+    if (!origImg || isProcessing) return;
+    isProcessing = true;
+    cachedMask = null; // 清除旧缓存，准备重推理
+    document.getElementById('processBtn').disabled = true;
+    try {
+        if (currentMode === 'hq') await processHQ();
+        else await processONNX();
+    } catch(e) {
+        console.error(e);
+        showStatus('处理失败：' + (e.message || '请刷新重试'), 'err');
+    }
+    isProcessing = false;
+    document.getElementById('processBtn').disabled = false;
+};
+
+// ===== ONNX RMBG-1.4 =====
+async function processONNX() {
+    showStatus('加载 ONNX Runtime...', 'loading', true);
+    await loadORT();
+    const session = await initOrtSession();
+    showStatus('AI 推理中，请稍候...', 'loading', true, 60);
+    const maxDim = inferSize; // 使用用户选择的推理分辨率
+    const wc = makeCanvas(origImg, maxDim);
+    const ctx = wc.getContext('2d');
+    const imgData = ctx.getImageData(0, 0, wc.width, wc.height);
+    const { tensor, lb } = preprocessImg(imgData, MODEL_INPUT_SIZE);
+    const inputTensor = new ort.Tensor('float32', tensor, [1, 3, MODEL_INPUT_SIZE, MODEL_INPUT_SIZE]);
+    const feeds = {};
+    feeds[session.inputNames[0]] = inputTensor;
+    const output = await session.run(feeds);
+    const maskTensor = output[session.outputNames[0]];
+    const maskData = maskTensor.data;
+    const mh = maskTensor.dims[2], mw = maskTensor.dims[3];
+    showStatus('生成抠图结果...', 'loading', true, 85);
+    const floatMask = new Float32Array(mw * mh);
+    for (let i = 0; i < mw * mh; i++) floatMask[i] = 1 / (1 + Math.exp(-maskData[i]));
+    // 缓存 mask，供调参时免重推理
+    cachedMask = { type: 'onnx', floatMask, mw, mh, lb, srcData: imgData };
+    const blurred = featherVal > 0 ? gaussBlur(floatMask, mw, mh, featherVal) : floatMask;
+    resultCanvas = applyMaskWithLetterbox(imgData, blurred, mw, mh, lb, threshVal);
+    applyBg();
+    document.getElementById('dlBtn').disabled = false;
+    document.getElementById('copyBtn').disabled = false;
+    document.getElementById('dlOpts').style.display = 'flex';
+    showStatus('✅ 抠图完成！', 'ok');
+    setProgress(100);
+    setTimeout(hideStatus, 3500);
+}
+
+// ===== ORT 初始化 =====
+async function loadORT() {
+    if (window.ort) return;
+    return new Promise((res, rej) => {
+        const s = document.createElement('script');
+        s.src = ORT_CDN; s.onload = res;
+        s.onerror = () => rej(new Error('ORT加载失败'));
+        document.head.appendChild(s);
+    });
+}
+
+async function initOrtSession() {
+    if (ortSession) return ortSession;
+    window.ort.env.wasm.wasmPaths = ORT_WASM;
+    window.ort.env.wasm.numThreads = 1;
+    showStatus('检查本地缓存...', 'loading', true, 15);
+    let buf = await loadFromCache();
+    if (buf) {
+        showStatus('从缓存加载模型...', 'loading', true, 56);
+    } else {
+        showStatus('首次使用，下载AI模型（约42MB）...', 'loading', true, 20);
+        buf = await downloadModel();
+        showStatus('模型下载完成，初始化中...', 'loading', true, 56);
+        saveToCache(buf.buffer.slice(0));
+    }
+    ortSession = await window.ort.InferenceSession.create(buf.buffer, {
+        executionProviders: ['wasm'], graphOptimizationLevel: 'all'
+    });
+    return ortSession;
+}
+
+async function loadFromCache() {
+    try {
+        const cache = await caches.open(MODEL_CACHE_KEY);
+        const resp = await cache.match('model.onnx');
+        if (resp) { const b = await resp.arrayBuffer(); if (b.byteLength === MODEL_TOTAL_SIZE) return new Uint8Array(b); }
+    } catch(e) {}
+    return null;
+}
+
+async function saveToCache(buffer) {
+    try {
+        const cache = await caches.open(MODEL_CACHE_KEY);
+        await cache.put('model.onnx', new Response(buffer, { headers: { 'Content-Type': 'application/octet-stream' } }));
+    } catch(e) {}
+}
+
+async function downloadModel() {
+    const chunkSizes = new Array(CHUNK_NAMES.length).fill(0);
+    const update = () => {
+        const recv = chunkSizes.reduce((a,b)=>a+b,0);
+        setProgress(Math.round(20 + (recv / MODEL_TOTAL_SIZE) * 36));
+        showStatus(`下载模型 ${(recv/1024/1024).toFixed(1)}MB / ${(MODEL_TOTAL_SIZE/1024/1024).toFixed(0)}MB...`, 'loading', true);
+    };
+    const fetchChunk = async (name, idx) => {
+        const resp = await fetch(CHUNK_BASE + name);
+        if (!resp.ok) throw new Error(`分块${idx}下载失败`);
+        const reader = resp.body.getReader(); const parts = [];
+        while(true) { const { done, value } = await reader.read(); if(done) break; parts.push(value); chunkSizes[idx]+=value.length; update(); }
+        const total = parts.reduce((s,p)=>s+p.length,0);
+        const arr = new Uint8Array(total); let off=0;
+        for(const p of parts) { arr.set(p,off); off+=p.length; }
+        return arr;
+    };
+    const chunks = await Promise.all(CHUNK_NAMES.map((n,i)=>fetchChunk(n,i)));
+    const full = new Uint8Array(MODEL_TOTAL_SIZE); let off=0;
+    for(const c of chunks) { full.set(c,off); off+=c.length; }
+    return full;
+}
+
+// ===== 预处理 =====
+function preprocessImg(imgData, ts) {
+    const { width: sw, height: sh } = imgData;
+    const scale = Math.min(ts/sw, ts/sh);
+    const nw = Math.round(sw*scale), nh = Math.round(sh*scale);
+    const padX = Math.floor((ts-nw)/2), padY = Math.floor((ts-nh)/2);
+    const c = document.createElement('canvas'); c.width=ts; c.height=ts;
+    const ctx = c.getContext('2d');
+    ctx.fillStyle='#808080'; ctx.fillRect(0,0,ts,ts);
+    const tmp = document.createElement('canvas'); tmp.width=sw; tmp.height=sh;
+    tmp.getContext('2d').putImageData(imgData,0,0);
+    ctx.drawImage(tmp,padX,padY,nw,nh);
+    const d = ctx.getImageData(0,0,ts,ts).data;
+    const mean=[0.485,0.456,0.406], std=[0.229,0.224,0.225];
+    const tensor = new Float32Array(3*ts*ts);
+    for(let i=0;i<ts*ts;i++) {
+        tensor[i]         = (d[i*4  ]/255-mean[0])/std[0];
+        tensor[ts*ts+i]   = (d[i*4+1]/255-mean[1])/std[1];
+        tensor[ts*ts*2+i] = (d[i*4+2]/255-mean[2])/std[2];
+    }
+    return { tensor, lb: { scale, nw, nh, padX, padY, sw, sh } };
+}
+
+// ===== 高斯模糊 =====
+function gaussBlur(mask, w, h, r) {
+    const kernel=[]; let sum=0;
+    for(let y=-r;y<=r;y++) for(let x=-r;x<=r;x++) { const v=Math.exp(-(x*x+y*y)/(2*r*r)); kernel.push(v); sum+=v; }
+    for(let i=0;i<kernel.length;i++) kernel[i]/=sum;
+    const out=new Float32Array(w*h);
+    for(let py=0;py<h;py++) for(let px=0;px<w;px++) {
+        let v=0,ki=0;
+        for(let ky=-r;ky<=r;ky++) for(let kx=-r;kx<=r;kx++) {
+            const sy=Math.min(Math.max(py+ky,0),h-1), sx=Math.min(Math.max(px+kx,0),w-1);
+            v+=mask[sy*w+sx]*kernel[ki++];
+        }
+        out[py*w+px]=v;
+    }
+    return out;
+}
+
+// ===== 应用 Letterbox 还原 =====
+function applyMaskWithLetterbox(srcData, maskArr, mw, mh, lb, thresh) {
+    const { width:sw, height:sh, data:src } = srcData;
+    const { nw, nh, padX, padY } = lb;
+    const cropC = document.createElement('canvas'); cropC.width=nw; cropC.height=nh;
+    const cropCtx = cropC.getContext('2d');
+    const cropImg = cropCtx.createImageData(nw, nh);
+    for(let py=0;py<nh;py++) for(let px=0;px<nw;px++) {
+        const si=(py+padY)*mw+(px+padX);
+        const v=Math.round(Math.min(1,Math.max(0,maskArr[si]))*255);
+        const di=(py*nw+px)*4;
+        cropImg.data[di]=cropImg.data[di+1]=cropImg.data[di+2]=v; cropImg.data[di+3]=255;
+    }
+    cropCtx.putImageData(cropImg,0,0);
+    const sc=document.createElement('canvas'); sc.width=sw; sc.height=sh;
+    const sCtx=sc.getContext('2d');
+    sCtx.imageSmoothingEnabled=true; sCtx.imageSmoothingQuality='high';
+    sCtx.drawImage(cropC,0,0,sw,sh);
+    const sm=sCtx.getImageData(0,0,sw,sh).data;
+    const out=document.createElement('canvas'); out.width=sw; out.height=sh;
+    const oCtx=out.getContext('2d');
+    oCtx.drawImage((() => { const t=document.createElement('canvas'); t.width=sw; t.height=sh; t.getContext('2d').putImageData(srcData,0,0); return t; })(),0,0);
+    const od=oCtx.getImageData(0,0,sw,sh);
+    const lo=thresh-0.2, hi=thresh+0.2;
+    for(let i=0;i<sw*sh;i++) {
+        const p=sm[i*4]/255; let a;
+        if(p<=lo) a=0;
+        else if(p>=hi) a=255;
+        else { const t=(p-lo)/(hi-lo); const s=t*t*(3-2*t); a=Math.round(s*255); }
+        od.data[i*4+3]=a;
+    }
+    oCtx.putImageData(od,0,0);
+    return out;
+}
+
+// ===== 高精度模式（BiRefNet）=====
+let tfPipeline = null;
+async function processHQ() {
+    showStatus('加载 transformers.js...', 'loading', true, 10);
+    await loadTF();
+    showStatus('初始化 BiRefNet 模型（首次约90MB）...', 'loading', true, 20);
+    if (!tfPipeline) {
+        tfPipeline = await window.__hfPipeline('image-segmentation', 'briaai/RMBG-1.4', {
+            device: 'webgpu', dtype: 'fp16',
+            progress_callback: info => {
+                if (info.status === 'progress') {
+                    setProgress(Math.round(20 + (info.progress||0) * 0.5));
+                    showStatus(`下载模型... ${Math.round(info.progress||0)}%`, 'loading', true);
+                }
+            }
+        }).catch(async e => {
+            console.warn('WebGPU降级wasm:', e);
+            return window.__hfPipeline('image-segmentation', 'briaai/RMBG-1.4', { device:'wasm', dtype:'q8' });
+        });
+    }
+    showStatus('AI 推理中...', 'loading', true, 72);
+    const wc = makeCanvas(origImg, inferSize);
+    const blob = await new Promise(r => wc.toBlob(r, 'image/png'));
+    const url = URL.createObjectURL(blob);
+    const results = await tfPipeline(url);
+    URL.revokeObjectURL(url);
+    const seg = (results||[]).find(r=>r.label!=='background') || (results||[])[0];
+    if (!seg || !seg.mask) throw new Error('未获取到分割掩码');
+    showStatus('生成结果...', 'loading', true, 88);
+    const sw=wc.width, sh=wc.height;
+    const srcData=wc.getContext('2d').getImageData(0,0,sw,sh);
+    // 缓存 mask，供调参时免重推理
+    cachedMask = { type: 'hq', srcData, mask: seg.mask, sw, sh };
+    resultCanvas = applyMaskHQ(srcData, seg.mask, sw, sh);
+    applyBg();
+    document.getElementById('dlBtn').disabled=false;
+    document.getElementById('copyBtn').disabled=false;
+    document.getElementById('dlOpts').style.display = 'flex';
+    showStatus('✅ 抠图完成！', 'ok');
+    setProgress(100);
+    setTimeout(hideStatus, 3500);
+}
+
+function applyMaskHQ(srcData, mask, sw, sh) {
+    const mw=mask.width, mh=mask.height;
+    const maskPixels=mask.data;
+    const channels=mask.channels||(maskPixels.length/(mw*mh));
+    const mc=document.createElement('canvas'); mc.width=mw; mc.height=mh;
+    const mCtx=mc.getContext('2d');
+    const mImg=mCtx.createImageData(mw,mh);
+    for(let i=0;i<mw*mh;i++) {
+        const v=channels===1?maskPixels[i]:maskPixels[i*channels];
+        mImg.data[i*4]=mImg.data[i*4+1]=mImg.data[i*4+2]=v; mImg.data[i*4+3]=255;
+    }
+    mCtx.putImageData(mImg,0,0);
+    const sc=document.createElement('canvas'); sc.width=sw; sc.height=sh;
+    const sCtx=sc.getContext('2d');
+    sCtx.imageSmoothingEnabled=true; sCtx.imageSmoothingQuality='high';
+    sCtx.drawImage(mc,0,0,sw,sh);
+    const sm=sCtx.getImageData(0,0,sw,sh).data;
+    const floatMask=new Float32Array(sw*sh);
+    for(let i=0;i<sw*sh;i++) floatMask[i]=sm[i*4]/255;
+    const blurred=featherVal>0?gaussBlur(floatMask,sw,sh,featherVal):floatMask;
+    const srcCanvas=document.createElement('canvas'); srcCanvas.width=sw; srcCanvas.height=sh;
+    srcCanvas.getContext('2d').putImageData(srcData,0,0);
+    const out=document.createElement('canvas'); out.width=sw; out.height=sh;
+    const oCtx=out.getContext('2d');
+    oCtx.drawImage(srcCanvas,0,0);
+    const od=oCtx.getImageData(0,0,sw,sh);
+    const src=srcData.data;
+    for(let i=0;i<sw*sh;i++) {
+        const t=blurred[i];
+        const s1=t*t*(3-2*t);
+        const smooth=s1*s1*(3-2*s1);
+        let r=src[i*4], g=src[i*4+1], b=src[i*4+2];
+        if(t>0.05&&t<0.9) {
+            const boost=(1-t)*0.5;
+            const lum=0.299*r+0.587*g+0.114*b;
+            r=Math.min(255,Math.round(r+(r-lum)*boost));
+            g=Math.min(255,Math.round(g+(g-lum)*boost));
+            b=Math.min(255,Math.round(b+(b-lum)*boost));
+        }
+        od.data[i*4]=r; od.data[i*4+1]=g; od.data[i*4+2]=b;
+        od.data[i*4+3]=Math.round(smooth*255);
+    }
+    oCtx.putImageData(od,0,0);
+    return out;
+}
+
+async function loadTF() {
+    if (window.__transformersLoaded) return;
+    return new Promise((res,rej) => {
+        const s=document.createElement('script'); s.type='module';
+        s.textContent=`
+            import { pipeline,env } from 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1/dist/transformers.min.js';
+            env.allowLocalModels=false; env.backends.onnx.wasm.proxy=false;
+            window.__hfPipeline=pipeline; window.__transformersLoaded=true;
+            window.dispatchEvent(new Event('tf-ready'));
+        `;
+        s.onerror=()=>rej(new Error('transformers.js加载失败'));
+        document.head.appendChild(s);
+        window.addEventListener('tf-ready',res,{once:true});
+        setTimeout(()=>rej(new Error('transformers.js加载超时')),20000);
+    });
+}
+
+// ===== 背景合成 =====
+function applyBg() {
+    if (!resultCanvas) return;
+    renderToView();
+    if (currentView === 'compare') setupCompare();
+    if (currentView === 'grid') renderGrid();
+}
+
+function getBgFill(canvas) {
+    // 生成背景填充后的 canvas
+    if (currentBg === 'transparent' && currentPat === 'none') return canvas;
+    const fc = document.createElement('canvas');
+    fc.width = canvas.width; fc.height = canvas.height;
+    const ctx = fc.getContext('2d');
+    if (currentPat !== 'none') {
+        drawPattern(ctx, currentPat, fc.width, fc.height);
+    } else {
+        applyBgFill(ctx, currentBg, fc.width, fc.height);
+    }
+    ctx.drawImage(canvas, 0, 0);
+    return fc;
+}
+
+function drawPattern(ctx, pat, w, h) {
+    // 先填色作底
+    if (currentBg !== 'transparent') { applyBgFill(ctx, currentBg, w, h); }
+    const pc = document.createElement('canvas'); pc.width=20; pc.height=20;
+    const pCtx = pc.getContext('2d');
+    if (pat === 'checker') {
+        pCtx.fillStyle='#cccccc'; pCtx.fillRect(0,0,20,20);
+        pCtx.fillStyle='#ffffff'; pCtx.fillRect(0,0,10,10); pCtx.fillRect(10,10,10,10);
+    } else if (pat === 'grid') {
+        pCtx.fillStyle='#f8f8f8'; pCtx.fillRect(0,0,20,20);
+        pCtx.strokeStyle='#dddddd'; pCtx.lineWidth=1;
+        pCtx.beginPath(); pCtx.moveTo(20,0); pCtx.lineTo(20,20); pCtx.moveTo(0,20); pCtx.lineTo(20,20); pCtx.stroke();
+    } else if (pat === 'dots') {
+        pCtx.fillStyle='#f0f0f0'; pCtx.fillRect(0,0,20,20);
+        pCtx.fillStyle='#bbb';
+        pCtx.beginPath(); pCtx.arc(10,10,2,0,Math.PI*2); pCtx.fill();
+    } else if (pat === 'stripe') {
+        pCtx.fillStyle='#fff'; pCtx.fillRect(0,0,20,20);
+        pCtx.strokeStyle='#e0e0e0'; pCtx.lineWidth=4;
+        pCtx.beginPath(); pCtx.moveTo(-5,5); pCtx.lineTo(5,-5);
+        pCtx.moveTo(0,20); pCtx.lineTo(20,0);
+        pCtx.moveTo(15,25); pCtx.lineTo(25,15); pCtx.stroke();
+    } else if (pat === 'gradient') {
+        const grd = ctx.createLinearGradient(0,0,w,h);
+        grd.addColorStop(0,'#667eea'); grd.addColorStop(0.5,'#764ba2'); grd.addColorStop(1,'#f093fb');
+        ctx.fillStyle = grd; ctx.fillRect(0,0,w,h);
+        return; // 渐变不用 pattern
+    }
+    const pattern = ctx.createPattern(pc,'repeat');
+    ctx.fillStyle = pattern; ctx.fillRect(0,0,w,h);
+}
+
+// ===== 统一背景填充（支持纯色 + CSS linear-gradient + 背景图片）=====
+function applyBgFill(ctx, bg, w, h) {
+    if (!bg || bg === 'transparent') return;
+    // 背景图片模式
+    if (bg === '__bgimg__') {
+        if (!bgImage) return;
+        // cover 模式绘制背景图
+        const iw = bgImage.naturalWidth, ih = bgImage.naturalHeight;
+        const scale = Math.max(w / iw, h / ih);
+        const sw = iw * scale, sh = ih * scale;
+        const ox = (w - sw) / 2, oy = (h - sh) / 2;
+        ctx.drawImage(bgImage, ox, oy, sw, sh);
+        return;
+    }
+    if (!bg.startsWith('linear-gradient')) {
+        // 纯色
+        ctx.fillStyle = bg;
+        ctx.fillRect(0, 0, w, h);
+        return;
+    }
+    // 解析 linear-gradient(angle, stop1, stop2, ...)
+    // 例：linear-gradient(135deg, #CAF8ED, #E6DAA1, #FF8557)
+    const inner = bg.slice(bg.indexOf('(') + 1, bg.lastIndexOf(')'));
+    const parts = inner.split(',').map(s => s.trim());
+
+    // 解析方向/角度
+    let angle = 180; // 默认 to bottom = 180deg
+    let stopStart = 0;
+    const firstPart = parts[0];
+    if (firstPart.endsWith('deg')) {
+        angle = parseFloat(firstPart);
+        stopStart = 1;
+    } else if (firstPart.startsWith('to ')) {
+        const dir = firstPart.slice(3);
+        if (dir === 'right') angle = 90;
+        else if (dir === 'left') angle = 270;
+        else if (dir === 'top') angle = 0;
+        else if (dir === 'bottom') angle = 180;
+        else if (dir === 'bottom right') angle = 135;
+        else if (dir === 'bottom left') angle = 225;
+        else if (dir === 'top right') angle = 45;
+        else if (dir === 'top left') angle = 315;
+        stopStart = 1;
+    }
+
+    // 角度 → 起止坐标（CSS角度：0deg=向上，顺时针）
+    const rad = (angle - 90) * Math.PI / 180;
+    const cx = w / 2, cy = h / 2;
+    // 计算渐变线长度（覆盖整个矩形的对角线投影）
+    const len = Math.abs(w * Math.cos(rad)) + Math.abs(h * Math.sin(rad));
+    const x0 = cx - Math.cos(rad) * len / 2;
+    const y0 = cy - Math.sin(rad) * len / 2;
+    const x1 = cx + Math.cos(rad) * len / 2;
+    const y1 = cy + Math.sin(rad) * len / 2;
+
+    const grad = ctx.createLinearGradient(x0, y0, x1, y1);
+
+    // 收集色标（后面部分可能带 % 偏移）
+    const stops = parts.slice(stopStart);
+    stops.forEach((s, i) => {
+        // 可能是 "#RRGGBB 50%" 或者仅 "#RRGGBB"
+        const tokens = s.trim().split(/\s+/);
+        const color = tokens[0];
+        if (tokens[1]) {
+            grad.addColorStop(parseFloat(tokens[1]) / 100, color);
+        } else {
+            grad.addColorStop(i / Math.max(stops.length - 1, 1), color);
+        }
+    });
+
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, w, h);
+}
+
+function renderToView() {
+    const bg = getBgFill(resultCanvas);
+    const mainBox = document.getElementById('mainBox');
+    const hint = document.getElementById('hint');
+    mainBox.innerHTML = '';
+    hint.style.display = 'none';
+    mainBox.appendChild(hint); // 保留 hint 节点
+    const c = document.createElement('canvas');
+    c.width = bg.width; c.height = bg.height;
+    c.style.maxWidth='100%'; c.style.maxHeight='520px';
+    c.getContext('2d').drawImage(bg, 0, 0);
+    mainBox.appendChild(c);
+}
+
+function renderGrid() {
+    const resultBox = document.getElementById('resultBox');
+    const origBox = document.getElementById('origBox');
+    resultBox.innerHTML=''; origBox.innerHTML='';
+    if (origImg) origBox.appendChild(makeCanvas(origImg, 500));
+    const bg = getBgFill(resultCanvas);
+    const c = document.createElement('canvas');
+    c.width=bg.width; c.height=bg.height;
+    c.style.maxWidth='100%'; c.style.maxHeight='300px';
+    c.getContext('2d').drawImage(bg,0,0);
+    resultBox.appendChild(c);
+}
+
+// ===== 对比滑块 =====
+function setupCompare() {
+    if (!resultCanvas || !origImg) return;
+    const wrap = document.getElementById('compareWrap');
+    wrap.style.display = 'block';
+
+    const maxW = wrap.parentElement.clientWidth || 800;
+    const maxH = 520;
+    let w = resultCanvas.width, h = resultCanvas.height;
+    if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
+    if (h > maxH) { w = Math.round(w * maxH / h); h = maxH; }
+
+    const origC = document.getElementById('compareOrigCanvas');
+    const resC = document.getElementById('compareResultCanvas');
+    origC.width = resC.width = w; origC.height = resC.height = h;
+    wrap.style.width = w + 'px';
+    wrap.style.height = h + 'px';
+
+    // 绘制原图（底层，铺满）
+    origC.style.cssText = 'position:absolute;left:0;top:0;display:block;';
+    const oCtx = origC.getContext('2d'); oCtx.drawImage(origImg, 0, 0, w, h);
+
+    // 绘制结果（覆盖右半部分，通过 clip 裁切）
+    const bg = getBgFill(resultCanvas);
+    resC.style.cssText = 'position:absolute;left:0;top:0;display:block;';
+    const rCtx = resC.getContext('2d'); rCtx.drawImage(bg, 0, 0, w, h);
+
+    // clip 容器遮住右侧
+    const clip = document.getElementById('compareClip');
+    clip.style.cssText = 'position:absolute;top:0;bottom:0;overflow:hidden;pointer-events:none;';
+
+    // 初始化滑块位置
+    const line = document.getElementById('compareLine');
+    let ratio = 0.5;
+    const updateSlider = (r) => {
+        ratio = Math.max(0.02, Math.min(0.98, r));
+        const px = Math.round(ratio * w);
+        line.style.left = px + 'px';
+        // clip 从 px 开始展示到右侧
+        clip.style.left = px + 'px';
+        clip.style.right = '0';
+        clip.style.width = (w - px) + 'px';
+        // resC 要往左偏移 px，使得正确部分显示在 clip 内
+        resC.style.left = -px + 'px';
+    };
+    updateSlider(0.5);
+
+    // 清旧事件（防多次 setup 叠加）
+    const newLine = line.cloneNode(true);
+    line.parentNode.replaceChild(newLine, line);
+
+    // 拖拽事件
+    const onMove = (clientX) => {
+        const rect = wrap.getBoundingClientRect();
+        updateSlider((clientX - rect.left) / rect.width);
+    };
+    newLine.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        const onMM = (e) => onMove(e.clientX);
+        const onMU = () => { document.removeEventListener('mousemove',onMM); document.removeEventListener('mouseup',onMU); };
+        document.addEventListener('mousemove',onMM);
+        document.addEventListener('mouseup',onMU);
+    });
+    newLine.addEventListener('touchstart', (e) => {
+        const onTM = (e) => { e.preventDefault(); onMove(e.touches[0].clientX); };
+        const onTE = () => { document.removeEventListener('touchmove',onTM); document.removeEventListener('touchend',onTE); };
+        document.addEventListener('touchmove',onTM,{passive:false});
+        document.addEventListener('touchend',onTE);
+    });
+    // 点击 wrap 也可定位（移除旧 handler 防叠加）
+    if (wrap._clickHandler) wrap.removeEventListener('click', wrap._clickHandler);
+    wrap._clickHandler = (e) => {
+        // 避免处理滑块 handle 上的点击
+        if (e.target.closest('.compare-line')) return;
+        const rect = wrap.getBoundingClientRect();
+        updateSlider((e.clientX - rect.left) / rect.width);
+    };
+    wrap.addEventListener('click', wrap._clickHandler);
+}
+
+// ===== 下载格式切换 =====
+document.querySelectorAll('.dl-opt').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.dl-opt').forEach(x => x.classList.remove('active'));
+        btn.classList.add('active');
+        downloadFmt = btn.dataset.fmt;
+    });
+});
+
+// ===== 下载 =====
+window.doDownload = () => {
+    if (!resultCanvas) return;
+    let exportCanvas;
+    let mimeType = 'image/png';
+    let ext = 'png';
+
+    if (downloadFmt === 'transparent') {
+        // 纯透明 PNG
+        exportCanvas = resultCanvas;
+    } else {
+        // 带背景（PNG 或 JPG）
+        const fc = document.createElement('canvas');
+        fc.width = resultCanvas.width; fc.height = resultCanvas.height;
+        const ctx = fc.getContext('2d');
+        if (downloadFmt === 'jpg') {
+            // JPG 不支持透明，先填白底
+            const baseBg = currentBg === 'transparent' ? '#ffffff' : currentBg;
+            applyBgFill(ctx, baseBg, fc.width, fc.height);
+            mimeType = 'image/jpeg';
+            ext = 'jpg';
+        }
+        if (currentPat !== 'none') {
+            drawPattern(ctx, currentPat, fc.width, fc.height);
+        } else {
+            applyBgFill(ctx, currentBg, fc.width, fc.height);
+        }
+        ctx.drawImage(resultCanvas, 0, 0);
+        exportCanvas = fc;
+    }
+
+    exportCanvas.toBlob(blob => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.download = `抠图_${Date.now()}.${ext}`;
+        a.href = url;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }, mimeType, 0.95);
+};
+
+// ===== 复制到剪贴板 =====
+window.doCopy = async () => {
+    if (!resultCanvas) return;
+    // 优先复制带当前背景的结果
+    const exportCanvas = (downloadFmt === 'transparent' && currentPat === 'none' && currentBg === 'transparent')
+        ? resultCanvas
+        : (() => {
+            const fc = document.createElement('canvas');
+            fc.width = resultCanvas.width; fc.height = resultCanvas.height;
+            const ctx = fc.getContext('2d');
+            if (currentPat !== 'none') {
+                drawPattern(ctx, currentPat, fc.width, fc.height);
+            } else {
+                applyBgFill(ctx, currentBg, fc.width, fc.height);
+            }
+            ctx.drawImage(resultCanvas, 0, 0);
+            return fc;
+        })();
+    try {
+        const blob = await new Promise(r => exportCanvas.toBlob(r, 'image/png'));
+        await navigator.clipboard.write([
+            new ClipboardItem({ 'image/png': blob })
+        ]);
+        showToast('✅ 已复制到剪贴板！');
+        // 按钮反馈动效
+        const btn = document.getElementById('copyBtn');
+        const orig = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-check"></i> 已复制！';
+        setTimeout(() => { btn.innerHTML = orig; }, 1800);
+    } catch(e) {
+        // 降级：在新标签页打开图片供用户手动复制
+        const blob = await new Promise(r => exportCanvas.toBlob(r, 'image/png'));
+        const url = URL.createObjectURL(blob);
+        window.open(url, '_blank');
+        setTimeout(() => URL.revokeObjectURL(url), 5000);
+        showToast('浏览器不支持直接复制，已在新标签页打开，请手动复制');
+    }
+};
+
+// ===== 重置 =====
+window.doReset = () => {
+    origImg = null; resultCanvas = null; cachedMask = null;
+    document.getElementById('fileInput').value = '';
+    const fi = document.getElementById('fileInfo'); fi.style.display = 'none'; fi.innerHTML = '';
+    document.getElementById('processBtn').disabled = true;
+    document.getElementById('dlBtn').disabled = true;
+    document.getElementById('copyBtn').disabled = true;
+    document.getElementById('dlOpts').style.display = 'none';
+    document.getElementById('dimTxt').textContent = '';
+    // 清理主预览区，只保留 hint
+    const mainBox = document.getElementById('mainBox');
+    const hint = document.getElementById('hint');
+    mainBox.innerHTML = '';
+    hint.style.display = 'block';
+    mainBox.appendChild(hint);
+    document.getElementById('compareWrap').style.display = 'none';
+    document.getElementById('origBox').innerHTML = '';
+    document.getElementById('resultBox').innerHTML = '';
+    hideStatus(); setProgress(0);
+    // 重置下载格式
+    downloadFmt = 'transparent';
+    document.querySelectorAll('.dl-opt').forEach((x,i) => x.classList.toggle('active', i===0));
+    // 清空批量区
+    previewList = [];
+    batchRunning = false;
+    document.getElementById('batchGrid').innerHTML = '';
+    document.getElementById('batchBar').classList.remove('show');
+    // 清空背景图片
+    if (bgImage && bgImage._url) URL.revokeObjectURL(bgImage._url);
+    bgImage = null;
+    document.getElementById('bgImgInput').value = '';
+    document.getElementById('bgImgThumb').style.display = 'none';
+    document.getElementById('bgImgClear').style.display = 'none';
+};
+
+// ===== 背景预设点击 =====
+document.querySelectorAll('.bg-swatch').forEach(s => {
+    s.addEventListener('click', () => {
+        document.querySelectorAll('.bg-swatch').forEach(x => x.classList.remove('active'));
+        s.classList.add('active');
+        const bg = s.dataset.bg;
+        if (bg === 'transparent') {
+            currentBg = 'transparent';
+        } else if (bg !== 'custom') {
+            currentBg = bg;
+            // 只有纯色 HEX 才同步颜色选择器
+            if (bg.startsWith('#')) cpSetColor(bg);
+        }
+        if (resultCanvas) applyBg();
+    });
+});
+
+// ===== 背景图案点击 =====
+document.querySelectorAll('.bp-btn').forEach(b => {
+    b.addEventListener('click', () => {
+        document.querySelectorAll('.bp-btn').forEach(x => x.classList.remove('active'));
+        b.classList.add('active');
+        currentPat = b.dataset.pat;
+        if (resultCanvas) applyBg();
+    });
+});
+
+// ===== 专业颜色选择器 =====
+let cpH = 240, cpS = 0.6, cpV = 0.9; // HSV
+
+function hsvToRgb(h, s, v) {
+    const f = (n,k=(n+h/60)%6) => v-v*s*Math.max(Math.min(k,4-k,1),0);
+    return [Math.round(f(5)*255), Math.round(f(3)*255), Math.round(f(1)*255)];
+}
+
+function rgbToHex(r,g,b) { return '#'+[r,g,b].map(x=>x.toString(16).padStart(2,'0')).join(''); }
+
+function hexToRgb(hex) {
+    const r = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return r ? [parseInt(r[1],16),parseInt(r[2],16),parseInt(r[3],16)] : null;
+}
+
+function rgbToHsv(r,g,b) {
+    r/=255; g/=255; b/=255;
+    const max=Math.max(r,g,b), min=Math.min(r,g,b), d=max-min;
+    let h=0,s=max===0?0:d/max,v=max;
+    if(max!==min) {
+        if(max===r) h=((g-b)/d)%6;
+        else if(max===g) h=(b-r)/d+2;
+        else h=(r-g)/d+4;
+        h=Math.round(h*60); if(h<0) h+=360;
+    }
+    return [h, s, v];
+}
+
+function cpDrawSat() {
+    const canvas = document.getElementById('cpSatCanvas');
+    const pw = canvas.parentElement.clientWidth || 220;
+    canvas.width = pw; canvas.height = 130;
+    const ctx = canvas.getContext('2d');
+    // 色相填充
+    const grad1 = ctx.createLinearGradient(0,0,pw,0);
+    grad1.addColorStop(0,'#fff');
+    grad1.addColorStop(1,'hsl('+cpH+',100%,50%)');
+    ctx.fillStyle=grad1; ctx.fillRect(0,0,pw,130);
+    // 亮度蒙版
+    const grad2 = ctx.createLinearGradient(0,0,0,130);
+    grad2.addColorStop(0,'rgba(0,0,0,0)');
+    grad2.addColorStop(1,'#000');
+    ctx.fillStyle=grad2; ctx.fillRect(0,0,pw,130);
+}
+
+function cpUpdateCursor() {
+    const sat = document.getElementById('cpSat');
+    const cursor = document.getElementById('cpCursor');
+    const pw = sat.clientWidth || 220;
+    cursor.style.left = (cpS * pw) + 'px';
+    cursor.style.top = ((1 - cpV) * 130) + 'px';
+}
+
+function cpUpdateHueThumb() {
+    const hue = document.getElementById('cpHue');
+    const thumb = document.getElementById('cpHueThumb');
+    const pw = hue.clientWidth || 220;
+    thumb.style.left = (cpH / 360 * pw) + 'px';
+}
+
+function cpUpdatePreview() {
+    const [r,g,b] = hsvToRgb(cpH, cpS, cpV);
+    const hex = rgbToHex(r,g,b);
+    document.getElementById('cpPreview').style.background = hex;
+    document.getElementById('cpHex').value = hex;
+    // 更新自定义色块
+    document.getElementById('customSwatch').style.background = hex;
+    // 应用颜色
+    currentBg = hex;
+    // 取消透明选中
+    document.querySelectorAll('.bg-swatch').forEach(x => x.classList.remove('active'));
+    document.getElementById('customSwatch').classList.add('active');
+    if (resultCanvas) applyBg();
+}
+
+function cpSetColor(hex) {
+    const rgb = hexToRgb(hex);
+    if (!rgb) return;
+    const [h,s,v] = rgbToHsv(...rgb);
+    cpH = h; cpS = s; cpV = v;
+    cpDrawSat(); cpUpdateCursor(); cpUpdateHueThumb();
+    document.getElementById('cpPreview').style.background = hex;
+    document.getElementById('cpHex').value = hex;
+    document.getElementById('customSwatch').style.background = hex;
+}
+
+// 饱和度面板交互
+const cpSat = document.getElementById('cpSat');
+function cpSatInteract(e) {
+    const rect = cpSat.getBoundingClientRect();
+    const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+    const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+    cpS = Math.max(0, Math.min(1, x / rect.width));
+    cpV = Math.max(0, Math.min(1, 1 - y / rect.height));
+    cpUpdateCursor(); cpUpdatePreview();
+}
+cpSat.addEventListener('mousedown', e => {
+    cpSatInteract(e);
+    const mm = (e) => cpSatInteract(e);
+    const mu = () => { document.removeEventListener('mousemove',mm); document.removeEventListener('mouseup',mu); };
+    document.addEventListener('mousemove',mm); document.addEventListener('mouseup',mu);
+});
+cpSat.addEventListener('touchstart', e => {
+    cpSatInteract(e);
+    const tm = (e) => { e.preventDefault(); cpSatInteract(e); };
+    const te = () => { document.removeEventListener('touchmove',tm); document.removeEventListener('touchend',te); };
+    document.addEventListener('touchmove',tm,{passive:false}); document.addEventListener('touchend',te);
+}, {passive:false});
+
+// 色相滑条交互
+const cpHuEl = document.getElementById('cpHue');
+function cpHueInteract(e) {
+    const rect = cpHuEl.getBoundingClientRect();
+    const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+    cpH = Math.max(0, Math.min(360, x / rect.width * 360));
+    cpDrawSat(); cpUpdateHueThumb(); cpUpdateCursor(); cpUpdatePreview();
+}
+cpHuEl.addEventListener('mousedown', e => {
+    cpHueInteract(e);
+    const mm=(e)=>cpHueInteract(e);
+    const mu=()=>{document.removeEventListener('mousemove',mm);document.removeEventListener('mouseup',mu);};
+    document.addEventListener('mousemove',mm); document.addEventListener('mouseup',mu);
+});
+cpHuEl.addEventListener('touchstart', e => {
+    cpHueInteract(e);
+    const tm=(e)=>{e.preventDefault();cpHueInteract(e);};
+    const te=()=>{document.removeEventListener('touchmove',tm);document.removeEventListener('touchend',te);};
+    document.addEventListener('touchmove',tm,{passive:false}); document.addEventListener('touchend',te);
+},{passive:false});
+
+// HEX 输入
+document.getElementById('cpHex').addEventListener('change', e => {
+    const hex = e.target.value.trim();
+    if (/^#[0-9a-f]{6}$/i.test(hex)) cpSetColor(hex);
+});
+document.getElementById('cpHex').addEventListener('keydown', e => {
+    if (e.key === 'Enter') { document.getElementById('cpHex').dispatchEvent(new Event('change')); }
+});
+
+// 吸管按钮
+document.getElementById('cpEyedrop').addEventListener('click', async () => {
+    if (!window.EyeDropper) { showToast('当前浏览器不支持吸管取色（需Chrome 95+）'); return; }
+    try {
+        const eye = new EyeDropper();
+        const res = await eye.open();
+        cpSetColor(res.sRGBHex);
+        currentBg = res.sRGBHex;
+        // 激活自定义色块
+        document.querySelectorAll('.bg-swatch').forEach(x => x.classList.remove('active'));
+        document.getElementById('customSwatch').classList.add('active');
+        if (resultCanvas) applyBg();
+    } catch(e) {}
+});
+
+// 随机颜色
+document.getElementById('cpRandom').addEventListener('click', () => {
+    cpH = Math.floor(Math.random()*360);
+    cpS = 0.5 + Math.random()*0.4;
+    cpV = 0.6 + Math.random()*0.3;
+    cpDrawSat(); cpUpdateCursor(); cpUpdateHueThumb(); cpUpdatePreview();
+});
+
+// 初始化颜色选择器
+setTimeout(() => {
+    cpDrawSat(); cpUpdateCursor(); cpUpdateHueThumb();
+    document.getElementById('cpPreview').style.background = '#667eea';
+    document.getElementById('cpHex').value = '#667eea';
+}, 100);
+
+// ===== 工具函数 =====
+function makeCanvas(img, maxDim) {
+    const c = document.createElement('canvas');
+    let w=img.width, h=img.height;
+    if(w>maxDim||h>maxDim) { const r=Math.min(maxDim/w,maxDim/h); w=Math.round(w*r); h=Math.round(h*r); }
+    c.width=w; c.height=h;
+    c.getContext('2d').drawImage(img,0,0,w,h);
+    c.style.maxWidth='100%';
+    return c;
+}
+
+function showStatus(txt, type, spin=false, prog=null) {
+    const bar=document.getElementById('statusBar');
+    document.getElementById('statusTxt').textContent=txt;
+    bar.className='status show '+type;
+    document.getElementById('spin').style.display=spin?'block':'none';
+    const pw=document.getElementById('progWrap');
+    if(prog!==null) { pw.style.display='block'; setProgress(prog); }
+    else pw.style.display='none';
+}
+function hideStatus() { document.getElementById('statusBar').className='status'; }
+function setProgress(v) { document.getElementById('progBar').style.width=v+'%'; }
+
+// ===== 粘贴上传 Ctrl+V =====
+document.addEventListener('paste', e => {
+    const items = e.clipboardData && e.clipboardData.items;
+    if (!items) return;
+    for (const item of items) {
+        if (item.type.startsWith('image/')) {
+            const file = item.getAsFile();
+            if (file) {
+                e.preventDefault();
+                showToast('📋 检测到粘贴图片，开始处理...');
+                loadFiles([file]);
+            }
+            break;
+        }
+    }
+});
+
+// ===== 背景图片上传 =====
+let bgImage = null; // 当前背景图片（HTMLImageElement）
+
+document.getElementById('bgImgInput').addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 10 * 1024 * 1024) { showToast('背景图片不超过 10MB', 'error'); return; }
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+        // 回收旧URL
+        if (bgImage && bgImage._url) URL.revokeObjectURL(bgImage._url);
+        bgImage = img;
+        bgImage._url = url;
+
+        // 更新缩略图
+        const thumb = document.getElementById('bgImgThumb');
+        thumb.src = url;
+        thumb.style.display = 'block';
+        document.getElementById('bgImgClear').style.display = 'inline-block';
+        document.getElementById('bgImgUpload').querySelector('i').style.display = 'none';
+        document.getElementById('bgImgUpload').childNodes[1].textContent = '';
+
+        // 切换到"无图案"并应用背景图
+        currentPat = 'none';
+        currentBg = '__bgimg__';
+        document.querySelectorAll('.bp-btn').forEach((x,i) => x.classList.toggle('active', i===0));
+        document.querySelectorAll('.bg-swatch').forEach(x => x.classList.remove('active'));
+
+        if (resultCanvas) applyBg();
+        showToast('✅ 背景图片已设置，实时预览中');
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); showToast('❌ 图片加载失败', 'error'); };
+    img.src = url;
+});
+
+function clearBgImg() {
+    if (bgImage && bgImage._url) URL.revokeObjectURL(bgImage._url);
+    bgImage = null;
+    document.getElementById('bgImgInput').value = '';
+    document.getElementById('bgImgThumb').style.display = 'none';
+    document.getElementById('bgImgClear').style.display = 'none';
+    document.getElementById('bgImgUpload').querySelector('i').style.display = '';
+    currentBg = 'transparent';
+    document.querySelectorAll('.bg-swatch').forEach((x,i) => x.classList.toggle('active', i===0));
+    if (resultCanvas) applyBg();
+    showToast('背景图片已移除');
+}
+
+// ===== FAQ 手风琴 =====
+function toggleFaq(el) {
+    const isOpen = el.classList.contains('open');
+    // 关闭所有
+    document.querySelectorAll('.faq-item.open').forEach(x => x.classList.remove('open'));
+    // 切换当前
+    if (!isOpen) el.classList.add('open');
+}
+
+</script>
+</body>
+</html>
